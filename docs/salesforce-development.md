@@ -72,6 +72,10 @@ Before opening a pull request, run:
 
 ```bash
 npm run check
+sf apex run test \
+  --tests HFS_ServiceContractTest \
+  --result-format human \
+  --wait 10
 ./scripts/sync-beads.sh
 git diff --check
 ```
