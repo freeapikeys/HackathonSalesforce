@@ -26,6 +26,7 @@ future recommendations can improve.
 - `docs/`: supporting architecture and engineering decisions.
 - `research/`: Mauritius-focused evidence and source register.
 - `ontology/`: versioned OWL, SHACL, mappings, and examples.
+- `integration/events/`: versioned event schemas and deterministic fixtures.
 - `force-app/`: Salesforce DX source.
 - `mulesoft/`: API contracts and MuleSoft applications.
 - `scripts/`: development and research utilities.
@@ -34,6 +35,8 @@ Salesforce org setup and validation commands live in
 [docs/salesforce-development.md](docs/salesforce-development.md).
 The executable semantic contract is documented in
 [ontology/README.md](ontology/README.md).
+The versioned source-event envelope and deterministic fixtures are documented
+in [docs/event-contract.md](docs/event-contract.md).
 
 The repository tracks `.beads/issues.jsonl` as the portable team copy of the
 work graph. `bootstrap-dev.sh` imports it for a fresh clone. Run

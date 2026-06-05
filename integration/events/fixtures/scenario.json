@@ -1,0 +1,64 @@
+{
+  "name": "industry-neutral relationship case",
+  "maximumLatenessSeconds": 86400,
+  "events": [
+    {
+      "file": "events/01-person.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/02-organization.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/03-employee.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/04-supplier.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/05-agreement.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/06-sop.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/07-issue.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/08-duplicate-agreement.json",
+      "expected": "DUPLICATE"
+    },
+    {
+      "file": "events/09-malformed.json",
+      "expected": "REJECTED_SCHEMA",
+      "expectedError": "'hfssourcerecordid' is a required property"
+    },
+    {
+      "file": "events/10-late-issue-update.json",
+      "expected": "ACCEPTED_LATE"
+    },
+    {
+      "file": "events/11-conflicting-agreement.json",
+      "expected": "CONFLICT_REVIEW"
+    },
+    {
+      "file": "events/12-out-of-order-person.json",
+      "expected": "ACCEPTED_OUT_OF_ORDER"
+    },
+    {
+      "file": "events/13-idempotency-conflict.json",
+      "expected": "REJECTED_IDEMPOTENCY_CONFLICT"
+    },
+    {
+      "file": "events/14-invalid-content-hash.json",
+      "expected": "REJECTED_HASH",
+      "preserveHash": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000013",
+  "source": "urn:hfs:source:hris",
+  "type": "io.github.freeapikeys.hfs.person.updated.v1",
+  "subject": "person:person-001",
+  "time": "2026-06-05T09:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hris-worker-001-v1",
+  "hfssourcerecordid": "worker-001",
+  "hfssourcesequence": 3,
+  "hfsobservedat": "2026-06-05T09:00:02Z",
+  "hfscontenthash": "sha256:d8b5403334c0cdf777b03390fe8296c4da502f21ae092e47f88711a0ac31a44b",
+  "data": {
+    "recordtype": "Person",
+    "operation": "UPDATE",
+    "businesskey": "person-001",
+    "effectiveat": "2026-06-05T09:00:00Z",
+    "attributes": {
+      "displayname": "Changed under reused idempotency key"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000009",
+  "source": "urn:hfs:source:crm",
+  "type": "io.github.freeapikeys.hfs.organization.upserted.v1",
+  "subject": "organization:organization-002",
+  "time": "2026-06-05T08:40:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "crm-account-002-v1",
+  "hfssourcesequence": 2,
+  "hfsobservedat": "2026-06-05T08:40:02Z",
+  "hfscontenthash": "sha256:d3e3474e8319fd884ee6c542c207436f5777dd062a74a8a21bc96748a8ad7136",
+  "data": {
+    "recordtype": "Organization",
+    "operation": "UPSERT",
+    "businesskey": "organization-002",
+    "effectiveat": "2026-06-05T08:40:00Z",
+    "attributes": {
+      "legalname": "Malformed Example Ltd"
+    }
+  }
+}

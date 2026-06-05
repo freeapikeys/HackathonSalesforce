@@ -1,0 +1,28 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000001",
+  "source": "urn:hfs:source:hris",
+  "type": "io.github.freeapikeys.hfs.person.upserted.v1",
+  "subject": "person:person-001",
+  "time": "2026-06-05T08:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hris-worker-001-v1",
+  "hfssourcerecordid": "worker-001",
+  "hfssourcesequence": 1,
+  "hfsobservedat": "2026-06-05T08:00:05Z",
+  "hfscontenthash": "sha256:64b55b92d62541510e1d2826b8878ae1772bbe78c51c7909e5eafdd4d4fb6ff1",
+  "data": {
+    "recordtype": "Person",
+    "operation": "UPSERT",
+    "businesskey": "person-001",
+    "effectiveat": "2026-06-05T08:00:00Z",
+    "attributes": {
+      "displayname": "Amina Raman",
+      "email": "amina@example.invalid"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000003",
+  "source": "urn:hfs:source:hris",
+  "type": "io.github.freeapikeys.hfs.employee.observed.v1",
+  "subject": "employee:employee-001",
+  "time": "2026-06-05T08:10:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hris-employment-001-v1",
+  "hfssourcerecordid": "employment-001",
+  "hfssourcesequence": 2,
+  "hfsobservedat": "2026-06-05T08:10:03Z",
+  "hfscontenthash": "sha256:9599579db1bca2b66b0d2789032d899af9fafe5ed36736bee34e67194a8b398b",
+  "data": {
+    "recordtype": "Employee",
+    "operation": "OBSERVE",
+    "businesskey": "employee-001",
+    "effectiveat": "2025-01-15T00:00:00Z",
+    "attributes": {
+      "personkey": "person-001",
+      "organizationkey": "organization-001",
+      "role": "Relationship Manager"
+    }
+  }
+}

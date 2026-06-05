@@ -1,0 +1,27 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000012",
+  "source": "urn:hfs:source:hris",
+  "type": "io.github.freeapikeys.hfs.person.updated.v1",
+  "subject": "person:person-001",
+  "time": "2026-06-05T08:02:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hris-worker-001-contact-v1",
+  "hfssourcerecordid": "worker-001-contact",
+  "hfssourcesequence": 1,
+  "hfsobservedat": "2026-06-05T08:55:00Z",
+  "hfscontenthash": "sha256:3db8cca6769f3a52fe7d9fc930a6a3c8c5b370fe2abc1ea57a2b892e04262f47",
+  "data": {
+    "recordtype": "Person",
+    "operation": "UPDATE",
+    "businesskey": "person-001",
+    "effectiveat": "2026-06-05T08:02:00Z",
+    "attributes": {
+      "phone": "+2300000000"
+    }
+  }
+}
