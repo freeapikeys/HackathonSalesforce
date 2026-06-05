@@ -14,9 +14,10 @@ future recommendations can improve.
 1. Read [ROADMAP.md](ROADMAP.md).
 2. Read [AGENTS.md](AGENTS.md).
 3. Run `./scripts/bootstrap-dev.sh`.
-4. Run `npm ci`, then `npm run check`.
-5. Run `bd prime`, then `bd ready`.
-6. Claim a bead before changing product code.
+4. Run `./scripts/bootstrap-runtime.sh`.
+5. Run `npm run check`.
+6. Run `bd prime`, then `bd ready`.
+7. Claim a bead before changing product code.
 
 ## Repository Map
 
@@ -31,6 +32,8 @@ future recommendations can improve.
 
 Salesforce org setup and validation commands live in
 [docs/salesforce-development.md](docs/salesforce-development.md).
+The executable semantic contract is documented in
+[ontology/README.md](ontology/README.md).
 
 The repository tracks `.beads/issues.jsonl` as the portable team copy of the
 work graph. `bootstrap-dev.sh` imports it for a fresh clone. Run

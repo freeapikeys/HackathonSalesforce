@@ -9,13 +9,14 @@
 Install dependencies and run checks that do not require an authenticated org:
 
 ```bash
-npm ci
+./scripts/bootstrap-runtime.sh
 npm run check
 ```
 
-`npm run check` validates the Salesforce DX structure, checks formatting and
-JavaScript, and runs Lightning Web Component tests. The test command succeeds
-when no LWC tests exist yet and becomes enforcing as components are added.
+`npm run check` validates the Salesforce DX structure and semantic contract,
+checks formatting and JavaScript, and runs Lightning Web Component tests. The
+test command succeeds when no LWC tests exist yet and becomes enforcing as
+components are added.
 
 ## Authenticate
 
