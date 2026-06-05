@@ -1,0 +1,41 @@
+# Salesforce
+.sfdx/
+.sf/
+.localdevserver/
+
+# MuleSoft and Java
+target/
+.mule/
+
+# Node and Python
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Development control plane runtime state
+.overstory/worktrees/
+.overstory/logs/
+.overstory/*.db
+.overstory/config.local.yaml
+.claude/settings.local.json
+.codex/
+
+# Research source cache
+research/**/_downloads/
+
+# OS and editor
+.DS_Store
+.idea/
+.vscode/
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
