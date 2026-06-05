@@ -1,0 +1,38 @@
+{
+  "@context": "../context.jsonld",
+  "@graph": [
+    {
+      "id": "https://example.org/data/organization/acme",
+      "type": "Organization",
+      "identifier": "org-acme",
+      "sourceSystem": "crm",
+      "sourceRecordId": "account-001",
+      "recordedAt": "2026-06-05T08:00:00Z"
+    },
+    {
+      "id": "https://example.org/data/person/alice",
+      "type": "Person",
+      "identifier": "person-alice",
+      "sourceSystem": "hris",
+      "sourceRecordId": "worker-001",
+      "recordedAt": "2026-06-05T08:00:00Z"
+    },
+    {
+      "id": "https://example.org/data/relationship/alice-acme",
+      "type": "Relationship",
+      "identifier": "relationship-alice-acme",
+      "sourceSystem": "hris",
+      "recordedAt": "2026-06-05T08:01:00Z",
+      "subjectEntity": "https://example.org/data/person/alice",
+      "relationshipType": "EmploymentRelationship"
+    },
+    {
+      "id": "https://example.org/data/recommendation/check-in-001",
+      "type": "Recommendation",
+      "identifier": "recommendation-check-in-001",
+      "sourceSystem": "relationship-system",
+      "sourceRecordId": "recommendation-001",
+      "recordedAt": "2026-06-05T08:03:00Z"
+    }
+  ]
+}

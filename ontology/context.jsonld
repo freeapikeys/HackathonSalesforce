@@ -1,0 +1,59 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "hfs": "https://freeapikeys.github.io/HackathonSalesforce/ontology#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "id": "@id",
+    "type": "@type",
+    "Organization": "hfs:Organization",
+    "Person": "hfs:Person",
+    "Relationship": "hfs:Relationship",
+    "Evidence": "hfs:Evidence",
+    "Recommendation": "hfs:Recommendation",
+    "Action": "hfs:Action",
+    "EmploymentRelationship": "hfs:EmploymentRelationship",
+    "CustomerRelationship": "hfs:CustomerRelationship",
+    "SupplierRelationship": "hfs:SupplierRelationship",
+    "SendMessageAction": "hfs:SendMessageAction",
+    "CreateWorkItemAction": "hfs:CreateWorkItemAction",
+    "identifier": "hfs:identifier",
+    "sourceSystem": "hfs:sourceSystem",
+    "sourceRecordId": "hfs:sourceRecordId",
+    "recordedAt": {
+      "@id": "hfs:recordedAt",
+      "@type": "xsd:dateTime"
+    },
+    "validFrom": {
+      "@id": "hfs:validFrom",
+      "@type": "xsd:dateTime"
+    },
+    "validTo": {
+      "@id": "hfs:validTo",
+      "@type": "xsd:dateTime"
+    },
+    "subjectEntity": {
+      "@id": "hfs:subjectEntity",
+      "@type": "@id"
+    },
+    "objectEntity": {
+      "@id": "hfs:objectEntity",
+      "@type": "@id"
+    },
+    "relationshipType": {
+      "@id": "hfs:relationshipType",
+      "@type": "@id"
+    },
+    "actionType": {
+      "@id": "hfs:actionType",
+      "@type": "@id"
+    },
+    "supportedBy": {
+      "@id": "hfs:supportedBy",
+      "@type": "@id"
+    },
+    "recommendsAction": {
+      "@id": "hfs:recommendsAction",
+      "@type": "@id"
+    }
+  }
+}
