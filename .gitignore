@@ -2,6 +2,7 @@
 .sfdx/
 .sf/
 .localdevserver/
+deploy-options.json
 
 # MuleSoft and Java
 target/
@@ -9,6 +10,10 @@ target/
 
 # Node and Python
 node_modules/
+coverage/
+.eslintcache
+.pmdCache
+npm-debug.log*
 __pycache__/
 *.pyc
 .venv/
