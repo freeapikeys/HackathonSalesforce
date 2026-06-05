@@ -1,0 +1,161 @@
+@prefix hfs: <https://freeapikeys.github.io/HackathonSalesforce/ontology#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+hfs:ProvenancedRecordShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:ProvenancedRecord ;
+    sh:property [
+        sh:path hfs:identifier ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:message "Every record must have exactly one non-empty identifier."
+    ] ;
+    sh:property [
+        sh:path hfs:sourceSystem ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:message "Every record must identify its source system."
+    ] ;
+    sh:property [
+        sh:path hfs:sourceRecordId ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:message "Every record must include its source record identifier."
+    ] ;
+    sh:property [
+        sh:path hfs:recordedAt ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "Every record must declare when it entered the system."
+    ] .
+
+hfs:RelationshipShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:Relationship ;
+    sh:property [
+        sh:path hfs:subjectEntity ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class hfs:Entity ;
+        sh:message "A relationship must identify its subject entity."
+    ] ;
+    sh:property [
+        sh:path hfs:objectEntity ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class hfs:Entity ;
+        sh:message "A relationship must identify its object entity."
+    ] ;
+    sh:property [
+        sh:path hfs:relationshipType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:Concept ;
+        sh:message "A relationship must use a controlled relationship type."
+    ] ;
+    sh:property [
+        sh:path hfs:validFrom ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "A relationship must declare when it became valid."
+    ] ;
+    sh:property [
+        sh:path hfs:validTo ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "A relationship valid-to value must be a date-time."
+    ] .
+
+hfs:AssertionShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:Assertion ;
+    sh:property [
+        sh:path hfs:assertionSubject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class hfs:Entity ;
+        sh:message "An assertion must identify its subject."
+    ] ;
+    sh:property [
+        sh:path hfs:assertionPredicate ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class rdf:Property ;
+        sh:message "An assertion must identify its predicate."
+    ] ;
+    sh:property [
+        sh:path hfs:assertionObject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "An assertion must identify its object."
+    ] ;
+    sh:property [
+        sh:path hfs:validFrom ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "An assertion must declare when it became valid."
+    ] .
+
+hfs:EventShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:Event ;
+    sh:property [
+        sh:path hfs:eventType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:Concept ;
+        sh:message "An event must use a controlled event type."
+    ] ;
+    sh:property [
+        sh:path hfs:occurredAt ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "An event must declare when it occurred."
+    ] ;
+    sh:property [
+        sh:path hfs:involvesEntity ;
+        sh:minCount 1 ;
+        sh:class hfs:Entity ;
+        sh:message "An event must involve at least one known entity."
+    ] .
+
+hfs:ActionShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:Action ;
+    sh:property [
+        sh:path hfs:actionType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:Concept ;
+        sh:message "An action must use a controlled action type."
+    ] .
+
+hfs:RecommendationShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:Recommendation ;
+    sh:property [
+        sh:path hfs:supportedBy ;
+        sh:minCount 1 ;
+        sh:class hfs:Evidence ;
+        sh:message "A recommendation must cite at least one evidence record."
+    ] ;
+    sh:property [
+        sh:path hfs:recommendsAction ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class hfs:Action ;
+        sh:message "A recommendation must point to the proposed action."
+    ] .

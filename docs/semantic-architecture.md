@@ -124,6 +124,10 @@ Salesforce and Data 360 remain the operational stores.
 - MuleSoft handles source-specific integration and write-back.
 - Versioned ontology files define meaning and validation.
 
+The initial executable contract lives in `ontology/`. It includes the core OWL
+vocabulary, controlled SKOS concepts, SHACL shapes, a JSON-LD context, and
+positive and negative validation fixtures.
+
 A separate graph database is not required for the initial vertical slice.
 Introduce one only when measured traversal, inference, or scale requirements
 cannot be satisfied by the platform architecture.

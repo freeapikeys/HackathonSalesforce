@@ -1,0 +1,288 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix hfs: <https://freeapikeys.github.io/HackathonSalesforce/ontology#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+hfs:CoreOntology
+    a owl:Ontology ;
+    dcterms:title "Hackathon Salesforce Core Ontology" ;
+    dcterms:description "Portable semantic contract for enterprise relationships, work, decisions, actions, and outcomes." ;
+    owl:versionIRI <https://freeapikeys.github.io/HackathonSalesforce/ontology/0.1.0> ;
+    owl:versionInfo "0.1.0" .
+
+hfs:ProvenancedRecord
+    a owl:Class ;
+    rdfs:label "Provenanced record" .
+
+hfs:Entity
+    a owl:Class ;
+    rdfs:label "Entity" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:Person
+    a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:subClassOf hfs:Entity, prov:Person .
+
+hfs:Organization
+    a owl:Class ;
+    rdfs:label "Organization" ;
+    rdfs:subClassOf hfs:Entity, prov:Organization .
+
+hfs:OrganizationalUnit
+    a owl:Class ;
+    rdfs:label "Organizational unit" ;
+    rdfs:subClassOf hfs:Organization .
+
+hfs:Supplier
+    a owl:Class ;
+    rdfs:label "Supplier" ;
+    rdfs:subClassOf hfs:Organization .
+
+hfs:Partner
+    a owl:Class ;
+    rdfs:label "Partner" ;
+    rdfs:subClassOf hfs:Organization .
+
+hfs:Regulator
+    a owl:Class ;
+    rdfs:label "Regulator" ;
+    rdfs:subClassOf hfs:Organization .
+
+hfs:Relationship
+    a owl:Class ;
+    rdfs:label "Relationship" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:Assertion
+    a owl:Class ;
+    rdfs:label "Assertion" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:Event
+    a owl:Class ;
+    rdfs:label "Event" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Activity .
+
+hfs:Agreement
+    a owl:Class ;
+    rdfs:label "Agreement" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:WorkItem
+    a owl:Class ;
+    rdfs:label "Work item" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Activity .
+
+hfs:SOPDefinition
+    a owl:Class ;
+    rdfs:label "SOP definition" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:SOPExecution
+    a owl:Class ;
+    rdfs:label "SOP execution" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Activity .
+
+hfs:Evidence
+    a owl:Class ;
+    rdfs:label "Evidence" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:Recommendation
+    a owl:Class ;
+    rdfs:label "Recommendation" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:Approval
+    a owl:Class ;
+    rdfs:label "Approval" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Activity .
+
+hfs:Action
+    a owl:Class ;
+    rdfs:label "Action" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Activity .
+
+hfs:Outcome
+    a owl:Class ;
+    rdfs:label "Outcome" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:Evaluation
+    a owl:Class ;
+    rdfs:label "Evaluation" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:ModelProfile
+    a owl:Class ;
+    rdfs:label "Logical model profile" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Entity .
+
+hfs:ModelInvocation
+    a owl:Class ;
+    rdfs:label "Model invocation" ;
+    rdfs:subClassOf hfs:ProvenancedRecord, prov:Activity .
+
+hfs:identifier
+    a owl:DatatypeProperty ;
+    rdfs:label "identifier" ;
+    rdfs:domain hfs:ProvenancedRecord ;
+    rdfs:range xsd:string .
+
+hfs:sourceSystem
+    a owl:DatatypeProperty ;
+    rdfs:label "source system" ;
+    rdfs:domain hfs:ProvenancedRecord ;
+    rdfs:range xsd:string .
+
+hfs:sourceRecordId
+    a owl:DatatypeProperty ;
+    rdfs:label "source record identifier" ;
+    rdfs:domain hfs:ProvenancedRecord ;
+    rdfs:range xsd:string .
+
+hfs:recordedAt
+    a owl:DatatypeProperty ;
+    rdfs:label "recorded at" ;
+    rdfs:domain hfs:ProvenancedRecord ;
+    rdfs:range xsd:dateTime .
+
+hfs:validFrom
+    a owl:DatatypeProperty ;
+    rdfs:label "valid from" ;
+    rdfs:range xsd:dateTime .
+
+hfs:validTo
+    a owl:DatatypeProperty ;
+    rdfs:label "valid to" ;
+    rdfs:range xsd:dateTime .
+
+hfs:supersededAt
+    a owl:DatatypeProperty ;
+    rdfs:label "superseded at" ;
+    rdfs:range xsd:dateTime .
+
+hfs:occurredAt
+    a owl:DatatypeProperty ;
+    rdfs:label "occurred at" ;
+    rdfs:domain hfs:Event ;
+    rdfs:range xsd:dateTime .
+
+hfs:confidence
+    a owl:DatatypeProperty ;
+    rdfs:label "confidence" ;
+    rdfs:range xsd:decimal .
+
+hfs:subjectEntity
+    a owl:ObjectProperty ;
+    rdfs:label "subject entity" ;
+    rdfs:range hfs:Entity .
+
+hfs:objectEntity
+    a owl:ObjectProperty ;
+    rdfs:label "object entity" ;
+    rdfs:range hfs:Entity .
+
+hfs:relationshipType
+    a owl:ObjectProperty ;
+    rdfs:label "relationship type" ;
+    rdfs:domain hfs:Relationship ;
+    rdfs:range skos:Concept .
+
+hfs:eventType
+    a owl:ObjectProperty ;
+    rdfs:label "event type" ;
+    rdfs:domain hfs:Event ;
+    rdfs:range skos:Concept .
+
+hfs:actionType
+    a owl:ObjectProperty ;
+    rdfs:label "action type" ;
+    rdfs:domain hfs:Action ;
+    rdfs:range skos:Concept .
+
+hfs:involvesEntity
+    a owl:ObjectProperty ;
+    rdfs:label "involves entity" ;
+    rdfs:domain hfs:Event ;
+    rdfs:range hfs:Entity .
+
+hfs:assertionSubject
+    a owl:ObjectProperty ;
+    rdfs:label "assertion subject" ;
+    rdfs:domain hfs:Assertion ;
+    rdfs:range hfs:Entity .
+
+hfs:assertionPredicate
+    a owl:ObjectProperty ;
+    rdfs:label "assertion predicate" ;
+    rdfs:domain hfs:Assertion ;
+    rdfs:range rdf:Property .
+
+hfs:assertionObject
+    a rdf:Property ;
+    rdfs:label "assertion object" ;
+    rdfs:domain hfs:Assertion .
+
+hfs:supportedBy
+    a owl:ObjectProperty ;
+    rdfs:label "supported by" ;
+    rdfs:domain hfs:Recommendation ;
+    rdfs:range hfs:Evidence ;
+    rdfs:subPropertyOf prov:wasDerivedFrom .
+
+hfs:recommendsAction
+    a owl:ObjectProperty ;
+    rdfs:label "recommends action" ;
+    rdfs:domain hfs:Recommendation ;
+    rdfs:range hfs:Action .
+
+hfs:approvalFor
+    a owl:ObjectProperty ;
+    rdfs:label "approval for" ;
+    rdfs:domain hfs:Approval ;
+    rdfs:range hfs:Recommendation .
+
+hfs:producedOutcome
+    a owl:ObjectProperty ;
+    rdfs:label "produced outcome" ;
+    rdfs:domain hfs:Action ;
+    rdfs:range hfs:Outcome .
+
+hfs:RelationshipTypeScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "Relationship types" .
+
+hfs:EmploymentRelationship
+    a skos:Concept ;
+    skos:inScheme hfs:RelationshipTypeScheme ;
+    skos:prefLabel "employment relationship" .
+
+hfs:CustomerRelationship
+    a skos:Concept ;
+    skos:inScheme hfs:RelationshipTypeScheme ;
+    skos:prefLabel "customer relationship" .
+
+hfs:SupplierRelationship
+    a skos:Concept ;
+    skos:inScheme hfs:RelationshipTypeScheme ;
+    skos:prefLabel "supplier relationship" .
+
+hfs:ActionTypeScheme
+    a skos:ConceptScheme ;
+    skos:prefLabel "Action types" .
+
+hfs:SendMessageAction
+    a skos:Concept ;
+    skos:inScheme hfs:ActionTypeScheme ;
+    skos:prefLabel "send message" .
+
+hfs:CreateWorkItemAction
+    a skos:Concept ;
+    skos:inScheme hfs:ActionTypeScheme ;
+    skos:prefLabel "create work item" .
