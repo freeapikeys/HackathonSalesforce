@@ -1,0 +1,142 @@
+{
+  "sources": [
+    {
+      "id": "business-mauritius-employee-engagement",
+      "filename": "business-mauritius-employee-engagement.pdf",
+      "status": "existing",
+      "bytes": 5207127,
+      "sha256": "0335dbbb6b2cc03ef9d21edc2850a94b6304643826253c13f0bd3951c0d0c149"
+    },
+    {
+      "id": "business-mauritius-gender-study",
+      "filename": "business-mauritius-gender-study.pdf",
+      "status": "existing",
+      "bytes": 977245,
+      "sha256": "da9248a226c979fc7f452a2db54587e799db8d830dfdd0d4c40440007c3c0c1f"
+    },
+    {
+      "id": "statistics-mauritius-labour-force-2024",
+      "filename": "statistics-mauritius-labour-force-2024.pdf",
+      "status": "existing",
+      "bytes": 396357,
+      "sha256": "988364d22fad6eb46b311216f85e5662205e453a8fd6f8e6df978b43452fef8f"
+    },
+    {
+      "id": "defi-business-pulse-2023",
+      "filename": "defi-business-pulse-2023.html",
+      "status": "existing",
+      "bytes": 49139,
+      "sha256": "9e557763a48df9616b3c07aebaef53517a2e3867144344e9678fea107d19a45e"
+    },
+    {
+      "id": "business-mauritius-business-pulse",
+      "filename": "business-mauritius-business-pulse.html",
+      "status": "link-only"
+    },
+    {
+      "id": "ibl-integrated-report-2025",
+      "filename": "ibl-integrated-report-2025.pdf",
+      "status": "existing",
+      "bytes": 19703127,
+      "sha256": "139e6bb540f3e6341dd2d8b06431578660b078f56725f84669ea7bc59adadf4a"
+    },
+    {
+      "id": "ciel-integrated-report-2025",
+      "filename": "ciel-integrated-report-2025.pdf",
+      "status": "existing",
+      "bytes": 48629308,
+      "sha256": "b28071844f5e20f494c6c0f170ea4041d2f1c4dc1dd003b8f52c070661010730"
+    },
+    {
+      "id": "mcb-annual-report-2025",
+      "filename": "mcb-annual-report-2025.pdf",
+      "status": "existing",
+      "bytes": 8475538,
+      "sha256": "e19c206b6fcb4aed4b4f6a84c54246878a7e8ec6a8b52af118892190c654ece2"
+    },
+    {
+      "id": "sbm-annual-report-2025",
+      "filename": "sbm-annual-report-2025.pdf",
+      "status": "existing",
+      "bytes": 42795212,
+      "sha256": "2a1fd9c732f1318c9e9efb001edabfb3f8e5faf7044230106e0a0a56159a216d"
+    },
+    {
+      "id": "er-group-ceo-2025",
+      "filename": "er-group-ceo-2025.pdf",
+      "status": "existing",
+      "bytes": 410133,
+      "sha256": "2caef571ce4a5206a673ee251c5092bf946a816a07dab7d7535b2b46c13816bc"
+    },
+    {
+      "id": "er-group-people-2025",
+      "filename": "er-group-people-2025.pdf",
+      "status": "existing",
+      "bytes": 688170,
+      "sha256": "8a285390d65ea1cdf9157ee17900d4981d02e6bf078e14ff21e6219b3362f9cf"
+    },
+    {
+      "id": "financial-services-ombudsperson-2023-2024",
+      "filename": "financial-services-ombudsperson-2023-2024.pdf",
+      "status": "existing",
+      "bytes": 1715356,
+      "sha256": "39e3766a79c5b5f60a70511f4f96231e69a817021c5b58b6b1d5bdd5d56d2750"
+    },
+    {
+      "id": "ombudsman-mauritius-2024",
+      "filename": "ombudsman-mauritius-2024.pdf",
+      "status": "existing",
+      "bytes": 11456670,
+      "sha256": "694e20e26d019427cdc2790c0fa56b1539b1976f3e51451aa7e80fa799d2b356"
+    },
+    {
+      "id": "mauritius-enterprise-architecture",
+      "filename": "mauritius-enterprise-architecture.pdf",
+      "status": "existing",
+      "bytes": 7029414,
+      "sha256": "2e7ae764f64277201d1893b6188aefb3e0f12476f2600c4245d1ee4eea302233"
+    },
+    {
+      "id": "pwc-mauritius-ceo-survey-2025",
+      "filename": "pwc-mauritius-ceo-survey-2025.html",
+      "status": "existing",
+      "bytes": 186054,
+      "sha256": "9242a5cd98365ba0d37dfcd179440e1cee37023bb4c0a10988d74e021141d9ff"
+    },
+    {
+      "id": "bizweek-insurance-customer-experience",
+      "filename": "bizweek-insurance-customer-experience.html",
+      "status": "existing",
+      "bytes": 117100,
+      "sha256": "79ca47a315bf0bdc733da1bcc8706a90b7092e2b86097bb12d5505a46b470bc8"
+    },
+    {
+      "id": "bizweek-employee-burnout",
+      "filename": "bizweek-employee-burnout.html",
+      "status": "existing",
+      "bytes": 112341,
+      "sha256": "6e0b97ea66188bf778e55422664cb510691cf8437213746176240bc6634ff8bb"
+    },
+    {
+      "id": "bizweek-digital-wallet-security",
+      "filename": "bizweek-digital-wallet-security.html",
+      "status": "existing",
+      "bytes": 115476,
+      "sha256": "3a53d556a7c66555e9ca2bd6d6d3a63e134cd9d520e30bf129d98b745d2d62a0"
+    },
+    {
+      "id": "lexpress-national-audit-2025",
+      "filename": "lexpress-national-audit-2025.html",
+      "status": "existing",
+      "bytes": 86875,
+      "sha256": "d17204aa66ce133eea0341b5083f2b949801195f9bfdf775772bbfcd58933279"
+    },
+    {
+      "id": "lexpress-employee-expectations-2025",
+      "filename": "lexpress-employee-expectations-2025.html",
+      "status": "existing",
+      "bytes": 87528,
+      "sha256": "5cae1d8a1b48ec949eea3aa71ccb6a37c2c00cf0b02724874a91c862eb5c9f98"
+    }
+  ]
+}
