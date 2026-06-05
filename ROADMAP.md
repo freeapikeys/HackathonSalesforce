@@ -174,6 +174,13 @@ Features:
 
 - Transparent rule-based baselines.
 - Einstein Studio predictive models where they outperform baselines.
+- Provider-neutral model profiles and deterministic routing policies.
+- Salesforce-managed, BYOLLM, LLM Open Connector, private-cloud, and secured
+  on-prem deployment options.
+- Per-agent and per-subagent model selection.
+- Capability, sensitivity, residency, quality, latency, cost, and availability
+  constraints.
+- Qualified fallback without weakening data policy.
 - Feature snapshots, model versions, confidence, top factors, and expiry.
 - Recommendations linked to affected relationships, evidence, SOPs, and
   expected outcomes.
@@ -183,7 +190,8 @@ Features:
 Checkpoint:
 
 - [ ] Every recommendation can be explained from accessible source evidence and
-  can be rejected without changing source facts.
+  can be rejected without changing source facts. Switching a qualified model
+  deployment does not require changes to the business workflow.
 
 ### C07. Human Approval, Actions, and Outreach
 
@@ -274,11 +282,18 @@ Features:
 - Outcome evaluation updates recommendation performance without rewriting
   historical evidence.
 - Contradictions and superseded beliefs remain traceable.
+- Versioned evaluation datasets, harnesses, experiments, candidates, and
+  promotion decisions.
+- Bounded AutoResearch-style loops for prompts, retrieval, routing, thresholds,
+  attribution parameters, and approved model-training recipes.
+- Multiple promotion gates covering quality, provenance, safety, fairness,
+  latency, cost, and robustness.
 
 Checkpoint:
 
 - [ ] A later recommendation can use a relevant prior outcome, cite it, respect
-  current permissions, and show why it applies.
+  current permissions, and show why it applies. Experiment candidates cannot
+  promote themselves or execute production actions.
 
 ### C12. Security, Governance, and Enterprise Readiness
 
@@ -293,6 +308,7 @@ Features:
 - Segregation of duties and dual approval.
 - Prompt injection and untrusted-content handling.
 - Agent and model audit records.
+- Model invocation, evaluation, fallback, and promotion audit records.
 - Observability, reconciliation, recovery, and operational runbooks.
 - Replaceable synthetic connectors through stable MuleSoft contracts.
 

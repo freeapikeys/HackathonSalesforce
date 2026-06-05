@@ -20,7 +20,8 @@ future recommendations can improve.
 ## Repository Map
 
 - `ROADMAP.md`: product problems, capabilities, dependencies, and completion gates.
-- `docs/`: architecture and engineering decisions.
+- `docs/architecture.md`: current end-to-end architecture and Mermaid diagram.
+- `docs/`: supporting architecture and engineering decisions.
 - `research/`: Mauritius-focused evidence and source register.
 - `ontology/`: versioned OWL, SHACL, mappings, and examples.
 - `force-app/`: Salesforce DX source.

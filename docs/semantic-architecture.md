@@ -96,6 +96,14 @@ the information available at the time.
 - `ToolCall`
 - `Handoff`
 - `MemoryItem`
+- `ModelProfile`
+- `ModelDeployment`
+- `ModelRoutingPolicy`
+- `ModelInvocation`
+- `EvaluationSuite`
+- `ExperimentRun`
+- `ExperimentCandidate`
+- `PromotionDecision`
 
 ## Standards
 
@@ -170,3 +178,6 @@ The enterprise product extends those patterns with:
 
 The product never changes a policy or high-impact action rule solely because an
 agent observed one outcome. It creates a candidate change for review.
+
+See `model-architecture.md` and `governed-experimentation.md` for provider
+portability and AutoResearch-style evaluation.
