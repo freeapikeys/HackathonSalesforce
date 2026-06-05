@@ -19,7 +19,7 @@
     "test:unit:debug": "sfdx-lwc-jest --debug",
     "test:unit:coverage": "sfdx-lwc-jest --coverage",
     "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
-    "prettier:verify": "prettier --check sfdx-project.json package.json config/project-scratch-def.json config/core-salesforce-model.json manifest/package.xml .github/workflows/validate.yml eslint.config.js jest.config.js scripts/validate-salesforce-project.mjs && prettier --check --parser json ontology/context.jsonld ontology/examples/valid.jsonld ontology/examples/invalid.jsonld \"integration/events/**/*.json\"",
+    "prettier:verify": "prettier --check sfdx-project.json package.json config/project-scratch-def.json config/core-salesforce-model.json manifest/package.xml .github/workflows/validate.yml eslint.config.js jest.config.js scripts/validate-salesforce-project.mjs \"force-app/main/default/classes/**/*.{cls,xml}\" && prettier --check --parser json ontology/context.jsonld ontology/examples/valid.jsonld ontology/examples/invalid.jsonld \"integration/events/**/*.json\"",
     "prepare": "husky || true",
     "precommit": "lint-staged"
   },
