@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "title": "Hackathon Salesforce Event Envelope v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "specversion",
+    "id",
+    "source",
+    "type",
+    "subject",
+    "time",
+    "datacontenttype",
+    "dataschema",
+    "hfstenantid",
+    "hfsschemaversion",
+    "hfscorrelationid",
+    "hfsidempotencykey",
+    "hfssourcerecordid",
+    "hfssourcesequence",
+    "hfsobservedat",
+    "hfscontenthash",
+    "data"
+  ],
+  "properties": {
+    "specversion": {
+      "const": "1.0"
+    },
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "source": {
+      "type": "string",
+      "format": "uri-reference",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^io\\.github\\.freeapikeys\\.hfs\\.[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)+\\.v[1-9][0-9]*$"
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "datacontenttype": {
+      "const": "application/json"
+    },
+    "dataschema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "hfstenantid": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+    },
+    "hfsschemaversion": {
+      "const": "1.0.0"
+    },
+    "hfscorrelationid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "hfscausationid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "hfsidempotencykey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "hfssourcerecordid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "hfssourcesequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "hfsobservedat": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "hfscontenthash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "data": {
+      "$ref": "#/$defs/businessRecord"
+    }
+  },
+  "$defs": {
+    "assertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflictkey", "predicate", "value"],
+      "properties": {
+        "conflictkey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": ["string", "number", "integer", "boolean", "null"]
+        }
+      }
+    },
+    "businessRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordtype",
+        "operation",
+        "businesskey",
+        "effectiveat",
+        "attributes"
+      ],
+      "properties": {
+        "recordtype": {
+          "enum": [
+            "Person",
+            "Organization",
+            "Employee",
+            "Supplier",
+            "Agreement",
+            "SOP",
+            "Issue"
+          ]
+        },
+        "operation": {
+          "enum": ["UPSERT", "OBSERVE", "START", "OPEN", "UPDATE", "CLOSE"]
+        },
+        "businesskey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effectiveat": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "attributes": {
+          "type": "object"
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assertion"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}
