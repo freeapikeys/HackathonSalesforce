@@ -28,25 +28,47 @@ organization's real systems and operating rules.
 - A capability is complete only when its acceptance checkpoint passes.
 - The first straight path is built before broadening the product surface.
 
+## Four-Developer Execution
+
+The first vertical slice is implemented through four stable ownership lanes:
+
+| Lane         | Responsibility                                                              | First claimable bead |
+| ------------ | --------------------------------------------------------------------------- | -------------------- |
+| Core         | Salesforce Apex context, provenance, approval, action, and outcome services | `hfs-v1-05a`         |
+| Integration  | MuleSoft APIs, adapters, write-back, retries, and callbacks                 | `hfs-v1-06a`         |
+| Intelligence | Provider-neutral model gateway, routing, audit, fallback, and Agentforce    | `hfs-v1-10a`         |
+| Experience   | Lightning command center, seed/reset, end-to-end verification, and demo     | `hfs-v1-07a`         |
+
+Cross-lane work is governed by four Beads checkpoints:
+
+1. contracts frozen;
+2. lanes independently verified;
+3. connected governed behavior;
+4. clean-clone completion.
+
+The detailed ownership, dependency, file-collision, branch, and handoff rules
+are in `docs/parallel-development.md`. Run `./scripts/team-status.sh` for the
+current claimable work and checkpoint state.
+
 ## Research-Backed Problem Map
 
-| ID | Enterprise problem | Required system response |
-|---|---|---|
-| P01 | Work and complaints disappear during departmental handoffs | Shared case history, explicit ownership, deadlines, escalation, and closure evidence |
-| P02 | Employees lack useful feedback, recognition, growth, and a safe voice | Restricted employee relationship records, feedback loops, growth actions, and confidential escalation |
-| P03 | Skills exist but are poorly matched to work and future demand | Skills evidence, role requirements, gaps, workload, development, and internal opportunity mapping |
-| P04 | Customers repeatedly chase status and retell context | Cross-channel history, expectation records, next-update commitments, and proactive approved communication |
-| P05 | Groups need shared governance without erasing local authority | Common semantics and controls with business-unit-specific policies, ownership, and processes |
-| P06 | Decision makers wait too long for assembled evidence | Defined metrics, source lineage, current context, exceptions, and decision-ready views |
-| P07 | Supplier and system failures create hidden cascading effects | Dependency relationships and impact traversal across people, work, agreements, and services |
-| P08 | SOPs exist but execution and recommendation closure are weak | Executable steps, required evidence, exception handling, escalation, and verification |
-| P09 | Sensitive concerns are unsafe in ordinary management chains | Purpose-based access, confidential cases, independent routing, and non-retaliation audit |
-| P10 | Automation removes friction but can make service less human | Human-controlled recommendations, language/channel preferences, and complete context for the responsible person |
-| P11 | Transformation pilots stall or fail to reach operating teams | Early user validation, visible rules, local process ownership, and measurable adoption |
-| P12 | Privacy and security failures destroy relationship trust | Consent, purpose, minimization, retention, segregation of duties, and incident history |
-| P13 | Data quality and duplicate reporting undermine confidence | Source ownership, validation, identity confidence, provenance, and correction workflows |
-| P14 | Organizations measure activity instead of outcomes | Versioned metric definitions, attribution models, outcomes, and effectiveness evaluation |
-| P15 | Organizational memory is trapped in people, documents, and chat | Permission-aware episodic, semantic, procedural, and outcome memory with source evidence |
+| ID  | Enterprise problem                                                    | Required system response                                                                                        |
+| --- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| P01 | Work and complaints disappear during departmental handoffs            | Shared case history, explicit ownership, deadlines, escalation, and closure evidence                            |
+| P02 | Employees lack useful feedback, recognition, growth, and a safe voice | Restricted employee relationship records, feedback loops, growth actions, and confidential escalation           |
+| P03 | Skills exist but are poorly matched to work and future demand         | Skills evidence, role requirements, gaps, workload, development, and internal opportunity mapping               |
+| P04 | Customers repeatedly chase status and retell context                  | Cross-channel history, expectation records, next-update commitments, and proactive approved communication       |
+| P05 | Groups need shared governance without erasing local authority         | Common semantics and controls with business-unit-specific policies, ownership, and processes                    |
+| P06 | Decision makers wait too long for assembled evidence                  | Defined metrics, source lineage, current context, exceptions, and decision-ready views                          |
+| P07 | Supplier and system failures create hidden cascading effects          | Dependency relationships and impact traversal across people, work, agreements, and services                     |
+| P08 | SOPs exist but execution and recommendation closure are weak          | Executable steps, required evidence, exception handling, escalation, and verification                           |
+| P09 | Sensitive concerns are unsafe in ordinary management chains           | Purpose-based access, confidential cases, independent routing, and non-retaliation audit                        |
+| P10 | Automation removes friction but can make service less human           | Human-controlled recommendations, language/channel preferences, and complete context for the responsible person |
+| P11 | Transformation pilots stall or fail to reach operating teams          | Early user validation, visible rules, local process ownership, and measurable adoption                          |
+| P12 | Privacy and security failures destroy relationship trust              | Consent, purpose, minimization, retention, segregation of duties, and incident history                          |
+| P13 | Data quality and duplicate reporting undermine confidence             | Source ownership, validation, identity confidence, provenance, and correction workflows                         |
+| P14 | Organizations measure activity instead of outcomes                    | Versioned metric definitions, attribution models, outcomes, and effectiveness evaluation                        |
+| P15 | Organizational memory is trapped in people, documents, and chat       | Permission-aware episodic, semantic, procedural, and outcome memory with source evidence                        |
 
 ## Capability Sequence
 
@@ -67,8 +89,8 @@ Features:
 Checkpoint:
 
 - [x] A new collaborator can clone the repository, understand the product,
-  inspect the research, run `bd prime`, and identify unblocked work without
-  reading prior chat.
+      inspect the research, run `bd prime`, and identify unblocked work without
+      reading prior chat.
 
 ### C01. Source Intake and Event Contracts
 
@@ -86,7 +108,7 @@ Features:
 Checkpoint:
 
 - [ ] Valid, duplicate, malformed, late, missing, and out-of-order events
-  produce deterministic and observable results.
+      produce deterministic and observable results.
 
 ### C02. Shared Semantics and Provenance
 
@@ -106,7 +128,7 @@ Features:
 Checkpoint:
 
 - [ ] Example records validate, preserve original terminology, and answer both
-  "what is true now?" and "what was known at that time?"
+      "what is true now?" and "what was known at that time?"
 
 ### C03. Identity, Relationships, and History
 
@@ -125,7 +147,7 @@ Features:
 Checkpoint:
 
 - [ ] A user can inspect one entity across source systems, understand every
-  match, correct ambiguity, and traverse its complete relationship history.
+      match, correct ambiguity, and traverse its complete relationship history.
 
 ### C04. Cross-Functional Work and SOP Execution
 
@@ -144,7 +166,7 @@ Features:
 Checkpoint:
 
 - [ ] A domain-neutral case crosses teams, a supplier, an agreement, an SOP,
-  and an approval without losing ownership, evidence, or status.
+      and an approval without losing ownership, evidence, or status.
 
 ### C05. Metrics and Attribution
 
@@ -164,7 +186,7 @@ Features:
 Checkpoint:
 
 - [ ] Independent recalculation from source events reproduces every displayed
-  metric and attribution result.
+      metric and attribution result.
 
 ### C06. Recommendations and Predictive Signals
 
@@ -190,8 +212,8 @@ Features:
 Checkpoint:
 
 - [ ] Every recommendation can be explained from accessible source evidence and
-  can be rejected without changing source facts. Switching a qualified model
-  deployment does not require changes to the business workflow.
+      can be rejected without changing source facts. Switching a qualified model
+      deployment does not require changes to the business workflow.
 
 ### C07. Human Approval, Actions, and Outreach
 
@@ -209,7 +231,7 @@ Features:
 Checkpoint:
 
 - [ ] No protected external action occurs without the required identity,
-  permission, policy, and approval checks.
+      permission, policy, and approval checks.
 
 ### C08. User Surfaces
 
@@ -229,7 +251,7 @@ Features:
 Checkpoint:
 
 - [ ] Different roles see consistent underlying facts while permissions and
-  purpose restrictions change what each role can access or do.
+      purpose restrictions change what each role can access or do.
 
 ### C09. Workforce Relationships
 
@@ -248,7 +270,7 @@ Features:
 Checkpoint:
 
 - [ ] The system can propose a development or staffing action with evidence
-  while preventing unauthorized access to sensitive employee information.
+      while preventing unauthorized access to sensitive employee information.
 
 ### C10. Dependency and Operational Impact
 
@@ -265,7 +287,7 @@ Features:
 Checkpoint:
 
 - [ ] A failed dependency identifies affected relationships and commitments,
-  assigns work, and tracks remediation to verified closure.
+      assigns work, and tracks remediation to verified closure.
 
 ### C11. Product Memory and Outcome Learning
 
@@ -292,8 +314,8 @@ Features:
 Checkpoint:
 
 - [ ] A later recommendation can use a relevant prior outcome, cite it, respect
-  current permissions, and show why it applies. Experiment candidates cannot
-  promote themselves or execute production actions.
+      current permissions, and show why it applies. Experiment candidates cannot
+      promote themselves or execute production actions.
 
 ### C12. Security, Governance, and Enterprise Readiness
 
@@ -315,7 +337,7 @@ Features:
 Checkpoint:
 
 - [ ] Security, privacy, failure recovery, and real-source replacement tests
-  pass without weakening audit history.
+      pass without weakening audit history.
 
 ## First Straight Path
 
@@ -337,7 +359,7 @@ This is the first complete behavior to implement before expanding sideways:
 Completion gate:
 
 - [ ] The whole path runs from a clean clone with automated tests and no manual
-  database edits.
+      database edits.
 
 ## Definition of Done
 

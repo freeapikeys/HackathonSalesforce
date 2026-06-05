@@ -17,12 +17,14 @@ future recommendations can improve.
 4. Run `./scripts/bootstrap-runtime.sh`.
 5. Run `npm run check`.
 6. Run `bd prime`, then `bd ready`.
-7. Claim a bead before changing product code.
+7. Run `./scripts/team-status.sh`.
+8. Claim a lane leaf bead before changing product code.
 
 ## Repository Map
 
 - `ROADMAP.md`: product problems, capabilities, dependencies, and completion gates.
 - `docs/architecture.md`: current end-to-end architecture and Mermaid diagram.
+- `docs/parallel-development.md`: four-developer ownership lanes and checkpoints.
 - `docs/`: supporting architecture and engineering decisions.
 - `research/`: Mauritius-focused evidence and source register.
 - `ontology/`: versioned OWL, SHACL, mappings, and examples.

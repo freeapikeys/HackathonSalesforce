@@ -7,14 +7,19 @@ Before starting work:
 1. Read `ROADMAP.md`.
 2. Read the relevant files in `docs/`.
 3. Run `bd prime`.
-4. Run `bd ready` and claim one bead with `bd update <id> --claim`.
+4. Run `./scripts/team-status.sh` and claim one ready leaf bead with
+   `bd update <id> --claim`.
 5. Search OneContext when the request refers to prior decisions, existing
    features, debugging history, or previous conversations.
 
 The roadmap defines product direction. Beads defines executable work. A chat
 plan is not a replacement for either.
 
+For the first vertical slice, read `docs/parallel-development.md`. Claim lane
+leaf beads, not the `hfs-v1-05` through `hfs-v1-10` coordination parents.
+
 <!-- BEGIN BEADS INTEGRATION -->
+
 ## Issue Tracking
 
 This project uses [Beads](https://github.com/steveyegge/beads).
@@ -33,6 +38,7 @@ Useful commands:
 ```bash
 bd prime
 bd ready
+./scripts/team-status.sh
 bd show <id>
 bd update <id> --claim
 bd create "Title" --type task --priority 2
@@ -40,6 +46,7 @@ bd dep add <issue> <depends-on>
 bd close <id> --reason "Acceptance checks passed"
 ./scripts/sync-beads.sh
 ```
+
 <!-- END BEADS INTEGRATION -->
 
 ## Development and Product Boundary
