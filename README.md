@@ -14,8 +14,9 @@ future recommendations can improve.
 1. Read [ROADMAP.md](ROADMAP.md).
 2. Read [AGENTS.md](AGENTS.md).
 3. Run `./scripts/bootstrap-dev.sh`.
-4. Run `bd prime`, then `bd ready`.
-5. Claim a bead before changing product code.
+4. Run `npm ci`, then `npm run check`.
+5. Run `bd prime`, then `bd ready`.
+6. Claim a bead before changing product code.
 
 ## Repository Map
 
@@ -27,6 +28,9 @@ future recommendations can improve.
 - `force-app/`: Salesforce DX source.
 - `mulesoft/`: API contracts and MuleSoft applications.
 - `scripts/`: development and research utilities.
+
+Salesforce org setup and validation commands live in
+[docs/salesforce-development.md](docs/salesforce-development.md).
 
 The repository tracks `.beads/issues.jsonl` as the portable team copy of the
 work graph. `bootstrap-dev.sh` imports it for a fresh clone. Run
