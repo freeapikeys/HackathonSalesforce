@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Different_Parties</fullName>
+    <active>true</active>
+    <description>An agreement must have two different parties.</description>
+    <errorConditionFormula>Party_One__c = Party_Two__c</errorConditionFormula>
+    <errorMessage>An agreement must have two different parties.</errorMessage>
+</ValidationRule>

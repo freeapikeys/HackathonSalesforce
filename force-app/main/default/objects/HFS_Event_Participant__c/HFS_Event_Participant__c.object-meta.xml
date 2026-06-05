@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Entity participation in an event with an explicit role.</description>
+    <enableActivities>false</enableActivities>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <label>Event Participant</label>
+    <nameField>
+        <displayFormat>EVP-{000000}</displayFormat>
+        <label>Event Participant Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Event Participants</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

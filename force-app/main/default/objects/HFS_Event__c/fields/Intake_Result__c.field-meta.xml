@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Intake_Result__c</fullName>
+    <label>Intake Result</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ACCEPTED</fullName>
+                <default>false</default>
+                <label>Accepted</label>
+            </value>
+            <value>
+                <fullName>DUPLICATE</fullName>
+                <default>false</default>
+                <label>Duplicate</label>
+            </value>
+            <value>
+                <fullName>REJECTED_SCHEMA</fullName>
+                <default>false</default>
+                <label>Rejected Schema</label>
+            </value>
+            <value>
+                <fullName>REJECTED_HASH</fullName>
+                <default>false</default>
+                <label>Rejected Hash</label>
+            </value>
+            <value>
+                <fullName>REJECTED_IDEMPOTENCY_CONFLICT</fullName>
+                <default>false</default>
+                <label>Rejected Idempotency Conflict</label>
+            </value>
+            <value>
+                <fullName>ACCEPTED_LATE</fullName>
+                <default>false</default>
+                <label>Accepted Late</label>
+            </value>
+            <value>
+                <fullName>ACCEPTED_OUT_OF_ORDER</fullName>
+                <default>false</default>
+                <label>Accepted Out Of Order</label>
+            </value>
+            <value>
+                <fullName>CONFLICT_REVIEW</fullName>
+                <default>false</default>
+                <label>Conflict Review</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Approval_Must_Be_Approved</fullName>
+    <active>true</active>
+    <description>An action requires an approved approval record.</description>
+    <errorConditionFormula>NOT(ISPICKVAL(Approval__r.Status__c, "APPROVED"))</errorConditionFormula>
+    <errorMessage>An action requires an approved approval record.</errorMessage>
+</ValidationRule>
