@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subject_Entity__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Subject Entity</label>
+    <referenceTo>HFS_Entity__c</referenceTo>
+    <relationshipLabel>Recommendations by Subject Entity</relationshipLabel>
+    <relationshipName>HFS_Recommendation_Subject_Entity</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>

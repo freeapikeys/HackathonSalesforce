@@ -26,10 +26,10 @@ flowchart LR
     OUTCOME -->|"new events, evidence and relationship state"| INGEST
 ```
 
-The intelligence engine does not manipulate people. It performs governed data
-transformations and inference. Personalization and predictions remain bounded
-by source evidence, consent, purpose, access policy, model policy, and the
-configured human approval point.
+Here, data manipulation means governed transformation, aggregation, mapping,
+and inference. It does not mean covert behavioral manipulation. Personalization
+and predictions remain bounded by source evidence, consent, purpose, access
+policy, model policy, and the configured human approval point.
 
 ## Current Intended Architecture
 

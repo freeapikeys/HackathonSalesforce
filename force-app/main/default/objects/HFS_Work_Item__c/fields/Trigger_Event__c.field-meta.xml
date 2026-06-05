@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Trigger_Event__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Trigger Event</label>
+    <referenceTo>HFS_Event__c</referenceTo>
+    <relationshipLabel>Work Items by Trigger Event</relationshipLabel>
+    <relationshipName>HFS_Work_Item_Trigger_Event</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>

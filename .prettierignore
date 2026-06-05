@@ -3,6 +3,9 @@
 #
 
 **/staticresources/**
+force-app/main/default/customPermissions/**
+force-app/main/default/objects/**
+force-app/main/default/permissionsets/**
 .localdevserver
 .sfdx
 .sf

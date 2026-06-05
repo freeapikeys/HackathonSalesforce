@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Party_Two__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Party Two</label>
+    <referenceTo>HFS_Entity__c</referenceTo>
+    <relationshipLabel>Agreements by Party Two</relationshipLabel>
+    <relationshipName>HFS_Agreement_Party_Two</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>
