@@ -1,0 +1,28 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000014",
+  "source": "urn:hfs:source:service",
+  "type": "io.github.freeapikeys.hfs.issue.opened.v1",
+  "subject": "issue:issue-002",
+  "time": "2026-06-05T09:05:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "service-issue-002-v1",
+  "hfssourcerecordid": "service-case-002",
+  "hfssourcesequence": 1,
+  "hfsobservedat": "2026-06-05T09:05:03Z",
+  "hfscontenthash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "issue-002",
+    "effectiveat": "2026-06-05T09:05:00Z",
+    "attributes": {
+      "severity": "MEDIUM",
+      "summary": "Payload hash deliberately does not match"
+    }
+  }
+}

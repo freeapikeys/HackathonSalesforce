@@ -1,0 +1,29 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000004",
+  "source": "urn:hfs:source:procurement",
+  "type": "io.github.freeapikeys.hfs.supplier.observed.v1",
+  "subject": "supplier:supplier-001",
+  "time": "2026-06-05T08:15:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "procurement-supplier-001-v1",
+  "hfssourcerecordid": "supplier-record-001",
+  "hfssourcesequence": 1,
+  "hfsobservedat": "2026-06-05T08:15:06Z",
+  "hfscontenthash": "sha256:b2ed4c92df656a395d65d413359db52d6c02357f62563861ba2c76ee832c3cdb",
+  "data": {
+    "recordtype": "Supplier",
+    "operation": "OBSERVE",
+    "businesskey": "supplier-001",
+    "effectiveat": "2026-01-01T00:00:00Z",
+    "attributes": {
+      "supplierorganizationkey": "supplier-organization-001",
+      "customerorganizationkey": "organization-001",
+      "category": "Facilities"
+    }
+  }
+}

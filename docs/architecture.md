@@ -1,5 +1,36 @@
 # System Architecture
 
+## Product Mental Model
+
+At product level, the system is two coupled loops:
+
+```mermaid
+flowchart LR
+    SOURCES["First-party business data<br/>and source events"]
+
+    subgraph INTELLIGENCE["Data and Intelligence Engine"]
+        INGEST["Ingest and preserve"]
+        MEANING["Aggregate, map ontology,<br/>resolve identity and provenance"]
+        REASON["Attribute, detect, predict<br/>and generate grounded recommendations"]
+    end
+
+    subgraph RELATIONSHIPS["Relationship Action System"]
+        REVIEW["Humans and agents review<br/>evidence and proposed action"]
+        ACT["Approved outreach, work,<br/>escalation or operational change"]
+        OUTCOME["Problem, intervention,<br/>outcome and evaluation"]
+    end
+
+    SOURCES --> INGEST --> MEANING --> REASON
+    REASON -->|"insights and proposed actions"| REVIEW
+    REVIEW --> ACT --> OUTCOME
+    OUTCOME -->|"new events, evidence and relationship state"| INGEST
+```
+
+The intelligence engine does not manipulate people. It performs governed data
+transformations and inference. Personalization and predictions remain bounded
+by source evidence, consent, purpose, access policy, model policy, and the
+configured human approval point.
+
 ## Current Intended Architecture
 
 ```mermaid
@@ -120,15 +151,15 @@ flowchart TB
 
 ## Storage Responsibilities
 
-| Component | Responsibility |
-|---|---|
-| Source systems | Authoritative operational source records |
-| MuleSoft | Source-specific connectivity, validation, orchestration, retries, and write-back |
-| Data 360 | Harmonization, identity, event history, calculated insights, and model features |
+| Component       | Responsibility                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| Source systems  | Authoritative operational source records                                                   |
+| MuleSoft        | Source-specific connectivity, validation, orchestration, retries, and write-back           |
+| Data 360        | Harmonization, identity, event history, calculated insights, and model features            |
 | Salesforce Core | Current operational work, SOP execution, recommendations, approvals, actions, and outcomes |
-| Ontology files | Versioned meaning, mappings, provenance requirements, and validation rules |
-| Model providers | Inference only; they are not the system of record |
-| Evaluation lab | Isolated experiments and candidate configurations, never live enterprise actions |
+| Ontology files  | Versioned meaning, mappings, provenance requirements, and validation rules                 |
+| Model providers | Inference only; they are not the system of record                                          |
+| Evaluation lab  | Isolated experiments and candidate configurations, never live enterprise actions           |
 
 ## Current Repository State
 

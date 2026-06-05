@@ -1,0 +1,36 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000005",
+  "source": "urn:hfs:source:contracts",
+  "type": "io.github.freeapikeys.hfs.agreement.upserted.v1",
+  "subject": "agreement:agreement-001",
+  "time": "2026-06-05T08:20:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "contracts-agreement-001-v1",
+  "hfssourcerecordid": "agreement-record-001",
+  "hfssourcesequence": 1,
+  "hfsobservedat": "2026-06-05T08:20:02Z",
+  "hfscontenthash": "sha256:a7c9f9956925bfb2cad3ff6e2ef37e17f0fadfc15df8f957188f6aa2c37358d6",
+  "data": {
+    "recordtype": "Agreement",
+    "operation": "UPSERT",
+    "businesskey": "agreement-001",
+    "effectiveat": "2026-01-01T00:00:00Z",
+    "attributes": {
+      "organizationkey": "organization-001",
+      "supplierkey": "supplier-001",
+      "renewaldate": "2026-12-31"
+    },
+    "assertions": [
+      {
+        "conflictkey": "agreement:agreement-001:status",
+        "predicate": "status",
+        "value": "ACTIVE"
+      }
+    ]
+  }
+}
