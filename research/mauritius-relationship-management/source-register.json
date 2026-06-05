@@ -1,0 +1,208 @@
+{
+  "generated_on": "2026-06-05",
+  "storage_policy": "Downloaded originals remain in ignored _downloads directories unless redistribution permission is confirmed.",
+  "sources": [
+    {
+      "id": "business-mauritius-employee-engagement",
+      "publisher": "Business Mauritius",
+      "title": "National Employee Engagement Survey - Full Report",
+      "data_period": "2023",
+      "url": "https://businessmauritius.org/wp-content/uploads/2025/10/Business-Mauritius-National-Employee-Engagement-Survey-Full-Report.pdf",
+      "format": "pdf",
+      "local_filename": "business-mauritius-employee-engagement.pdf",
+      "source_type": "national survey",
+      "reliability": "high"
+    },
+    {
+      "id": "business-mauritius-gender-study",
+      "publisher": "Business Mauritius / Kantar",
+      "title": "Gender Study",
+      "url": "https://businessmauritius.org/wp-content/uploads/2025/10/GenderStudyKantar.pdf",
+      "format": "pdf",
+      "local_filename": "business-mauritius-gender-study.pdf",
+      "source_type": "national study",
+      "reliability": "high"
+    },
+    {
+      "id": "statistics-mauritius-labour-force-2024",
+      "publisher": "Statistics Mauritius",
+      "title": "Labour Force, Employment and Unemployment - 2024",
+      "url": "https://statsmauritius.govmu.org/Documents/Statistics/ESI/2025/EI1855/LF_Emp_Unemp_Yr24_200525.pdf",
+      "format": "pdf",
+      "local_filename": "statistics-mauritius-labour-force-2024.pdf",
+      "source_type": "official statistics",
+      "reliability": "high"
+    },
+    {
+      "id": "defi-business-pulse-2023",
+      "publisher": "Defi Media",
+      "title": "Sondage sur les entreprises a Maurice: voici les principales conclusions",
+      "url": "https://defimedia.info/sondage-sur-les-entreprises-maurice-voici-les-principales-conclusions",
+      "format": "html",
+      "local_filename": "defi-business-pulse-2023.html",
+      "source_type": "news",
+      "reliability": "medium"
+    },
+    {
+      "id": "business-mauritius-business-pulse",
+      "publisher": "United Nations Development Programme",
+      "title": "The 3rd Business Pulse Survey financed by UNDP Mauritius unveils its findings",
+      "url": "https://www.undp.org/mauritius-seychelles/news/3rd-business-pulse-survey-financed-undp-mauritius-unveils-its-findings",
+      "format": "html",
+      "local_filename": "business-mauritius-business-pulse.html",
+      "download": false,
+      "source_type": "business survey",
+      "reliability": "medium"
+    },
+    {
+      "id": "ibl-integrated-report-2025",
+      "publisher": "IBL Group",
+      "title": "Integrated Report 2025",
+      "url": "https://www.iblgroup.com/storage/2025/10/IR2025.pdf",
+      "format": "pdf",
+      "local_filename": "ibl-integrated-report-2025.pdf",
+      "source_type": "company integrated report",
+      "reliability": "medium"
+    },
+    {
+      "id": "ciel-integrated-report-2025",
+      "publisher": "CIEL Group",
+      "title": "Annual Integrated Report 2025",
+      "url": "https://www.cielgroup.com/pdf/2025/CIEL_Annual_integrated_Report_2025.pdf",
+      "format": "pdf",
+      "local_filename": "ciel-integrated-report-2025.pdf",
+      "source_type": "company integrated report",
+      "reliability": "medium"
+    },
+    {
+      "id": "mcb-annual-report-2025",
+      "publisher": "MCB Group",
+      "title": "Annual Report 2025",
+      "url": "https://mcbgroup.com/docs/default-source/investor-centre/annual-report-2025/annual-report-2025.pdf",
+      "format": "pdf",
+      "local_filename": "mcb-annual-report-2025.pdf",
+      "source_type": "company annual report",
+      "reliability": "medium"
+    },
+    {
+      "id": "sbm-annual-report-2025",
+      "publisher": "SBM Holdings",
+      "title": "Annual Report 2025",
+      "url": "https://www.sbmgroup.mu/sites/default/files/2026-06/SBM%20Holdings%20Annual%20Report%202025%20Consolidated%20Final_full%20AR.pdf",
+      "format": "pdf",
+      "local_filename": "sbm-annual-report-2025.pdf",
+      "source_type": "company annual report",
+      "reliability": "medium"
+    },
+    {
+      "id": "er-group-ceo-2025",
+      "publisher": "ER Group",
+      "title": "Integrated Report 2025 - Discussion with Group CEO",
+      "url": "https://ergroup.mu/sites/default/files/2025-11/ER-Group-IR25-Discussion-with-Group-CEO.pdf",
+      "format": "pdf",
+      "local_filename": "er-group-ceo-2025.pdf",
+      "source_type": "company integrated report",
+      "reliability": "medium"
+    },
+    {
+      "id": "er-group-people-2025",
+      "publisher": "ER Group",
+      "title": "Integrated Report 2025 - People Section",
+      "url": "https://ergroup.mu/sites/default/files/2025-11/ER-Group-Integrated-Report-2025-People-Section.pdf",
+      "format": "pdf",
+      "local_filename": "er-group-people-2025.pdf",
+      "source_type": "company integrated report",
+      "reliability": "medium"
+    },
+    {
+      "id": "financial-services-ombudsperson-2023-2024",
+      "publisher": "Office of the Financial Services Ombudsperson",
+      "title": "Annual Report 2023-2024",
+      "url": "https://ofsmauritius.govmu.org/ofsmauritius/wp-content/uploads/2024/12/Ombudsperson-Annual-Report-2023-2024-Final.pdf",
+      "format": "pdf",
+      "local_filename": "financial-services-ombudsperson-2023-2024.pdf",
+      "source_type": "regulator report",
+      "reliability": "high"
+    },
+    {
+      "id": "ombudsman-mauritius-2024",
+      "publisher": "Office of the Ombudsman of Mauritius",
+      "title": "51st Annual Report for 2024",
+      "url": "https://ombudsman.govmu.org/Documents/Annual%20Report/51st%20Annual%20Report%20Ombudsman%202024.pdf",
+      "format": "pdf",
+      "local_filename": "ombudsman-mauritius-2024.pdf",
+      "source_type": "official report",
+      "reliability": "high"
+    },
+    {
+      "id": "mauritius-enterprise-architecture",
+      "publisher": "Government of Mauritius",
+      "title": "Enterprise Architecture Mauritius",
+      "url": "https://cib.govmu.org/Documents/Reports/EnterpriseArchitectureMauritius.pdf",
+      "format": "pdf",
+      "local_filename": "mauritius-enterprise-architecture.pdf",
+      "source_type": "government architecture",
+      "reliability": "high"
+    },
+    {
+      "id": "pwc-mauritius-ceo-survey-2025",
+      "publisher": "PwC Mauritius",
+      "title": "Annual Global CEO Survey - Mauritius",
+      "url": "https://www.pwc.com/mu/en/publications/annual-global-ceo-survey-mauritius.html",
+      "format": "html",
+      "local_filename": "pwc-mauritius-ceo-survey-2025.html",
+      "source_type": "executive survey",
+      "reliability": "medium"
+    },
+    {
+      "id": "bizweek-insurance-customer-experience",
+      "publisher": "Bizweek",
+      "title": "The Mauritian insurance market is not very innovative",
+      "url": "https://bizweek.mu/the-mauritian-insurance-market-is-not-very-innovative/",
+      "format": "html",
+      "local_filename": "bizweek-insurance-customer-experience.html",
+      "source_type": "business news interview",
+      "reliability": "medium"
+    },
+    {
+      "id": "bizweek-employee-burnout",
+      "publisher": "Bizweek",
+      "title": "Ask yourselves: Are our employees showing signs of satisfaction or burnout?",
+      "url": "https://bizweek.mu/ask-yourselves-are-our-employees-showing-signs-of-satisfaction-or-burnout/",
+      "format": "html",
+      "local_filename": "bizweek-employee-burnout.html",
+      "source_type": "business news",
+      "reliability": "medium"
+    },
+    {
+      "id": "bizweek-digital-wallet-security",
+      "publisher": "Bizweek",
+      "title": "Protecting the New Digital Wallet from Cybercriminals",
+      "url": "https://bizweek.mu/protecting-the-new-digital-wallet-from-cybercriminals/lifestyle/",
+      "format": "html",
+      "local_filename": "bizweek-digital-wallet-security.html",
+      "source_type": "business news",
+      "reliability": "medium"
+    },
+    {
+      "id": "lexpress-national-audit-2025",
+      "publisher": "L'Express",
+      "title": "Fonds publics: Le dernier rapport de l'Audit",
+      "url": "https://lexpress.mu/s/le-dernier-rapport-de-laudit-543671",
+      "format": "html",
+      "local_filename": "lexpress-national-audit-2025.html",
+      "source_type": "news coverage of official audit",
+      "reliability": "medium"
+    },
+    {
+      "id": "lexpress-employee-expectations-2025",
+      "publisher": "L'Express",
+      "title": "Les attentes des salaries mauriciens dissequees",
+      "url": "https://lexpress.mu/s/les-attentes-des-salaries-mauriciens-dissequees-544981",
+      "format": "html",
+      "local_filename": "lexpress-employee-expectations-2025.html",
+      "source_type": "news coverage of survey",
+      "reliability": "medium"
+    }
+  ]
+}
