@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Date_Range</fullName>
+    <active>true</active>
+    <description>Valid To cannot be earlier than Valid From.</description>
+    <errorConditionFormula>AND(NOT(ISBLANK(Valid_To__c)), Valid_To__c &lt; Valid_From__c)</errorConditionFormula>
+    <errorMessage>Valid To cannot be earlier than Valid From.</errorMessage>
+</ValidationRule>

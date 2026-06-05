@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Outcome__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Outcome</label>
+    <referenceTo>HFS_Outcome__c</referenceTo>
+    <relationshipLabel>Evaluations by Outcome</relationshipLabel>
+    <relationshipName>HFS_Evaluation_Outcome</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>

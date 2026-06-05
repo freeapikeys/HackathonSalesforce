@@ -33,6 +33,8 @@ future recommendations can improve.
 
 Salesforce org setup and validation commands live in
 [docs/salesforce-development.md](docs/salesforce-development.md).
+The operational objects, relationships, and permission model are documented in
+[docs/salesforce-data-model.md](docs/salesforce-data-model.md).
 The executable semantic contract is documented in
 [ontology/README.md](ontology/README.md).
 The versioned source-event envelope and deterministic fixtures are documented

@@ -1,0 +1,975 @@
+{
+  "version": "1.0.0",
+  "objects": [
+    {
+      "api": "HFS_Event__c",
+      "label": "Event",
+      "pluralLabel": "Events",
+      "prefix": "EVT",
+      "description": "Immutable source event envelope and intake result.",
+      "fields": [
+        {
+          "api": "Event_Id__c",
+          "label": "Event ID",
+          "type": "Text",
+          "length": 36,
+          "required": true,
+          "externalId": true,
+          "unique": true
+        },
+        {
+          "api": "Tenant_Key__c",
+          "label": "Tenant Key",
+          "type": "Text",
+          "length": 80,
+          "required": true
+        },
+        {
+          "api": "Event_Type__c",
+          "label": "Event Type",
+          "type": "Text",
+          "length": 180,
+          "required": true
+        },
+        {
+          "api": "Source_URI__c",
+          "label": "Source URI",
+          "type": "Text",
+          "length": 255,
+          "required": true
+        },
+        {
+          "api": "Subject__c",
+          "label": "Subject",
+          "type": "Text",
+          "length": 255,
+          "required": true
+        },
+        {
+          "api": "Source_Record_Id__c",
+          "label": "Source Record ID",
+          "type": "Text",
+          "length": 200,
+          "required": true
+        },
+        {
+          "api": "Schema_Version__c",
+          "label": "Schema Version",
+          "type": "Text",
+          "length": 20,
+          "required": true
+        },
+        {
+          "api": "Correlation_Id__c",
+          "label": "Correlation ID",
+          "type": "Text",
+          "length": 36,
+          "required": true
+        },
+        {
+          "api": "Causation_Id__c",
+          "label": "Causation ID",
+          "type": "Text",
+          "length": 36
+        },
+        {
+          "api": "Idempotency_Key__c",
+          "label": "Idempotency Key",
+          "type": "Text",
+          "length": 200,
+          "required": true
+        },
+        {
+          "api": "Source_Sequence__c",
+          "label": "Source Sequence",
+          "type": "Number",
+          "precision": 18,
+          "scale": 0,
+          "required": true
+        },
+        {
+          "api": "Occurred_At__c",
+          "label": "Occurred At",
+          "type": "DateTime",
+          "required": true
+        },
+        {
+          "api": "Observed_At__c",
+          "label": "Observed At",
+          "type": "DateTime",
+          "required": true
+        },
+        {
+          "api": "Content_Hash__c",
+          "label": "Content Hash",
+          "type": "Text",
+          "length": 71,
+          "required": true
+        },
+        {
+          "api": "Payload_JSON__c",
+          "label": "Payload JSON",
+          "type": "LongTextArea",
+          "length": 131072,
+          "visibleLines": 10,
+          "required": true
+        },
+        {
+          "api": "Intake_Result__c",
+          "label": "Intake Result",
+          "type": "Picklist",
+          "required": true,
+          "values": [
+            "ACCEPTED",
+            "DUPLICATE",
+            "REJECTED_SCHEMA",
+            "REJECTED_HASH",
+            "REJECTED_IDEMPOTENCY_CONFLICT",
+            "ACCEPTED_LATE",
+            "ACCEPTED_OUT_OF_ORDER",
+            "CONFLICT_REVIEW"
+          ]
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Observed_After_Occurrence",
+          "formula": "Observed_At__c < Occurred_At__c",
+          "message": "Observed At cannot be earlier than Occurred At."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Entity__c",
+      "label": "Entity",
+      "pluralLabel": "Entities",
+      "prefix": "ENT",
+      "description": "A person, organization, unit, supplier, partner, regulator, or other identified entity.",
+      "fieldSets": ["tenantRecord", "sourceEvent"],
+      "fields": [
+        {
+          "api": "Entity_Type__c",
+          "label": "Entity Type",
+          "type": "Picklist",
+          "required": true,
+          "values": [
+            "PERSON",
+            "ORGANIZATION",
+            "ORGANIZATIONAL_UNIT",
+            "SUPPLIER",
+            "PARTNER",
+            "REGULATOR",
+            "OTHER"
+          ]
+        },
+        {
+          "api": "Display_Name__c",
+          "label": "Display Name",
+          "type": "Text",
+          "length": 255,
+          "required": true
+        },
+        { "api": "Valid_From__c", "label": "Valid From", "type": "DateTime" },
+        { "api": "Valid_To__c", "label": "Valid To", "type": "DateTime" },
+        {
+          "api": "Confidence__c",
+          "label": "Confidence",
+          "type": "Number",
+          "precision": 3,
+          "scale": 2
+        },
+        {
+          "api": "Attributes_JSON__c",
+          "label": "Attributes JSON",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 8
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Valid_Date_Range",
+          "formula": "AND(NOT(ISBLANK(Valid_To__c)), Valid_To__c < Valid_From__c)",
+          "message": "Valid To cannot be earlier than Valid From."
+        },
+        {
+          "api": "Confidence_Range",
+          "formula": "OR(Confidence__c < 0, Confidence__c > 1)",
+          "message": "Confidence must be between 0 and 1."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Relationship__c",
+      "label": "Relationship",
+      "pluralLabel": "Relationships",
+      "prefix": "REL",
+      "description": "Typed, directed, time-bounded relationship between two entities.",
+      "fieldSets": ["tenantRecord", "sourceEvent"],
+      "fields": [
+        {
+          "api": "Subject_Entity__c",
+          "label": "Subject Entity",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Object_Entity__c",
+          "label": "Object Entity",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Relationship_Type__c",
+          "label": "Relationship Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Valid_From__c",
+          "label": "Valid From",
+          "type": "DateTime",
+          "required": true
+        },
+        { "api": "Valid_To__c", "label": "Valid To", "type": "DateTime" },
+        {
+          "api": "Confidence__c",
+          "label": "Confidence",
+          "type": "Number",
+          "precision": 3,
+          "scale": 2
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Different_Entities",
+          "formula": "Subject_Entity__c = Object_Entity__c",
+          "message": "A relationship must connect two different entity records."
+        },
+        {
+          "api": "Valid_Date_Range",
+          "formula": "AND(NOT(ISBLANK(Valid_To__c)), Valid_To__c < Valid_From__c)",
+          "message": "Valid To cannot be earlier than Valid From."
+        },
+        {
+          "api": "Confidence_Range",
+          "formula": "OR(Confidence__c < 0, Confidence__c > 1)",
+          "message": "Confidence must be between 0 and 1."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Event_Participant__c",
+      "label": "Event Participant",
+      "pluralLabel": "Event Participants",
+      "prefix": "EVP",
+      "description": "Entity participation in an event with an explicit role.",
+      "fieldSets": ["tenantRecord"],
+      "fields": [
+        {
+          "api": "Event__c",
+          "label": "Event",
+          "type": "Lookup",
+          "referenceTo": "HFS_Event__c",
+          "required": true
+        },
+        {
+          "api": "Entity__c",
+          "label": "Entity",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Participant_Role__c",
+          "label": "Participant Role",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        }
+      ]
+    },
+    {
+      "api": "HFS_Agreement__c",
+      "label": "Agreement",
+      "pluralLabel": "Agreements",
+      "prefix": "AGR",
+      "description": "Agreement, promise, obligation, or material terms between entities.",
+      "fieldSets": ["tenantRecord", "sourceEvent"],
+      "fields": [
+        {
+          "api": "Party_One__c",
+          "label": "Party One",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Party_Two__c",
+          "label": "Party Two",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Agreement_Type__c",
+          "label": "Agreement Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Status__c",
+          "label": "Status",
+          "type": "Picklist",
+          "required": true,
+          "values": ["DRAFT", "ACTIVE", "SUSPENDED", "TERMINATED", "EXPIRED"]
+        },
+        {
+          "api": "Effective_From__c",
+          "label": "Effective From",
+          "type": "Date",
+          "required": true
+        },
+        { "api": "Effective_To__c", "label": "Effective To", "type": "Date" },
+        {
+          "api": "Terms_Summary__c",
+          "label": "Terms Summary",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 8
+        },
+        {
+          "api": "Material_Terms_JSON__c",
+          "label": "Material Terms JSON",
+          "type": "LongTextArea",
+          "length": 131072,
+          "visibleLines": 10
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Different_Parties",
+          "formula": "Party_One__c = Party_Two__c",
+          "message": "An agreement must have two different parties."
+        },
+        {
+          "api": "Effective_Date_Range",
+          "formula": "AND(NOT(ISBLANK(Effective_To__c)), Effective_To__c < Effective_From__c)",
+          "message": "Effective To cannot be earlier than Effective From."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Work_Item__c",
+      "label": "Work Item",
+      "pluralLabel": "Work Items",
+      "prefix": "WRK",
+      "description": "Cross-functional unit of accountable work triggered by evidence.",
+      "fieldSets": ["tenantRecord"],
+      "fields": [
+        {
+          "api": "Primary_Entity__c",
+          "label": "Primary Entity",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Trigger_Event__c",
+          "label": "Trigger Event",
+          "type": "Lookup",
+          "referenceTo": "HFS_Event__c",
+          "required": true
+        },
+        {
+          "api": "Status__c",
+          "label": "Status",
+          "type": "Picklist",
+          "required": true,
+          "values": [
+            "NEW",
+            "IN_PROGRESS",
+            "BLOCKED",
+            "AWAITING_APPROVAL",
+            "COMPLETED",
+            "CANCELLED"
+          ]
+        },
+        {
+          "api": "Priority__c",
+          "label": "Priority",
+          "type": "Picklist",
+          "required": true,
+          "values": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+        },
+        {
+          "api": "Summary__c",
+          "label": "Summary",
+          "type": "Text",
+          "length": 255,
+          "required": true
+        },
+        { "api": "Due_At__c", "label": "Due At", "type": "DateTime" },
+        {
+          "api": "Blocked_Reason__c",
+          "label": "Blocked Reason",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 5
+        }
+      ]
+    },
+    {
+      "api": "HFS_SOP_Execution__c",
+      "label": "SOP Execution",
+      "pluralLabel": "SOP Executions",
+      "prefix": "SOP",
+      "description": "Versioned SOP execution state for a work item.",
+      "fieldSets": ["tenantRecord"],
+      "fields": [
+        {
+          "api": "Work_Item__c",
+          "label": "Work Item",
+          "type": "Lookup",
+          "referenceTo": "HFS_Work_Item__c",
+          "required": true
+        },
+        {
+          "api": "Definition_Key__c",
+          "label": "Definition Key",
+          "type": "Text",
+          "length": 160,
+          "required": true
+        },
+        {
+          "api": "Definition_Version__c",
+          "label": "Definition Version",
+          "type": "Text",
+          "length": 40,
+          "required": true
+        },
+        {
+          "api": "Status__c",
+          "label": "Status",
+          "type": "Picklist",
+          "required": true,
+          "values": [
+            "PENDING",
+            "RUNNING",
+            "BLOCKED",
+            "COMPLETED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        {
+          "api": "Current_Step_Key__c",
+          "label": "Current Step Key",
+          "type": "Text",
+          "length": 160
+        },
+        {
+          "api": "Started_At__c",
+          "label": "Started At",
+          "type": "DateTime",
+          "required": true
+        },
+        {
+          "api": "Completed_At__c",
+          "label": "Completed At",
+          "type": "DateTime"
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Completion_After_Start",
+          "formula": "AND(NOT(ISBLANK(Completed_At__c)), Completed_At__c < Started_At__c)",
+          "message": "Completed At cannot be earlier than Started At."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Evidence__c",
+      "label": "Evidence",
+      "pluralLabel": "Evidence",
+      "prefix": "EVD",
+      "description": "Citable evidence supporting work and recommendations.",
+      "fieldSets": ["tenantRecord", "sourceEvent"],
+      "fields": [
+        {
+          "api": "Work_Item__c",
+          "label": "Work Item",
+          "type": "Lookup",
+          "referenceTo": "HFS_Work_Item__c",
+          "required": true
+        },
+        {
+          "api": "Related_Entity__c",
+          "label": "Related Entity",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c"
+        },
+        {
+          "api": "Evidence_Type__c",
+          "label": "Evidence Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Summary__c",
+          "label": "Summary",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 8,
+          "required": true
+        },
+        {
+          "api": "Content_Hash__c",
+          "label": "Content Hash",
+          "type": "Text",
+          "length": 71
+        },
+        {
+          "api": "Source_URI__c",
+          "label": "Source URI",
+          "type": "Text",
+          "length": 255
+        },
+        {
+          "api": "Captured_At__c",
+          "label": "Captured At",
+          "type": "DateTime",
+          "required": true
+        }
+      ]
+    },
+    {
+      "api": "HFS_Recommendation__c",
+      "label": "Recommendation",
+      "pluralLabel": "Recommendations",
+      "prefix": "REC",
+      "description": "Evidence-backed proposed intervention awaiting policy evaluation and approval.",
+      "fieldSets": ["tenantRecord"],
+      "fields": [
+        {
+          "api": "Work_Item__c",
+          "label": "Work Item",
+          "type": "Lookup",
+          "referenceTo": "HFS_Work_Item__c",
+          "required": true
+        },
+        {
+          "api": "Subject_Entity__c",
+          "label": "Subject Entity",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Primary_Evidence__c",
+          "label": "Primary Evidence",
+          "type": "Lookup",
+          "referenceTo": "HFS_Evidence__c",
+          "required": true
+        },
+        {
+          "api": "Status__c",
+          "label": "Status",
+          "type": "Picklist",
+          "required": true,
+          "values": [
+            "DRAFT",
+            "PENDING_APPROVAL",
+            "APPROVED",
+            "REJECTED",
+            "EXPIRED"
+          ]
+        },
+        {
+          "api": "Recommendation_Type__c",
+          "label": "Recommendation Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Proposed_Action_Type__c",
+          "label": "Proposed Action Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Rationale__c",
+          "label": "Rationale",
+          "type": "LongTextArea",
+          "length": 131072,
+          "visibleLines": 10,
+          "required": true
+        },
+        {
+          "api": "Confidence__c",
+          "label": "Confidence",
+          "type": "Number",
+          "precision": 3,
+          "scale": 2
+        },
+        {
+          "api": "Model_Profile__c",
+          "label": "Model Profile",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Model_Invocation_Id__c",
+          "label": "Model Invocation ID",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Generated_At__c",
+          "label": "Generated At",
+          "type": "DateTime",
+          "required": true
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Confidence_Range",
+          "formula": "OR(Confidence__c < 0, Confidence__c > 1)",
+          "message": "Confidence must be between 0 and 1."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Approval__c",
+      "label": "Approval",
+      "pluralLabel": "Approvals",
+      "prefix": "APP",
+      "description": "Human approval or rejection of a recommendation under a named policy.",
+      "fieldSets": ["tenantRecord"],
+      "fields": [
+        {
+          "api": "Recommendation__c",
+          "label": "Recommendation",
+          "type": "Lookup",
+          "referenceTo": "HFS_Recommendation__c",
+          "required": true
+        },
+        {
+          "api": "Status__c",
+          "label": "Status",
+          "type": "Picklist",
+          "required": true,
+          "values": ["PENDING", "APPROVED", "REJECTED", "REVOKED"]
+        },
+        {
+          "api": "Requested_At__c",
+          "label": "Requested At",
+          "type": "DateTime",
+          "required": true
+        },
+        {
+          "api": "Decision_By__c",
+          "label": "Decision By",
+          "type": "Lookup",
+          "referenceTo": "User"
+        },
+        { "api": "Decided_At__c", "label": "Decided At", "type": "DateTime" },
+        {
+          "api": "Decision_Notes__c",
+          "label": "Decision Notes",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 6
+        },
+        {
+          "api": "Policy_Key__c",
+          "label": "Policy Key",
+          "type": "Text",
+          "length": 160,
+          "required": true
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Decision_Fields_Required",
+          "formula": "AND(OR(ISPICKVAL(Status__c, \"APPROVED\"), ISPICKVAL(Status__c, \"REJECTED\"), ISPICKVAL(Status__c, \"REVOKED\")), OR(ISBLANK(Decision_By__c), ISBLANK(Decided_At__c)))",
+          "message": "Decision By and Decided At are required for a completed approval decision."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Action__c",
+      "label": "Action",
+      "pluralLabel": "Actions",
+      "prefix": "ACT",
+      "description": "Approved outreach or operational action and its execution state.",
+      "fieldSets": ["tenantRecord"],
+      "fields": [
+        {
+          "api": "Recommendation__c",
+          "label": "Recommendation",
+          "type": "Lookup",
+          "referenceTo": "HFS_Recommendation__c",
+          "required": true
+        },
+        {
+          "api": "Approval__c",
+          "label": "Approval",
+          "type": "Lookup",
+          "referenceTo": "HFS_Approval__c",
+          "required": true
+        },
+        {
+          "api": "Target_Entity__c",
+          "label": "Target Entity",
+          "type": "Lookup",
+          "referenceTo": "HFS_Entity__c",
+          "required": true
+        },
+        {
+          "api": "Status__c",
+          "label": "Status",
+          "type": "Picklist",
+          "required": true,
+          "values": ["PENDING", "QUEUED", "EXECUTED", "FAILED", "CANCELLED"]
+        },
+        {
+          "api": "Action_Type__c",
+          "label": "Action Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Requested_At__c",
+          "label": "Requested At",
+          "type": "DateTime",
+          "required": true
+        },
+        { "api": "Executed_At__c", "label": "Executed At", "type": "DateTime" },
+        {
+          "api": "Correlation_Id__c",
+          "label": "Correlation ID",
+          "type": "Text",
+          "length": 36,
+          "required": true
+        },
+        {
+          "api": "Idempotency_Key__c",
+          "label": "Idempotency Key",
+          "type": "Text",
+          "length": 200,
+          "required": true,
+          "externalId": true,
+          "unique": true
+        },
+        {
+          "api": "External_Reference__c",
+          "label": "External Reference",
+          "type": "Text",
+          "length": 255
+        },
+        {
+          "api": "Failure_Detail__c",
+          "label": "Failure Detail",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 6
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Approval_Must_Be_Approved",
+          "formula": "NOT(ISPICKVAL(Approval__r.Status__c, \"APPROVED\"))",
+          "message": "An action requires an approved approval record."
+        },
+        {
+          "api": "Execution_After_Request",
+          "formula": "AND(NOT(ISBLANK(Executed_At__c)), Executed_At__c < Requested_At__c)",
+          "message": "Executed At cannot be earlier than Requested At."
+        }
+      ]
+    },
+    {
+      "api": "HFS_Outcome__c",
+      "label": "Outcome",
+      "pluralLabel": "Outcomes",
+      "prefix": "OUT",
+      "description": "Observed result of an executed action.",
+      "fieldSets": ["tenantRecord", "sourceEvent"],
+      "fields": [
+        {
+          "api": "Action__c",
+          "label": "Action",
+          "type": "Lookup",
+          "referenceTo": "HFS_Action__c",
+          "required": true
+        },
+        {
+          "api": "Outcome_Type__c",
+          "label": "Outcome Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Status__c",
+          "label": "Status",
+          "type": "Picklist",
+          "required": true,
+          "values": [
+            "OBSERVED",
+            "SUCCESS",
+            "PARTIAL",
+            "NO_EFFECT",
+            "NEGATIVE",
+            "UNKNOWN"
+          ]
+        },
+        {
+          "api": "Observed_At__c",
+          "label": "Observed At",
+          "type": "DateTime",
+          "required": true
+        },
+        {
+          "api": "Summary__c",
+          "label": "Summary",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 8,
+          "required": true
+        },
+        {
+          "api": "Metric_Key__c",
+          "label": "Metric Key",
+          "type": "Text",
+          "length": 160
+        },
+        {
+          "api": "Metric_Value__c",
+          "label": "Metric Value",
+          "type": "Number",
+          "precision": 18,
+          "scale": 4
+        }
+      ]
+    },
+    {
+      "api": "HFS_Evaluation__c",
+      "label": "Evaluation",
+      "pluralLabel": "Evaluations",
+      "prefix": "EVA",
+      "description": "Versioned assessment of an outcome, recommendation, or intervention.",
+      "fieldSets": ["tenantRecord"],
+      "fields": [
+        {
+          "api": "Outcome__c",
+          "label": "Outcome",
+          "type": "Lookup",
+          "referenceTo": "HFS_Outcome__c",
+          "required": true
+        },
+        {
+          "api": "Evaluation_Type__c",
+          "label": "Evaluation Type",
+          "type": "Text",
+          "length": 120,
+          "required": true
+        },
+        {
+          "api": "Evaluator_Type__c",
+          "label": "Evaluator Type",
+          "type": "Picklist",
+          "required": true,
+          "values": ["HUMAN", "RULE", "MODEL", "SYSTEM"]
+        },
+        {
+          "api": "Evaluator_Id__c",
+          "label": "Evaluator ID",
+          "type": "Text",
+          "length": 160,
+          "required": true
+        },
+        {
+          "api": "Score__c",
+          "label": "Score",
+          "type": "Number",
+          "precision": 6,
+          "scale": 3
+        },
+        {
+          "api": "Verdict__c",
+          "label": "Verdict",
+          "type": "Picklist",
+          "required": true,
+          "values": ["PASS", "FAIL", "INCONCLUSIVE", "NEEDS_REVIEW"]
+        },
+        {
+          "api": "Evaluated_At__c",
+          "label": "Evaluated At",
+          "type": "DateTime",
+          "required": true
+        },
+        {
+          "api": "Notes__c",
+          "label": "Notes",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 6
+        }
+      ]
+    }
+  ],
+  "customPermissions": [
+    {
+      "api": "HFS_Approve_Recommendation",
+      "label": "Approve HFS Recommendation",
+      "description": "Allows a user to approve or reject relationship recommendations."
+    },
+    {
+      "api": "HFS_Execute_Action",
+      "label": "Execute HFS Action",
+      "description": "Allows automation or an authorized user to execute approved actions."
+    }
+  ],
+  "permissionSets": [
+    {
+      "api": "HFS_Relationship_User",
+      "label": "HFS Relationship User",
+      "description": "Read relationship context and manage assigned work, evidence, SOP execution, and recommendations.",
+      "editableObjects": [
+        "HFS_Work_Item__c",
+        "HFS_SOP_Execution__c",
+        "HFS_Evidence__c",
+        "HFS_Recommendation__c"
+      ]
+    },
+    {
+      "api": "HFS_Approver",
+      "label": "HFS Approver",
+      "description": "Read relationship context and record recommendation approval decisions.",
+      "editableObjects": ["HFS_Approval__c"],
+      "customPermissions": ["HFS_Approve_Recommendation"]
+    },
+    {
+      "api": "HFS_Integration_User",
+      "label": "HFS Integration User",
+      "description": "Create and reconcile integration, operational, action, and outcome records.",
+      "editableObjects": ["*"],
+      "deleteObjects": ["*"],
+      "viewAllRecords": true,
+      "modifyAllRecords": true,
+      "customPermissions": ["HFS_Execute_Action"]
+    }
+  ]
+}

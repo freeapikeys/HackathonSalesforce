@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Observed_After_Occurrence</fullName>
+    <active>true</active>
+    <description>Observed At cannot be earlier than Occurred At.</description>
+    <errorConditionFormula>Observed_At__c &lt; Occurred_At__c</errorConditionFormula>
+    <errorMessage>Observed At cannot be earlier than Occurred At.</errorMessage>
+</ValidationRule>

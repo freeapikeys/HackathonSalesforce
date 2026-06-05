@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Approved outreach or operational action and its execution state.</description>
+    <enableActivities>false</enableActivities>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <label>Action</label>
+    <nameField>
+        <displayFormat>ACT-{000000}</displayFormat>
+        <label>Action Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Actions</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

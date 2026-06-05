@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Related_Entity__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Related Entity</label>
+    <referenceTo>HFS_Entity__c</referenceTo>
+    <relationshipLabel>Evidence by Related Entity</relationshipLabel>
+    <relationshipName>HFS_Evidence_Related_Entity</relationshipName>
+    <type>Lookup</type>
+</CustomField>

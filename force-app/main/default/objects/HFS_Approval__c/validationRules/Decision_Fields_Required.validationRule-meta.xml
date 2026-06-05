@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Decision_Fields_Required</fullName>
+    <active>true</active>
+    <description>Decision By and Decided At are required for a completed approval decision.</description>
+    <errorConditionFormula>AND(OR(ISPICKVAL(Status__c, "APPROVED"), ISPICKVAL(Status__c, "REJECTED"), ISPICKVAL(Status__c, "REVOKED")), OR(ISBLANK(Decision_By__c), ISBLANK(Decided_At__c)))</errorConditionFormula>
+    <errorMessage>Decision By and Decided At are required for a completed approval decision.</errorMessage>
+</ValidationRule>

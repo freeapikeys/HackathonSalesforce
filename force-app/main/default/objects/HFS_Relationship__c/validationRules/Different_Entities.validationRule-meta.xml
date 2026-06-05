@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Different_Entities</fullName>
+    <active>true</active>
+    <description>A relationship must connect two different entity records.</description>
+    <errorConditionFormula>Subject_Entity__c = Object_Entity__c</errorConditionFormula>
+    <errorMessage>A relationship must connect two different entity records.</errorMessage>
+</ValidationRule>

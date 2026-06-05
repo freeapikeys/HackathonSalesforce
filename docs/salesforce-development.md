@@ -49,6 +49,18 @@ sf project deploy preview --source-dir force-app
 sf project deploy start --source-dir force-app
 ```
 
+For the core relationship metadata, assign the integration permission set to
+the connected integration identity and run the rollback smoke test:
+
+```bash
+sf org assign permset \
+  --name HFS_Integration_User \
+  --target-org hfs-dev
+sf apex run \
+  --file scripts/apex/verify_core_metadata.apex \
+  --target-org hfs-dev
+```
+
 Retrieve metadata intentionally by type or name. Do not retrieve an entire org
 into the repository.
 

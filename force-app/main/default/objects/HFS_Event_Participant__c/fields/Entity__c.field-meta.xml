@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Entity__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Entity</label>
+    <referenceTo>HFS_Entity__c</referenceTo>
+    <relationshipLabel>Event Participants by Entity</relationshipLabel>
+    <relationshipName>HFS_Event_Participant_Entity</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>
