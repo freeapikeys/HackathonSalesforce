@@ -12,8 +12,29 @@ and integration adapters. It covers:
 - pending action logging;
 - outcome capture.
 
-The contract classes are under `force-app/main/default/classes/`. The service
-implementation belongs to `hfs-v1-05b`.
+The contract and implementation classes are under
+`force-app/main/default/classes/`. `HFS_RelationshipServiceImpl` is the
+`with sharing` implementation, `HFS_ContextAssembler` builds context and
+provenance responses, and `HFS_ServiceSupport` normalizes validation,
+authorization, replay, and error behavior.
+
+## Implemented Behavior
+
+- Context reads start from a work item or subject entity and assemble the
+  connected entity, relationship, agreement, SOP, evidence, recommendation,
+  approval, action, outcome, evaluation, and event graph.
+- Provenance reads use an explicit object allowlist and trace records back to
+  citable evidence and immutable source events.
+- Queries use user mode; command DML uses user mode and the service runs with
+  sharing.
+- Every referenced record is checked against the request tenant.
+- Recommendation, approval request, action, and outcome external keys replay
+  only when the persisted command content matches.
+- Approval decisions and action execution require their named custom
+  permissions.
+- Human decisions derive the deciding user and timestamp on the server.
+- Outcome capture records the outcome, marks the action executed, and completes
+  terminal work in one rollback-protected transaction.
 
 ## Service Interface
 
