@@ -36,6 +36,21 @@ authorization, replay, and error behavior.
 - Outcome capture records the outcome, marks the action executed, and completes
   terminal work in one rollback-protected transaction.
 
+## Verified Failure Paths
+
+The Apex suite executes with the deployed `HFS_Relationship_User`,
+`HFS_Approver`, and `HFS_Integration_User` permission sets on minimum-access
+users. It proves:
+
+- role-appropriate success and cross-role denial;
+- missing custom-permission denial;
+- inaccessible source evidence fails closed with
+  `SOURCE_EVIDENCE_INACCESSIBLE`;
+- conflicting external or idempotency keys return `IDEMPOTENCY_CONFLICT`;
+- invalid approval and action states are rejected;
+- a failure after outcome insertion rolls back the outcome, action update, and
+  work update, so a single-command transaction never returns a partial commit.
+
 ## Service Interface
 
 `HFS_RelationshipService` exposes:
