@@ -40,25 +40,7 @@ public with sharing class HFS_ContextAssembler {
       'workItemId'
     );
 
-    List<HFS_Evidence__c> evidenceRecords = [
-      SELECT
-        Id,
-        Name,
-        External_Key__c,
-        Tenant_Key__c,
-        Work_Item__c,
-        Related_Entity__c,
-        Source_Event__c,
-        Evidence_Type__c,
-        Summary__c,
-        Content_Hash__c,
-        Source_URI__c,
-        Captured_At__c
-      FROM HFS_Evidence__c
-      WHERE Work_Item__c = :workItem.Id
-      WITH USER_MODE
-      ORDER BY Captured_At__c DESC
-    ];
+    List<HFS_Evidence__c> evidenceRecords = evidenceForWork(workItem.Id);
     List<HFS_SOP_Execution__c> sopRecords = [
       SELECT
         Id,
@@ -402,24 +384,7 @@ public with sharing class HFS_ContextAssembler {
     }
 
     if (!seed.evidenceIds.isEmpty()) {
-      List<HFS_Evidence__c> evidenceRecords = [
-        SELECT
-          Id,
-          Name,
-          External_Key__c,
-          Tenant_Key__c,
-          Work_Item__c,
-          Related_Entity__c,
-          Source_Event__c,
-          Evidence_Type__c,
-          Summary__c,
-          Content_Hash__c,
-          Source_URI__c,
-          Captured_At__c
-        FROM HFS_Evidence__c
-        WHERE Id IN :seed.evidenceIds
-        WITH USER_MODE
-      ];
+      List<HFS_Evidence__c> evidenceRecords = evidenceByIds(seed.evidenceIds);
       for (HFS_Evidence__c evidence : evidenceRecords) {
         HFS_ServiceSupport.requireTenant(
           request.tenantKey,
@@ -867,27 +832,96 @@ public with sharing class HFS_ContextAssembler {
   }
 
   private static HFS_Evidence__c oneEvidence(Id recordId) {
-    List<HFS_Evidence__c> records = [
-      SELECT
-        Id,
-        Name,
-        External_Key__c,
-        Tenant_Key__c,
-        Work_Item__c,
-        Related_Entity__c,
-        Source_Event__c,
-        Evidence_Type__c,
-        Summary__c,
-        Content_Hash__c,
-        Source_URI__c,
-        Captured_At__c
-      FROM HFS_Evidence__c
-      WHERE Id = :recordId
-      WITH USER_MODE
-      LIMIT 1
-    ];
-    requireRecord(records, 'recordId');
+    List<HFS_Evidence__c> records;
+    try {
+      records = [
+        SELECT
+          Id,
+          Name,
+          External_Key__c,
+          Tenant_Key__c,
+          Work_Item__c,
+          Related_Entity__c,
+          Source_Event__c,
+          Evidence_Type__c,
+          Summary__c,
+          Content_Hash__c,
+          Source_URI__c,
+          Captured_At__c
+        FROM HFS_Evidence__c
+        WHERE Id = :recordId
+        WITH USER_MODE
+        LIMIT 1
+      ];
+    } catch (Exception ignored) {
+      inaccessibleEvidence();
+      return null;
+    }
+    if (records.isEmpty()) {
+      inaccessibleEvidence();
+    }
     return records[0];
+  }
+
+  private static List<HFS_Evidence__c> evidenceForWork(Id workItemId) {
+    try {
+      return [
+        SELECT
+          Id,
+          Name,
+          External_Key__c,
+          Tenant_Key__c,
+          Work_Item__c,
+          Related_Entity__c,
+          Source_Event__c,
+          Evidence_Type__c,
+          Summary__c,
+          Content_Hash__c,
+          Source_URI__c,
+          Captured_At__c
+        FROM HFS_Evidence__c
+        WHERE Work_Item__c = :workItemId
+        WITH USER_MODE
+        ORDER BY Captured_At__c DESC
+      ];
+    } catch (Exception ignored) {
+      inaccessibleEvidence();
+      return new List<HFS_Evidence__c>();
+    }
+  }
+
+  private static List<HFS_Evidence__c> evidenceByIds(Set<Id> evidenceIds) {
+    try {
+      return [
+        SELECT
+          Id,
+          Name,
+          External_Key__c,
+          Tenant_Key__c,
+          Work_Item__c,
+          Related_Entity__c,
+          Source_Event__c,
+          Evidence_Type__c,
+          Summary__c,
+          Content_Hash__c,
+          Source_URI__c,
+          Captured_At__c
+        FROM HFS_Evidence__c
+        WHERE Id IN :evidenceIds
+        WITH USER_MODE
+      ];
+    } catch (Exception ignored) {
+      inaccessibleEvidence();
+      return new List<HFS_Evidence__c>();
+    }
+  }
+
+  private static void inaccessibleEvidence() {
+    HFS_ServiceSupport.fail(
+      HFS_ServiceContract.SOURCE_EVIDENCE_INACCESSIBLE,
+      'The source evidence is missing or inaccessible.',
+      'recordId'
+    );
   }
 
   private static void requireRecord(List<SObject> records, String fieldName) {

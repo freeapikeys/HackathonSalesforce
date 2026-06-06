@@ -73,6 +73,32 @@ public class HFS_ServiceSupport {
     }
   }
 
+  public static void requireCreate(
+    Schema.DescribeSObjectResult objectDescribe,
+    String fieldName
+  ) {
+    if (!objectDescribe.isCreateable()) {
+      fail(
+        HFS_ServiceContract.PERMISSION_DENIED,
+        'The current user cannot create the requested record.',
+        fieldName
+      );
+    }
+  }
+
+  public static void requireUpdate(
+    Schema.DescribeSObjectResult objectDescribe,
+    String fieldName
+  ) {
+    if (!objectDescribe.isUpdateable()) {
+      fail(
+        HFS_ServiceContract.PERMISSION_DENIED,
+        'The current user cannot update the requested record.',
+        fieldName
+      );
+    }
+  }
+
   @TestVisible
   static void setPermissionOverride(String customPermission, Boolean allowed) {
     permissionOverrides.put(customPermission, allowed);
@@ -103,6 +129,7 @@ public class HFS_ServiceSupport {
 
     if (
       exceptionValue instanceof QueryException ||
+      exceptionValue instanceof NoAccessException ||
       exceptionValue instanceof SecurityException
     ) {
       return error(
@@ -117,15 +144,37 @@ public class HFS_ServiceSupport {
     if (exceptionValue instanceof DmlException) {
       DmlException dmlError = (DmlException) exceptionValue;
       String code = HFS_ServiceContract.VALIDATION_FAILED;
-      if (
-        dmlError.getNumDml() > 0 &&
-        dmlError.getDmlStatusCode(0) == 'DUPLICATE_VALUE'
-      ) {
-        code = HFS_ServiceContract.IDEMPOTENCY_CONFLICT;
+      if (dmlError.getNumDml() > 0) {
+        String statusCode = dmlError.getDmlStatusCode(0);
+        if (statusCode == 'DUPLICATE_VALUE') {
+          code = HFS_ServiceContract.IDEMPOTENCY_CONFLICT;
+        } else if (
+          statusCode == 'INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY' ||
+          statusCode == 'INSUFFICIENT_ACCESS_OR_READONLY' ||
+          statusCode == 'INVALID_FIELD_FOR_INSERT_UPDATE'
+        ) {
+          code = HFS_ServiceContract.PERMISSION_DENIED;
+        }
       }
       return error(
         code,
         'Salesforce rejected the requested record change.',
+        null,
+        false,
+        null
+      );
+    }
+
+    String normalizedMessage = exceptionValue.getMessage() == null
+      ? ''
+      : exceptionValue.getMessage().toLowerCase();
+    if (
+      normalizedMessage.contains('permission') ||
+      normalizedMessage.contains('access')
+    ) {
+      return error(
+        HFS_ServiceContract.PERMISSION_DENIED,
+        'The current user cannot perform this operation.',
         null,
         false,
         null
