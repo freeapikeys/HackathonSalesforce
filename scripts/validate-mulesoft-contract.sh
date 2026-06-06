@@ -12,3 +12,6 @@ fi
 
 "$PYTHON" "$ROOT/scripts/generate_mulesoft_contract.py" --check
 "$PYTHON" "$ROOT/scripts/validate_mulesoft_contract.py"
+PYTHONPATH="$ROOT/mulesoft" "$PYTHON" -m unittest discover \
+  -s "$ROOT/mulesoft/tests" \
+  -p "test_*.py"
