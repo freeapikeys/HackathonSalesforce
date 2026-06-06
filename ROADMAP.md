@@ -378,10 +378,8 @@ done when:
 
 ## Explicit Non-Goals
 
-- Harvesting third-party personal data.
 - Replacing source systems as their authoritative store.
 - Hiding uncertainty behind one unexplained score.
 - Letting agents make unrestricted enterprise changes.
 - Forcing every subsidiary or department into one identical process.
 - Importing developer orchestration tools into the product runtime.
-- Training foundation models on customer data as the definition of learning.
