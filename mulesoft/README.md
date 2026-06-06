@@ -27,3 +27,15 @@ npm run check:mulesoft
 The generator keeps the OpenAPI document and example catalog deterministic.
 Edit `scripts/generate_mulesoft_contract.py`, regenerate, and commit both
 generated JSON files.
+
+## Mock Runtime
+
+`mock_runtime/` is the replaceable local reference implementation behind the
+frozen API. It preserves accepted source events, reads seeded context, executes
+only registered approved actions, writes deterministic mock source records,
+captures correlated outcomes, and retries optional completion callbacks.
+
+It deliberately keeps adapters behind Python interfaces so the same contract
+tests can be applied to Mule flows and real connectors without embedding mock
+behavior in production configuration. The runtime is an integration test
+harness, not a substitute for an Anypoint deployment.
