@@ -88,6 +88,10 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         command.modelInvocationId,
         'modelInvocationId'
       );
+      HFS_ServiceSupport.requireCreate(
+        Schema.SObjectType.HFS_Recommendation__c,
+        'HFS_Recommendation__c'
+      );
       if (
         command.confidence != null &&
         (command.confidence < 0 ||
@@ -199,6 +203,10 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       );
       HFS_ServiceSupport.requireText(command.externalKey, 'externalKey');
       HFS_ServiceSupport.requireText(command.policyKey, 'policyKey');
+      HFS_ServiceSupport.requireCreate(
+        Schema.SObjectType.HFS_Approval__c,
+        'HFS_Approval__c'
+      );
 
       List<HFS_Approval__c> existingRecords = [
         SELECT
@@ -290,6 +298,10 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         command == null ? null : command.correlationId
       );
       HFS_ServiceSupport.requirePermission('HFS_Approve_Recommendation');
+      HFS_ServiceSupport.requireUpdate(
+        Schema.SObjectType.HFS_Approval__c,
+        'HFS_Approval__c'
+      );
       HFS_ServiceSupport.requireText(command.decisionStatus, 'decisionStatus');
       if (!APPROVAL_DECISIONS.contains(command.decisionStatus)) {
         HFS_ServiceSupport.fail(
@@ -351,6 +363,10 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         command == null ? null : command.correlationId
       );
       HFS_ServiceSupport.requirePermission('HFS_Execute_Action');
+      HFS_ServiceSupport.requireCreate(
+        Schema.SObjectType.HFS_Action__c,
+        'HFS_Action__c'
+      );
       HFS_ServiceSupport.requireText(command.externalKey, 'externalKey');
       HFS_ServiceSupport.requireText(command.idempotencyKey, 'idempotencyKey');
       HFS_ServiceSupport.requireText(command.actionType, 'actionType');
@@ -455,6 +471,18 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         command == null ? null : command.correlationId
       );
       HFS_ServiceSupport.requirePermission('HFS_Execute_Action');
+      HFS_ServiceSupport.requireCreate(
+        Schema.SObjectType.HFS_Outcome__c,
+        'HFS_Outcome__c'
+      );
+      HFS_ServiceSupport.requireUpdate(
+        Schema.SObjectType.HFS_Action__c,
+        'HFS_Action__c'
+      );
+      HFS_ServiceSupport.requireUpdate(
+        Schema.SObjectType.HFS_Work_Item__c,
+        'HFS_Work_Item__c'
+      );
       HFS_ServiceSupport.requireText(command.externalKey, 'externalKey');
       HFS_ServiceSupport.requireText(command.outcomeType, 'outcomeType');
       HFS_ServiceSupport.requireText(command.status, 'status');
@@ -614,15 +642,31 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
 
   private static HFS_Evidence__c evidence(String recordId) {
     Id value = HFS_ServiceSupport.requireId(recordId, 'primaryEvidenceId');
-    List<HFS_Evidence__c> records = [
-      SELECT Id, Tenant_Key__c, Work_Item__c
-      FROM HFS_Evidence__c
-      WHERE Id = :value
-      WITH USER_MODE
-      LIMIT 1
-    ];
-    requireRecord(records, 'primaryEvidenceId');
+    List<HFS_Evidence__c> records;
+    try {
+      records = [
+        SELECT Id, Tenant_Key__c, Work_Item__c
+        FROM HFS_Evidence__c
+        WHERE Id = :value
+        WITH USER_MODE
+        LIMIT 1
+      ];
+    } catch (Exception ignored) {
+      inaccessibleEvidence();
+      return null;
+    }
+    if (records.isEmpty()) {
+      inaccessibleEvidence();
+    }
     return records[0];
+  }
+
+  private static void inaccessibleEvidence() {
+    HFS_ServiceSupport.fail(
+      HFS_ServiceContract.SOURCE_EVIDENCE_INACCESSIBLE,
+      'The source evidence is missing or inaccessible.',
+      'primaryEvidenceId'
+    );
   }
 
   private static HFS_Recommendation__c recommendation(String recordId) {
