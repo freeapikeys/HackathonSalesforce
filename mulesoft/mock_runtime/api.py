@@ -50,6 +50,10 @@ class AdapterIdempotencyConflict(RuntimeError):
     pass
 
 
+class RetryableDependencyFailure(RuntimeError):
+    pass
+
+
 class MockCallbackTransport:
     """Replaceable callback transport with deterministic failure injection."""
 
@@ -99,6 +103,24 @@ class MockSourceAdapter:
 
     def preserve(self, event: dict[str, Any]) -> None:
         self.events[event["id"]] = deepcopy(event)
+
+
+class MockOutcomeAdapter:
+    """Replaceable outcome store with deterministic retryable failures."""
+
+    def __init__(self, failures_remaining: int = 0) -> None:
+        if failures_remaining < 0:
+            raise ValueError("failures_remaining cannot be negative")
+        self.failures_remaining = failures_remaining
+        self.outcomes: dict[str, dict[str, Any]] = {}
+
+    def record(self, outcome: dict[str, Any]) -> None:
+        if self.failures_remaining > 0:
+            self.failures_remaining -= 1
+            raise RetryableDependencyFailure(
+                "Injected temporary outcome-store failure."
+            )
+        self.outcomes[outcome["externalKey"]] = deepcopy(outcome)
 
 
 class MockWriteBackAdapter:
@@ -194,19 +216,24 @@ class MockIntegrationApi:
         contract: IntegrationContract,
         source_adapter: MockSourceAdapter,
         write_back_adapter: MockWriteBackAdapter,
+        outcome_adapter: MockOutcomeAdapter,
         callback_transport: MockCallbackTransport,
         retry_policy: RetryPolicy,
     ) -> None:
         self.contract = contract
         self.source_adapter = source_adapter
         self.write_back_adapter = write_back_adapter
+        self.outcome_adapter = outcome_adapter
         self.callback_transport = callback_transport
         self.retry_policy = retry_policy
-        self.outcomes: dict[str, dict[str, Any]] = {}
         self.pending_callbacks: list[dict[str, Any]] = []
         self._idempotency: dict[
             tuple[str, str, str], tuple[str, MockHttpResponse]
         ] = {}
+
+    @property
+    def outcomes(self) -> dict[str, dict[str, Any]]:
+        return self.outcome_adapter.outcomes
 
     def request(
         self,
@@ -666,7 +693,18 @@ class MockIntegrationApi:
             return replay
 
         outcome_id = body["externalKey"]
-        self.outcomes[outcome_id] = deepcopy(body)
+        try:
+            self.outcome_adapter.record(body)
+        except RetryableDependencyFailure as error:
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=503,
+                code="RETRYABLE_DEPENDENCY_FAILURE",
+                message=str(error),
+                retryable=True,
+            )
         response_body = {
             "contractVersion": CONTRACT_VERSION,
             "tenantKey": body["tenantKey"],
@@ -751,11 +789,13 @@ class MockIntegrationApi:
 def build_default_api(
     *,
     failures_by_operation: dict[str, int] | None = None,
+    outcome_failures: int = 0,
     retry_policy: RetryPolicy | None = None,
 ) -> MockIntegrationApi:
     contract = IntegrationContract()
     source_adapter = MockSourceAdapter()
     write_back_adapter = MockWriteBackAdapter()
+    outcome_adapter = MockOutcomeAdapter(outcome_failures)
     callback_transport = MockCallbackTransport(
         contract,
         failures_by_operation=failures_by_operation,
@@ -764,6 +804,7 @@ def build_default_api(
         contract=contract,
         source_adapter=source_adapter,
         write_back_adapter=write_back_adapter,
+        outcome_adapter=outcome_adapter,
         callback_transport=callback_transport,
         retry_policy=retry_policy or RetryPolicy(),
     )
