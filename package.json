@@ -7,9 +7,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "npm run check:project && npm run check:ontology && npm run check:events && npm run check:metadata && npm run prettier:verify && npm run lint && npm run test:unit",
+    "check": "npm run check:project && npm run check:ontology && npm run check:events && npm run check:mulesoft && npm run check:metadata && npm run prettier:verify && npm run lint && npm run test:unit",
     "check:events": "./scripts/validate-event-contract.sh",
     "check:metadata": "python3 scripts/generate_core_salesforce_metadata.py --check",
+    "check:mulesoft": "./scripts/validate-mulesoft-contract.sh",
     "check:ontology": "./scripts/validate-ontology.sh",
     "check:project": "node scripts/validate-salesforce-project.mjs",
     "lint": "eslint \"force-app/main/default/{aura,lwc}/**/*.js\" --no-error-on-unmatched-pattern",

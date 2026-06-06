@@ -1,0 +1,679 @@
+{
+  "contractVersion": "1.0.0",
+  "description": "Executable examples for every request, success, denial, conflict, validation, retryable failure, and callback.",
+  "operations": {
+    "ingestEvent": {
+      "request": {
+        "summary": "Valid preserved source event",
+        "value": {
+          "specversion": "1.0",
+          "id": "00000000-0000-4000-8000-000000000007",
+          "source": "urn:hfs:source:operations",
+          "type": "io.github.freeapikeys.hfs.issue.opened.v1",
+          "subject": "issue:issue-001",
+          "time": "2026-06-05T08:30:00Z",
+          "datacontenttype": "application/json",
+          "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+          "hfstenantid": "demo-mauritius",
+          "hfsschemaversion": "1.0.0",
+          "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+          "hfsidempotencykey": "operations-issue-001-v1",
+          "hfssourcerecordid": "issue-record-001",
+          "hfssourcesequence": 2,
+          "hfsobservedat": "2026-06-05T08:30:03Z",
+          "hfscontenthash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
+          "data": {
+            "recordtype": "Issue",
+            "operation": "OPEN",
+            "businesskey": "issue-001",
+            "effectiveat": "2026-06-05T08:30:00Z",
+            "attributes": {
+              "agreementkey": "agreement-001",
+              "supplierkey": "supplier-001",
+              "severity": "HIGH",
+              "summary": "Repeated service interruption"
+            }
+          }
+        },
+        "x-hfs-schema": "EventEnvelope",
+        "x-hfs-headers": {
+          "X-Tenant-Id": "demo-mauritius",
+          "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
+          "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
+          "X-Idempotency-Key": "operations-issue-001-v1"
+        }
+      },
+      "success": {
+        "summary": "New event accepted",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "eventId": "00000000-0000-4000-8000-000000000007",
+          "intakeResult": "ACCEPTED",
+          "replayed": false,
+          "observedAt": "2026-06-05T08:30:03Z"
+        },
+        "x-hfs-schema": "EventIntakeResponse",
+        "x-hfs-status": "202"
+      },
+      "callback": {
+        "summary": "Event intake completion callback",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "INGEST_EVENT",
+          "status": "COMPLETED",
+          "completedAt": "2026-06-05T08:31:10Z",
+          "retryable": false,
+          "result": {
+            "eventId": "00000000-0000-4000-8000-000000000007",
+            "intakeResult": "ACCEPTED"
+          },
+          "errors": []
+        },
+        "x-hfs-schema": "OperationCallback"
+      },
+      "denial": {
+        "summary": "Purpose or permission denial",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "INGEST_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "PERMISSION_DENIED",
+              "message": "The operation is not allowed for the current purpose.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "403"
+      },
+      "conflict": {
+        "summary": "Idempotency or state conflict",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "INGEST_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "IDEMPOTENCY_CONFLICT",
+              "message": "The request key was already used for different content.",
+              "fieldName": "X-Idempotency-Key",
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "409"
+      },
+      "validation": {
+        "summary": "Deterministic validation failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "INGEST_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "VALIDATION_FAILED",
+              "message": "A required field or invariant is invalid.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "422"
+      },
+      "retryableFailure": {
+        "summary": "Retryable dependency failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "INGEST_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "RETRYABLE_DEPENDENCY_FAILURE",
+              "message": "A required dependency is temporarily unavailable.",
+              "fieldName": null,
+              "retryable": true,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "503"
+      }
+    },
+    "retrieveContext": {
+      "request": {
+        "summary": "Context query by work item",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "workItemId": "work-issue-001",
+          "subjectEntityId": null,
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "includeProvenance": true,
+          "timelineLimit": 50
+        },
+        "x-hfs-schema": "ContextRequest",
+        "x-hfs-headers": {
+          "X-Tenant-Id": "demo-mauritius",
+          "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
+          "X-Callback-Url": "https://callbacks.example.test/hfs/completions"
+        }
+      },
+      "success": {
+        "summary": "Authorized context with provenance",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "generatedAt": "2026-06-05T08:30:10Z",
+          "workItem": {
+            "recordId": "work-issue-001",
+            "objectApiName": "HFS_Work_Item__c",
+            "externalKey": "work-issue-001",
+            "recordType": "Work_Item",
+            "label": "Repeated service interruption",
+            "status": "OPEN",
+            "summary": null,
+            "occurredAt": "2026-06-05T08:30:00Z",
+            "sourceEventId": "event-issue-001",
+            "subjectEntityId": "entity-person-001",
+            "objectEntityId": null,
+            "relationshipType": null,
+            "participantRole": null,
+            "confidence": 1.0,
+            "sourceUri": "urn:hfs:source:operations",
+            "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
+          },
+          "entities": [
+            {
+              "recordId": "entity-person-001",
+              "objectApiName": "HFS_Entity__c",
+              "externalKey": "entity-person-001",
+              "recordType": "Entity",
+              "label": "Affected relationship",
+              "status": "ACTIVE",
+              "summary": null,
+              "occurredAt": "2026-06-05T08:30:00Z",
+              "sourceEventId": "event-issue-001",
+              "subjectEntityId": "entity-person-001",
+              "objectEntityId": null,
+              "relationshipType": null,
+              "participantRole": null,
+              "confidence": 1.0,
+              "sourceUri": "urn:hfs:source:operations",
+              "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
+            }
+          ],
+          "relationships": [],
+          "agreements": [],
+          "sopExecutions": [],
+          "timeline": [
+            {
+              "recordId": "work-issue-001",
+              "objectApiName": "HFS_Work_Item__c",
+              "externalKey": "work-issue-001",
+              "recordType": "Work_Item",
+              "label": "Repeated service interruption",
+              "status": "OPEN",
+              "summary": null,
+              "occurredAt": "2026-06-05T08:30:00Z",
+              "sourceEventId": "event-issue-001",
+              "subjectEntityId": "entity-person-001",
+              "objectEntityId": null,
+              "relationshipType": null,
+              "participantRole": null,
+              "confidence": 1.0,
+              "sourceUri": "urn:hfs:source:operations",
+              "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
+            }
+          ],
+          "evidence": [
+            {
+              "evidenceId": "evidence-issue-001",
+              "sourceEventId": "event-issue-001",
+              "sourceUri": "urn:hfs:source:operations",
+              "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
+              "summary": "The source system reported repeated interruption.",
+              "capturedAt": "2026-06-05T08:30:03Z"
+            }
+          ],
+          "recommendations": [],
+          "approvals": [],
+          "actions": [],
+          "outcomes": [],
+          "evaluations": [],
+          "errors": []
+        },
+        "x-hfs-schema": "ContextResponse",
+        "x-hfs-status": "200"
+      },
+      "callback": {
+        "summary": "Context query completion callback",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "READ_CONTEXT",
+          "status": "COMPLETED",
+          "completedAt": "2026-06-05T08:31:10Z",
+          "retryable": false,
+          "result": {
+            "workItemId": "work-issue-001",
+            "generatedAt": "2026-06-05T08:30:10Z"
+          },
+          "errors": []
+        },
+        "x-hfs-schema": "OperationCallback"
+      },
+      "denial": {
+        "summary": "Purpose or permission denial",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "READ_CONTEXT",
+          "success": false,
+          "errors": [
+            {
+              "code": "PERMISSION_DENIED",
+              "message": "The operation is not allowed for the current purpose.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "403"
+      },
+      "conflict": {
+        "summary": "Idempotency or state conflict",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "READ_CONTEXT",
+          "success": false,
+          "errors": [
+            {
+              "code": "IDEMPOTENCY_CONFLICT",
+              "message": "The request key was already used for different content.",
+              "fieldName": "X-Idempotency-Key",
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "409"
+      },
+      "validation": {
+        "summary": "Deterministic validation failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "READ_CONTEXT",
+          "success": false,
+          "errors": [
+            {
+              "code": "VALIDATION_FAILED",
+              "message": "A required field or invariant is invalid.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "422"
+      },
+      "retryableFailure": {
+        "summary": "Retryable dependency failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "READ_CONTEXT",
+          "success": false,
+          "errors": [
+            {
+              "code": "RETRYABLE_DEPENDENCY_FAILURE",
+              "message": "A required dependency is temporarily unavailable.",
+              "fieldName": null,
+              "retryable": true,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "503"
+      }
+    },
+    "executeApprovedAction": {
+      "request": {
+        "summary": "Approved source-system action",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "purpose": "PROVIDE_APPROVED_STATUS_UPDATE",
+          "externalKey": "action-status-update-001",
+          "idempotencyKey": "action-status-update-001-v1",
+          "recommendationId": "recommendation-status-update-001",
+          "approvalId": "approval-status-update-001",
+          "actionId": "action-status-update-001",
+          "targetEntityId": "entity-person-001",
+          "actionType": "SEND_STATUS_UPDATE",
+          "sourceSystem": "service-platform",
+          "payload": {
+            "channel": "EMAIL",
+            "templateKey": "service-status-update-v1",
+            "language": "en"
+          }
+        },
+        "x-hfs-schema": "ActionExecutionRequest",
+        "x-hfs-headers": {
+          "X-Tenant-Id": "demo-mauritius",
+          "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
+          "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
+          "X-Idempotency-Key": "action-status-update-001-v1"
+        }
+      },
+      "success": {
+        "summary": "Approved action queued",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "EXECUTE_APPROVED_ACTION",
+          "success": true,
+          "replayed": false,
+          "actionId": "action-status-update-001",
+          "sourceSystem": "service-platform",
+          "status": "QUEUED",
+          "acceptedAt": "2026-06-05T08:31:00Z",
+          "errors": []
+        },
+        "x-hfs-schema": "ActionExecutionResponse",
+        "x-hfs-status": "202"
+      },
+      "callback": {
+        "summary": "Approved action completion callback",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "EXECUTE_APPROVED_ACTION",
+          "status": "COMPLETED",
+          "completedAt": "2026-06-05T08:31:10Z",
+          "retryable": false,
+          "result": {
+            "actionId": "action-status-update-001",
+            "sourceSystem": "service-platform",
+            "sourceRecordId": "message-delivery-001",
+            "status": "EXECUTED"
+          },
+          "errors": []
+        },
+        "x-hfs-schema": "OperationCallback"
+      },
+      "denial": {
+        "summary": "Purpose or permission denial",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "EXECUTE_APPROVED_ACTION",
+          "success": false,
+          "errors": [
+            {
+              "code": "PERMISSION_DENIED",
+              "message": "The operation is not allowed for the current purpose.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "403"
+      },
+      "conflict": {
+        "summary": "Idempotency or state conflict",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "EXECUTE_APPROVED_ACTION",
+          "success": false,
+          "errors": [
+            {
+              "code": "IDEMPOTENCY_CONFLICT",
+              "message": "The request key was already used for different content.",
+              "fieldName": "X-Idempotency-Key",
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "409"
+      },
+      "validation": {
+        "summary": "Deterministic validation failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "EXECUTE_APPROVED_ACTION",
+          "success": false,
+          "errors": [
+            {
+              "code": "VALIDATION_FAILED",
+              "message": "A required field or invariant is invalid.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "422"
+      },
+      "retryableFailure": {
+        "summary": "Retryable dependency failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "EXECUTE_APPROVED_ACTION",
+          "success": false,
+          "errors": [
+            {
+              "code": "RETRYABLE_DEPENDENCY_FAILURE",
+              "message": "A required dependency is temporarily unavailable.",
+              "fieldName": null,
+              "retryable": true,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "503"
+      }
+    },
+    "receiveOutcomeCallback": {
+      "request": {
+        "summary": "Delivered message outcome",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
+          "externalKey": "outcome-message-delivered-001",
+          "idempotencyKey": "outcome-message-delivered-001-v1",
+          "actionId": "action-status-update-001",
+          "sourceEventId": "event-message-delivered-001",
+          "sourceSystem": "service-platform",
+          "sourceRecordId": "message-delivery-001",
+          "outcomeType": "MESSAGE_DELIVERED",
+          "status": "SUCCESS",
+          "observedAt": "2026-06-05T08:31:07Z",
+          "summary": "The approved status update was delivered.",
+          "metricKey": "delivery_success",
+          "metricValue": 1
+        },
+        "x-hfs-schema": "OutcomeCallbackRequest",
+        "x-hfs-headers": {
+          "X-Tenant-Id": "demo-mauritius",
+          "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
+          "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
+          "X-Idempotency-Key": "outcome-message-delivered-001-v1"
+        }
+      },
+      "success": {
+        "summary": "Outcome recorded",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "CAPTURE_OUTCOME",
+          "success": true,
+          "replayed": false,
+          "outcomeId": "outcome-message-delivered-001",
+          "actionId": "action-status-update-001",
+          "status": "RECORDED",
+          "recordedAt": "2026-06-05T08:31:08Z",
+          "errors": []
+        },
+        "x-hfs-schema": "OutcomeCallbackResponse",
+        "x-hfs-status": "200"
+      },
+      "callback": {
+        "summary": "Outcome capture completion callback",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "CAPTURE_OUTCOME",
+          "status": "COMPLETED",
+          "completedAt": "2026-06-05T08:31:10Z",
+          "retryable": false,
+          "result": {
+            "outcomeId": "outcome-message-delivered-001",
+            "actionId": "action-status-update-001",
+            "status": "RECORDED"
+          },
+          "errors": []
+        },
+        "x-hfs-schema": "OperationCallback"
+      },
+      "denial": {
+        "summary": "Purpose or permission denial",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "CAPTURE_OUTCOME",
+          "success": false,
+          "errors": [
+            {
+              "code": "PERMISSION_DENIED",
+              "message": "The operation is not allowed for the current purpose.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "403"
+      },
+      "conflict": {
+        "summary": "Idempotency or state conflict",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "CAPTURE_OUTCOME",
+          "success": false,
+          "errors": [
+            {
+              "code": "IDEMPOTENCY_CONFLICT",
+              "message": "The request key was already used for different content.",
+              "fieldName": "X-Idempotency-Key",
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "409"
+      },
+      "validation": {
+        "summary": "Deterministic validation failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "CAPTURE_OUTCOME",
+          "success": false,
+          "errors": [
+            {
+              "code": "VALIDATION_FAILED",
+              "message": "A required field or invariant is invalid.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "422"
+      },
+      "retryableFailure": {
+        "summary": "Retryable dependency failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "CAPTURE_OUTCOME",
+          "success": false,
+          "errors": [
+            {
+              "code": "RETRYABLE_DEPENDENCY_FAILURE",
+              "message": "A required dependency is temporarily unavailable.",
+              "fieldName": null,
+              "retryable": true,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "503"
+      }
+    }
+  }
+}

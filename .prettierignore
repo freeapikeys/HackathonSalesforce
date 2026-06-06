@@ -12,3 +12,7 @@ force-app/main/default/permissionsets/**
 .vscode
 
 coverage/
+
+# Generated and byte-checked by scripts/generate_mulesoft_contract.py
+mulesoft/api/hfs-integration-v1.openapi.json
+mulesoft/api/examples/operation-examples-v1.json
