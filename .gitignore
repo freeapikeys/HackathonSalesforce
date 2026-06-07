@@ -11,6 +11,7 @@ target/
 # Node and Python
 node_modules/
 coverage/
+artifacts/
 .eslintcache
 .pmdCache
 npm-debug.log*

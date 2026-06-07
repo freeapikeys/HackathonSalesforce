@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0.0",
+  "tenantKey": "demo-mauritius",
+  "correlationId": "10000000-0000-4000-8000-000000000001",
+  "expectedCounts": {
+    "HFS_Event__c": 1,
+    "HFS_Entity__c": 3,
+    "HFS_Event_Participant__c": 3,
+    "HFS_Relationship__c": 2,
+    "HFS_Agreement__c": 1,
+    "HFS_Work_Item__c": 1,
+    "HFS_SOP_Execution__c": 1,
+    "HFS_Evidence__c": 2,
+    "HFS_Recommendation__c": 1,
+    "HFS_Approval__c": 1,
+    "HFS_Action__c": 0,
+    "HFS_Outcome__c": 0,
+    "HFS_Evaluation__c": 0
+  },
+  "identifiers": {
+    "workItemExternalKey": "work-demo-001",
+    "recommendationExternalKey": "recommendation-demo-001",
+    "approvalExternalKey": "approval-demo-001"
+  }
+}
