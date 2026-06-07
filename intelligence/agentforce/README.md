@@ -18,5 +18,7 @@ npm run check:agentforce
 ```
 
 The action catalog uses `apex://` targets and developer names compatible with
-Salesforce custom actions. The implementation bead adds the corresponding
-`@InvocableMethod` classes.
+Salesforce custom actions. The corresponding `@InvocableMethod` classes are
+under `force-app/main/default/classes/`. They delegate to the governed Apex
+service, return only accessible citations, preserve model invocation
+provenance, and can create only a pending human approval.

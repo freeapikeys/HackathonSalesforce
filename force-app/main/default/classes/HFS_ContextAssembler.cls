@@ -1187,6 +1187,7 @@ public with sharing class HFS_ContextAssembler {
         null
       );
       result.proposedActionType = value.Proposed_Action_Type__c;
+      result.primaryEvidenceId = value.Primary_Evidence__c;
       result.modelProfile = value.Model_Profile__c;
       result.modelInvocationId = value.Model_Invocation_Id__c;
       return result;

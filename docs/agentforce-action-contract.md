@@ -46,9 +46,35 @@ Implementation classes use one `@InvocableMethod` per action and explicit
 `@InvocableVariable` inputs and outputs. Descriptions tell Agentforce when to
 invoke the action and what the action does not authorize.
 
+The deployed entry points are:
+
+| Action                              | Apex target                      |
+| ----------------------------------- | -------------------------------- |
+| `EXPLAIN_RELATIONSHIP_CASE`         | `HFS_AgentExplainAction`         |
+| `DRAFT_RELATIONSHIP_RECOMMENDATION` | `HFS_AgentRecommendationAction`  |
+| `REQUEST_HUMAN_APPROVAL`            | `HFS_AgentApprovalRequestAction` |
+
+Each action returns typed status, citation, model-invocation, approval,
+refusal, error, and external-execution fields. `responseJson` is the canonical
+serialized `1.0.0` response and preserves the complete facts, inferences,
+citations, recommendation, approval, refusal, error, and audit structure.
+
+The recommendation action returns only a normalized recommendation already
+persisted with a qualified provider-neutral model profile and invocation ID.
+If no matching result exists, it returns `NO_QUALIFIED_MODEL`; it does not
+silently substitute a provider, model, or ungrounded answer.
+
 The approval-request action requires user confirmation in the action catalog.
 It creates only a pending approval record and never calls the external action
 boundary.
+
+Permission-set access is intentionally narrower than method availability:
+
+- relationship users can explain cases and retrieve qualified recommendations;
+- approvers can explain cases and request human approval;
+- integration users can invoke all three actions;
+- no permission set receives an Agentforce external-execution action because
+  no such Apex entry point exists.
 
 ## Compatibility
 

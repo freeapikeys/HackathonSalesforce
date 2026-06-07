@@ -4,6 +4,14 @@
         <apexClass>HFS_RelationshipController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>HFS_AgentExplainAction</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HFS_AgentRecommendationAction</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Read relationship context and manage assigned work, evidence, SOP execution, and recommendations.</description>
     <fieldPermissions>
         <editable>false</editable>
