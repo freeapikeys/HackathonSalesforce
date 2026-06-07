@@ -144,3 +144,9 @@ Additive nullable response fields are backward-compatible within version
 `1.0.0`. Renaming or removing a field, changing required input, changing an
 error code, or weakening an authorization rule requires a new contract version
 and review from every consuming lane.
+
+Verify compatibility with:
+
+```bash
+sf apex run test --tests HFS_ServiceContractTest,HFS_RelationshipServiceImplTest --target-org dev-ed --wait 20 --result-format human
+```

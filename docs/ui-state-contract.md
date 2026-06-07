@@ -40,3 +40,9 @@ external action.
 Additive optional fields are compatible within `1.0.0`. Renaming required
 fields, changing state meanings, or weakening permission-based control
 visibility requires a new state version and updated fixture tests.
+
+Verify compatibility with:
+
+```bash
+npm run test:unit -- --runTestsByPath force-app/main/default/lwc/hfsRelationshipCommandCenter/__tests__/hfsRelationshipCommandCenter.test.js
+```

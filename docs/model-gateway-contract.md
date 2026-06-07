@@ -46,3 +46,9 @@ Additive optional fields are compatible within `1.0.0`. Renaming a field,
 changing required routing input, weakening a qualification check, changing the
 adapter interface, or changing audit semantics requires a new contract version
 and affected-lane review.
+
+Verify compatibility with:
+
+```bash
+npm run check:models
+```
