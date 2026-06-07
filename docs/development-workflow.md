@@ -15,6 +15,11 @@ Define:
 - constraints and permissions;
 - the roadmap capability and Beads issue.
 
+For North Star, also define the selected product category, store role, business
+risk, and whether the action is informational, operational, or protected.
+Protected retail actions include reorder, supplier case, markdown, warehouse
+transfer, Slack alert, WhatsApp-style alert, and staff-task write-back.
+
 ### Trace
 
 Define:
@@ -24,6 +29,15 @@ Define:
 - public interfaces;
 - ownership and dependencies;
 - expected failures and recovery.
+
+For North Star, trace the source of each retail signal:
+
+- POS sales or promotion history;
+- inventory, shelf, backroom, warehouse, batch, and expiry record;
+- customer complaint or refund evidence;
+- supplier response or delivery record;
+- staff roster or task state;
+- channel delivery result.
 
 ### Link
 
@@ -35,6 +49,10 @@ Validate before broad implementation:
 - MuleSoft connectivity;
 - synthetic fixtures;
 - test and deployment commands.
+
+For North Star, validate whether Slack and WhatsApp are real configured channels
+or mocked channel results. Do not write docs or demo scripts that imply a live
+channel exists when the current implementation uses the mock runtime.
 
 ### Assemble
 
@@ -51,6 +69,16 @@ Test:
 - retries and partial failure;
 - evidence and audit history;
 - user acceptance and roadmap completion gates.
+
+For North Star, stress-test:
+
+- complaints without supplier response;
+- supplier response that resolves only one batch;
+- selected product category changes;
+- reorder recommendation blocked by quality evidence;
+- staff alert delivery failure;
+- manager rejection or modification;
+- outcome that does not improve the metric.
 
 ## Reasoning and Determinism
 

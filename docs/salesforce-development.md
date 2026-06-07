@@ -49,8 +49,9 @@ sf project deploy preview --source-dir force-app
 sf project deploy start --source-dir force-app
 ```
 
-For the core relationship metadata, assign the integration permission set to
-the connected integration identity and run the rollback smoke test:
+For the core metadata used by both HFS and North Star, assign the integration
+permission set to the connected integration identity and run the rollback smoke
+test:
 
 ```bash
 sf org assign permset \
@@ -79,3 +80,18 @@ sf apex run test \
 ./scripts/sync-beads.sh
 git diff --check
 ```
+
+## North Star Demo Workflow
+
+When the North Star seed and harness are implemented, use the same org alias and
+run:
+
+```bash
+npm run demo:reset -- --target-org hfs-dev
+npm run demo:seed -- --target-org hfs-dev
+npm run demo:run -- --target-org hfs-dev
+```
+
+The expected demo should create retail context, manager approval, MuleSoft mock
+write-back, Slack and WhatsApp-style alert records, outcome, and evaluation
+without manual Salesforce record edits.

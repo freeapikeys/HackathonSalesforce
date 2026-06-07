@@ -37,3 +37,8 @@ npm run check:mulesoft
 
 The shared matrix executes all 14 versioned fixtures through the classifier
 and MuleSoft reference path.
+
+North Star retail fixtures should be added to this same classifier path so
+stockout, expiry, complaint, supplier-response, queue, and outcome events keep
+the same duplicate, late, out-of-order, conflict, quarantine, and replay
+behavior.

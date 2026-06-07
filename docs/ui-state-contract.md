@@ -5,6 +5,10 @@ Version `1.0.0` defines the mock-backed state consumed by
 from transport so the same component can use fixtures now and governed Apex
 services later.
 
+The North Star command center may reuse this component contract while changing
+labels and fixtures. The state should describe retail operations work, not a
+generic service interruption, when the active demo is North Star.
+
 ## Material States
 
 | State        | Required behavior                                                   |
@@ -30,6 +34,15 @@ The ready state contains:
 - approval policy, current status, and permitted decisions;
 - action history and source-system correlation;
 - observed outcome and effectiveness state.
+
+North Star ready state should additionally expose:
+
+- selected product and product category;
+- store and supplier context;
+- inventory, expiry, complaint, supplier, promotion, and queue risk summaries;
+- supplier response status;
+- Slack and WhatsApp-style channel delivery status;
+- outcome metrics for stockout, waste, customer trust, and staff readiness.
 
 The UI distinguishes source facts from model inference. Consequential controls
 emit intent events only; the component never treats a click as completed

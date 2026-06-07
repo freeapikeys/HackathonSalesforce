@@ -1,26 +1,19 @@
-# Four-Developer Execution Model
+# Parallel Development Guide
 
 ## Purpose
 
-The first vertical slice is split by stable technical ownership rather than by
-screens, days, or arbitrary ticket counts. Each developer owns one lane from
-contract through verification. Cross-lane work starts only when its Beads
-checkpoint is unblocked.
+The first vertical slice uses stable contracts so multiple contributors can
+work without stepping on each other. Work should start from the relevant
+contract, fixture, or checklist item, then move through verification before
+handoff.
+
+For the hackathon, the active vertical is North Star. Keep coordination focused
+on the supermarket operations demo.
 
 Claim leaf beads only. The `hfs-v1-05` through `hfs-v1-10` feature beads are
 coordination containers and completion summaries.
 
-## Ownership Lanes
-
-| Developer   | Lane label          | Owns                                                                                               | Starting bead | Primary paths                                                             |
-| ----------- | ------------------- | -------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------- |
-| Developer A | `lane-core`         | Salesforce Apex context, provenance, recommendation, approval, action, and outcome services        | `hfs-v1-05a`  | `force-app/main/default/classes/`, Apex contract fixtures and tests       |
-| Developer B | `lane-integration`  | MuleSoft API contracts, mock source adapters, write-back, callbacks, retries, and correlation      | `hfs-v1-06a`  | `mulesoft/`, integration contract fixtures                                |
-| Developer C | `lane-intelligence` | Provider-neutral model routing, invocation audit, qualified fallback, and Agentforce actions       | `hfs-v1-10a`  | model gateway contracts, Agentforce actions, model and grounding fixtures |
-| Developer D | `lane-experience`   | Lightning command center, UI state contract, seed/reset harness, end-to-end verification, and demo | `hfs-v1-07a`  | `force-app/main/default/lwc/`, end-to-end scripts and demo docs           |
-
-Developer letters are placeholders. Record actual ownership by claiming the
-starting bead:
+Record active work by claiming the relevant bead when Beads is available:
 
 ```bash
 bd update <bead-id> --claim
@@ -42,14 +35,14 @@ Required:
 After this checkpoint, incompatible interface changes require:
 
 1. an explicit compatibility note on the changed bead;
-2. review from every affected lane;
+2. review from every affected surface;
 3. updated examples and contract tests in the same pull request.
 
-### Checkpoint 2: Lanes Independently Verified
+### Checkpoint 2: Surfaces Independently Verified
 
 Bead: `hfs-v1-cp2`
 
-Each lane must run without unfinished downstream work:
+Each surface must run without unfinished downstream work:
 
 - Apex services pass success and material failure tests;
 - MuleSoft mocks pass contract, idempotency, retry, and callback tests;
@@ -91,7 +84,7 @@ flowchart LR
   C1 --> CP1
   D1 --> CP1
 
-  A2 --> CP2["Checkpoint 2: lanes independently verified"]
+  A2 --> CP2["Checkpoint 2: surfaces independently verified"]
   B2 --> CP2
   C2 --> CP2
   D1 --> CP2
@@ -114,11 +107,11 @@ flowchart LR
 
 - Use one branch and pull request per leaf bead.
 - Name branches `<handle>/<bead-id>-short-description`.
-- Do not combine two lanes in one pull request.
+- Keep pull requests focused on one contract, feature, or verification path.
 - Contract pull requests contain schemas, examples, and validation before broad
   implementation.
 - Consumers may use versioned fixtures and mocks before providers are complete.
-- A lane owner reviews changes to their contract or primary path.
+- Contract changes need review from every affected surface.
 - Rebase or merge current `main` before connected integration work.
 - Close a leaf bead only after its acceptance criteria pass and the pull request
   is merged.
@@ -126,27 +119,23 @@ flowchart LR
 
 ## File Collision Rules
 
-The lane paths are ownership defaults, not security boundaries. Shared files
-need explicit coordination:
+Shared files need explicit coordination:
 
-| Shared surface                  | Change rule                                                        |
-| ------------------------------- | ------------------------------------------------------------------ |
-| `package.json`, CI, manifests   | Developer D coordinates; affected lane reviews                     |
-| core Salesforce object metadata | Developer A coordinates                                            |
-| event schemas and ontology      | Contract owner plus every consuming lane reviews                   |
-| cross-lane DTO or error names   | Checkpoint 1 compatibility process applies                         |
-| `.beads/issues.jsonl`           | Sync immediately before commit; resolve by re-exporting from Beads |
+| Shared surface                   | Change rule                                                        |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `package.json`, CI, manifests    | affected surfaces review                                           |
+| core Salesforce object metadata  | Salesforce and every consuming surface review                      |
+| event schemas and ontology       | contract owner plus every consuming surface reviews                |
+| cross-surface DTO or error names | Checkpoint 1 compatibility process applies                         |
+| `.beads/issues.jsonl`            | Sync immediately before commit; resolve by re-exporting from Beads |
 
-## Team Commands
+## Coordination Commands
 
 ```bash
 ./scripts/team-status.sh
 bd graph hfs-v1 --compact
-bd ready --label lane-core
-bd ready --label lane-integration
-bd ready --label lane-intelligence
-bd ready --label lane-experience
+bd ready
 ```
 
-The status script is the quick team view. Beads remains authoritative for
-claiming, dependencies, and completion.
+The status script is the quick coordination view. Beads remains authoritative
+for claiming, dependencies, and completion when it is installed.

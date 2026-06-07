@@ -6,6 +6,20 @@ Version `1.0.0` defines three Agentforce-facing actions:
 - draft an evidence-backed recommendation;
 - request a pending human approval.
 
+For North Star, these actions should be presented to Agentforce through retail
+topics:
+
+- North Star Orchestration;
+- Inventory and Waste;
+- Supplier and Product Trust;
+- Store Execution and Outreach;
+- Manager Approval and Outreach.
+
+The actions remain governed. Agentforce can explain a retail case, draft an
+evidence-backed recovery recommendation, and request approval. It cannot
+directly send Slack, WhatsApp, reorder, markdown, supplier, or store-task
+write-backs.
+
 The contract deliberately does not expose protected external execution as an
 Agentforce action. The refusal fixture proves that an attempted execution fails
 closed and returns no protected facts, evidence, or record identifiers.

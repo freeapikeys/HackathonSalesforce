@@ -25,6 +25,10 @@ The change is additive. Existing consumers can ignore the new fields. Request
 requirements, error codes, authorization rules, and transaction boundaries do
 not change.
 
+North Star can use these nullable context fields for product risk, supplier
+status, action correlation, channel result, and outcome display as long as
+required inputs and authorization semantics remain unchanged.
+
 Verify with:
 
 ```bash

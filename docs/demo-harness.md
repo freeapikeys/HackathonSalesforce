@@ -4,6 +4,11 @@ The harness validates prerequisites, resets only the `demo-mauritius` tenant,
 loads one deterministic relationship case, verifies every object count and
 stable external key, and emits a versioned JSON result.
 
+For North Star, the harness should evolve from the existing foundation case into
+one deterministic retail operations case. The seed should include multiple
+product categories and one selected product at risk, with inventory, expiry,
+complaint, supplier, promotion, and staffing evidence.
+
 `demo:seed` stops at the review state used by the Lightning command center.
 `demo:run` continues through the complete governed vertical slice:
 
@@ -19,6 +24,17 @@ stable external key, and emits a versioned JSON result.
 10. ingest the resulting source event and capture the outcome in Salesforce;
 11. evaluate the defined outcome;
 12. refresh the Lightning controller and verify completed state.
+
+North Star adds these demo assertions:
+
+- the selected product is not hard-coded to burgers;
+- complaint evidence is evaluated before supplier action;
+- supplier response can change the recommendation;
+- manager approval is required before protected write-back;
+- Slack and WhatsApp-style internal alerts are recorded after approved
+  execution;
+- outcome metrics include stockout avoided, waste reduced, complaint risk
+  contained, and staff readiness.
 
 ## Commands
 
@@ -64,6 +80,10 @@ Configure the Lightning command center with:
 - work item ID: the report's `workItemId`;
 - purpose: `RELATIONSHIP_SERVICE`;
 - synthetic demo data: disabled.
+
+North Star live mode should eventually use purpose `RESOLVE_RETAIL_OPERATION_RISK`
+or another documented purpose once the Apex, Agentforce, and model fixtures are
+updated consistently.
 
 ## Connected Invariants
 
