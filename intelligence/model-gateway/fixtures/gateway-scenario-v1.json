@@ -1,0 +1,645 @@
+{
+  "contractVersion": "1.0.0",
+  "profiles": [
+    {
+      "contractVersion": "1.0.0",
+      "version": "1.0.0",
+      "profileKey": "recommendation_reasoning",
+      "taskType": "RECOMMENDATION",
+      "inputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/generateRequest",
+      "outputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/recommendationOutput",
+      "requiredCapabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "minimumContextTokens": 4096,
+      "permittedDataClassifications": [
+        "INTERNAL",
+        "CONFIDENTIAL"
+      ],
+      "qualityObjective": {
+        "metricKey": "grounded_recommendation_score",
+        "minimumScore": 0.85,
+        "evaluationSuiteVersion": "recommendation-eval-1.0.0"
+      },
+      "maximumLatencyMs": 8000,
+      "maximumCostUsd": 0.08,
+      "fallbackMode": "QUALIFIED_ONLY",
+      "status": "ACTIVE"
+    }
+  ],
+  "deployments": [
+    {
+      "contractVersion": "1.0.0",
+      "version": "1.2.0",
+      "deploymentKey": "mock-alpha-primary",
+      "adapterKey": "mock-alpha-adapter",
+      "adapterInterfaceVersion": "hfs.generate.v1",
+      "providerIdentifier": "mock-provider-alpha",
+      "modelIdentifier": "alpha-reasoner",
+      "configuredModelIdentifier": null,
+      "hostingClass": "MOCK",
+      "residencyRegions": [
+        "mu",
+        "global"
+      ],
+      "permittedDataClassifications": [
+        "INTERNAL",
+        "CONFIDENTIAL"
+      ],
+      "capabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT",
+        "TOOL_USE"
+      ],
+      "contextWindowTokens": 32768,
+      "qualifiedProfiles": [
+        "recommendation_reasoning"
+      ],
+      "qualityScores": {
+        "grounded_recommendation_score": 0.91
+      },
+      "estimatedLatencyMs": 2200,
+      "estimatedCostUsd": 0.035,
+      "operationalStatus": "ACTIVE",
+      "activeFrom": "2026-06-01T00:00:00Z",
+      "activeUntil": null
+    },
+    {
+      "contractVersion": "1.0.0",
+      "version": "2.0.0",
+      "deploymentKey": "mock-beta-private",
+      "adapterKey": "mock-beta-adapter",
+      "adapterInterfaceVersion": "hfs.generate.v1",
+      "providerIdentifier": "mock-provider-beta",
+      "modelIdentifier": "beta-private-reasoner",
+      "configuredModelIdentifier": null,
+      "hostingClass": "MOCK",
+      "residencyRegions": [
+        "mu"
+      ],
+      "permittedDataClassifications": [
+        "INTERNAL",
+        "CONFIDENTIAL"
+      ],
+      "capabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "contextWindowTokens": 16384,
+      "qualifiedProfiles": [
+        "recommendation_reasoning"
+      ],
+      "qualityScores": {
+        "grounded_recommendation_score": 0.88
+      },
+      "estimatedLatencyMs": 3100,
+      "estimatedCostUsd": 0.041,
+      "operationalStatus": "ACTIVE",
+      "activeFrom": "2026-06-01T00:00:00Z",
+      "activeUntil": null
+    }
+  ],
+  "policies": [
+    {
+      "contractVersion": "1.0.0",
+      "version": "1.0.0",
+      "policyKey": "recommendation-routing-mauritius",
+      "tenantKey": "demo-mauritius",
+      "businessUnit": null,
+      "profileKey": "recommendation_reasoning",
+      "candidatePriority": [
+        "mock-alpha-primary",
+        "mock-beta-private"
+      ],
+      "requiredChecks": [
+        "PROFILE",
+        "DATA_CLASSIFICATION",
+        "RESIDENCY",
+        "CAPABILITY",
+        "CONTEXT_WINDOW",
+        "QUALITY",
+        "LATENCY",
+        "COST",
+        "STATUS",
+        "AVAILABILITY"
+      ],
+      "fallbackMode": "QUALIFIED_ONLY",
+      "effectiveFrom": "2026-06-01T00:00:00Z",
+      "effectiveUntil": null
+    }
+  ],
+  "routingRequests": {
+    "primary": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "businessUnit": null,
+      "agentKey": "relationship-recommendation-agent",
+      "subagentKey": "case-analysis",
+      "userId": "integration-user-001",
+      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+      "profileKey": "recommendation_reasoning",
+      "dataClassification": "CONFIDENTIAL",
+      "residencyRegion": "mu",
+      "language": "en",
+      "requiredCapabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "requiredContextTokens": 6000,
+      "maximumLatencyMs": 8000,
+      "maximumCostUsd": 0.08,
+      "unavailableDeploymentKeys": []
+    },
+    "fallback": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "businessUnit": null,
+      "agentKey": "relationship-recommendation-agent",
+      "subagentKey": "case-analysis",
+      "userId": "integration-user-001",
+      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+      "profileKey": "recommendation_reasoning",
+      "dataClassification": "CONFIDENTIAL",
+      "residencyRegion": "mu",
+      "language": "en",
+      "requiredCapabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "requiredContextTokens": 6000,
+      "maximumLatencyMs": 8000,
+      "maximumCostUsd": 0.08,
+      "unavailableDeploymentKeys": [
+        "mock-alpha-primary"
+      ]
+    },
+    "noQualifiedDeployment": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "businessUnit": null,
+      "agentKey": "relationship-recommendation-agent",
+      "subagentKey": "case-analysis",
+      "userId": "integration-user-001",
+      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+      "profileKey": "recommendation_reasoning",
+      "dataClassification": "RESTRICTED",
+      "residencyRegion": "mu",
+      "language": "en",
+      "requiredCapabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "requiredContextTokens": 6000,
+      "maximumLatencyMs": 8000,
+      "maximumCostUsd": 0.08,
+      "unavailableDeploymentKeys": []
+    }
+  },
+  "routingDecisions": {
+    "primary": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "policyKey": "recommendation-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "decision": "SELECTED",
+      "selectedDeploymentKey": "mock-alpha-primary",
+      "selectedDeploymentVersion": "1.2.0",
+      "fallback": false,
+      "fallbackFromDeploymentKey": null,
+      "checks": [
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "PROFILE",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "DATA_CLASSIFICATION",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "RESIDENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "CAPABILITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "CONTEXT_WINDOW",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "QUALITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "LATENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "COST",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "STATUS",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "AVAILABILITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        }
+      ],
+      "decidedAt": "2026-06-05T08:30:11Z"
+    },
+    "fallback": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "policyKey": "recommendation-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "decision": "SELECTED",
+      "selectedDeploymentKey": "mock-beta-private",
+      "selectedDeploymentVersion": "2.0.0",
+      "fallback": true,
+      "fallbackFromDeploymentKey": "mock-alpha-primary",
+      "checks": [
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "AVAILABILITY",
+          "passed": false,
+          "reasonCode": "DEPLOYMENT_UNAVAILABLE"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "PROFILE",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "DATA_CLASSIFICATION",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "RESIDENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "CAPABILITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "CONTEXT_WINDOW",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "QUALITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "LATENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "COST",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "STATUS",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "AVAILABILITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        }
+      ],
+      "decidedAt": "2026-06-05T08:30:11Z"
+    },
+    "noQualifiedDeployment": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "policyKey": "recommendation-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "decision": "NO_QUALIFIED_DEPLOYMENT",
+      "selectedDeploymentKey": null,
+      "selectedDeploymentVersion": null,
+      "fallback": false,
+      "fallbackFromDeploymentKey": null,
+      "checks": [
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "DATA_CLASSIFICATION",
+          "passed": false,
+          "reasonCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "DATA_CLASSIFICATION",
+          "passed": false,
+          "reasonCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        }
+      ],
+      "decidedAt": "2026-06-05T08:30:11Z"
+    }
+  },
+  "generateRequest": {
+    "contractVersion": "1.0.0",
+    "correlationId": "20000000-0000-4000-8000-000000000001",
+    "tenantKey": "demo-mauritius",
+    "userId": "integration-user-001",
+    "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+    "agentKey": "relationship-recommendation-agent",
+    "profileKey": "recommendation_reasoning",
+    "profileVersion": "1.0.0",
+    "promptVersion": "recommendation-prompt-1.0.0",
+    "retrievalVersion": "relationship-context-1.0.0",
+    "messages": [
+      {
+        "role": "SYSTEM",
+        "content": "Separate facts, inferences, and recommendations. Cite accessible evidence and require human approval."
+      },
+      {
+        "role": "USER",
+        "content": "Recommend the next action for the repeated service interruption."
+      }
+    ],
+    "context": {
+      "dataClassification": "CONFIDENTIAL",
+      "evidenceIds": [
+        "evidence-issue-001"
+      ],
+      "sourceContentHashes": [
+        "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
+      ]
+    },
+    "responseSchema": {
+      "$ref": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/recommendationOutput"
+    },
+    "invocationPolicy": {
+      "maximumOutputTokens": 1200,
+      "temperature": 0.1,
+      "retainContent": false,
+      "requireCitations": true
+    }
+  },
+  "normalizedResponses": [
+    {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "invocationId": "invocation-alpha-001",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "deploymentKey": "mock-alpha-primary",
+      "deploymentVersion": "1.2.0",
+      "adapterInterfaceVersion": "hfs.generate.v1",
+      "output": {
+        "facts": [
+          "The source system reports repeated service interruption."
+        ],
+        "inferences": [
+          "The affected relationship is likely to require a proactive update."
+        ],
+        "recommendation": "Prepare a status update using the approved service template and route it for human approval.",
+        "confidence": 0.87,
+        "evidenceIds": [
+          "evidence-issue-001"
+        ],
+        "requiresHumanApproval": true
+      },
+      "finishReason": "STOP",
+      "outputSchemaValid": true,
+      "safetyStatus": "PASSED"
+    },
+    {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "invocationId": "invocation-beta-001",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "deploymentKey": "mock-beta-private",
+      "deploymentVersion": "2.0.0",
+      "adapterInterfaceVersion": "hfs.generate.v1",
+      "output": {
+        "facts": [
+          "The source system reports repeated service interruption."
+        ],
+        "inferences": [
+          "The affected relationship is likely to require a proactive update."
+        ],
+        "recommendation": "Prepare a status update using the approved service template and route it for human approval.",
+        "confidence": 0.87,
+        "evidenceIds": [
+          "evidence-issue-001"
+        ],
+        "requiresHumanApproval": true
+      },
+      "finishReason": "STOP",
+      "outputSchemaValid": true,
+      "safetyStatus": "PASSED"
+    }
+  ],
+  "invocationAudits": [
+    {
+      "contractVersion": "1.0.0",
+      "invocationId": "invocation-alpha-001",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "userId": "integration-user-001",
+      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+      "agentKey": "relationship-recommendation-agent",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "policyKey": "recommendation-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "selectedDeploymentKey": "mock-alpha-primary",
+      "selectedDeploymentVersion": "1.2.0",
+      "promptVersion": "recommendation-prompt-1.0.0",
+      "retrievalVersion": "relationship-context-1.0.0",
+      "inputHash": "sha256:bd2cc4d23dafefc224b41a11b4cf35d8453d56c367b785d0b32d73a3cc8bcf6b",
+      "outputHash": "sha256:5e0a359d72434e19a2dd26a4e30e8d694a87958585773be23ad1e36e38b9e3ef",
+      "evidenceIds": [
+        "evidence-issue-001"
+      ],
+      "attempts": [
+        {
+          "sequence": 1,
+          "deploymentKey": "mock-alpha-primary",
+          "deploymentVersion": "1.2.0",
+          "adapterKey": "mock-alpha-adapter",
+          "startedAt": "2026-06-05T08:30:12Z",
+          "completedAt": "2026-06-05T08:30:14Z",
+          "status": "SUCCEEDED",
+          "retryable": false,
+          "failureCode": null
+        }
+      ],
+      "fallbackUsed": false,
+      "inputTokens": 840,
+      "outputTokens": 156,
+      "latencyMs": 2100,
+      "costUsd": 0.031,
+      "safetyStatus": "PASSED",
+      "outputSchemaValid": true,
+      "retentionMode": "HASHES_ONLY",
+      "status": "SUCCEEDED",
+      "completedAt": "2026-06-05T08:30:14Z"
+    },
+    {
+      "contractVersion": "1.0.0",
+      "invocationId": "invocation-beta-001",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "userId": "integration-user-001",
+      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+      "agentKey": "relationship-recommendation-agent",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "policyKey": "recommendation-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "selectedDeploymentKey": "mock-beta-private",
+      "selectedDeploymentVersion": "2.0.0",
+      "promptVersion": "recommendation-prompt-1.0.0",
+      "retrievalVersion": "relationship-context-1.0.0",
+      "inputHash": "sha256:bd2cc4d23dafefc224b41a11b4cf35d8453d56c367b785d0b32d73a3cc8bcf6b",
+      "outputHash": "sha256:5e0a359d72434e19a2dd26a4e30e8d694a87958585773be23ad1e36e38b9e3ef",
+      "evidenceIds": [
+        "evidence-issue-001"
+      ],
+      "attempts": [
+        {
+          "sequence": 1,
+          "deploymentKey": "mock-alpha-primary",
+          "deploymentVersion": "1.2.0",
+          "adapterKey": "mock-alpha-adapter",
+          "startedAt": "2026-06-05T08:30:12Z",
+          "completedAt": "2026-06-05T08:30:12Z",
+          "status": "UNAVAILABLE",
+          "retryable": true,
+          "failureCode": "DEPLOYMENT_UNAVAILABLE"
+        },
+        {
+          "sequence": 2,
+          "deploymentKey": "mock-beta-private",
+          "deploymentVersion": "2.0.0",
+          "adapterKey": "mock-beta-adapter",
+          "startedAt": "2026-06-05T08:30:12Z",
+          "completedAt": "2026-06-05T08:30:15Z",
+          "status": "SUCCEEDED",
+          "retryable": false,
+          "failureCode": null
+        }
+      ],
+      "fallbackUsed": true,
+      "inputTokens": 840,
+      "outputTokens": 156,
+      "latencyMs": 3200,
+      "costUsd": 0.039,
+      "safetyStatus": "PASSED",
+      "outputSchemaValid": true,
+      "retentionMode": "HASHES_ONLY",
+      "status": "SUCCEEDED",
+      "completedAt": "2026-06-05T08:30:15Z"
+    },
+    {
+      "contractVersion": "1.0.0",
+      "invocationId": "invocation-no-qualified-001",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "userId": "integration-user-001",
+      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+      "agentKey": "relationship-recommendation-agent",
+      "profileKey": "recommendation_reasoning",
+      "profileVersion": "1.0.0",
+      "policyKey": "recommendation-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "selectedDeploymentKey": null,
+      "selectedDeploymentVersion": null,
+      "promptVersion": "recommendation-prompt-1.0.0",
+      "retrievalVersion": "relationship-context-1.0.0",
+      "inputHash": "sha256:38da27ad4c72b6ae9499f26cd00f52e14e48bd0c3cdef0ac3bd308640ad0913f",
+      "outputHash": null,
+      "evidenceIds": [
+        "evidence-issue-001"
+      ],
+      "attempts": [
+        {
+          "sequence": 1,
+          "deploymentKey": "mock-alpha-primary",
+          "deploymentVersion": "1.2.0",
+          "adapterKey": "mock-alpha-adapter",
+          "startedAt": "2026-06-05T08:30:12Z",
+          "completedAt": "2026-06-05T08:30:12Z",
+          "status": "POLICY_REJECTED",
+          "retryable": false,
+          "failureCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        },
+        {
+          "sequence": 2,
+          "deploymentKey": "mock-beta-private",
+          "deploymentVersion": "2.0.0",
+          "adapterKey": "mock-beta-adapter",
+          "startedAt": "2026-06-05T08:30:12Z",
+          "completedAt": "2026-06-05T08:30:12Z",
+          "status": "POLICY_REJECTED",
+          "retryable": false,
+          "failureCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        }
+      ],
+      "fallbackUsed": false,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "latencyMs": 0,
+      "costUsd": 0,
+      "safetyStatus": "NOT_RUN",
+      "outputSchemaValid": false,
+      "retentionMode": "HASHES_ONLY",
+      "status": "FAILED_CLOSED",
+      "completedAt": "2026-06-05T08:30:12Z"
+    }
+  ]
+}

@@ -16,3 +16,7 @@ coverage/
 # Generated and byte-checked by scripts/generate_mulesoft_contract.py
 mulesoft/api/hfs-integration-v1.openapi.json
 mulesoft/api/examples/operation-examples-v1.json
+
+# Generated and byte-checked by scripts/generate_model_gateway_contract.py
+intelligence/model-gateway/schemas/model-gateway-v1.schema.json
+intelligence/model-gateway/fixtures/gateway-scenario-v1.json
