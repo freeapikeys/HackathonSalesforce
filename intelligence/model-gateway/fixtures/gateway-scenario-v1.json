@@ -43,6 +43,10 @@
         "mu",
         "global"
       ],
+      "supportedLanguages": [
+        "en",
+        "fr"
+      ],
       "permittedDataClassifications": [
         "INTERNAL",
         "CONFIDENTIAL"
@@ -78,6 +82,10 @@
       "residencyRegions": [
         "mu"
       ],
+      "supportedLanguages": [
+        "en",
+        "fr"
+      ],
       "permittedDataClassifications": [
         "INTERNAL",
         "CONFIDENTIAL"
@@ -108,14 +116,21 @@
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
       "profileKey": "recommendation_reasoning",
+      "permittedPurposes": [
+        "RESOLVE_SERVICE_INTERRUPTION"
+      ],
       "candidatePriority": [
         "mock-alpha-primary",
         "mock-beta-private"
       ],
       "requiredChecks": [
+        "TENANT",
+        "BUSINESS_UNIT",
+        "PURPOSE",
         "PROFILE",
         "DATA_CLASSIFICATION",
         "RESIDENCY",
+        "LANGUAGE",
         "CAPABILITY",
         "CONTEXT_WINDOW",
         "QUALITY",
@@ -215,6 +230,24 @@
       "checks": [
         {
           "deploymentKey": "mock-alpha-primary",
+          "check": "TENANT",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "BUSINESS_UNIT",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "PURPOSE",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
           "check": "PROFILE",
           "passed": true,
           "reasonCode": "QUALIFIED"
@@ -228,6 +261,12 @@
         {
           "deploymentKey": "mock-alpha-primary",
           "check": "RESIDENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "LANGUAGE",
           "passed": true,
           "reasonCode": "QUALIFIED"
         },
@@ -297,6 +336,24 @@
         },
         {
           "deploymentKey": "mock-beta-private",
+          "check": "TENANT",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "BUSINESS_UNIT",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "PURPOSE",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
           "check": "PROFILE",
           "passed": true,
           "reasonCode": "QUALIFIED"
@@ -310,6 +367,12 @@
         {
           "deploymentKey": "mock-beta-private",
           "check": "RESIDENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-beta-private",
+          "check": "LANGUAGE",
           "passed": true,
           "reasonCode": "QUALIFIED"
         },

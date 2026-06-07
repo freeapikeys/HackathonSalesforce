@@ -12,3 +12,7 @@ fi
 
 "$PYTHON" "$ROOT/scripts/generate_model_gateway_contract.py" --check
 "$PYTHON" "$ROOT/scripts/validate_model_gateway_contract.py"
+PYTHONPATH="$ROOT/intelligence/model-gateway/runtime" \
+  "$PYTHON" -m unittest discover \
+  -s "$ROOT/intelligence/model-gateway/tests" \
+  -p "test_*.py"

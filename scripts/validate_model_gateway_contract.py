@@ -41,6 +41,22 @@ FORBIDDEN_SECRET_KEYS = {
     "password",
     "secret",
 }
+REQUIRED_POLICY_CHECKS = {
+    "TENANT",
+    "BUSINESS_UNIT",
+    "PURPOSE",
+    "PROFILE",
+    "DATA_CLASSIFICATION",
+    "RESIDENCY",
+    "LANGUAGE",
+    "CAPABILITY",
+    "CONTEXT_WINDOW",
+    "QUALITY",
+    "LATENCY",
+    "COST",
+    "STATUS",
+    "AVAILABILITY",
+}
 
 
 def walk_keys(value: Any) -> set[str]:
@@ -133,6 +149,10 @@ def main() -> None:
     )
 
     policy = fixture["policies"][0]
+    assert set(policy["requiredChecks"]) == REQUIRED_POLICY_CHECKS
+    assert fixture["routingRequests"]["primary"]["purpose"] in policy[
+        "permittedPurposes"
+    ]
     assert policy["candidatePriority"] == [
         item["deploymentKey"] for item in deployments
     ]
