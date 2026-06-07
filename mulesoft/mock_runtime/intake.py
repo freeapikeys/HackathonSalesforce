@@ -110,7 +110,12 @@ class EventIntakeClassifier:
             )
         return None
 
-    def classify(self, event: dict[str, Any]) -> IntakeDecision:
+    def classify(
+        self,
+        event: dict[str, Any],
+        *,
+        commit: bool = True,
+    ) -> IntakeDecision:
         validation = self.validate(event)
         if validation is not None:
             return validation
@@ -197,13 +202,14 @@ class EventIntakeClassifier:
             result = "ACCEPTED"
             detail = "Valid new event."
 
-        self._idempotency[idempotency_scope] = event["hfscontenthash"]
-        self._event_identities[event_identity] = event["hfscontenthash"]
-        self._source_watermarks[source_scope] = next_watermark
-        for assertion_scope, assertion_value in assertion_values:
-            self._assertions.setdefault(assertion_scope, set()).add(
-                assertion_value
-            )
+        if commit:
+            self._idempotency[idempotency_scope] = event["hfscontenthash"]
+            self._event_identities[event_identity] = event["hfscontenthash"]
+            self._source_watermarks[source_scope] = next_watermark
+            for assertion_scope, assertion_value in assertion_values:
+                self._assertions.setdefault(assertion_scope, set()).add(
+                    assertion_value
+                )
 
         return IntakeDecision(
             result=result,

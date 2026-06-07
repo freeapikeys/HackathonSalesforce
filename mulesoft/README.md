@@ -40,6 +40,11 @@ fixtures. The mock therefore exposes the same accepted, duplicate, late,
 out-of-order, conflict-review, schema-rejection, hash-rejection, and
 idempotency-conflict behavior that Mule flows must preserve.
 
+The generated contract also exposes `POST /v1/events/replays`. The reference
+runtime records immutable intake attempts, retries temporary source-store
+failures, quarantines exhausted or correctable failures, authorizes replay by
+purpose, and links each replay attempt to its original audit record.
+
 It deliberately keeps adapters behind Python interfaces so the same contract
 tests can be applied to Mule flows and real connectors without embedding mock
 behavior in production configuration. The runtime is an integration test
