@@ -1,0 +1,386 @@
+<template>
+  <article class="command-center" aria-labelledby="command-center-title">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Relationship command center</p>
+        <h1 id="command-center-title">Decision-ready relationship work</h1>
+      </div>
+      <span class="version">{uiVersionLabel}</span>
+    </header>
+
+    <template lwc:if={isLoading}>
+      <section
+        class="state-panel"
+        data-testid="loading-view"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <lightning-spinner
+          alternative-text="Loading relationship context"
+          size="medium"
+        ></lightning-spinner>
+        <h2>Loading relationship context</h2>
+        <p>{state.message}</p>
+      </section>
+    </template>
+
+    <template lwc:elseif={isEmpty}>
+      <section class="state-panel" data-testid="empty-view">
+        <div class="state-icon" aria-hidden="true">0</div>
+        <h2>{state.title}</h2>
+        <p>{state.message}</p>
+      </section>
+    </template>
+
+    <template lwc:elseif={isDenied}>
+      <section
+        class="state-panel state-panel_denied"
+        data-testid="denied-view"
+        role="alert"
+      >
+        <div class="state-icon" aria-hidden="true">!</div>
+        <h2>{state.title}</h2>
+        <p>{state.message}</p>
+        <p class="correlation">Correlation: {state.correlationId}</p>
+      </section>
+    </template>
+
+    <template lwc:elseif={isError}>
+      <section
+        class="state-panel state-panel_error"
+        data-testid="error-view"
+        role="alert"
+      >
+        <div class="state-icon" aria-hidden="true">!</div>
+        <h2>{state.title}</h2>
+        <p>{state.message}</p>
+        <p class="correlation">
+          {state.errorCode} | Correlation: {state.correlationId}
+        </p>
+        <lightning-button
+          data-testid="retry-button"
+          label="Retry"
+          variant="brand"
+          onclick={handleRetry}
+        ></lightning-button>
+      </section>
+    </template>
+
+    <template lwc:elseif={isReady}>
+      <div data-testid="ready-view">
+        <section class="case-banner" aria-labelledby="case-title">
+          <div class="case-heading">
+            <div>
+              <p class="eyebrow">{state.case.externalKey}</p>
+              <h2 id="case-title">{state.case.title}</h2>
+              <p class="case-summary">{state.case.summary}</p>
+            </div>
+            <div class="badges" aria-label="Case status">
+              <lightning-badge label={state.case.severity}></lightning-badge>
+              <lightning-badge label={state.case.status}></lightning-badge>
+            </div>
+          </div>
+
+          <dl class="case-metrics">
+            <div>
+              <dt>Accountable owner</dt>
+              <dd>{state.case.owner.name}</dd>
+            </div>
+            <div>
+              <dt>Service deadline</dt>
+              <dd>
+                <lightning-formatted-date-time
+                  value={state.case.serviceDeadline}
+                  year="numeric"
+                  month="short"
+                  day="2-digit"
+                  hour="2-digit"
+                  minute="2-digit"
+                ></lightning-formatted-date-time>
+              </dd>
+            </div>
+            <div>
+              <dt>Next relationship update</dt>
+              <dd>
+                <lightning-formatted-date-time
+                  value={state.case.nextUpdateDue}
+                  year="numeric"
+                  month="short"
+                  day="2-digit"
+                  hour="2-digit"
+                  minute="2-digit"
+                ></lightning-formatted-date-time>
+              </dd>
+            </div>
+            <div>
+              <dt>Current role</dt>
+              <dd>{state.userRole}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <template lwc:if={showRestrictedNotice}>
+          <div class="permission-notice" data-testid="restricted-notice">
+            You can inspect the accessible case facts. Approval controls are not
+            available for your current role.
+          </div>
+        </template>
+
+        <div class="workspace">
+          <main class="primary-column">
+            <section class="panel" aria-labelledby="relationship-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Context</p>
+                  <h2 id="relationship-heading">
+                    Relationship and dependencies
+                  </h2>
+                </div>
+                <span class="status-pill"
+                  >{state.case.affectedRelationship.status}</span
+                >
+              </div>
+              <div class="relationship-line">
+                <strong>{state.case.affectedRelationship.subject}</strong>
+                <span>{state.case.affectedRelationship.type}</span>
+                <strong>{state.case.affectedRelationship.object}</strong>
+              </div>
+              <ul class="entity-grid" aria-label="Connected entities">
+                <template
+                  for:each={state.case.connectedEntities}
+                  for:item="entity"
+                >
+                  <li key={entity.id}>
+                    <span class="entity-type">{entity.type}</span>
+                    <strong>{entity.label}</strong>
+                    <span>{entity.role}</span>
+                  </li>
+                </template>
+              </ul>
+            </section>
+
+            <section class="panel" aria-labelledby="timeline-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">History</p>
+                  <h2 id="timeline-heading">Chronological evidence view</h2>
+                </div>
+              </div>
+              <ol class="timeline">
+                <template for:each={state.case.timeline} for:item="item">
+                  <li key={item.id}>
+                    <div class="timeline-marker" aria-hidden="true"></div>
+                    <div class="timeline-content">
+                      <div class="timeline-meta">
+                        <span>{item.type}</span>
+                        <lightning-formatted-date-time
+                          value={item.occurredAt}
+                          hour="2-digit"
+                          minute="2-digit"
+                        ></lightning-formatted-date-time>
+                      </div>
+                      <h3>{item.title}</h3>
+                      <p>{item.detail}</p>
+                      <span class="source">{item.source}</span>
+                    </div>
+                  </li>
+                </template>
+              </ol>
+            </section>
+
+            <section class="panel" aria-labelledby="evidence-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Provenance</p>
+                  <h2 id="evidence-heading">Accessible source evidence</h2>
+                </div>
+              </div>
+              <div class="evidence-list">
+                <template for:each={state.case.evidence} for:item="evidence">
+                  <article key={evidence.id} class="evidence-card">
+                    <h3>{evidence.label}</h3>
+                    <p>{evidence.summary}</p>
+                    <dl>
+                      <div>
+                        <dt>Source</dt>
+                        <dd>{evidence.sourceUri}</dd>
+                      </div>
+                      <div>
+                        <dt>Captured</dt>
+                        <dd>
+                          <lightning-formatted-date-time
+                            value={evidence.capturedAt}
+                            year="numeric"
+                            month="short"
+                            day="2-digit"
+                            hour="2-digit"
+                            minute="2-digit"
+                          ></lightning-formatted-date-time>
+                        </dd>
+                      </div>
+                    </dl>
+                    <code>{evidence.contentHash}</code>
+                  </article>
+                </template>
+              </div>
+            </section>
+
+            <section class="panel" aria-labelledby="actions-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Execution</p>
+                  <h2 id="actions-heading">Action and outcome history</h2>
+                </div>
+              </div>
+              <ul class="action-list">
+                <template for:each={state.case.actions} for:item="action">
+                  <li key={action.id}>
+                    <div>
+                      <strong>{action.type}</strong>
+                      <span>{action.sourceSystem}</span>
+                    </div>
+                    <span class="status-pill">{action.status}</span>
+                  </li>
+                </template>
+              </ul>
+              <div class="outcome">
+                <div>
+                  <span class="entity-type">Outcome</span>
+                  <h3>{state.case.outcome.status}</h3>
+                </div>
+                <p>{state.case.outcome.summary}</p>
+                <strong>{state.case.outcome.effectiveness}</strong>
+              </div>
+            </section>
+          </main>
+
+          <aside class="secondary-column" aria-label="Decision controls">
+            <section class="panel sticky-panel" aria-labelledby="sop-heading">
+              <p class="section-kicker">Operating procedure</p>
+              <h2 id="sop-heading">{state.case.sop.name}</h2>
+              <div class="sop-meta">
+                <span>Version {state.case.sop.version}</span>
+                <span>{state.case.sop.status}</span>
+              </div>
+              <lightning-progress-bar
+                value={state.case.sop.progress}
+                size="large"
+              ></lightning-progress-bar>
+              <p class="progress-label">
+                {state.case.sop.completedSteps} of {state.case.sop.totalSteps}
+                steps complete
+              </p>
+              <div class="current-step">
+                <span>Current step</span>
+                <strong>{state.case.sop.currentStep}</strong>
+              </div>
+              <p class="required-evidence">
+                Required evidence: {state.case.sop.requiredEvidence}
+              </p>
+            </section>
+
+            <section
+              class="panel recommendation"
+              aria-labelledby="recommendation-heading"
+            >
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Recommendation</p>
+                  <h2 id="recommendation-heading">
+                    {state.case.recommendation.title}
+                  </h2>
+                </div>
+                <strong>{state.case.recommendation.confidencePercent}</strong>
+              </div>
+              <p class="recommendation-copy">
+                {state.case.recommendation.recommendation}
+              </p>
+
+              <h3>Source facts</h3>
+              <ul class="fact-list">
+                <template
+                  for:each={state.case.recommendation.facts}
+                  for:item="fact"
+                >
+                  <li key={fact}>{fact}</li>
+                </template>
+              </ul>
+
+              <h3>Model inference</h3>
+              <ul class="inference-list">
+                <template
+                  for:each={state.case.recommendation.inferences}
+                  for:item="inference"
+                >
+                  <li key={inference}>{inference}</li>
+                </template>
+              </ul>
+
+              <dl class="model-meta">
+                <div>
+                  <dt>Logical profile</dt>
+                  <dd>{state.case.recommendation.modelProfile}</dd>
+                </div>
+                <div>
+                  <dt>Routing policy</dt>
+                  <dd>{state.case.recommendation.policyVersion}</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="panel approval" aria-labelledby="approval-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Human control</p>
+                  <h2 id="approval-heading">Approval decision</h2>
+                </div>
+                <span class="status-pill">{state.case.approval.status}</span>
+              </div>
+              <p>{state.case.approval.policy}</p>
+              <p class="approval-note">
+                Approval authorizes execution; it does not mark the external
+                action as completed.
+              </p>
+              <template lwc:if={showApprovalControls}>
+                <div class="approval-controls" data-testid="approval-controls">
+                  <lightning-button
+                    data-testid="reject-button"
+                    label="Reject"
+                    onclick={handleReject}
+                  ></lightning-button>
+                  <lightning-button
+                    data-testid="modify-button"
+                    label="Modify"
+                    onclick={handleModify}
+                  ></lightning-button>
+                  <lightning-button
+                    data-testid="approve-button"
+                    label="Approve"
+                    variant="brand"
+                    onclick={handleApprove}
+                  ></lightning-button>
+                </div>
+              </template>
+            </section>
+
+            <section class="panel blockers" aria-labelledby="blockers-heading">
+              <p class="section-kicker">Dependencies</p>
+              <h2 id="blockers-heading">Current blockers</h2>
+              <ul>
+                <template for:each={state.case.blockers} for:item="blocker">
+                  <li key={blocker.id}>
+                    <div>
+                      <strong>{blocker.label}</strong>
+                      <span>{blocker.owner}</span>
+                    </div>
+                    <span>{blocker.status}</span>
+                  </li>
+                </template>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </template>
+  </article>
+</template>
