@@ -10,6 +10,7 @@ contract is executable at
 | Operation                 | Path                          | Result                                                         |
 | ------------------------- | ----------------------------- | -------------------------------------------------------------- |
 | `INGEST_EVENT`            | `POST /v1/events`             | Deterministic intake disposition                               |
+| `REPLAY_EVENT`            | `POST /v1/events/replays`     | Authorized linked replay of a quarantined intake attempt       |
 | `READ_CONTEXT`            | `POST /v1/context/queries`    | Permission-aware relationship context                          |
 | `EXECUTE_APPROVED_ACTION` | `POST /v1/actions/executions` | Accepted source-system write-back correlated to human approval |
 | `CAPTURE_OUTCOME`         | `POST /v1/outcomes/callbacks` | Idempotent outcome capture and action correlation              |
@@ -21,6 +22,12 @@ contract is executable at
 - Write operations require `X-Idempotency-Key`; reusing a key with different
   content returns `IDEMPOTENCY_CONFLICT`.
 - Exact retries return the prior result with `replayed = true`.
+- Event replay requires purpose `REPLAY_QUARANTINED_EVENT`, accepts only an
+  original attempt in `QUARANTINED` state, and creates a linked attempt.
+- Replay idempotency is independent from source-event idempotency; neither an
+  exact replay nor a corrected event can mutate the original attempt.
+- Schema/hash failures and exhausted source-store retries are quarantined.
+  Idempotency and invalid-state conflicts are permanent rejections.
 - `403` is a policy or permission denial, `409` is a state or idempotency
   conflict, `422` is deterministic validation failure, and `503` is retryable.
 - Error bodies use the Apex service error codes and never expose raw upstream

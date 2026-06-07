@@ -21,6 +21,7 @@ EVENT_SCHEMA_PATH = (
 
 REQUIRED_OPERATIONS = {
     "ingestEvent",
+    "replayEvent",
     "retrieveContext",
     "executeApprovedAction",
     "receiveOutcomeCallback",

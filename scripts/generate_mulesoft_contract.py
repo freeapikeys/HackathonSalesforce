@@ -345,6 +345,63 @@ def schemas() -> dict[str, Any]:
                 "observedAt",
             ],
         ),
+        "EventReplayRequest": object_schema(
+            {
+                "contractVersion": {"const": CONTRACT_VERSION},
+                "tenantKey": tenant,
+                "correlationId": correlation,
+                "idempotencyKey": identifier,
+                "purpose": string_schema(max_length=200),
+                "originalAttemptId": identifier,
+                "reason": string_schema(max_length=1000),
+                "event": schema_ref("EventEnvelope"),
+            },
+            [
+                "contractVersion",
+                "tenantKey",
+                "correlationId",
+                "idempotencyKey",
+                "purpose",
+                "originalAttemptId",
+                "reason",
+                "event",
+            ],
+        ),
+        "EventReplayResponse": object_schema(
+            {
+                "contractVersion": {"const": CONTRACT_VERSION},
+                "tenantKey": tenant,
+                "correlationId": correlation,
+                "operation": {"const": "REPLAY_EVENT"},
+                "success": {"const": True},
+                "replayed": {"type": "boolean"},
+                "originalAttemptId": identifier,
+                "replayAttemptId": identifier,
+                "intakeResult": {
+                    "type": "string",
+                    "enum": [
+                        "ACCEPTED",
+                        "DUPLICATE",
+                        "ACCEPTED_LATE",
+                        "ACCEPTED_OUT_OF_ORDER",
+                        "CONFLICT_REVIEW",
+                    ],
+                },
+                "status": {"const": "COMPLETED"},
+            },
+            [
+                "contractVersion",
+                "tenantKey",
+                "correlationId",
+                "operation",
+                "success",
+                "replayed",
+                "originalAttemptId",
+                "replayAttemptId",
+                "intakeResult",
+                "status",
+            ],
+        ),
         "ContextRequest": object_schema(
             {
                 "contractVersion": {"const": CONTRACT_VERSION},
@@ -604,6 +661,7 @@ def schemas() -> dict[str, Any]:
                     "type": "string",
                     "enum": [
                         "INGEST_EVENT",
+                        "REPLAY_EVENT",
                         "READ_CONTEXT",
                         "EXECUTE_APPROVED_ACTION",
                         "CAPTURE_OUTCOME",
@@ -641,6 +699,7 @@ def build_spec() -> dict[str, Any]:
         operation_id: example_ref(operation_id, "callback")
         for operation_id in (
             "ingestEvent",
+            "replayEvent",
             "retrieveContext",
             "executeApprovedAction",
             "receiveOutcomeCallback",
@@ -688,6 +747,22 @@ def build_spec() -> dict[str, Any]:
                     success_schema="EventIntakeResponse",
                     success_code="202",
                     success_description="The event was accepted or replayed.",
+                    idempotent=True,
+                    tags=["Events"],
+                )
+            },
+            "/v1/events/replays": {
+                "post": operation(
+                    operation_id="replayEvent",
+                    summary="Replay a quarantined source event",
+                    description=(
+                        "Creates a linked intake attempt for a corrected "
+                        "quarantined event under an authorized purpose."
+                    ),
+                    request_schema="EventReplayRequest",
+                    success_schema="EventReplayResponse",
+                    success_code="202",
+                    success_description="The quarantined event was replayed.",
                     idempotent=True,
                     tags=["Events"],
                 )
@@ -1023,6 +1098,28 @@ def build_examples() -> dict[str, Any]:
         "replayed": False,
         "observedAt": "2026-06-05T08:30:03Z",
     }
+    replay_request = {
+        "contractVersion": CONTRACT_VERSION,
+        "tenantKey": TENANT,
+        "correlationId": CORRELATION,
+        "idempotencyKey": "replay-intake-attempt-000001-v1",
+        "purpose": "REPLAY_QUARANTINED_EVENT",
+        "originalAttemptId": "intake-attempt-000001",
+        "reason": "The source envelope was corrected and reviewed.",
+        "event": event_request,
+    }
+    replay_success = {
+        "contractVersion": CONTRACT_VERSION,
+        "tenantKey": TENANT,
+        "correlationId": CORRELATION,
+        "operation": "REPLAY_EVENT",
+        "success": True,
+        "replayed": False,
+        "originalAttemptId": "intake-attempt-000001",
+        "replayAttemptId": "intake-attempt-000002",
+        "intakeResult": "ACCEPTED",
+        "status": "COMPLETED",
+    }
     context_request = {
         "contractVersion": CONTRACT_VERSION,
         "tenantKey": TENANT,
@@ -1165,6 +1262,26 @@ def build_examples() -> dict[str, Any]:
             ),
         }
         | common_failures("INGEST_EVENT"),
+        "replayEvent": {
+            "request": example(
+                summary="Authorized replay of a corrected quarantined event",
+                schema_name="EventReplayRequest",
+                value=replay_request,
+                request_headers=headers(replay_request["idempotencyKey"]),
+            ),
+            "success": example(
+                summary="Linked replay completed",
+                schema_name="EventReplayResponse",
+                status="202",
+                value=replay_success,
+            ),
+            "callback": example(
+                summary="Event replay completion callback",
+                schema_name="OperationCallback",
+                value=callback_value("REPLAY_EVENT", replay_success),
+            ),
+        }
+        | common_failures("REPLAY_EVENT"),
         "retrieveContext": {
             "request": example(
                 summary="Context query by work item",

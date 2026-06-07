@@ -67,6 +67,12 @@ source-event store. Preserved event identity is scoped by tenant, source, and
 CloudEvents ID; reusing that identity for different source data is rejected
 rather than overwritten.
 
+Schema/hash failures and accepted events whose source-store retries are
+exhausted enter an immutable `QUARANTINED` intake attempt. An authorized replay
+submits a complete corrected envelope to `POST /v1/events/replays`, links the
+new attempt to the original, and applies a separate replay idempotency key.
+Permanent idempotency and state conflicts cannot be replayed.
+
 ## Synthetic Case
 
 Fixtures model an industry-neutral organization with a person, employing
