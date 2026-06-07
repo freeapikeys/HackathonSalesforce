@@ -17,9 +17,27 @@
     "HFS_Outcome__c": 0,
     "HFS_Evaluation__c": 0
   },
+  "connectedExpectedCounts": {
+    "HFS_Event__c": 2,
+    "HFS_Entity__c": 3,
+    "HFS_Event_Participant__c": 3,
+    "HFS_Relationship__c": 2,
+    "HFS_Agreement__c": 1,
+    "HFS_Work_Item__c": 1,
+    "HFS_SOP_Execution__c": 1,
+    "HFS_Evidence__c": 2,
+    "HFS_Recommendation__c": 1,
+    "HFS_Approval__c": 1,
+    "HFS_Action__c": 1,
+    "HFS_Outcome__c": 1,
+    "HFS_Evaluation__c": 1
+  },
   "identifiers": {
     "workItemExternalKey": "work-demo-001",
     "recommendationExternalKey": "recommendation-demo-001",
-    "approvalExternalKey": "approval-demo-001"
+    "approvalExternalKey": "approval-demo-001",
+    "actionExternalKey": "action-demo-001",
+    "outcomeExternalKey": "outcome-action-demo-001",
+    "evaluationExternalKey": "evaluation-demo-001"
   }
 }

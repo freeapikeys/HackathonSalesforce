@@ -2,8 +2,23 @@
 
 The harness validates prerequisites, resets only the `demo-mauritius` tenant,
 loads one deterministic relationship case, verifies every object count and
-stable external key, reads the graph through the governed Apex context service,
-and emits a versioned JSON result.
+stable external key, and emits a versioned JSON result.
+
+`demo:seed` stops at the review state used by the Lightning command center.
+`demo:run` continues through the complete governed vertical slice:
+
+1. route a recommendation through the provider-neutral model gateway;
+2. prove a restricted model route fails closed;
+3. persist the normalized recommendation with its model invocation ID;
+4. read grounded citations and the recommendation through Agentforce actions;
+5. create a pending human approval through Agentforce;
+6. prove Salesforce refuses action logging before approval;
+7. record the human approval and log a pending action;
+8. prove MuleSoft refuses an unregistered approval;
+9. execute the approved mock write-back and preserve correlation;
+10. ingest the resulting source event and capture the outcome in Salesforce;
+11. evaluate the defined outcome;
+12. refresh the Lightning controller and verify completed state.
 
 ## Commands
 
@@ -33,18 +48,36 @@ python3 scripts/e2e_harness.py run \
 repeatedly therefore produces the same counts and external keys without
 touching records from another tenant.
 
-The successful report includes the Salesforce IDs for `work-demo-001`,
-`recommendation-demo-001`, and `approval-demo-001`. Configure the Lightning
-command center with:
+The seed report includes the Salesforce IDs for `work-demo-001`,
+`recommendation-demo-001`, and `approval-demo-001`. The connected report also
+includes the action, outcome, and evaluation IDs plus the model deployment,
+profile, policy, and invocation versions used by the run.
+
+Configure the Lightning command center with:
 
 - tenant key: `demo-mauritius`;
 - work item ID: the report's `workItemId`;
 - purpose: `RELATIONSHIP_SERVICE`;
 - synthetic demo data: disabled.
 
+## Connected Invariants
+
+The connected report must show:
+
+- `NO_QUALIFIED_DEPLOYMENT` and `FAILED_CLOSED` for restricted model data;
+- `INACCESSIBLE_EVIDENCE` for a transient work item with no evidence;
+- Agentforce citations and the same model invocation ID that was persisted;
+- `externalActionExecuted = false` for Agentforce;
+- `INVALID_STATE` before human approval in Salesforce;
+- `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
+- one approved action, one correlated outcome, and one evaluation;
+- final action status `EXECUTED` and work item status `COMPLETED`;
+- Lightning controller permissions and refreshed final context.
+
 ## Failure Behavior
 
 The process exits nonzero and still emits a JSON report when a required tool,
-org connection, contract check, Apex fixture, count, or identifier fails. No
-credentials, access tokens, org details, or local Salesforce state are written
-to the report.
+org connection, contract check, model route, Agentforce action, approval,
+MuleSoft write-back, Apex fixture, count, or identifier fails. No credentials,
+access tokens, command logs, usernames, org details, or local Salesforce state
+are written to the report.
