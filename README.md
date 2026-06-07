@@ -43,6 +43,8 @@ The executable semantic contract is documented in
 [ontology/README.md](ontology/README.md).
 The versioned source-event envelope and deterministic fixtures are documented
 in [docs/event-contract.md](docs/event-contract.md).
+The repeatable Salesforce seed, reset, verification, and JSON reporting
+commands are documented in [docs/demo-harness.md](docs/demo-harness.md).
 
 The repository tracks `.beads/issues.jsonl` as the portable team copy of the
 work graph. `bootstrap-dev.sh` imports it for a fresh clone. Run
