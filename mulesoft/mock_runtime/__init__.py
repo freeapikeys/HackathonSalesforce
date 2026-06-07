@@ -10,6 +10,7 @@ from .api import (
     RetryPolicy,
     build_default_api,
 )
+from .intake import EventIntakeClassifier, IntakeDecision
 
 __all__ = [
     "MockCallbackTransport",
@@ -18,6 +19,8 @@ __all__ = [
     "MockOutcomeAdapter",
     "MockSourceAdapter",
     "MockWriteBackAdapter",
+    "EventIntakeClassifier",
+    "IntakeDecision",
     "RetryPolicy",
     "build_default_api",
 ]
