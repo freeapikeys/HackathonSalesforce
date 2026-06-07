@@ -160,6 +160,184 @@
         "x-hfs-status": "503"
       }
     },
+    "replayEvent": {
+      "request": {
+        "summary": "Authorized replay of a corrected quarantined event",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "idempotencyKey": "replay-intake-attempt-000001-v1",
+          "purpose": "REPLAY_QUARANTINED_EVENT",
+          "originalAttemptId": "intake-attempt-000001",
+          "reason": "The source envelope was corrected and reviewed.",
+          "event": {
+            "specversion": "1.0",
+            "id": "00000000-0000-4000-8000-000000000007",
+            "source": "urn:hfs:source:operations",
+            "type": "io.github.freeapikeys.hfs.issue.opened.v1",
+            "subject": "issue:issue-001",
+            "time": "2026-06-05T08:30:00Z",
+            "datacontenttype": "application/json",
+            "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+            "hfstenantid": "demo-mauritius",
+            "hfsschemaversion": "1.0.0",
+            "hfscorrelationid": "10000000-0000-4000-8000-000000000001",
+            "hfsidempotencykey": "operations-issue-001-v1",
+            "hfssourcerecordid": "issue-record-001",
+            "hfssourcesequence": 2,
+            "hfsobservedat": "2026-06-05T08:30:03Z",
+            "hfscontenthash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
+            "data": {
+              "recordtype": "Issue",
+              "operation": "OPEN",
+              "businesskey": "issue-001",
+              "effectiveat": "2026-06-05T08:30:00Z",
+              "attributes": {
+                "agreementkey": "agreement-001",
+                "supplierkey": "supplier-001",
+                "severity": "HIGH",
+                "summary": "Repeated service interruption"
+              }
+            }
+          }
+        },
+        "x-hfs-schema": "EventReplayRequest",
+        "x-hfs-headers": {
+          "X-Tenant-Id": "demo-mauritius",
+          "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
+          "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
+          "X-Idempotency-Key": "replay-intake-attempt-000001-v1"
+        }
+      },
+      "success": {
+        "summary": "Linked replay completed",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "REPLAY_EVENT",
+          "success": true,
+          "replayed": false,
+          "originalAttemptId": "intake-attempt-000001",
+          "replayAttemptId": "intake-attempt-000002",
+          "intakeResult": "ACCEPTED",
+          "status": "COMPLETED"
+        },
+        "x-hfs-schema": "EventReplayResponse",
+        "x-hfs-status": "202"
+      },
+      "callback": {
+        "summary": "Event replay completion callback",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "REPLAY_EVENT",
+          "status": "COMPLETED",
+          "completedAt": "2026-06-05T08:31:10Z",
+          "retryable": false,
+          "result": {
+            "contractVersion": "1.0.0",
+            "tenantKey": "demo-mauritius",
+            "correlationId": "10000000-0000-4000-8000-000000000001",
+            "operation": "REPLAY_EVENT",
+            "success": true,
+            "replayed": false,
+            "originalAttemptId": "intake-attempt-000001",
+            "replayAttemptId": "intake-attempt-000002",
+            "intakeResult": "ACCEPTED",
+            "status": "COMPLETED"
+          },
+          "errors": []
+        },
+        "x-hfs-schema": "OperationCallback"
+      },
+      "denial": {
+        "summary": "Purpose or permission denial",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "REPLAY_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "PERMISSION_DENIED",
+              "message": "The operation is not allowed for the current purpose.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "403"
+      },
+      "conflict": {
+        "summary": "Idempotency or state conflict",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "REPLAY_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "IDEMPOTENCY_CONFLICT",
+              "message": "The request key was already used for different content.",
+              "fieldName": "X-Idempotency-Key",
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "409"
+      },
+      "validation": {
+        "summary": "Deterministic validation failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "REPLAY_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "VALIDATION_FAILED",
+              "message": "A required field or invariant is invalid.",
+              "fieldName": null,
+              "retryable": false,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "422"
+      },
+      "retryableFailure": {
+        "summary": "Retryable dependency failure",
+        "value": {
+          "contractVersion": "1.0.0",
+          "tenantKey": "demo-mauritius",
+          "correlationId": "10000000-0000-4000-8000-000000000001",
+          "operation": "REPLAY_EVENT",
+          "success": false,
+          "errors": [
+            {
+              "code": "RETRYABLE_DEPENDENCY_FAILURE",
+              "message": "A required dependency is temporarily unavailable.",
+              "fieldName": null,
+              "retryable": true,
+              "details": null
+            }
+          ]
+        },
+        "x-hfs-schema": "ErrorResponse",
+        "x-hfs-status": "503"
+      }
+    },
     "retrieveContext": {
       "request": {
         "summary": "Context query by work item",

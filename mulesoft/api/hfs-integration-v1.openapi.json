@@ -182,6 +182,153 @@
         }
       }
     },
+    "/v1/events/replays": {
+      "post": {
+        "operationId": "replayEvent",
+        "summary": "Replay a quarantined source event",
+        "description": "Creates a linked intake attempt for a corrected quarantined event under an authorized purpose.",
+        "tags": [
+          "Events"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantId"
+          },
+          {
+            "$ref": "#/components/parameters/CorrelationId"
+          },
+          {
+            "$ref": "#/components/parameters/CallbackUrl"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventReplayRequest"
+              },
+              "examples": {
+                "request": {
+                  "$ref": "./examples/operation-examples-v1.json#/operations/replayEvent/request"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "The quarantined event was replayed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventReplayResponse"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "./examples/operation-examples-v1.json#/operations/replayEvent/success"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The current client, user, purpose, or policy is not allowed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "denial": {
+                    "$ref": "./examples/operation-examples-v1.json#/operations/replayEvent/denial"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The request conflicts with prior content or current state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "conflict": {
+                    "$ref": "./examples/operation-examples-v1.json#/operations/replayEvent/conflict"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The request is well formed but fails deterministic validation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "validation": {
+                    "$ref": "./examples/operation-examples-v1.json#/operations/replayEvent/validation"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "A required dependency is temporarily unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "retryableFailure": {
+                    "$ref": "./examples/operation-examples-v1.json#/operations/replayEvent/retryableFailure"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds before the caller should retry.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        },
+        "callbacks": {
+          "operationCompleted": {
+            "$ref": "#/components/callbacks/OperationCompleted"
+          }
+        },
+        "security": [
+          {
+            "oauth2ClientCredentials": [
+              "hfs.integration"
+            ],
+            "mutualTLS": []
+          }
+        ],
+        "x-hfs-example-coverage": {
+          "request": "./examples/operation-examples-v1.json#/operations/replayEvent/request",
+          "success": "./examples/operation-examples-v1.json#/operations/replayEvent/success",
+          "denial": "./examples/operation-examples-v1.json#/operations/replayEvent/denial",
+          "conflict": "./examples/operation-examples-v1.json#/operations/replayEvent/conflict",
+          "validation": "./examples/operation-examples-v1.json#/operations/replayEvent/validation",
+          "retryableFailure": "./examples/operation-examples-v1.json#/operations/replayEvent/retryableFailure",
+          "callback": "./examples/operation-examples-v1.json#/operations/replayEvent/callback"
+        }
+      }
+    },
     "/v1/context/queries": {
       "post": {
         "operationId": "retrieveContext",
@@ -707,6 +854,9 @@
                     "ingestEvent": {
                       "$ref": "./examples/operation-examples-v1.json#/operations/ingestEvent/callback"
                     },
+                    "replayEvent": {
+                      "$ref": "./examples/operation-examples-v1.json#/operations/replayEvent/callback"
+                    },
                     "retrieveContext": {
                       "$ref": "./examples/operation-examples-v1.json#/operations/retrieveContext/callback"
                     },
@@ -879,6 +1029,121 @@
             "type": "string",
             "minLength": 1,
             "format": "date-time"
+          }
+        }
+      },
+      "EventReplayRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractVersion",
+          "tenantKey",
+          "correlationId",
+          "idempotencyKey",
+          "purpose",
+          "originalAttemptId",
+          "reason",
+          "event"
+        ],
+        "properties": {
+          "contractVersion": {
+            "const": "1.0.0"
+          },
+          "tenantKey": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+          },
+          "correlationId": {
+            "type": "string",
+            "minLength": 1,
+            "format": "uuid"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "originalAttemptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "event": {
+            "$ref": "#/components/schemas/EventEnvelope"
+          }
+        }
+      },
+      "EventReplayResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contractVersion",
+          "tenantKey",
+          "correlationId",
+          "operation",
+          "success",
+          "replayed",
+          "originalAttemptId",
+          "replayAttemptId",
+          "intakeResult",
+          "status"
+        ],
+        "properties": {
+          "contractVersion": {
+            "const": "1.0.0"
+          },
+          "tenantKey": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9][a-z0-9-]{2,63}$"
+          },
+          "correlationId": {
+            "type": "string",
+            "minLength": 1,
+            "format": "uuid"
+          },
+          "operation": {
+            "const": "REPLAY_EVENT"
+          },
+          "success": {
+            "const": true
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "originalAttemptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "replayAttemptId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "intakeResult": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DUPLICATE",
+              "ACCEPTED_LATE",
+              "ACCEPTED_OUT_OF_ORDER",
+              "CONFLICT_REVIEW"
+            ]
+          },
+          "status": {
+            "const": "COMPLETED"
           }
         }
       },
@@ -1589,6 +1854,7 @@
             "type": "string",
             "enum": [
               "INGEST_EVENT",
+              "REPLAY_EVENT",
               "READ_CONTEXT",
               "EXECUTE_APPROVED_ACTION",
               "CAPTURE_OUTCOME"

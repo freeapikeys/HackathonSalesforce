@@ -99,11 +99,20 @@ class MockCallbackTransport:
 class MockSourceAdapter:
     """Preserves accepted source events without source-specific behavior."""
 
-    def __init__(self) -> None:
+    def __init__(self, failures_remaining: int = 0) -> None:
+        if failures_remaining < 0:
+            raise ValueError("failures_remaining cannot be negative")
         self.events: dict[tuple[str, str, str], dict[str, Any]] = {}
         self.attempts: list[dict[str, Any]] = []
+        self.failures_remaining = failures_remaining
+        self._attempt_events: dict[str, dict[str, Any]] = {}
 
     def preserve(self, event: dict[str, Any]) -> None:
+        if self.failures_remaining > 0:
+            self.failures_remaining -= 1
+            raise RetryableDependencyFailure(
+                "Injected temporary source-event store failure."
+            )
         identity = (
             event["hfstenantid"],
             event["source"],
@@ -115,21 +124,44 @@ class MockSourceAdapter:
         self,
         event: dict[str, Any],
         decision: IntakeDecision,
-    ) -> None:
-        self.attempts.append(
-            {
-                "eventId": event.get("id"),
-                "tenantKey": event.get("hfstenantid"),
-                "source": event.get("source"),
-                "idempotencyKey": event.get("hfsidempotencykey"),
-                "intakeResult": decision.result,
-                "detail": decision.detail,
-                "preserved": decision.preserve,
-                "replayed": decision.replayed,
-                "lateBySeconds": decision.late_by_seconds,
-                "sourceWatermark": decision.source_watermark,
-            }
-        )
+        *,
+        state: str | None = None,
+        original_attempt_id: str | None = None,
+        error_code: str | None = None,
+    ) -> dict[str, Any]:
+        attempt_id = f"intake-attempt-{len(self.attempts) + 1:06d}"
+        attempt = {
+            "attemptId": attempt_id,
+            "originalAttemptId": original_attempt_id,
+            "eventId": event.get("id"),
+            "tenantKey": event.get("hfstenantid"),
+            "source": event.get("source"),
+            "idempotencyKey": event.get("hfsidempotencykey"),
+            "intakeResult": decision.result,
+            "state": state
+            or (
+                "PRESERVED"
+                if decision.preserve
+                else "DUPLICATE"
+                if decision.replayed
+                else "REJECTED"
+            ),
+            "errorCode": error_code,
+            "detail": decision.detail,
+            "preserved": decision.preserve and state != "QUARANTINED",
+            "replayed": decision.replayed,
+            "lateBySeconds": decision.late_by_seconds,
+            "sourceWatermark": decision.source_watermark,
+        }
+        self.attempts.append(attempt)
+        self._attempt_events[attempt_id] = deepcopy(event)
+        return deepcopy(attempt)
+
+    def attempt(self, attempt_id: str) -> dict[str, Any] | None:
+        for attempt in self.attempts:
+            if attempt["attemptId"] == attempt_id:
+                return deepcopy(attempt)
+        return None
 
 
 class MockOutcomeAdapter:
@@ -232,6 +264,7 @@ class MockWriteBackAdapter:
 class MockIntegrationApi:
     PATHS = {
         "/v1/events": "ingestEvent",
+        "/v1/events/replays": "replayEvent",
         "/v1/context/queries": "retrieveContext",
         "/v1/actions/executions": "executeApprovedAction",
         "/v1/outcomes/callbacks": "receiveOutcomeCallback",
@@ -247,6 +280,7 @@ class MockIntegrationApi:
         callback_transport: MockCallbackTransport,
         retry_policy: RetryPolicy,
         intake_classifier: EventIntakeClassifier,
+        replay_purposes: set[str] | None = None,
     ) -> None:
         self.contract = contract
         self.source_adapter = source_adapter
@@ -255,6 +289,9 @@ class MockIntegrationApi:
         self.callback_transport = callback_transport
         self.retry_policy = retry_policy
         self.intake_classifier = intake_classifier
+        self.replay_purposes = replay_purposes or {
+            "REPLAY_QUARANTINED_EVENT"
+        }
         self.pending_callbacks: list[dict[str, Any]] = []
         self._idempotency: dict[
             tuple[str, str, str], tuple[str, MockHttpResponse]
@@ -283,6 +320,7 @@ class MockIntegrationApi:
             Callable[[dict[str, str], dict[str, Any]], MockHttpResponse],
         ] = {
             "ingestEvent": self._ingest_event,
+            "replayEvent": self.replay_event,
             "retrieveContext": self._retrieve_context,
             "executeApprovedAction": self._execute_action,
             "receiveOutcomeCallback": self._receive_outcome,
@@ -480,11 +518,24 @@ class MockIntegrationApi:
         self,
         headers: dict[str, str],
         body: dict[str, Any],
+        *,
+        original_attempt_id: str | None = None,
     ) -> MockHttpResponse:
         operation = "INGEST_EVENT"
         validation = self.intake_classifier.validate(body)
         if validation is not None:
-            self.source_adapter.record_attempt(body, validation)
+            state = (
+                "QUARANTINED"
+                if validation.result in {"REJECTED_SCHEMA", "REJECTED_HASH"}
+                else "REJECTED"
+            )
+            self.source_adapter.record_attempt(
+                body,
+                validation,
+                state=state,
+                original_attempt_id=original_attempt_id,
+                error_code="VALIDATION_FAILED",
+            )
             return self._common_error(
                 operation=operation,
                 headers=headers,
@@ -503,9 +554,15 @@ class MockIntegrationApi:
         )
         if header_error:
             return header_error
-        decision = self.intake_classifier.classify(body)
-        self.source_adapter.record_attempt(body, decision)
+        decision = self.intake_classifier.classify(body, commit=False)
         if decision.result == "REJECTED_IDEMPOTENCY_CONFLICT":
+            self.source_adapter.record_attempt(
+                body,
+                decision,
+                state="REJECTED",
+                original_attempt_id=original_attempt_id,
+                error_code="IDEMPOTENCY_CONFLICT",
+            )
             return self._common_error(
                 operation=operation,
                 headers=headers,
@@ -517,7 +574,38 @@ class MockIntegrationApi:
                 details=decision.result,
             )
         if decision.preserve:
-            self.source_adapter.preserve(body)
+            preserved = False
+            for _ in range(self.retry_policy.max_attempts):
+                try:
+                    self.source_adapter.preserve(body)
+                    preserved = True
+                    break
+                except RetryableDependencyFailure:
+                    continue
+            if not preserved:
+                self.source_adapter.record_attempt(
+                    body,
+                    decision,
+                    state="QUARANTINED",
+                    original_attempt_id=original_attempt_id,
+                    error_code="RETRYABLE_DEPENDENCY_FAILURE",
+                )
+                return self._common_error(
+                    operation=operation,
+                    headers=headers,
+                    body=body,
+                    status=503,
+                    code="RETRYABLE_DEPENDENCY_FAILURE",
+                    message="Source-event preservation exhausted its retry policy.",
+                    retryable=True,
+                    details="QUARANTINED",
+                )
+            decision = self.intake_classifier.classify(body, commit=True)
+        self.source_adapter.record_attempt(
+            body,
+            decision,
+            original_attempt_id=original_attempt_id,
+        )
         response_body = {
             "contractVersion": CONTRACT_VERSION,
             "tenantKey": body["hfstenantid"],
@@ -571,6 +659,163 @@ class MockIntegrationApi:
             200,
             response_body,
             {"X-Correlation-Id": body["correlationId"]},
+        )
+        self._request_callback(headers, operation, response_body)
+        return response
+
+    def replay_event(
+        self,
+        headers: dict[str, str],
+        body: dict[str, Any],
+    ) -> MockHttpResponse:
+        operation = "REPLAY_EVENT"
+        try:
+            self.contract.validate("EventReplayRequest", body)
+        except ContractValidationError as error:
+            return self._schema_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                error=error,
+            )
+        required = {
+            "contractVersion",
+            "tenantKey",
+            "correlationId",
+            "idempotencyKey",
+            "purpose",
+            "originalAttemptId",
+            "reason",
+            "event",
+        }
+        missing = sorted(required - set(body))
+        if missing:
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=422,
+                code="VALIDATION_FAILED",
+                message=f"Required field {missing[0]} is missing.",
+                field_name=missing[0],
+            )
+        header_error = self._validated_headers(
+            operation=operation,
+            headers=headers,
+            body=body,
+            idempotent=True,
+        )
+        if header_error:
+            return header_error
+        if body["purpose"] not in self.replay_purposes:
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=403,
+                code="PERMISSION_DENIED",
+                message="The declared purpose is not authorized for event replay.",
+                field_name="purpose",
+            )
+        replay = self._idempotency_result(
+            operation=operation,
+            headers=headers,
+            body=body,
+        )
+        if replay:
+            return replay
+
+        original = self.source_adapter.attempt(body["originalAttemptId"])
+        if original is None:
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=422,
+                code="RECORD_NOT_FOUND",
+                message="The original intake attempt was not found.",
+                field_name="originalAttemptId",
+            )
+        if original["tenantKey"] != body["tenantKey"]:
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=409,
+                code="TENANT_MISMATCH",
+                message="The replay tenant does not match the original attempt.",
+                field_name="tenantKey",
+            )
+        if original["state"] != "QUARANTINED":
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=409,
+                code="INVALID_STATE",
+                message="Only quarantined intake attempts can be replayed.",
+                field_name="originalAttemptId",
+            )
+
+        event = body["event"]
+        if not isinstance(event, dict) or event.get("hfstenantid") != body["tenantKey"]:
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=409,
+                code="TENANT_MISMATCH",
+                message="The replay event tenant does not match the request.",
+                field_name="event.hfstenantid",
+            )
+        event_headers = {
+            "X-Tenant-Id": event.get("hfstenantid", ""),
+            "X-Correlation-Id": event.get("hfscorrelationid", ""),
+            "X-Idempotency-Key": event.get("hfsidempotencykey", ""),
+        }
+        intake_response = self._ingest_event(
+            event_headers,
+            event,
+            original_attempt_id=original["attemptId"],
+        )
+        if intake_response.status != 202:
+            error = intake_response.body["errors"][0]
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=intake_response.status,
+                code=error["code"],
+                message=error["message"],
+                retryable=error["retryable"],
+                field_name=error["fieldName"],
+                details=error["details"],
+            )
+
+        replay_attempt = self.source_adapter.attempts[-1]
+        response_body = {
+            "contractVersion": CONTRACT_VERSION,
+            "tenantKey": body["tenantKey"],
+            "correlationId": body["correlationId"],
+            "operation": operation,
+            "success": True,
+            "replayed": False,
+            "originalAttemptId": original["attemptId"],
+            "replayAttemptId": replay_attempt["attemptId"],
+            "intakeResult": replay_attempt["intakeResult"],
+            "status": "COMPLETED",
+        }
+        response = MockHttpResponse(
+            202,
+            response_body,
+            {"X-Correlation-Id": body["correlationId"]},
+        )
+        self.contract.validate("EventReplayResponse", response_body)
+        self._remember(
+            operation=operation,
+            headers=headers,
+            body=body,
+            response=response,
         )
         self._request_callback(headers, operation, response_body)
         return response
@@ -814,11 +1059,13 @@ def build_default_api(
     *,
     failures_by_operation: dict[str, int] | None = None,
     outcome_failures: int = 0,
+    source_failures: int = 0,
     retry_policy: RetryPolicy | None = None,
     maximum_lateness_seconds: int = 86_400,
+    replay_purposes: set[str] | None = None,
 ) -> MockIntegrationApi:
     contract = IntegrationContract()
-    source_adapter = MockSourceAdapter()
+    source_adapter = MockSourceAdapter(source_failures)
     write_back_adapter = MockWriteBackAdapter()
     outcome_adapter = MockOutcomeAdapter(outcome_failures)
     callback_transport = MockCallbackTransport(
@@ -835,6 +1082,7 @@ def build_default_api(
         intake_classifier=EventIntakeClassifier(
             maximum_lateness_seconds=maximum_lateness_seconds
         ),
+        replay_purposes=replay_purposes,
     )
     action = contract.example("executeApprovedAction", "request")
     write_back_adapter.register_approval(
