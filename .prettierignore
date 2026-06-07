@@ -20,3 +20,7 @@ mulesoft/api/examples/operation-examples-v1.json
 # Generated and byte-checked by scripts/generate_model_gateway_contract.py
 intelligence/model-gateway/schemas/model-gateway-v1.schema.json
 intelligence/model-gateway/fixtures/gateway-scenario-v1.json
+
+# Generated and byte-checked by scripts/generate_agentforce_contract.py
+intelligence/agentforce/schemas/agentforce-actions-v1.schema.json
+intelligence/agentforce/fixtures/agentforce-scenarios-v1.json
