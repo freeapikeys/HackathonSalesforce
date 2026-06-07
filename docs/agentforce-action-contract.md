@@ -87,4 +87,10 @@ Verify with:
 
 ```bash
 npm run check:agentforce
+npm run demo:run
 ```
+
+The connected demo run invokes all three actions against the Salesforce org,
+checks that the model invocation ID survives the Agentforce boundary, and
+proves that external execution remains blocked until a separate human approval
+and MuleSoft transaction.
