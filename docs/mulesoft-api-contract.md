@@ -37,3 +37,9 @@ Additive optional fields are compatible within version `1.0.0`. Removing or
 renaming fields, changing required inputs, changing an error code, changing
 idempotency scope, or weakening approval and authorization rules requires a new
 contract version and cross-lane review.
+
+Verify compatibility with:
+
+```bash
+npm run check:mulesoft
+```
