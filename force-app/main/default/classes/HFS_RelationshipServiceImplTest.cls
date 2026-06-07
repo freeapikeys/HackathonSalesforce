@@ -89,7 +89,9 @@ private class HFS_RelationshipServiceImplTest {
       Trigger_Event__c = sourceEvent.Id,
       Status__c = 'IN_PROGRESS',
       Priority__c = 'HIGH',
-      Summary__c = 'Prepare and approve a proactive customer update.'
+      Summary__c = 'Prepare and approve a proactive customer update.',
+      Due_At__c = nowValue.addHours(2),
+      Blocked_Reason__c = 'Human approval is required before outreach.'
     );
     insert workItem;
     insert new HFS_SOP_Execution__c(
@@ -203,6 +205,11 @@ private class HFS_RelationshipServiceImplTest {
     HFS_ContextResponse context = service.getContext(contextRequest);
     System.assertEquals(0, context.errors.size());
     System.assertEquals(workItem.Id, context.workItem.recordId);
+    System.assertNotEquals(null, context.workItem.dueAt);
+    System.assertEquals(
+      'Human approval is required before outreach.',
+      context.workItem.blockedReason
+    );
     System.assert(context.entities.size() >= 3);
     System.assertEquals(1, context.relationships.size());
     System.assertEquals(1, context.agreements.size());
@@ -213,6 +220,19 @@ private class HFS_RelationshipServiceImplTest {
     System.assertEquals(1, context.actions.size());
     System.assertEquals(1, context.outcomes.size());
     System.assert(context.timeline.size() >= 5);
+    System.assertEquals('1.0.0', context.sopExecutions[0].definitionVersion);
+    System.assertEquals(
+      'SEND_STATUS_UPDATE',
+      context.recommendations[0].proposedActionType
+    );
+    System.assertEquals(
+      'relationship-recommendation',
+      context.recommendations[0].modelProfile
+    );
+    System.assertNotEquals(null, context.approvals[0].requestedAt);
+    System.assertEquals(CORRELATION, context.actions[0].correlationId);
+    System.assertEquals('delivery_success', context.outcomes[0].metricKey);
+    System.assertEquals(1, context.outcomes[0].metricValue);
 
     HFS_ProvenanceRequest provenanceRequest = new HFS_ProvenanceRequest();
     provenanceRequest.contractVersion = HFS_ServiceContract.VERSION;

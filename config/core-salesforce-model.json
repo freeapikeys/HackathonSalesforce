@@ -947,6 +947,7 @@
       "api": "HFS_Relationship_User",
       "label": "HFS Relationship User",
       "description": "Read relationship context and manage assigned work, evidence, SOP execution, and recommendations.",
+      "apexClasses": ["HFS_RelationshipController"],
       "editableObjects": [
         "HFS_Work_Item__c",
         "HFS_SOP_Execution__c",
@@ -958,6 +959,7 @@
       "api": "HFS_Approver",
       "label": "HFS Approver",
       "description": "Read relationship context and record recommendation approval decisions.",
+      "apexClasses": ["HFS_RelationshipController"],
       "editableObjects": ["HFS_Approval__c"],
       "customPermissions": ["HFS_Approve_Recommendation"]
     },
@@ -965,6 +967,7 @@
       "api": "HFS_Integration_User",
       "label": "HFS Integration User",
       "description": "Create and reconcile integration, operational, action, and outcome records.",
+      "apexClasses": ["HFS_RelationshipController"],
       "editableObjects": ["*"],
       "deleteObjects": ["*"],
       "viewAllRecords": true,
