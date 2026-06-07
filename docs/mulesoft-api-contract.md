@@ -42,4 +42,10 @@ Verify compatibility with:
 
 ```bash
 npm run check:mulesoft
+npm run demo:run
 ```
+
+The connected demo registers only the Salesforce-approved action with the mock
+write-back adapter. It first submits an unregistered approval and requires a
+`403 PERMISSION_DENIED` with no outcome, then executes the approved action,
+captures the callback, and writes the correlated outcome back to Salesforce.

@@ -69,10 +69,10 @@ class DemoHarnessTest(unittest.TestCase):
     def tearDown(self) -> None:
         e2e_harness.shutil.which = self.original_which
 
-    def test_run_reports_repeatable_seed_and_identifiers(self) -> None:
+    def test_seed_reports_repeatable_records_and_identifiers(self) -> None:
         runner = FakeRunner()
         report, exit_code = e2e_harness.run_harness(
-            "run", "test-org", runner=runner, config=CONFIG
+            "seed", "test-org", runner=runner, config=CONFIG
         )
 
         self.assertEqual(0, exit_code)
@@ -81,7 +81,6 @@ class DemoHarnessTest(unittest.TestCase):
             [
                 "tools",
                 "salesforce-org",
-                "local-contracts",
                 "reset",
                 "seed",
                 "verify-seed",
@@ -100,6 +99,54 @@ class DemoHarnessTest(unittest.TestCase):
         self.assertTrue(apex_scripts[0].endswith("reset_demo.apex"))
         self.assertTrue(apex_scripts[1].endswith("seed_demo.apex"))
         self.assertTrue(apex_scripts[2].endswith("verify_demo_context.apex"))
+        self.assertNotIn("logs", report["steps"][2]["details"])
+
+    def test_connected_model_and_mulesoft_paths_fail_closed_then_succeed(
+        self,
+    ) -> None:
+        config = json.loads(e2e_harness.CONFIG_PATH.read_text())
+        harness = e2e_harness.DemoHarness(
+            "test-org",
+            runner=FakeRunner(),
+            config=config,
+        )
+        source = {
+            "workItemId": "a0E000000000001AAA",
+            "subjectEntityId": "a01000000000001AAA",
+            "triggerEventId": "a09000000000001AAA",
+            "evidenceId": "a06000000000001AAA",
+            "contentHash": (
+                "sha256:"
+                "56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
+            ),
+        }
+        model = harness.run_model_gateway(source)
+        self.assertEqual("runtime-invocation-0001", model["invocationId"])
+        self.assertEqual(
+            "NO_QUALIFIED_DEPLOYMENT",
+            model["restrictedDecision"],
+        )
+        self.assertEqual("FAILED_CLOSED", model["restrictedAuditStatus"])
+
+        recommendation = {"recommendationId": "a0B000000000001AAA"}
+        action = {
+            "approvalId": "a04000000000001AAA",
+            "actionId": "a00000000000001AAA",
+            "actionExternalKey": "action-demo-001",
+            "actionIdempotencyKey": "action-demo-001-v1",
+        }
+        mulesoft = harness.run_mulesoft(
+            source,
+            recommendation,
+            action,
+        )
+        self.assertEqual(403, mulesoft["blockedStatus"])
+        self.assertEqual("PERMISSION_DENIED", mulesoft["blockedErrorCode"])
+        self.assertEqual(202, mulesoft["executionStatus"])
+        self.assertEqual(
+            config["correlationId"],
+            mulesoft["outcome"]["correlationId"],
+        )
 
     def test_count_mismatch_returns_machine_readable_failure(self) -> None:
         runner = FakeRunner(
