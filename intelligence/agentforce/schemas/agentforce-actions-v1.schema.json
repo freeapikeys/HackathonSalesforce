@@ -1,0 +1,593 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://freeapikeys.github.io/HackathonSalesforce/agentforce/agentforce-actions-v1.schema.json",
+  "title": "HFS Agentforce Action Contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contractVersion",
+    "actionCatalog",
+    "scenarios"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "actionCatalog": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/actionDefinition"
+      },
+      "minItems": 3
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/scenario"
+      },
+      "minItems": 7
+    }
+  },
+  "$defs": {
+    "actionDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "developerName",
+        "action",
+        "target",
+        "description",
+        "requireUserConfirmation",
+        "inputContract",
+        "outputContract"
+      ],
+      "properties": {
+        "developerName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,79}$"
+        },
+        "action": {
+          "enum": [
+            "EXPLAIN_RELATIONSHIP_CASE",
+            "DRAFT_RELATIONSHIP_RECOMMENDATION",
+            "REQUEST_HUMAN_APPROVAL"
+          ]
+        },
+        "target": {
+          "type": "string",
+          "pattern": "^apex://[A-Za-z][A-Za-z0-9_]{0,79}$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "requireUserConfirmation": {
+          "type": "boolean"
+        },
+        "inputContract": {
+          "const": "#/$defs/actionRequest"
+        },
+        "outputContract": {
+          "const": "#/$defs/actionResponse"
+        }
+      }
+    },
+    "actionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "action",
+        "tenantKey",
+        "correlationId",
+        "purpose",
+        "workItemId"
+      ],
+      "properties": {
+        "contractVersion": {
+          "const": "1.0.0"
+        },
+        "action": {
+          "enum": [
+            "EXPLAIN_RELATIONSHIP_CASE",
+            "DRAFT_RELATIONSHIP_RECOMMENDATION",
+            "REQUEST_HUMAN_APPROVAL",
+            "EXECUTE_EXTERNAL_ACTION"
+          ]
+        },
+        "tenantKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "correlationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "workItemId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "recommendationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "approvalPolicyKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "desiredOutcome": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "modelProfile": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        }
+      }
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceId",
+        "sourceEventId",
+        "sourceUri",
+        "contentHash",
+        "summary",
+        "accessible"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "sourceEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "sourceUri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "accessible": {
+          "const": true
+        }
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "factId",
+        "statement",
+        "evidenceIds"
+      ],
+      "properties": {
+        "factId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "inference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inferenceId",
+        "statement",
+        "basisFactIds",
+        "confidence"
+      ],
+      "properties": {
+        "inferenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "basisFactIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommendationType",
+        "proposedActionType",
+        "rationale",
+        "confidence",
+        "evidenceIds",
+        "modelProfile",
+        "modelInvocationId",
+        "requiresHumanApproval"
+      ],
+      "properties": {
+        "recommendationType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "proposedActionType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "modelProfile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "modelInvocationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "requiresHumanApproval": {
+          "const": true
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approvalId",
+        "recommendationId",
+        "policyKey",
+        "status",
+        "externalActionExecuted"
+      ],
+      "properties": {
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "recommendationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "policyKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "status": {
+          "const": "PENDING"
+        },
+        "externalActionExecuted": {
+          "const": false
+        }
+      }
+    },
+    "refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "disclosedRecordIds"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "INACCESSIBLE_EVIDENCE",
+            "UNAUTHORIZED_ACTION",
+            "PURPOSE_DENIED",
+            "NO_QUALIFIED_MODEL"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "disclosedRecordIds": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    },
+    "serviceError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_REQUEST",
+            "UNSUPPORTED_CONTRACT_VERSION",
+            "VALIDATION_FAILED",
+            "RETRYABLE_DEPENDENCY_FAILURE",
+            "UNEXPECTED_ERROR"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actorUserId",
+        "agentKey",
+        "purpose",
+        "permissionEvaluated",
+        "modelInvocationId",
+        "humanApprovalRequired",
+        "externalActionExecuted"
+      ],
+      "properties": {
+        "actorUserId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "agentKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "permissionEvaluated": {
+          "const": true
+        },
+        "modelInvocationId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "humanApprovalRequired": {
+          "type": "boolean"
+        },
+        "externalActionExecuted": {
+          "const": false
+        }
+      }
+    },
+    "actionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "action",
+        "tenantKey",
+        "correlationId",
+        "status",
+        "facts",
+        "inferences",
+        "citations",
+        "recommendation",
+        "approval",
+        "refusal",
+        "errors",
+        "audit"
+      ],
+      "properties": {
+        "contractVersion": {
+          "const": "1.0.0"
+        },
+        "action": {
+          "enum": [
+            "EXPLAIN_RELATIONSHIP_CASE",
+            "DRAFT_RELATIONSHIP_RECOMMENDATION",
+            "REQUEST_HUMAN_APPROVAL",
+            "EXECUTE_EXTERNAL_ACTION"
+          ]
+        },
+        "tenantKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "correlationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": [
+            "SUCCESS",
+            "REFUSED",
+            "ERROR"
+          ]
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fact"
+          }
+        },
+        "inferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inference"
+          }
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/citation"
+          }
+        },
+        "recommendation": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/recommendation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approval": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/approval"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "refusal": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/refusal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/serviceError"
+          }
+        },
+        "audit": {
+          "$ref": "#/$defs/audit"
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "request",
+        "response"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "request": {
+          "$ref": "#/$defs/actionRequest"
+        },
+        "response": {
+          "$ref": "#/$defs/actionResponse"
+        }
+      }
+    }
+  }
+}

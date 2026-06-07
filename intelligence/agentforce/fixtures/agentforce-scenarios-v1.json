@@ -1,0 +1,423 @@
+{
+  "contractVersion": "1.0.0",
+  "actionCatalog": [
+    {
+      "developerName": "explain_relationship_case",
+      "action": "EXPLAIN_RELATIONSHIP_CASE",
+      "target": "apex://HFS_AgentExplainAction",
+      "description": "Read permission-aware relationship context, separate facts from inference, and return accessible citations.",
+      "requireUserConfirmation": false,
+      "inputContract": "#/$defs/actionRequest",
+      "outputContract": "#/$defs/actionResponse"
+    },
+    {
+      "developerName": "draft_relationship_recommendation",
+      "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+      "target": "apex://HFS_AgentRecommendationAction",
+      "description": "Draft an evidence-backed recommendation through the qualified model gateway without executing an action.",
+      "requireUserConfirmation": false,
+      "inputContract": "#/$defs/actionRequest",
+      "outputContract": "#/$defs/actionResponse"
+    },
+    {
+      "developerName": "request_human_approval",
+      "action": "REQUEST_HUMAN_APPROVAL",
+      "target": "apex://HFS_AgentApprovalRequestAction",
+      "description": "Create a pending human approval request for an existing recommendation. Never execute the protected action.",
+      "requireUserConfirmation": true,
+      "inputContract": "#/$defs/actionRequest",
+      "outputContract": "#/$defs/actionResponse"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "accessible-grounded-explanation",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "EXPLAIN_RELATIONSHIP_CASE",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": null,
+        "modelProfile": null
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "EXPLAIN_RELATIONSHIP_CASE",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-interruption",
+            "statement": "The operations source reported repeated service interruption.",
+            "evidenceIds": [
+              "a06000000000001AAA"
+            ]
+          },
+          {
+            "factId": "fact-update-obligation",
+            "statement": "The agreement requires an update within two hours.",
+            "evidenceIds": [
+              "a06000000000002AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-update-risk",
+            "statement": "A delayed update is likely to increase status chasing.",
+            "basisFactIds": [
+              "fact-interruption",
+              "fact-update-obligation"
+            ],
+            "confidence": 0.82
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000001AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:operations",
+            "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
+            "summary": "The operations source reported repeated service interruption.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000002AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:contracts",
+            "contentHash": "sha256:7549cf0c63ad4a64f178d8500c1f3874d97478f6ee323e4debbab6d89b168b69",
+            "summary": "The agreement requires an update within two hours.",
+            "accessible": true
+          }
+        ],
+        "recommendation": null,
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "relationship-management-agent",
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "permissionEvaluated": true,
+          "modelInvocationId": null,
+          "humanApprovalRequired": false,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "grounded-recommendation",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Reduce repeated status chasing without sending an unapproved message.",
+        "modelProfile": "recommendation_reasoning"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-interruption",
+            "statement": "The operations source reported repeated service interruption.",
+            "evidenceIds": [
+              "a06000000000001AAA"
+            ]
+          },
+          {
+            "factId": "fact-update-obligation",
+            "statement": "The agreement requires an update within two hours.",
+            "evidenceIds": [
+              "a06000000000002AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-update-risk",
+            "statement": "A delayed update is likely to increase status chasing.",
+            "basisFactIds": [
+              "fact-interruption",
+              "fact-update-obligation"
+            ],
+            "confidence": 0.82
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000001AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:operations",
+            "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
+            "summary": "The operations source reported repeated service interruption.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000002AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:contracts",
+            "contentHash": "sha256:7549cf0c63ad4a64f178d8500c1f3874d97478f6ee323e4debbab6d89b168b69",
+            "summary": "The agreement requires an update within two hours.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "PROACTIVE_RELATIONSHIP_UPDATE",
+          "proposedActionType": "SEND_STATUS_UPDATE",
+          "rationale": "Prepare a grounded update naming the owner and next update time, then route it for human approval.",
+          "confidence": 0.87,
+          "evidenceIds": [
+            "a06000000000001AAA",
+            "a06000000000002AAA"
+          ],
+          "modelProfile": "recommendation_reasoning",
+          "modelInvocationId": "model-invocation-agentforce-001",
+          "requiresHumanApproval": true
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "relationship-management-agent",
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-001",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "pending-human-approval",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "REQUEST_HUMAN_APPROVAL",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": "a07000000000001AAA",
+        "approvalPolicyKey": "external-relationship-communication-v1",
+        "desiredOutcome": null,
+        "modelProfile": null
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "REQUEST_HUMAN_APPROVAL",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [],
+        "inferences": [],
+        "citations": [],
+        "recommendation": null,
+        "approval": {
+          "approvalId": "a08000000000001AAA",
+          "recommendationId": "a07000000000001AAA",
+          "policyKey": "external-relationship-communication-v1",
+          "status": "PENDING",
+          "externalActionExecuted": false
+        },
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "relationship-management-agent",
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "permissionEvaluated": true,
+          "modelInvocationId": null,
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "inaccessible-evidence-refusal",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "EXPLAIN_RELATIONSHIP_CASE",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": null,
+        "modelProfile": null
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "EXPLAIN_RELATIONSHIP_CASE",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "REFUSED",
+        "facts": [],
+        "inferences": [],
+        "citations": [],
+        "recommendation": null,
+        "approval": null,
+        "refusal": {
+          "code": "INACCESSIBLE_EVIDENCE",
+          "message": "The source evidence is missing or inaccessible for this user and purpose.",
+          "retryable": false,
+          "disclosedRecordIds": []
+        },
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "relationship-management-agent",
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "permissionEvaluated": true,
+          "modelInvocationId": null,
+          "humanApprovalRequired": false,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "unauthorized-external-action-refusal",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "EXECUTE_EXTERNAL_ACTION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": "a07000000000001AAA",
+        "approvalPolicyKey": null,
+        "desiredOutcome": null,
+        "modelProfile": null
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "EXECUTE_EXTERNAL_ACTION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "REFUSED",
+        "facts": [],
+        "inferences": [],
+        "citations": [],
+        "recommendation": null,
+        "approval": null,
+        "refusal": {
+          "code": "UNAUTHORIZED_ACTION",
+          "message": "Agentforce cannot execute the protected external action. Human approval and the governed execution service are required.",
+          "retryable": false,
+          "disclosedRecordIds": []
+        },
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "relationship-management-agent",
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "permissionEvaluated": true,
+          "modelInvocationId": null,
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "no-qualified-model-refusal",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": null,
+        "modelProfile": "recommendation_reasoning"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "REFUSED",
+        "facts": [],
+        "inferences": [],
+        "citations": [],
+        "recommendation": null,
+        "approval": null,
+        "refusal": {
+          "code": "NO_QUALIFIED_MODEL",
+          "message": "No model deployment satisfies the configured policy.",
+          "retryable": true,
+          "disclosedRecordIds": []
+        },
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "relationship-management-agent",
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "permissionEvaluated": true,
+          "modelInvocationId": null,
+          "humanApprovalRequired": false,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "invalid-approval-request-error",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "REQUEST_HUMAN_APPROVAL",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": null,
+        "modelProfile": null
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "REQUEST_HUMAN_APPROVAL",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "ERROR",
+        "facts": [],
+        "inferences": [],
+        "citations": [],
+        "recommendation": null,
+        "approval": null,
+        "refusal": null,
+        "errors": [
+          {
+            "code": "INVALID_REQUEST",
+            "message": "A recommendation identifier and approval policy are required.",
+            "retryable": false
+          }
+        ],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "relationship-management-agent",
+          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "permissionEvaluated": true,
+          "modelInvocationId": null,
+          "humanApprovalRequired": false,
+          "externalActionExecuted": false
+        }
+      }
+    }
+  ]
+}
