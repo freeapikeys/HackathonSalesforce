@@ -126,6 +126,26 @@
           </div>
         </template>
 
+        <template lwc:if={commandMessage}>
+          <div
+            class="command-feedback command-feedback_success"
+            data-testid="command-success"
+            role="status"
+          >
+            {commandMessage}
+          </div>
+        </template>
+
+        <template lwc:if={commandError}>
+          <div
+            class="command-feedback command-feedback_error"
+            data-testid="command-error"
+            role="alert"
+          >
+            {commandError}
+          </div>
+        </template>
+
         <div class="workspace">
           <main class="primary-column">
             <section class="panel" aria-labelledby="relationship-heading">
@@ -343,22 +363,31 @@
               </p>
               <template lwc:if={showApprovalControls}>
                 <div class="approval-controls" data-testid="approval-controls">
-                  <lightning-button
-                    data-testid="reject-button"
-                    label="Reject"
-                    onclick={handleReject}
-                  ></lightning-button>
-                  <lightning-button
-                    data-testid="modify-button"
-                    label="Modify"
-                    onclick={handleModify}
-                  ></lightning-button>
-                  <lightning-button
-                    data-testid="approve-button"
-                    label="Approve"
-                    variant="brand"
-                    onclick={handleApprove}
-                  ></lightning-button>
+                  <template lwc:if={showRejectControl}>
+                    <lightning-button
+                      data-testid="reject-button"
+                      label="Reject"
+                      disabled={decisionPending}
+                      onclick={handleReject}
+                    ></lightning-button>
+                  </template>
+                  <template lwc:if={showModifyControl}>
+                    <lightning-button
+                      data-testid="modify-button"
+                      label="Modify"
+                      disabled={decisionPending}
+                      onclick={handleModify}
+                    ></lightning-button>
+                  </template>
+                  <template lwc:if={showApproveControl}>
+                    <lightning-button
+                      data-testid="approve-button"
+                      label="Approve"
+                      variant="brand"
+                      disabled={decisionPending}
+                      onclick={handleApprove}
+                    ></lightning-button>
+                  </template>
                 </div>
               </template>
             </section>

@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>HFS_RelationshipController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Read relationship context and manage assigned work, evidence, SOP execution, and recommendations.</description>
     <fieldPermissions>
         <editable>false</editable>

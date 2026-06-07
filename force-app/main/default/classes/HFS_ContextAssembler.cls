@@ -451,6 +451,7 @@ public with sharing class HFS_ContextAssembler {
           Summary__c,
           Due_At__c,
           Blocked_Reason__c,
+          Owner.Name,
           CreatedDate
         FROM HFS_Work_Item__c
         WHERE Id = :workItemId
@@ -475,6 +476,7 @@ public with sharing class HFS_ContextAssembler {
           Summary__c,
           Due_At__c,
           Blocked_Reason__c,
+          Owner.Name,
           CreatedDate
         FROM HFS_Work_Item__c
         WHERE Primary_Entity__c = :subjectEntityId
@@ -1101,7 +1103,7 @@ public with sharing class HFS_ContextAssembler {
     }
     if (recordValue instanceof HFS_Work_Item__c) {
       HFS_Work_Item__c value = (HFS_Work_Item__c) recordValue;
-      return contextItem(
+      HFS_ContextItem result = contextItem(
         value,
         value.External_Key__c,
         value.Priority__c,
@@ -1118,10 +1120,14 @@ public with sharing class HFS_ContextAssembler {
         null,
         null
       );
+      result.ownerLabel = value.Owner == null ? null : value.Owner.Name;
+      result.dueAt = value.Due_At__c;
+      result.blockedReason = value.Blocked_Reason__c;
+      return result;
     }
     if (recordValue instanceof HFS_SOP_Execution__c) {
       HFS_SOP_Execution__c value = (HFS_SOP_Execution__c) recordValue;
-      return contextItem(
+      HFS_ContextItem result = contextItem(
         value,
         value.External_Key__c,
         value.Definition_Key__c,
@@ -1138,6 +1144,8 @@ public with sharing class HFS_ContextAssembler {
         null,
         null
       );
+      result.definitionVersion = value.Definition_Version__c;
+      return result;
     }
     if (recordValue instanceof HFS_Evidence__c) {
       HFS_Evidence__c value = (HFS_Evidence__c) recordValue;
@@ -1161,7 +1169,7 @@ public with sharing class HFS_ContextAssembler {
     }
     if (recordValue instanceof HFS_Recommendation__c) {
       HFS_Recommendation__c value = (HFS_Recommendation__c) recordValue;
-      return contextItem(
+      HFS_ContextItem result = contextItem(
         value,
         value.External_Key__c,
         value.Recommendation_Type__c,
@@ -1178,10 +1186,14 @@ public with sharing class HFS_ContextAssembler {
         null,
         null
       );
+      result.proposedActionType = value.Proposed_Action_Type__c;
+      result.modelProfile = value.Model_Profile__c;
+      result.modelInvocationId = value.Model_Invocation_Id__c;
+      return result;
     }
     if (recordValue instanceof HFS_Approval__c) {
       HFS_Approval__c value = (HFS_Approval__c) recordValue;
-      return contextItem(
+      HFS_ContextItem result = contextItem(
         value,
         value.External_Key__c,
         value.Policy_Key__c,
@@ -1200,10 +1212,13 @@ public with sharing class HFS_ContextAssembler {
         null,
         null
       );
+      result.requestedAt = value.Requested_At__c;
+      result.decidedAt = value.Decided_At__c;
+      return result;
     }
     if (recordValue instanceof HFS_Action__c) {
       HFS_Action__c value = (HFS_Action__c) recordValue;
-      return contextItem(
+      HFS_ContextItem result = contextItem(
         value,
         value.External_Key__c,
         value.Action_Type__c,
@@ -1222,10 +1237,14 @@ public with sharing class HFS_ContextAssembler {
         null,
         null
       );
+      result.requestedAt = value.Requested_At__c;
+      result.correlationId = value.Correlation_Id__c;
+      result.externalReference = value.External_Reference__c;
+      return result;
     }
     if (recordValue instanceof HFS_Outcome__c) {
       HFS_Outcome__c value = (HFS_Outcome__c) recordValue;
-      return contextItem(
+      HFS_ContextItem result = contextItem(
         value,
         value.External_Key__c,
         value.Outcome_Type__c,
@@ -1242,6 +1261,9 @@ public with sharing class HFS_ContextAssembler {
         null,
         null
       );
+      result.metricKey = value.Metric_Key__c;
+      result.metricValue = value.Metric_Value__c;
+      return result;
     }
     HFS_Evaluation__c value = (HFS_Evaluation__c) recordValue;
     return contextItem(
