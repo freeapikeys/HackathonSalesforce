@@ -14,6 +14,18 @@ Examples:
 - `embedding_general`
 - `sensitive_on_prem`
 
+North Star can reuse these logical profiles and add retail-specific aliases only
+when they describe a distinct capability. Candidate profiles:
+
+- `retail_signal_classification`
+- `retail_recovery_reasoning`
+- `supplier_response_analysis`
+- `staff_alert_drafting`
+- `manager_briefing`
+
+Do not encode provider names or product names such as burger items into a model
+profile. The selected product belongs in context, not routing policy.
+
 Each logical profile resolves to a versioned deployment and policy.
 
 ## Core Records
@@ -109,7 +121,7 @@ entry point and the Einstein Trust Layer where available.
 
 For custom providers, our LLM Open Connector adapter presents one stable
 contract and translates provider-specific requests and responses. The adapter
-may be fronted by MuleSoft for policy, routing, observability, and enterprise
+may be fronted by MuleSoft for policy, routing, observability, and production
 connectivity, but model-streaming and latency requirements must be tested
 before choosing MuleSoft as the inference proxy.
 
@@ -122,6 +134,11 @@ embed(profile, inputs, invocation_policy)
 
 This interface lets custom Apex, Flow, Agentforce actions, and future non-
 Salesforce services request capabilities without encoding a provider.
+
+For North Star, the generation context must distinguish source facts from
+inferences and include only the evidence the current user and purpose can see:
+product, batch, store, supplier, complaint cluster, inventory position,
+promotion window, staff context, and prior outcome evidence.
 
 ## Failover
 

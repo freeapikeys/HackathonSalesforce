@@ -81,6 +81,20 @@ operational issue. The scenario then replays a duplicate, sends malformed
 input, delivers a late event, introduces a contradictory agreement assertion,
 and sends an out-of-order event.
 
+The North Star demo should add retail fixtures using the same envelope and intake
+rules. Candidate event types:
+
+- `io.github.freeapikeys.hfs.retail.stockout-risk-detected.v1`;
+- `io.github.freeapikeys.hfs.retail.expiry-risk-detected.v1`;
+- `io.github.freeapikeys.hfs.retail.complaint-cluster-detected.v1`;
+- `io.github.freeapikeys.hfs.retail.supplier-response-received.v1`;
+- `io.github.freeapikeys.hfs.retail.queue-risk-detected.v1`;
+- `io.github.freeapikeys.hfs.retail.action-outcome-captured.v1`.
+
+Retail event payloads must name product, product category, store, supplier,
+batch where relevant, source metric, and evidence summary. They must not assume
+the selected product is a burger item.
+
 Run:
 
 ```bash

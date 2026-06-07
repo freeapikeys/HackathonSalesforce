@@ -5,33 +5,45 @@
 Before starting work:
 
 1. Read `ROADMAP.md`.
-2. Read the relevant files in `docs/`.
-3. Run `bd prime`.
-4. Run `./scripts/team-status.sh` and claim one ready leaf bead with
-   `bd update <id> --claim`.
-5. Search OneContext when the request refers to prior decisions, existing
-   features, debugging history, or previous conversations.
+2. Read `docs/north-star-mvp.md`.
+3. Read `docs/north-star-implementation-plan.md`.
+4. Read the relevant contract or source files for the surface you are changing.
+5. Run `bd prime` and `bd ready` if Beads is installed.
+6. If Beads is not installed, use the checklist in `ROADMAP.md` and say which
+   checklist item you are advancing.
 
-The roadmap defines product direction. Beads defines executable work. A chat
-plan is not a replacement for either.
+The roadmap is the visible hackathon checklist. Beads is useful for dependency
+tracking, but it is not required to understand the build.
 
-For the first vertical slice, read `docs/parallel-development.md`. Claim lane
-leaf beads, not the `hfs-v1-05` through `hfs-v1-10` coordination parents.
+## North Star Context
 
-<!-- BEGIN BEADS INTEGRATION -->
+North Star is the active product. It is a supermarket operations command center
+that coordinates inventory, expiry, complaints, supplier recovery, staff tasks,
+manager approval, and outcome tracking.
+
+Do not drift back into the old broad platform idea. Keep work tied
+to the retail demo unless the user explicitly asks for longer-term architecture.
+
+Do not hard-code the MVP to burgers. Burger patties can be the first scenario,
+but object names, fixtures, labels, actions, and Agentforce instructions must
+support any selected supermarket product category.
+
+The North Star agents are:
+
+- North Star Orchestrator Topic;
+- Inventory and Waste Agent;
+- Supplier and Product Trust Agent;
+- Store Execution and Outreach Agent.
+
+The Supplier and Product Trust Agent must not blindly stop all orders because
+complaints exist. It should inspect batch, product, store, time, supplier
+response, and available alternatives before proposing quarantine, replacement,
+reorder, transfer, promotion adjustment, or escalation.
 
 ## Issue Tracking
 
-This project uses [Beads](https://github.com/steveyegge/beads).
-
-- Track implementation work, bugs, research gaps, and decisions in Beads.
-- Use dependencies to make sequencing explicit.
-- Create newly discovered work with a `discovered-from` relationship.
-- Close a bead only after its acceptance checks pass.
-- Run `bd ready` instead of selecting work from memory.
-- Roadmap checkboxes are capability gates, not a second task tracker.
-- Run `./scripts/sync-beads.sh` after changing Beads and commit the resulting
-  `.beads/issues.jsonl`.
+This project can use [Beads](https://github.com/steveyegge/beads) when
+available.
 
 Useful commands:
 
@@ -47,56 +59,45 @@ bd close <id> --reason "Acceptance checks passed"
 ./scripts/sync-beads.sh
 ```
 
-<!-- END BEADS INTEGRATION -->
-
-## Development and Product Boundary
-
-Beads, OneContext, Overstory, Atlas/GOTCHA files, local agent memory, and agent
-worktrees belong to the development control plane.
-
-They must not become Salesforce metadata, MuleSoft runtime dependencies,
-customer data models, product prompts, or deployable packages.
-
-Product capabilities such as memory, dependency tracking, agent handoffs, and
-replay must be implemented natively using the product architecture and security
-model.
+Close a bead only after its acceptance checks pass. If you change Beads, run
+`./scripts/sync-beads.sh` and commit the updated `.beads/issues.jsonl`.
 
 ## Engineering Rules
 
-- Use plain business and technical language. Do not invent product terminology.
-- Define every metric, score, formula, time window, and confidence value.
-- Preserve source records and provenance. Derived facts must identify their
-  inputs, rule or model version, and generation time.
+- Use plain retail operations language.
+- Preserve source records and evidence.
 - Distinguish facts, claims, inferences, recommendations, decisions, actions,
   and outcomes.
+- Define every metric, score, formula, time window, and confidence value.
 - Do not silently overwrite contradictory evidence. Supersede it explicitly.
-- External actions require the configured policy and human approval.
+- External actions require the configured policy and manager approval.
+- Slack, WhatsApp, reorder, supplier, markdown, and store-task write-backs are
+  protected external actions unless explicitly scoped as local demo mocks.
+- Approval means a business manager role in the MVP, not a Salesforce admin and
+  not a developer approving implementation work. A command-center button or
+  Salesforce approval/status record is acceptable for the hackathon demo.
 - Agents operate with the current user's permissions and purpose restrictions.
-- Prefer Salesforce, Agentforce, Data 360, and MuleSoft platform capabilities
-  before introducing another runtime.
-- Keep every enterprise implementation adaptable to its real terminology,
-  systems, SOPs, permissions, and operating structure.
+- Prefer existing Salesforce, Agentforce, MuleSoft, model-gateway, LWC, and
+  harness patterns before adding new architecture.
 - Add focused tests for every behavioral change.
 
 ## Workflow
 
-Use the project adaptation of Atlas:
+1. **Scope:** identify the roadmap checkbox being advanced.
+2. **Trace:** identify the source data, evidence, action, owner, and failure path.
+3. **Assemble:** implement the smallest complete behavior.
+4. **Verify:** run the focused checks and record what passed.
+5. **Update:** keep docs and checklist status honest.
 
-1. **Architect:** identify the problem, user, measurable result, and constraints.
-2. **Trace:** define data, sources, interfaces, ownership, and failure paths.
-3. **Link:** validate credentials, APIs, permissions, and test fixtures.
-4. **Assemble:** implement the smallest complete vertical behavior.
-5. **Stress-test:** test errors, permissions, retries, evidence, and acceptance.
-
-Push deterministic work into code, schemas, validation, and policies. Use
-language models for interpretation and recommendations, not for invariants that
-must always execute the same way.
+Use language models for interpretation and recommendations, not for invariants
+that must always execute deterministically.
 
 ## Documentation
 
-- Update `ROADMAP.md` only when product scope, dependencies, or completion gates
-  change.
-- Record architecture decisions in `docs/decisions/`.
-- Add research claims to the research archive with a source locator.
+- Update `ROADMAP.md` when a checklist item is truly complete.
+- Keep `docs/north-star-mvp.md` as the product brief.
+- Keep `docs/north-star-implementation-plan.md` as the practical build plan.
+- Record architecture decisions in `docs/decisions/` only when a real contract
+  decision changes.
 - Never commit secrets, personal memory, downloaded copyrighted source files,
   agent transcripts, or machine-local paths.

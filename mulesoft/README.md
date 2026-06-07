@@ -45,6 +45,23 @@ runtime records immutable intake attempts, retries temporary source-store
 failures, quarantines exhausted or correctable failures, authorizes replay by
 purpose, and links each replay attempt to its original audit record.
 
+## North Star Mock Actions
+
+The North Star demo should use the same mock runtime to simulate retail source
+systems and channels:
+
+- POS and inventory reads;
+- expiry and batch records;
+- supplier quality case and replacement-batch response;
+- reorder, warehouse transfer, markdown, and store-task write-backs;
+- Slack staff alert;
+- WhatsApp-style urgent staff alert;
+- outcome callback.
+
+Use real Slack or WhatsApp credentials only when they are available and safe to
+configure. Otherwise the mock runtime should return deterministic channel
+delivery records that are clearly presented as demo channel results.
+
 It deliberately keeps adapters behind Python interfaces so the same contract
 tests can be applied to Mule flows and real connectors without embedding mock
 behavior in production configuration. The runtime is an integration test

@@ -56,3 +56,10 @@ The connected demo registers only the Salesforce-approved action with the mock
 write-back adapter. It first submits an unregistered approval and requires a
 `403 PERMISSION_DENIED` with no outcome, then executes the approved action,
 captures the callback, and writes the correlated outcome back to Salesforce.
+
+For North Star, approved mock write-backs should include retail action types such
+as supplier quality case, replacement-batch request, reorder request, warehouse
+transfer, markdown plan, store tasks, Slack alert, WhatsApp-style alert, and
+retail outcome capture. These can remain action payloads behind the existing
+`EXECUTE_APPROVED_ACTION` operation unless a real integration requires a new
+contract version.

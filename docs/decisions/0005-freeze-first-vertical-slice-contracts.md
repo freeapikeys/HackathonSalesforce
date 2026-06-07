@@ -42,3 +42,7 @@ changing identity, authorization, approval, or audit semantics.
   authorization, approval, provenance, or routing policy.
 - Provider, source-system, and user-interface implementation details remain
   behind these contracts.
+- North Star should first specialize data, fixtures, action payloads, and UI
+  state behind version `1.0.0`. Create a new contract version only if the retail
+  demo requires renamed fields, new required inputs, weakened approvals, or
+  changed authorization semantics.

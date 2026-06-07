@@ -84,3 +84,11 @@ Final tenant-scoped counts were:
 This checkpoint proves the first synthetic vertical slice and its governance
 boundaries. It does not claim production readiness, real-source certification,
 or completion of the wider capability roadmap.
+
+## North Star Follow-Up
+
+This document remains historical evidence for the generic HFS foundation. The
+North Star demo requires a separate verification record after the retail
+vertical slice passes. That record should include product-category-neutral
+seed data, supplier-response behavior, Slack and WhatsApp-style channel
+results, and retail outcome metrics.

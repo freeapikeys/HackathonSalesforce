@@ -25,3 +25,6 @@ safety, fairness, provenance, multiple metrics, and human release control.
   policies or models.
 - The live Agentforce path remains deterministic around permissions, approval,
   and action execution.
+- North Star outcome learning can propose improved stockout, expiry, complaint,
+  supplier, and staff-alert thresholds, but it cannot silently change supplier
+  blocking, food-safety, markdown, or staff-allocation policy.

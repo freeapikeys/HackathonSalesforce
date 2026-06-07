@@ -9,6 +9,15 @@ vertical slice without manual Salesforce record edits:
 human approval -> mocked MuleSoft write-back -> outcome -> evaluation ->
 refreshed Lightning context`
 
+This is currently the generic HFS vertical slice. North Star should reuse the
+same verifier once the retail seed, event fixtures, channel mocks, and command
+center are wired. The North Star proof should become:
+
+`retail event -> product, store, supplier, batch, complaint, inventory, and
+staff context -> recovery recommendation -> manager approval -> MuleSoft
+supplier/reorder/task/channel actions -> retail outcome -> refreshed North Star
+command center`
+
 The verifier creates a temporary clone, installs locked dependencies, runs all
 repository checks, deploys Salesforce metadata with the four Apex test suites,
 runs the connected demo, validates its governed failure paths, and writes a
@@ -105,6 +114,15 @@ Evidence validation fails unless all of these are true:
 - MuleSoft accepts the approved mock write-back with `202 QUEUED`;
 - the final action is `EXECUTED`, outcome is `SUCCESS`, work item is
   `COMPLETED`, and an evaluation exists.
+
+North Star should add these invariants when implemented:
+
+- the selected product category can change without changing code;
+- supplier action is not executed before complaint evidence and supplier
+  response are evaluated;
+- Slack and WhatsApp-style alerts are recorded only after approved execution;
+- outcome metrics include stockout, waste, complaint, and staff-readiness
+  dimensions.
 
 ## Recovery
 

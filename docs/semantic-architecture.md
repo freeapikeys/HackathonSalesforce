@@ -105,6 +105,29 @@ the information available at the time.
 - `ExperimentCandidate`
 - `PromotionDecision`
 
+## North Star Semantic Extension
+
+North Star should extend the core types through controlled terms before adding a
+separate graph store. Candidate retail terms:
+
+- `Store`
+- `ProductCategory`
+- `ProductBatch`
+- `ShelfLocation`
+- `InventoryPosition`
+- `PromotionWindow`
+- `ComplaintCluster`
+- `SupplierResponse`
+- `MarkdownPlan`
+- `WarehouseTransfer`
+- `StaffTask`
+- `ChannelAlert`
+- `RetailOutcome`
+
+These terms should preserve original source terminology. For example, one
+retailer may say "lot", another "batch", and another "SKU batch"; mappings
+should keep those labels while relating them to the shared concept.
+
 ## Standards
 
 - OWL 2 for vocabulary and class relationships.
@@ -153,6 +176,11 @@ SOPs, policies, constraints, and approval requirements.
 What was attempted, under which conditions, what happened, and how the result
 was measured.
 
+North Star outcome memory should capture which recovery option was chosen,
+supplier response status, manager decision, channel delivery, staff completion,
+stockout result, waste result, complaint result, and any new risk created by
+the action.
+
 ### Working Context
 
 The minimum accessible information assembled for one agent run or user task.
@@ -169,7 +197,7 @@ The local memory research memory system demonstrates useful patterns:
 - outcomes can strengthen or downrank future rules;
 - OWL is an export of structured knowledge, not the only working store.
 
-The enterprise product extends those patterns with:
+The production product extends those patterns with:
 
 - tenant and user isolation;
 - purpose and consent checks;

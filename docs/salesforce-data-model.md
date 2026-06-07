@@ -26,6 +26,27 @@ recommendation -> approval -> action -> outcome -> evaluation`
 Every mapped operational record has a tenant key and stable external key.
 Source-derived records link to the immutable event that produced them.
 
+## North Star Retail Mapping
+
+North Star should map retail operations concepts onto this model before adding
+new custom objects. Add fields or types only when the generic model cannot
+express the demo requirement.
+
+| Retail concept                                                         | Initial model mapping                    |
+| ---------------------------------------------------------------------- | ---------------------------------------- |
+| Store                                                                  | `HFS_Entity__c`                          |
+| Product                                                                | `HFS_Entity__c`                          |
+| Product category                                                       | entity attribute or event payload        |
+| Supplier                                                               | `HFS_Entity__c`                          |
+| Batch or lot                                                           | `HFS_Entity__c` or evidence attribute    |
+| Promotion                                                              | `HFS_Agreement__c` or `HFS_Event__c`     |
+| Stockout, expiry, complaint, queue, or supplier signal                 | `HFS_Event__c`                           |
+| Source proof                                                           | `HFS_Evidence__c`                        |
+| Recovery plan                                                          | `HFS_Recommendation__c`                  |
+| Manager decision                                                       | `HFS_Approval__c`                        |
+| Supplier, reorder, markdown, task, Slack, or WhatsApp-style write-back | `HFS_Action__c`                          |
+| Result                                                                 | `HFS_Outcome__c` and `HFS_Evaluation__c` |
+
 ## Enforced Relationships
 
 - relationships require distinct subject and object entities;

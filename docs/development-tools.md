@@ -5,12 +5,12 @@
 The team uses several tools to preserve context and coordinate work. They form
 the development control plane only.
 
-| Tool | Job | Repository |
-|---|---|---|
-| Beads | Work items, dependencies, readiness, and completion history | https://github.com/steveyegge/beads |
-| Aline / OneContext | Searchable development conversation history | https://github.com/human-re/aline |
-| Overstory | Optional parallel agents, worktrees, mail, and merge coordination | https://github.com/jayminwest/overstory |
-| Atlas/GOTCHA adaptation | Architecture and validation workflow | `docs/development-workflow.md` |
+| Tool                    | Job                                                               | Repository                              |
+| ----------------------- | ----------------------------------------------------------------- | --------------------------------------- |
+| Beads                   | Work items, dependencies, readiness, and completion history       | https://github.com/steveyegge/beads     |
+| Aline / OneContext      | Searchable development conversation history                       | https://github.com/human-re/aline       |
+| Overstory               | Optional parallel agents, worktrees, mail, and merge coordination | https://github.com/jayminwest/overstory |
+| Atlas/GOTCHA adaptation | Architecture and validation workflow                              | `docs/development-workflow.md`          |
 
 The original Atlas material is inside the private
 `freeapikeys/claudes-space` repository. Collaborators do not need access to it
@@ -35,6 +35,22 @@ Recommended versions at project bootstrap:
 
 Overstory was archived upstream on May 28, 2026. It is optional and must not
 become necessary to build, test, or deploy the product.
+
+## North Star Hackathon Usage
+
+For the hackathon, use the tools to preserve the North Star build path:
+
+- Beads tracks tasks and dependencies when available.
+- Contributors should pull latest `main`, inspect the relevant contract, make a
+  focused change, run the focused check, and update docs or fixtures when
+  behavior changes.
+- Generated data, supplier replies, malformed event cases, expected
+  recommendation notes, and manual validation must land in committed files,
+  fixtures, or checklists.
+- Tooling should support the three-agent system: Inventory and Waste, Supplier
+  and Product Trust, and Store Execution and Outreach.
+- Keep Slack, WhatsApp, Agentforce, MuleSoft, Salesforce, and LWC changes
+  contract-compatible so they converge cleanly.
 
 ## Tool Responsibilities
 

@@ -16,6 +16,11 @@ Provider and model identifiers are deployment configuration. They do not
 appear in recommendation requests, prompts, Agentforce workflow logic, or UI
 state.
 
+North Star callers should request logical capabilities such as
+`retail_recovery_reasoning` or the existing `recommendation_reasoning`
+profile. They must not request a provider, a model name, or a product-specific
+profile such as a burger-only model.
+
 ## Deterministic Routing
 
 Version `1.0.0` evaluates candidates in the policy's explicit priority order.
@@ -39,6 +44,12 @@ Every invocation records:
 - retention mode and completion status.
 
 Sensitive prompt or response content is not required in the audit record.
+
+North Star invocation audit should also record the selected product external key,
+product category, store key, supplier key, source evidence identifiers,
+recommendation type, and action type when these are present in accessible
+context. Record identifiers should be stable business keys or hashes where
+policy requires minimization.
 
 ## Compatibility
 

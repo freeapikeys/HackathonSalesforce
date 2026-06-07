@@ -12,6 +12,10 @@ and integration adapters. It covers:
 - pending action logging;
 - outcome capture.
 
+The service remains domain-neutral. North Star maps supermarket products,
+stores, suppliers, batches, complaints, promotions, tasks, and channel alerts
+onto the same context, recommendation, approval, action, and outcome boundary.
+
 The contract and implementation classes are under
 `force-app/main/default/classes/`. `HFS_RelationshipServiceImpl` is the
 `with sharing` implementation, `HFS_ContextAssembler` builds context and

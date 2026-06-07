@@ -27,18 +27,31 @@ the production product.
 - local fine-tuning recipes when an organization operates its own model;
 - deterministic pipeline latency or cost improvements.
 
+North Star-specific suitable experiments:
+
+- stockout-risk threshold compared with sales-at-risk;
+- expiry markdown threshold compared with waste avoided;
+- complaint-cluster threshold by product, batch, store, and supplier;
+- supplier-response classification accuracy;
+- staff-alert wording and acknowledgement rate;
+- recommendation ordering when inventory, quality, and queue risks conflict.
+
 ## Unsafe Experiments
 
 The loop must not autonomously:
 
 - alter production SOPs or approval requirements;
-- execute enterprise actions;
-- train on unrestricted customer records;
+- execute production or external actions;
+- train on unrestricted shopper, complaint, or staff records;
 - change permissions, consent, retention, or safety rules;
 - promote its own candidates;
-- use live customers or employees as an unapproved test population;
+- use live shoppers or staff as an unapproved test population;
 - optimize only engagement when the relevant outcome includes harm, fairness,
   or service quality.
+
+For North Star, the loop must not autonomously change food-safety rules, supplier
+blocking policy, markdown policy, staff allocation policy, or customer-facing
+messages. It can propose candidates for review.
 
 ## Experiment Contract
 
@@ -71,6 +84,11 @@ No model is promoted on one quality score alone.
 - cost;
 - robustness to prompt injection and malformed context;
 - downstream business outcome where a reliable measure exists.
+
+North Star evaluation should include stockout avoided, waste reduced, complaint
+risk contained, supplier SLA response, staff-task completion, alert delivery,
+approval accuracy, and whether the selected action created a new operational
+risk.
 
 ## Promotion
 

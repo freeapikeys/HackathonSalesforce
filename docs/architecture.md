@@ -2,167 +2,111 @@
 
 ## Product Mental Model
 
-At product level, the system is two coupled loops:
+North Star turns scattered supermarket signals into approved operational
+actions.
 
 ```mermaid
 flowchart LR
-    SOURCES["First-party business data<br/>and source events"]
+    SOURCES["Retail source signals<br/>POS, inventory, expiry, complaints,<br/>supplier, promotion, roster"]
+    CONTEXT["Evidence and context<br/>product, batch, store, supplier,<br/>promotion, staff, complaint cluster"]
+    AGENTS["Agentforce analysis<br/>inventory/waste,<br/>supplier/product trust,<br/>store execution/outreach"]
+    REVIEW["Manager review<br/>facts, inference, recommendation,<br/>approval"]
+    ACTIONS["Mocked actions<br/>supplier case, reorder, transfer,<br/>markdown, task, Slack, WhatsApp-style alert"]
+    OUTCOME["Outcome<br/>stockout avoided, waste reduced,<br/>complaint risk, staff readiness"]
 
-    subgraph INTELLIGENCE["Data and Intelligence Engine"]
-        INGEST["Ingest and preserve"]
-        MEANING["Aggregate, map ontology,<br/>resolve identity and provenance"]
-        REASON["Attribute, detect, predict<br/>and generate grounded recommendations"]
-    end
-
-    subgraph RELATIONSHIPS["Relationship Action System"]
-        REVIEW["Humans and agents review<br/>evidence and proposed action"]
-        ACT["Approved outreach, work,<br/>escalation or operational change"]
-        OUTCOME["Problem, intervention,<br/>outcome and evaluation"]
-    end
-
-    SOURCES --> INGEST --> MEANING --> REASON
-    REASON -->|"insights and proposed actions"| REVIEW
-    REVIEW --> ACT --> OUTCOME
-    OUTCOME -->|"new events, evidence and relationship state"| INGEST
+    SOURCES --> CONTEXT --> AGENTS --> REVIEW --> ACTIONS --> OUTCOME
+    OUTCOME -->|"new evidence"| CONTEXT
 ```
 
-Here, data manipulation means governed transformation, aggregation, mapping,
-and inference. It does not mean covert behavioral manipulation. Personalization
-and predictions remain bounded by source evidence, consent, purpose, access
-policy, model policy, and the configured human approval point.
+The key rule is simple: agents can recommend, explain, draft, and request
+approval. Consequential external actions require manager approval and an
+auditable action boundary.
 
-## Current Intended Architecture
+## North Star Flow
+
+1. A retail event arrives from a synthetic POS, inventory, expiry, complaint,
+   supplier, promotion, or staffing source.
+2. The event contract validates the envelope, hash, idempotency key, sequence,
+   and correlation ID.
+3. The source payload maps into Salesforce context records for product, batch,
+   store, supplier, promotion, complaint evidence, staff readiness, work item,
+   recommendation, approval, action, and outcome.
+4. Agentforce receives only the context the current user and purpose can access.
+5. Three specialist agents analyze inventory/waste, supplier/product trust, and
+   store execution/outreach.
+6. The orchestrator produces one evidence-backed recovery plan.
+7. The manager approves, rejects, modifies, or defers protected actions.
+8. MuleSoft mocks execute approved write-backs and channel alerts.
+9. Outcome events return through the same intake path and refresh the command
+   center.
+
+## Runtime Components
 
 ```mermaid
 flowchart TB
-    subgraph Sources["Enterprise Source Systems"]
-        CRM["CRM and sales"]
-        HR["HR and workforce"]
-        FIN["Finance and contracts"]
-        SERVICE["Service and communications"]
-        OPS["Suppliers, assets, and operations"]
+    subgraph RetailSources["Retail Sources"]
+        POS["POS sales"]
+        INV["Inventory and batches"]
+        EXP["Expiry and markdown"]
+        COMP["Complaints and refunds"]
+        SUP["Supplier response"]
+        ROSTER["Roster and queue signals"]
     end
 
-    subgraph Integration["Integration and Action Boundary"]
-        SYSAPI["MuleSoft System APIs"]
-        PROCAPI["MuleSoft Process APIs"]
-        MQ["Queues, retry, replay, and dead letters"]
-        EXPAPI["MuleSoft Experience APIs"]
+    subgraph Integration["Integration Boundary"]
+        EVENTS["Event contract"]
+        MULE["MuleSoft mock APIs"]
+        CHANNELS["Slack and WhatsApp-style mocks"]
     end
 
-    subgraph Data["Data and Meaning"]
-        RAW["Preserved source records and events"]
-        D360["Data 360 harmonization, identity, history, features, and metrics"]
-        SEM["OWL and SKOS types, SHACL rules, mappings, and provenance"]
+    subgraph Salesforce["Salesforce Core"]
+        RECORDS["HFS records used as internal spine"]
+        WORK["Retail work item and SOP step"]
+        APPROVAL["Manager approval"]
+        AUDIT["Action, outcome, and audit history"]
     end
 
-    subgraph Operations["Operational System of Work"]
-        CORE["Salesforce Core records"]
-        WORK["Work items, SOP steps, ownership, deadlines, and evidence"]
-        GOV["Permissions, consent, policy, approval, and audit"]
-        ACTIONS["Approved actions and outcome records"]
+    subgraph Intelligence["Agentforce and Model Gateway"]
+        CONTEXT["Permission-aware context"]
+        ROUTER["Logical model routing"]
+        AGENT["North Star agents"]
+        REC["Recovery recommendation"]
     end
 
-    subgraph Intelligence["Agent and Model Layer"]
-        AGENT["Agentforce agents and subagents"]
-        CONTEXT["Permission-aware context assembly and memory retrieval"]
-        ROUTER["Logical model profiles and routing policy"]
-        SF_MODELS["Salesforce AI Models and Einstein Trust Layer"]
-        OPEN["LLM Open Connector adapter"]
-        PROVIDERS["Cloud providers, private cloud, or secured on-prem models"]
-        RECOMMEND["Recommendations, explanations, and message drafts"]
+    subgraph UI["Human Surface"]
+        LWC["North Star command center"]
+        ALERTS["Alert log"]
+        METRICS["Outcome metrics"]
     end
 
-    subgraph Channels["Human Interfaces"]
-        LWC["Lightning command center and role views"]
-        SLACK["Slack"]
-        TABLEAU["Tableau"]
-        API["Approved external channels"]
-    end
-
-    subgraph Lab["Governed Evaluation Lab, Outside Production"]
-        EVALDATA["Versioned authorized evaluation datasets"]
-        LOOP["AutoResearch-style bounded experiment loop"]
-        CANDIDATE["Candidate prompt, retrieval, routing, model, or threshold"]
-        SCORE["Quality, safety, latency, cost, and outcome evaluation"]
-        PROMOTE["Human review and controlled promotion"]
-    end
-
-    Sources --> SYSAPI
-    SYSAPI --> MQ
-    MQ --> PROCAPI
-    PROCAPI --> RAW
-    RAW --> D360
-    SEM <--> D360
-    D360 --> CORE
-    SEM <--> CORE
-    CORE --> WORK
-    WORK --> CONTEXT
-    GOV --> CONTEXT
-    CONTEXT --> AGENT
-    AGENT --> ROUTER
-    ROUTER --> SF_MODELS
-    SF_MODELS --> OPEN
-    OPEN --> PROVIDERS
-    SF_MODELS --> RECOMMEND
-    RECOMMEND --> GOV
-    GOV --> ACTIONS
-    ACTIONS --> EXPAPI
-    EXPAPI --> PROCAPI
-    PROCAPI --> SYSAPI
-    ACTIONS --> CORE
-
-    CORE --> LWC
-    CORE --> SLACK
-    D360 --> TABLEAU
-    GOV --> API
-
-    D360 -. approved snapshots .-> EVALDATA
-    CORE -. reviewed outcomes .-> EVALDATA
-    EVALDATA --> LOOP
-    LOOP --> CANDIDATE
-    CANDIDATE --> SCORE
-    SCORE --> LOOP
-    SCORE --> PROMOTE
-    PROMOTE -. versioned configuration .-> ROUTER
-    PROMOTE -. approved templates and rules .-> AGENT
+    RetailSources --> EVENTS --> MULE --> RECORDS
+    RECORDS --> WORK --> CONTEXT --> AGENT
+    AGENT --> ROUTER --> REC --> APPROVAL
+    APPROVAL --> AUDIT
+    AUDIT --> MULE --> CHANNELS
+    AUDIT --> RECORDS
+    RECORDS --> LWC
+    CHANNELS --> ALERTS
+    AUDIT --> METRICS
 ```
-
-## Runtime Flow
-
-1. MuleSoft receives a source event, validates it, preserves the source
-   record, and applies retry and replay controls.
-2. Data 360 harmonizes the event, resolves identity, calculates defined
-   measures, and retains history.
-3. The semantic layer defines what records and relationships mean and validates
-   required provenance.
-4. Salesforce Core creates or updates the operational work item, SOP execution,
-   evidence, owner, deadline, and affected relationships.
-5. Agentforce receives only the context the current user and purpose are
-   permitted to access.
-6. A logical model profile selects an approved model deployment without
-   exposing provider-specific names to business logic.
-7. The model produces an explanation, recommendation, or draft. Deterministic
-   code validates its shape, citations, permissions, and applicable policy.
-8. A human approves, rejects, or modifies consequential actions.
-9. MuleSoft writes the approved action to the authoritative source system.
-10. The resulting outcome event returns through the same ingestion path and is
-    attached to the decision trace.
 
 ## Storage Responsibilities
 
-| Component       | Responsibility                                                                             |
-| --------------- | ------------------------------------------------------------------------------------------ |
-| Source systems  | Authoritative operational source records                                                   |
-| MuleSoft        | Source-specific connectivity, validation, orchestration, retries, and write-back           |
-| Data 360        | Harmonization, identity, event history, calculated insights, and model features            |
-| Salesforce Core | Current operational work, SOP execution, recommendations, approvals, actions, and outcomes |
-| Ontology files  | Versioned meaning, mappings, provenance requirements, and validation rules                 |
-| Model providers | Inference only; they are not the system of record                                          |
-| Evaluation lab  | Isolated experiments and candidate configurations, never live enterprise actions           |
+| Component       | Responsibility                                                                   |
+| --------------- | -------------------------------------------------------------------------------- |
+| Source fixtures | Synthetic retail records and event payloads                                      |
+| MuleSoft mocks  | Intake, validation, write-back simulation, channel results, retry behavior       |
+| Salesforce Core | Work item, evidence, recommendation, approval, action, outcome, and audit record |
+| Model gateway   | Logical model profile, routing, validation, fallback, and invocation audit       |
+| Agentforce      | Explanation, recommendation drafting, approval request, and governed refusal     |
+| Lightning       | Command center, evidence timeline, approval cockpit, alert log, outcome view     |
 
 ## Current Repository State
 
-The architecture and roadmap exist, but the product runtime has not yet been
-scaffolded. The next executable work is the Salesforce DX skeleton, event
-contracts, and initial ontology.
+The repo already contains a reusable governed spine: Salesforce metadata,
+service contracts, event schemas, MuleSoft mocks, model-gateway fixtures,
+Agentforce contracts, a Lightning command center, and harness scripts.
+
+The next work is North Star specialization: retail fixtures, retail labels,
+North Star Agentforce topics, approved mock write-backs, Slack and
+WhatsApp-style alert results, and a polished command-center demo.

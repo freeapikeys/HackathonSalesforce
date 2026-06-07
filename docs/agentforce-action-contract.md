@@ -8,9 +8,17 @@ Agentforce can ask the product to:
 2. draft a grounded recommendation through a qualified model profile;
 3. create a pending human approval request.
 
+In the North Star MVP, "relationship case" means the current retail operations
+case: selected product, store, supplier, batch where applicable, promotion,
+complaint evidence, inventory evidence, staffing context, recommendation,
+approval, action, and outcome.
+
 Agentforce cannot decide the approval or execute a protected external action.
 Those operations remain behind the current user's permissions, the Apex
 service contract, human approval, and the MuleSoft execution boundary.
+Protected North Star actions include Slack alerts, WhatsApp-style alerts,
+reorders, supplier cases, markdown plans, warehouse transfers, and store-task
+write-backs.
 
 ## Grounding
 
