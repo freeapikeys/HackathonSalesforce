@@ -130,3 +130,6 @@ Add `--keep-workdir` to preserve the temporary clone after a failure:
 
 The failure artifact identifies the failed stage. Temporary working directories
 and raw CLI results remain outside Git.
+
+The accepted first-slice release result is summarized in
+[First Vertical Slice Completion Evidence](verification/first-vertical-slice-completion.md).

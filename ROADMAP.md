@@ -358,8 +358,9 @@ This is the first complete behavior to implement before expanding sideways:
 
 Completion gate:
 
-- [ ] The whole path runs from a clean clone with automated tests and no manual
-      database edits.
+- [x] The whole path runs from a clean clone with automated tests and no manual
+      database edits. See
+      [the completion evidence](docs/verification/first-vertical-slice-completion.md).
 
 ## Definition of Done
 
