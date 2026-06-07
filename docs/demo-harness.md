@@ -44,6 +44,11 @@ python3 scripts/e2e_harness.py run \
   --output artifacts/demo-harness-result.json
 ```
 
+To verify a pushed repository ref from a new temporary clone, including
+dependency bootstrap, Salesforce deployment, Apex tests, connected behavior,
+and sanitized completion evidence, follow
+[the clean-clone completion runbook](clean-clone-runbook.md).
+
 `demo:seed` always resets the scoped tenant before inserting data. Running it
 repeatedly therefore produces the same counts and external keys without
 touching records from another tenant.
