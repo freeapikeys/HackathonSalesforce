@@ -1,0 +1,30 @@
+# Provider-Neutral Model Gateway Contract
+
+Version `1.0.0` freezes the boundary between business workflows and model
+deployments. Callers select a logical profile and declare purpose, sensitivity,
+residency, capability, latency, and cost constraints. They do not select a
+provider or model.
+
+The contract defines:
+
+- logical model profiles;
+- deployment descriptors;
+- deterministic routing policy inputs and decisions;
+- provider-neutral generation requests and normalized responses;
+- qualified fallback attempts;
+- invocation audit records.
+
+Two mock deployments implement the same `hfs.generate.v1` adapter interface.
+The scenario demonstrates primary selection, qualified fallback, and
+fail-closed behavior when no deployment satisfies the data policy.
+
+Run:
+
+```bash
+npm run check:models
+```
+
+Generated schema and fixtures are owned by
+`scripts/generate_model_gateway_contract.py`. Secrets are intentionally absent;
+production credentials belong in Salesforce credentials, MuleSoft secure
+properties, or the customer's approved secret manager.
