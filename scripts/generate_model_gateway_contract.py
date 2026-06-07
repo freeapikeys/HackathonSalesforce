@@ -190,6 +190,10 @@ def build_schema() -> dict[str, Any]:
                 ],
             },
             "residencyRegions": array_of(identifier, minimum=1),
+            "supportedLanguages": array_of(
+                string(pattern="^[a-z]{2}(-[A-Z]{2})?$"),
+                minimum=1,
+            ),
             "permittedDataClassifications": array_of(
                 data_classification,
                 minimum=1,
@@ -223,6 +227,7 @@ def build_schema() -> dict[str, Any]:
             "configuredModelIdentifier",
             "hostingClass",
             "residencyRegions",
+            "supportedLanguages",
             "permittedDataClassifications",
             "capabilities",
             "contextWindowTokens",
@@ -243,6 +248,7 @@ def build_schema() -> dict[str, Any]:
             "tenantKey": identifier,
             "businessUnit": {"type": ["string", "null"]},
             "profileKey": identifier,
+            "permittedPurposes": array_of(string(max_length=200), minimum=1),
             "candidatePriority": array_of(identifier, minimum=1),
             "requiredChecks": {
                 "type": "array",
@@ -251,9 +257,13 @@ def build_schema() -> dict[str, Any]:
                 "items": {
                     "type": "string",
                     "enum": [
+                        "TENANT",
+                        "BUSINESS_UNIT",
+                        "PURPOSE",
                         "PROFILE",
                         "DATA_CLASSIFICATION",
                         "RESIDENCY",
+                        "LANGUAGE",
                         "CAPABILITY",
                         "CONTEXT_WINDOW",
                         "QUALITY",
@@ -275,6 +285,7 @@ def build_schema() -> dict[str, Any]:
             "tenantKey",
             "businessUnit",
             "profileKey",
+            "permittedPurposes",
             "candidatePriority",
             "requiredChecks",
             "fallbackMode",
@@ -697,6 +708,7 @@ def build_fixture() -> dict[str, Any]:
             "configuredModelIdentifier": None,
             "hostingClass": "MOCK",
             "residencyRegions": ["mu", "global"],
+            "supportedLanguages": ["en", "fr"],
             "permittedDataClassifications": [
                 "INTERNAL",
                 "CONFIDENTIAL",
@@ -722,6 +734,7 @@ def build_fixture() -> dict[str, Any]:
             "configuredModelIdentifier": None,
             "hostingClass": "MOCK",
             "residencyRegions": ["mu"],
+            "supportedLanguages": ["en", "fr"],
             "permittedDataClassifications": [
                 "INTERNAL",
                 "CONFIDENTIAL",
@@ -744,11 +757,16 @@ def build_fixture() -> dict[str, Any]:
         "tenantKey": TENANT,
         "businessUnit": None,
         "profileKey": profile_key,
+        "permittedPurposes": ["RESOLVE_SERVICE_INTERRUPTION"],
         "candidatePriority": [primary_key, fallback_key],
         "requiredChecks": [
+            "TENANT",
+            "BUSINESS_UNIT",
+            "PURPOSE",
             "PROFILE",
             "DATA_CLASSIFICATION",
             "RESIDENCY",
+            "LANGUAGE",
             "CAPABILITY",
             "CONTEXT_WINDOW",
             "QUALITY",

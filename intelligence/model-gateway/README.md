@@ -28,3 +28,12 @@ Generated schema and fixtures are owned by
 `scripts/generate_model_gateway_contract.py`. Secrets are intentionally absent;
 production credentials belong in Salesforce credentials, MuleSoft secure
 properties, or the customer's approved secret manager.
+
+## Reference Runtime
+
+`runtime/hfs_model_gateway/` implements the frozen contract with deterministic
+qualification checks, two mock adapters, normalized output validation,
+qualified fallback, failed-closed behavior, and hashes-only invocation audit.
+It is a local reference and test harness; production adapters remain behind the
+same interface and use customer-approved Salesforce or integration
+credentials.
