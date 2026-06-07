@@ -63,6 +63,9 @@ public class HFS_ContextItem {
   public String proposedActionType { get; set; }
 
   @AuraEnabled
+  public String primaryEvidenceId { get; set; }
+
+  @AuraEnabled
   public String modelProfile { get; set; }
 
   @AuraEnabled
