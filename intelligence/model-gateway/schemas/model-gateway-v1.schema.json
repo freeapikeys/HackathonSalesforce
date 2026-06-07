@@ -148,6 +148,7 @@
         "configuredModelIdentifier",
         "hostingClass",
         "residencyRegions",
+        "supportedLanguages",
         "permittedDataClassifications",
         "capabilities",
         "contextWindowTokens",
@@ -216,6 +217,15 @@
             "minLength": 1,
             "maxLength": 200,
             "pattern": "^[a-z0-9][a-z0-9._-]*$"
+          },
+          "minItems": 1
+        },
+        "supportedLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
           },
           "minItems": 1
         },
@@ -310,6 +320,7 @@
         "tenantKey",
         "businessUnit",
         "profileKey",
+        "permittedPurposes",
         "candidatePriority",
         "requiredChecks",
         "fallbackMode",
@@ -349,6 +360,15 @@
           "maxLength": 200,
           "pattern": "^[a-z0-9][a-z0-9._-]*$"
         },
+        "permittedPurposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "minItems": 1
+        },
         "candidatePriority": {
           "type": "array",
           "items": {
@@ -366,9 +386,13 @@
           "items": {
             "type": "string",
             "enum": [
+              "TENANT",
+              "BUSINESS_UNIT",
+              "PURPOSE",
               "PROFILE",
               "DATA_CLASSIFICATION",
               "RESIDENCY",
+              "LANGUAGE",
               "CAPABILITY",
               "CONTEXT_WINDOW",
               "QUALITY",
