@@ -35,6 +35,16 @@ The UI distinguishes source facts from model inference. Consequential controls
 emit intent events only; the component never treats a click as completed
 external action.
 
+## Live Transport
+
+Live mode calls `HFS_RelationshipController`, which delegates context reads and
+approval decisions to `HFS_RelationshipServiceImpl`. The component maps the
+frozen Apex DTOs into this UI state and refreshes after a successful decision.
+It renders controls only when the server reports the matching capability.
+
+Synthetic fixture mode remains available for deterministic tests and demos.
+Live mode is the default.
+
 ## Compatibility
 
 Additive optional fields are compatible within `1.0.0`. Renaming required

@@ -296,6 +296,14 @@ def render_permission_set(
 ) -> None:
     root = metadata_element("PermissionSet")
 
+    for apex_class in permission_set.get("apexClasses", []):
+        class_access = ET.SubElement(
+            root,
+            f"{{{METADATA_NAMESPACE}}}classAccesses",
+        )
+        child(class_access, "apexClass", apex_class)
+        child(class_access, "enabled", True)
+
     for custom_permission in permission_set.get("customPermissions", []):
         permission_element = ET.SubElement(
             root,
@@ -407,6 +415,7 @@ def validate_model(model: dict[str, object]) -> None:
     }
     for permission_set in model["permissionSets"]:
         assert set(permission_set.get("customPermissions", [])) <= permission_names
+        assert all(permission_set.get("apexClasses", []))
 
     permission_sets = {
         str(permission_set["api"]): permission_set

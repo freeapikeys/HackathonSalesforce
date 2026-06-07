@@ -10,4 +10,36 @@
     <target>lightning__HomePage</target>
     <target>lightning__RecordPage</target>
   </targets>
+  <targetConfigs>
+    <targetConfig
+      targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage"
+    >
+      <property
+        name="tenantKey"
+        type="String"
+        label="Tenant key"
+        description="Tenant key enforced by the relationship service."
+      />
+      <property
+        name="purpose"
+        type="String"
+        label="Purpose"
+        default="RELATIONSHIP_SERVICE"
+        description="Declared purpose used for governed context and decisions."
+      />
+      <property
+        name="workItemId"
+        type="String"
+        label="Work item ID"
+        description="Optional HFS work item ID for app and home pages. Record pages use recordId by default."
+      />
+      <property
+        name="mockMode"
+        type="Boolean"
+        label="Use synthetic demo data"
+        default="false"
+        description="Use versioned fixtures instead of live governed Apex services."
+      />
+    </targetConfig>
+  </targetConfigs>
 </LightningComponentBundle>

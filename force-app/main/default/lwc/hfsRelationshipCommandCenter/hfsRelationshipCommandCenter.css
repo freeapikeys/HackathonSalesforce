@@ -143,6 +143,23 @@ dd {
   padding: 0.75rem 1.5rem;
 }
 
+.command-feedback {
+  border-bottom: 1px solid;
+  padding: 0.75rem 1.5rem;
+}
+
+.command-feedback_success {
+  background: #edf8f1;
+  border-color: #b9dcc5;
+  color: #215b35;
+}
+
+.command-feedback_error {
+  background: #fff0ed;
+  border-color: #e5bdb6;
+  color: #8b3024;
+}
+
 .workspace {
   display: grid;
   gap: 1rem;
