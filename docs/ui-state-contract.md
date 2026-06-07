@@ -1,0 +1,42 @@
+# Lightning Command Center UI State Contract
+
+Version `1.0.0` defines the mock-backed state consumed by
+`c-hfs-relationship-command-center`. The contract keeps rendering independent
+from transport so the same component can use fixtures now and governed Apex
+services later.
+
+## Material States
+
+| State        | Required behavior                                                   |
+| ------------ | ------------------------------------------------------------------- |
+| `ready`      | Complete synthetic case with permitted approval controls            |
+| `restricted` | Same underlying facts with controls removed for the current role    |
+| `loading`    | Busy status without stale case content                              |
+| `empty`      | No assigned work with a clear next step                             |
+| `denied`     | Purpose or permission denial without inaccessible record disclosure |
+| `error`      | Recoverable service error with correlation identifier               |
+
+## Ready State
+
+The ready state contains:
+
+- case identity, severity, status, owner, service deadline, and next update;
+- affected relationship and connected entities;
+- blockers and cross-functional ownership;
+- chronological source-backed timeline;
+- evidence citations and content hashes;
+- SOP version, current step, progress, and required evidence;
+- recommendation facts, inferences, confidence, and model profile;
+- approval policy, current status, and permitted decisions;
+- action history and source-system correlation;
+- observed outcome and effectiveness state.
+
+The UI distinguishes source facts from model inference. Consequential controls
+emit intent events only; the component never treats a click as completed
+external action.
+
+## Compatibility
+
+Additive optional fields are compatible within `1.0.0`. Renaming required
+fields, changing state meanings, or weakening permission-based control
+visibility requires a new state version and updated fixture tests.
