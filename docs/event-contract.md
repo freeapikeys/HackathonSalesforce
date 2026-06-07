@@ -57,6 +57,16 @@ Late and out-of-order events are preserved rather than silently discarded.
 Conflicts coexist as claims and are routed for resolution; no history is
 overwritten.
 
+The executable fixture validator and MuleSoft reference runtime use the same
+stateful classifier. Idempotency is scoped by tenant, source, and idempotency
+key, and exact replay compares the canonical `data` hash rather than
+transport-level fields such as event occurrence ID or observation time.
+Every runtime attempt records its disposition, detail, preservation decision,
+lateness, and source watermark. Rejected attempts never enter the accepted
+source-event store. Preserved event identity is scoped by tenant, source, and
+CloudEvents ID; reusing that identity for different source data is rejected
+rather than overwritten.
+
 ## Synthetic Case
 
 Fixtures model an industry-neutral organization with a person, employing
@@ -69,6 +79,7 @@ Run:
 
 ```bash
 npm run check:events
+npm run check:mulesoft
 ```
 
 Contract basis:

@@ -35,6 +35,11 @@ frozen API. It preserves accepted source events, reads seeded context, executes
 only registered approved actions, writes deterministic mock source records,
 captures correlated outcomes, and retries optional completion callbacks.
 
+Event ingestion shares its stateful classifier with the versioned event
+fixtures. The mock therefore exposes the same accepted, duplicate, late,
+out-of-order, conflict-review, schema-rejection, hash-rejection, and
+idempotency-conflict behavior that Mule flows must preserve.
+
 It deliberately keeps adapters behind Python interfaces so the same contract
 tests can be applied to Mule flows and real connectors without embedding mock
 behavior in production configuration. The runtime is an integration test
