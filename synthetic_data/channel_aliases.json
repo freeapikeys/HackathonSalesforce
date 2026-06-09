@@ -1,0 +1,14 @@
+[
+  { "recipientAliasId": "ALIAS-001", "role": "role:grand-baie-duty-manager", "storeId": "STORE-003", "slackTarget": "S-GB-DM", "whatsappTargetAlias": "WA-GB-DM", "canReceiveUrgentAlerts": true },
+  { "recipientAliasId": "ALIAS-002", "role": "role:grand-baie-floor-staff", "storeId": "STORE-003", "slackTarget": "S-GB-FS", "whatsappTargetAlias": "WA-GB-FS", "canReceiveUrgentAlerts": false },
+  { "recipientAliasId": "ALIAS-003", "role": "role:curepipe-duty-manager", "storeId": "STORE-002", "slackTarget": "S-CP-DM", "whatsappTargetAlias": "WA-CP-DM", "canReceiveUrgentAlerts": true },
+  { "recipientAliasId": "ALIAS-004", "role": "role:curepipe-floor-staff", "storeId": "STORE-002", "slackTarget": "S-CP-FS", "whatsappTargetAlias": "WA-CP-FS", "canReceiveUrgentAlerts": false },
+  { "recipientAliasId": "ALIAS-005", "role": "role:port-louis-duty-manager", "storeId": "STORE-001", "slackTarget": "S-PL-DM", "whatsappTargetAlias": "WA-PL-DM", "canReceiveUrgentAlerts": true },
+  { "recipientAliasId": "ALIAS-006", "role": "role:port-louis-floor-staff", "storeId": "STORE-001", "slackTarget": "S-PL-FS", "whatsappTargetAlias": "WA-PL-FS", "canReceiveUrgentAlerts": false },
+  { "recipientAliasId": "ALIAS-007", "role": "role:procurement-manager", "storeId": "WAREHOUSE-001", "slackTarget": "S-PROC-MGR", "whatsappTargetAlias": "WA-PROC-MGR", "canReceiveUrgentAlerts": true },
+  { "recipientAliasId": "ALIAS-008", "role": "role:quality-officer", "storeId": "WAREHOUSE-001", "slackTarget": "S-QUAL-OFF", "whatsappTargetAlias": "WA-QUAL-OFF", "canReceiveUrgentAlerts": true },
+  { "recipientAliasId": "ALIAS-009", "role": "role:general-manager", "storeId": "S-HQ", "slackTarget": "S-GM", "whatsappTargetAlias": "WA-GM", "canReceiveUrgentAlerts": true },
+  { "recipientAliasId": "ALIAS-010", "role": "role:customer-service", "storeId": "S-HQ", "slackTarget": "S-CS", "whatsappTargetAlias": "WA-CS", "canReceiveUrgentAlerts": false },
+  { "recipientAliasId": "ALIAS-011", "role": "role:store-exec-lead", "storeId": "S-HQ", "slackTarget": "S-EXEC-LEAD", "whatsappTargetAlias": "WA-EXEC-LEAD", "canReceiveUrgentAlerts": true },
+  { "recipientAliasId": "ALIAS-012", "role": "role:backup-manager", "storeId": "S-HQ", "slackTarget": "S-BKMGR", "whatsappTargetAlias": "WA-BKMGR", "canReceiveUrgentAlerts": false }
+]
