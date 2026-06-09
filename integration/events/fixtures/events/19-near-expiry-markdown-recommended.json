@@ -1,0 +1,31 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000019",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.nearexpiry.markdown.recommended.v1",
+  "subject": "batch:BATCH-FRESH-BEEF-2026-06-07-A",
+  "time": "2026-06-06T09:10:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-markdown-v1",
+  "hfssourcerecordid": "retail-event-markdown-001",
+  "hfssourcesequence": 5,
+  "hfsobservedat": "2026-06-06T09:10:02Z",
+  "hfscontenthash": "sha256:01b3782364ae0dddd591117ad315ac831de683d5dd19546046e6c9465f7d4aa2",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "ISSUE-EXPIRY-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:10:00Z",
+    "attributes": {
+      "eventcode": "NEAR_EXPIRY_MARKDOWN_RECOMMENDED",
+      "markdownpercent": 20,
+      "eligiblequantity": 12,
+      "approvalrequired": true,
+      "managerapprovalpolicy": "MARKDOWN_REQUIRES_MANAGER_APPROVAL"
+    }
+  }
+}

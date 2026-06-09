@@ -1,0 +1,32 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000016",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.warehouse.stock.checked.v1",
+  "subject": "product:PROD-FRESH-BEEF-PATTIES-400G",
+  "time": "2026-06-06T09:03:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-warehouse-stock-v1",
+  "hfssourcerecordid": "retail-event-warehouse-001",
+  "hfssourcesequence": 2,
+  "hfsobservedat": "2026-06-06T09:03:03Z",
+  "hfscontenthash": "sha256:04cfcae0343c92ef420522c9335d12aabc85da0c9f24da41cfeb5203ee198936",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "ISSUE-STOCKOUT-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:03:00Z",
+    "attributes": {
+      "eventcode": "WAREHOUSE_STOCK_CHECKED",
+      "warehousequantity": 72,
+      "warehouseleadtimehours": 4,
+      "supplierquantity": 180,
+      "supplierleadtimehours": 36,
+      "recommendation": "Use warehouse transfer for rush coverage before supplier replacement arrives."
+    }
+  }
+}

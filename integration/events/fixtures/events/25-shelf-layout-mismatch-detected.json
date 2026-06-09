@@ -1,0 +1,30 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000025",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.shelf.layout.mismatch.detected.v1",
+  "subject": "shelf:SHELF-MEAT-CHILLER-A3",
+  "time": "2026-06-06T09:32:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-shelf-layout-v1",
+  "hfssourcerecordid": "retail-event-shelf-layout-001",
+  "hfssourcesequence": 11,
+  "hfsobservedat": "2026-06-06T09:32:01Z",
+  "hfscontenthash": "sha256:4c957a95b5aa58028f1e4c0d18d6dde0b642fa4b0dfd25d81e2e29ab7d420f0a",
+  "data": {
+    "recordtype": "SOP",
+    "operation": "OBSERVE",
+    "businesskey": "SHELF-MEAT-CHILLER-A3",
+    "effectiveat": "2026-06-06T09:32:00Z",
+    "attributes": {
+      "eventcode": "SHELF_LAYOUT_MISMATCH_DETECTED",
+      "expectedproductid": "PROD-FRESH-BEEF-PATTIES-400G",
+      "observedissue": "Promo shelf tag shows stale price and display has gaps.",
+      "tasktype": "SHELF_LAYOUT_CORRECTION"
+    }
+  }
+}

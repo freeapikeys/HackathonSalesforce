@@ -31,7 +31,7 @@ function createLiveComponent() {
   });
   element.recordId = "a01000000000001AAA";
   element.tenantKey = "tenant-live-test";
-  element.purpose = "RELATIONSHIP_SERVICE";
+  element.purpose = "RESOLVE_RETAIL_RISK";
   document.body.appendChild(element);
   return element;
 }
@@ -60,7 +60,7 @@ const livePayload = {
       objectApiName: "HFS_Work_Item__c",
       externalKey: "work-live-test",
       recordType: "HIGH",
-      label: "Live relationship case",
+      label: "Live North Star case",
       status: "AWAITING_APPROVAL",
       summary: "A permitted user must decide the current recommendation.",
       occurredAt: "2026-06-07T07:00:00.000Z",
@@ -115,7 +115,8 @@ const livePayload = {
       {
         evidenceId: "a06000000000001AAA",
         sourceUri: "urn:test:service",
-        contentHash: "sha256:live-evidence",
+        contentHash:
+          "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
         summary: "The customer is waiting for an update.",
         capturedAt: "2026-06-07T07:01:00.000Z"
       }
@@ -128,7 +129,7 @@ const livePayload = {
         summary: "Send a grounded service update.",
         confidence: 0.91,
         proposedActionType: "SEND_STATUS_UPDATE",
-        modelProfile: "recommendation_reasoning",
+        modelProfile: "north-star-retail-recommendation",
         modelInvocationId: "invocation-live-test"
       }
     ],
@@ -155,31 +156,35 @@ describe("c-hfs-relationship-command-center", () => {
     }
   });
 
-  it("renders the complete synthetic relationship case", () => {
+  it("renders the complete synthetic North Star case", () => {
     const element = createComponent();
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("Repeated service interruption");
-    expect(root.textContent).toContain("Relationship and dependencies");
-    expect(root.textContent).toContain("Chronological evidence view");
+    expect(root.textContent).toContain("North Star weekend promotion recovery");
+    expect(root.textContent).toContain("North Star retail signals");
+    expect(root.textContent).toContain("Product, batch, and stock");
+    expect(root.textContent).toContain("Complaint cluster");
+    expect(root.textContent).toContain("Supplier response");
+    expect(root.textContent).toContain("Source records");
     expect(root.textContent).toContain("Accessible source evidence");
-    expect(root.textContent).toContain("Major incident relationship response");
-    expect(root.textContent).toContain(
-      "Send a proactive service status update"
-    );
+    expect(root.textContent).toContain("North Star retail recovery");
+    expect(root.textContent).toContain("Approve retail recovery actions");
     expect(root.textContent).toContain("Approval decision");
-    expect(root.textContent).toContain("Action and outcome history");
+    expect(root.textContent).toContain("Store tasks and channel log");
+    expect(root.textContent).toContain("Slack");
+    expect(root.textContent).toContain("WhatsApp-style");
+    expect(root.textContent).toContain("Stockout avoided");
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
-    expect(root.querySelectorAll(".evidence-card")).toHaveLength(2);
+    expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
   });
 
   it.each([
-    ["loading", "loading-view", "Loading relationship context"],
-    ["empty", "empty-view", "No relationship work is assigned"],
-    ["denied", "denied-view", "Context is not available"],
-    ["error", "error-view", "The command center could not load"]
+    ["loading", "loading-view", "Loading North Star context"],
+    ["empty", "empty-view", "No North Star work is assigned"],
+    ["denied", "denied-view", "North Star context is not available"],
+    ["error", "error-view", "North Star could not load"]
   ])("renders the %s material state", (stateName, testId, expectedText) => {
     const element = createComponent(stateName);
     const root = element.shadowRoot;
@@ -194,7 +199,7 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("Repeated service interruption");
+    expect(root.textContent).toContain("North Star weekend promotion recovery");
     expect(
       root.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();
@@ -217,9 +222,9 @@ describe("c-hfs-relationship-command-center", () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toEqual({
       decision,
-      recommendationId: "recommendation-status-update-001",
-      approvalId: "approval-status-update-001",
-      correlationId: "10000000-0000-4000-8000-000000000001",
+      recommendationId: "recommendation-north-star-retail-001",
+      approvalId: "approval-north-star-retail-001",
+      correlationId: "20000000-0000-4000-8000-000000000001",
       stateVersion: UI_STATE_VERSION
     });
   });
@@ -235,7 +240,7 @@ describe("c-hfs-relationship-command-center", () => {
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toEqual({
-      correlationId: "10000000-0000-4000-8000-000000000003",
+      correlationId: "20000000-0000-4000-8000-000000000003",
       stateVersion: UI_STATE_VERSION
     });
   });
@@ -269,11 +274,11 @@ describe("c-hfs-relationship-command-center", () => {
         contractVersion: UI_STATE_VERSION,
         tenantKey: "tenant-live-test",
         workItemId: "a01000000000001AAA",
-        purpose: "RELATIONSHIP_SERVICE",
+        purpose: "RESOLVE_RETAIL_RISK",
         includeProvenance: true
       })
     );
-    expect(element.shadowRoot.textContent).toContain("Live relationship case");
+    expect(element.shadowRoot.textContent).toContain("Live North Star case");
     expect(element.shadowRoot.textContent).toContain("Live customer");
     expect(element.shadowRoot.textContent).toContain(
       "Send a grounded service update."
@@ -300,7 +305,7 @@ describe("c-hfs-relationship-command-center", () => {
     const element = createLiveComponent();
     await flushPromises();
 
-    expect(element.shadowRoot.textContent).toContain("Live relationship case");
+    expect(element.shadowRoot.textContent).toContain("Live North Star case");
     expect(
       element.shadowRoot.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();

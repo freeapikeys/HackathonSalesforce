@@ -1,0 +1,31 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000022",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.damaged.packaging.reported.v1",
+  "subject": "batch:BATCH-FRESH-BEEF-2026-06-07-A",
+  "time": "2026-06-06T09:18:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-damaged-packaging-v1",
+  "hfssourcerecordid": "retail-event-packaging-001",
+  "hfssourcesequence": 8,
+  "hfsobservedat": "2026-06-06T09:18:01Z",
+  "hfscontenthash": "sha256:31c09d6a3cff14041ed2c97f0021bae275184280ce0a31862c27b278a949b2a9",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "ISSUE-COMPLAINT-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:18:00Z",
+    "attributes": {
+      "eventcode": "DAMAGED_PACKAGING_REPORTED",
+      "damagedpackagingcount": 3,
+      "refundcount": 2,
+      "badbatchrisk": "POSSIBLE",
+      "recommendation": "Quarantine suspect units pending manager approval and supplier response."
+    }
+  }
+}

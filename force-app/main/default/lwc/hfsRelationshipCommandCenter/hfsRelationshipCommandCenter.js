@@ -10,7 +10,7 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
   @api recordId;
   @api workItemId;
   @api tenantKey;
-  @api purpose = "RELATIONSHIP_SERVICE";
+  @api purpose = "RESOLVE_RETAIL_RISK";
   @api mockMode = false;
   state = getUiState("loading");
   decisionPending = false;
@@ -194,7 +194,7 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
           purpose: this.purpose,
           approvalId: this.state.case.approval.id,
           decisionStatus,
-          decisionNotes: `${decisionStatus} from the relationship command center.`
+          decisionNotes: `${decisionStatus} from the North Star command center.`
         }
       });
       if (!result?.success) {

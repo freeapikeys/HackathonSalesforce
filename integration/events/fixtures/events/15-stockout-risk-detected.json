@@ -1,0 +1,37 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000015",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.stockout.risk.detected.v1",
+  "subject": "product:PROD-FRESH-BEEF-PATTIES-400G",
+  "time": "2026-06-06T09:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-stockout-risk-v1",
+  "hfssourcerecordid": "retail-event-stockout-001",
+  "hfssourcesequence": 1,
+  "hfsobservedat": "2026-06-06T09:00:02Z",
+  "hfscontenthash": "sha256:78a4edba80da674a0f1b1e05a853b902e552dbec1d7737bdb81a41085f5c5e88",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "ISSUE-STOCKOUT-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:00:00Z",
+    "attributes": {
+      "eventcode": "STOCKOUT_RISK_DETECTED",
+      "storeid": "STORE-GOODLANDS-FRESHMART",
+      "productid": "PROD-FRESH-BEEF-PATTIES-400G",
+      "batchid": "BATCH-FRESH-BEEF-2026-06-07-A",
+      "promotionid": "PROMO-WEEKEND-GRILL-2026-W23",
+      "shelfquantity": 18,
+      "backroomquantity": 24,
+      "salesvelocityperhour": 28,
+      "daysofcover": 0.06,
+      "agent": "Inventory and Demand Agent",
+      "recommendation": "Check warehouse stock and prepare transfer or reorder."
+    }
+  }
+}

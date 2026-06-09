@@ -2,8 +2,8 @@
   <article class="command-center" aria-labelledby="command-center-title">
     <header class="hero">
       <div>
-        <p class="eyebrow">Relationship command center</p>
-        <h1 id="command-center-title">Decision-ready relationship work</h1>
+        <p class="eyebrow">North Star command center</p>
+        <h1 id="command-center-title">Supermarket recovery plan</h1>
       </div>
       <span class="version">{uiVersionLabel}</span>
     </header>
@@ -16,10 +16,10 @@
         aria-live="polite"
       >
         <lightning-spinner
-          alternative-text="Loading relationship context"
+          alternative-text="Loading North Star context"
           size="medium"
         ></lightning-spinner>
-        <h2>Loading relationship context</h2>
+        <h2>Loading North Star context</h2>
         <p>{state.message}</p>
       </section>
     </template>
@@ -83,11 +83,11 @@
 
           <dl class="case-metrics">
             <div>
-              <dt>Accountable owner</dt>
+              <dt>Manager owner</dt>
               <dd>{state.case.owner.name}</dd>
             </div>
             <div>
-              <dt>Service deadline</dt>
+              <dt>Rush deadline</dt>
               <dd>
                 <lightning-formatted-date-time
                   value={state.case.serviceDeadline}
@@ -100,7 +100,7 @@
               </dd>
             </div>
             <div>
-              <dt>Next relationship update</dt>
+              <dt>Next decision update</dt>
               <dd>
                 <lightning-formatted-date-time
                   value={state.case.nextUpdateDue}
@@ -117,6 +117,23 @@
               <dd>{state.userRole}</dd>
             </div>
           </dl>
+        </section>
+
+        <section class="panel" aria-labelledby="risk-pulse-heading">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Risk pulse</p>
+              <h2 id="risk-pulse-heading">North Star retail signals</h2>
+            </div>
+          </div>
+          <ul class="entity-grid" aria-label="Risk pulse cards">
+            <template for:each={state.case.riskPulses} for:item="risk">
+              <li key={risk.id}>
+                <span class="entity-type">{risk.label}</span>
+                <strong>{risk.status}</strong>
+              </li>
+            </template>
+          </ul>
         </section>
 
         <template lwc:if={showRestrictedNotice}>
@@ -151,10 +168,8 @@
             <section class="panel" aria-labelledby="relationship-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Context</p>
-                  <h2 id="relationship-heading">
-                    Relationship and dependencies
-                  </h2>
+                  <p class="section-kicker">Product context</p>
+                  <h2 id="relationship-heading">Product, batch, and stock</h2>
                 </div>
                 <span class="status-pill"
                   >{state.case.affectedRelationship.status}</span
@@ -177,13 +192,96 @@
                   </li>
                 </template>
               </ul>
+              <dl class="case-metrics">
+                <div>
+                  <dt>Store</dt>
+                  <dd>{state.case.productContext.store}</dd>
+                </div>
+                <div>
+                  <dt>Product</dt>
+                  <dd>{state.case.productContext.product}</dd>
+                </div>
+                <div>
+                  <dt>Batch</dt>
+                  <dd>{state.case.productContext.batch}</dd>
+                </div>
+                <div>
+                  <dt>Promotion</dt>
+                  <dd>{state.case.productContext.promotion}</dd>
+                </div>
+              </dl>
+              <ul class="entity-grid" aria-label="Stock positions">
+                <template for:each={state.case.stock} for:item="stock">
+                  <li key={stock.id}>
+                    <span class="entity-type">{stock.label}</span>
+                    <strong>{stock.value}</strong>
+                  </li>
+                </template>
+              </ul>
+            </section>
+
+            <section class="panel" aria-labelledby="complaint-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Customer risk</p>
+                  <h2 id="complaint-heading">Complaint cluster</h2>
+                </div>
+              </div>
+              <dl class="case-metrics">
+                <div>
+                  <dt>Type</dt>
+                  <dd>{state.case.complaintCluster.type}</dd>
+                </div>
+                <div>
+                  <dt>Count</dt>
+                  <dd>{state.case.complaintCluster.count}</dd>
+                </div>
+                <div>
+                  <dt>Supplier</dt>
+                  <dd>{state.case.complaintCluster.supplier}</dd>
+                </div>
+                <div>
+                  <dt>Window</dt>
+                  <dd>{state.case.complaintCluster.window}</dd>
+                </div>
+              </dl>
+            </section>
+
+            <section class="panel" aria-labelledby="supplier-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Supplier</p>
+                  <h2 id="supplier-heading">Supplier response</h2>
+                </div>
+                <span class="status-pill"
+                  >{state.case.supplierResponse.status}</span
+                >
+              </div>
+              <dl class="case-metrics">
+                <div>
+                  <dt>Lead time</dt>
+                  <dd>{state.case.supplierResponse.leadTime}</dd>
+                </div>
+                <div>
+                  <dt>Replacement</dt>
+                  <dd>{state.case.supplierResponse.replacement}</dd>
+                </div>
+                <div>
+                  <dt>Credit note</dt>
+                  <dd>{state.case.supplierResponse.creditNote}</dd>
+                </div>
+                <div>
+                  <dt>Quality issue</dt>
+                  <dd>{state.case.supplierResponse.qualityIssue}</dd>
+                </div>
+              </dl>
             </section>
 
             <section class="panel" aria-labelledby="timeline-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">History</p>
-                  <h2 id="timeline-heading">Chronological evidence view</h2>
+                  <p class="section-kicker">Evidence timeline</p>
+                  <h2 id="timeline-heading">Source records</h2>
                 </div>
               </div>
               <ol class="timeline">
@@ -249,7 +347,7 @@
               <div class="panel-heading">
                 <div>
                   <p class="section-kicker">Execution</p>
-                  <h2 id="actions-heading">Action and outcome history</h2>
+                  <h2 id="actions-heading">Store tasks and channel log</h2>
                 </div>
               </div>
               <ul class="action-list">
@@ -265,12 +363,54 @@
               </ul>
               <div class="outcome">
                 <div>
+                  <span class="entity-type">Cashier plan</span>
+                  <h3>{state.case.storeExecution.cashierRecommendation}</h3>
+                </div>
+              </div>
+              <ul class="action-list">
+                <template
+                  for:each={state.case.storeExecution.tasks}
+                  for:item="task"
+                >
+                  <li key={task.id}>
+                    <div>
+                      <strong>{task.label}</strong>
+                      <span>{task.owner}</span>
+                    </div>
+                    <span class="status-pill">{task.status}</span>
+                  </li>
+                </template>
+              </ul>
+              <ul class="action-list">
+                <template for:each={state.case.channelLog} for:item="channel">
+                  <li key={channel.id}>
+                    <div>
+                      <strong>{channel.channel}</strong>
+                      <span>{channel.detail}</span>
+                    </div>
+                    <span class="status-pill">{channel.status}</span>
+                  </li>
+                </template>
+              </ul>
+              <div class="outcome">
+                <div>
                   <span class="entity-type">Outcome</span>
                   <h3>{state.case.outcome.status}</h3>
                 </div>
                 <p>{state.case.outcome.summary}</p>
                 <strong>{state.case.outcome.effectiveness}</strong>
               </div>
+              <ul class="entity-grid" aria-label="Outcome metrics">
+                <template
+                  for:each={state.case.outcomeMetrics}
+                  for:item="metric"
+                >
+                  <li key={metric.id}>
+                    <span class="entity-type">{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                  </li>
+                </template>
+              </ul>
             </section>
           </main>
 

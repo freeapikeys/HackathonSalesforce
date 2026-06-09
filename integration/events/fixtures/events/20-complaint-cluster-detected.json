@@ -1,0 +1,39 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000020",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.complaint.cluster.detected.v1",
+  "subject": "batch:BATCH-FRESH-BEEF-2026-06-07-A",
+  "time": "2026-06-06T09:14:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-complaint-cluster-v1",
+  "hfssourcerecordid": "retail-event-complaints-001",
+  "hfssourcesequence": 6,
+  "hfsobservedat": "2026-06-06T09:14:02Z",
+  "hfscontenthash": "sha256:031bc815e035302e7c389274f97961fe483fe3b6ce598ecb8b90709e4eeba2de",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "ISSUE-COMPLAINT-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:14:00Z",
+    "attributes": {
+      "eventcode": "COMPLAINT_CLUSTER_DETECTED",
+      "complaintcount": 5,
+      "complainttypes": [
+        "smell",
+        "damaged packaging",
+        "refund",
+        "price mismatch"
+      ],
+      "productid": "PROD-FRESH-BEEF-PATTIES-400G",
+      "batchid": "BATCH-FRESH-BEEF-2026-06-07-A",
+      "supplierid": "SUPPLIER-ISLAND-PROTEINS",
+      "agent": "Customer and Risk Intelligence Agent",
+      "recommendation": "Investigate batch and request supplier response before broad supplier decision."
+    }
+  }
+}
