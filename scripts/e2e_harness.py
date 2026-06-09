@@ -330,10 +330,15 @@ class DemoHarness:
         routing_request = deepcopy(fixture["routingRequests"]["primary"])
         generation_request = deepcopy(fixture["generateRequest"])
         output = deepcopy(fixture["normalizedResponses"][0]["output"])
+        
+        # Use fixture's purpose (RESOLVE_RETAIL_RISK); align tenantKey and correlationId with config
+        fixture_purpose = fixture["generateRequest"]["purpose"]
+        
         for value in (routing_request, generation_request):
             value["tenantKey"] = self.config["tenantKey"]
             value["correlationId"] = self.config["correlationId"]
-            value["purpose"] = "RESOLVE_SERVICE_INTERRUPTION"
+            value["purpose"] = fixture_purpose
+        
         generation_request["context"]["evidenceIds"] = [
             source["evidenceId"]
         ]
@@ -392,7 +397,7 @@ HFS_RecommendationCommand command = new HFS_RecommendationCommand();
 command.contractVersion = HFS_ServiceContract.VERSION;
 command.correlationId = '{apex_string(self.config["correlationId"])}';
 command.tenantKey = '{apex_string(self.config["tenantKey"])}';
-command.purpose = 'RESOLVE_SERVICE_INTERRUPTION';
+command.purpose = 'RESOLVE_RETAIL_RISK';
 command.externalKey = '{apex_string(recommendation_key)}';
 command.workItemId = '{apex_string(source["workItemId"])}';
 command.subjectEntityId = '{apex_string(source["subjectEntityId"])}';
@@ -431,7 +436,7 @@ explainRequest.contractVersion = HFS_ServiceContract.VERSION;
 explainRequest.action = HFS_AgentActionService.EXPLAIN;
 explainRequest.tenantKey = '{apex_string(self.config["tenantKey"])}';
 explainRequest.correlationId = '{apex_string(self.config["correlationId"])}';
-explainRequest.purpose = 'RESOLVE_SERVICE_INTERRUPTION';
+explainRequest.purpose = 'RESOLVE_RETAIL_RISK';
 explainRequest.workItemId = '{apex_string(source["workItemId"])}';
 HFS_AgentActionResult explanation = HFS_AgentExplainAction.invoke(
   new List<HFS_AgentActionRequest>{{ explainRequest }}
