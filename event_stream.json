@@ -1,0 +1,349 @@
+[
+  {
+    "specversion": "1.0",
+    "id": "EVT-001",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.waste.log",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T08:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-005",
+      "qty_waste": 5,
+      "reason": "Quality Decay",
+      "category": "Produce"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-001"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-002",
+    "source": "io.github.freeapikeys.hfs.retail.customer.mobile",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.quality",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T09:30:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-005",
+      "complaint": "Strawberries were bruised and moldy upon arrival.",
+      "customer_id": "CUST-101"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-002"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-003",
+    "source": "io.github.freeapikeys.hfs.retail.store.002",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.expiry",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T10:15:00Z",
+    "data": {
+      "store_id": "STORE-002",
+      "product_id": "PROD-006",
+      "complaint": "Milk expires tomorrow, too many on shelf.",
+      "customer_id": "CUST-102"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-003"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-004",
+    "source": "io.github.freeapikeys.hfs.retail.store.003",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.packaging",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T11:00:00Z",
+    "data": {
+      "store_id": "STORE-003",
+      "product_id": "PROD-026",
+      "complaint": "Canned tomatoes leaking from the seam.",
+      "customer_id": "CUST-103"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-004"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-005",
+    "source": "io.github.freeapikeys.hfs.retail.supplier.003",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.missing",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T12:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-011",
+      "complaint": "Salmon shipment missing 2kg of ordered amount.",
+      "customer_id": "STORE-MANAGER-001"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-005"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-006",
+    "source": "io.github.freeapikeys.hfs.retail.store.003",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.price",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T13:00:00Z",
+    "data": {
+      "store_id": "STORE-003",
+      "product_id": "PROD-030",
+      "complaint": "Shelf says 20 Rs, POS says 25 Rs.",
+      "customer_id": "CUST-104"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-006"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-007",
+    "source": "io.github.freeapikeys.hfs.retail.supplier.006",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.delay",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T14:00:00Z",
+    "data": {
+      "store_id": "STORE-002",
+      "product_id": "PROD-027",
+      "complaint": "Rice delivery 4 hours late, affecting shelf filling.",
+      "customer_id": "STORE-MANAGER-002"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-007"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-008",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.health",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T15:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-013",
+      "complaint": "Chicken fridge temperature rose to 8C.",
+      "customer_id": "STORE-STAFF-001"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-008"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-009",
+    "source": "io.github.freeapikeys.hfs.retail.supplier.001",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.incorrect",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T16:00:00Z",
+    "data": {
+      "store_id": "STORE-003",
+      "product_id": "PROD-003",
+      "complaint": "Received Green Mangoes instead of Yellow Mangoes.",
+      "customer_id": "STORE-MANAGER-003"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-009"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-010",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.stock.update",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T17:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-001",
+      "current_stock": 100
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-010"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-011",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.stock.update",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T17:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-001",
+      "current_stock": 100
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-010"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-012",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T18:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-001",
+      "current_stock": 90
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-012"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-013",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.stock.update",
+    "datacontenttype": "application/json",
+    "time": "2026-06-10T10:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-001",
+      "current_stock": 110
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-013"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-015",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.stock.update",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T19:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-001",
+      "current_stock": 80
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-015"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-014",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.stock.update",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T18:30:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-001",
+      "current_stock": 90
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-014"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-016",
+    "source": "io.github.freeapikeys.hfs.retail.store.002",
+    "type": "io.github.freeapikeys.hfs.retail.waste.log",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T20:00:00Z",
+    "data": {
+      "store_id": "STORE-002",
+      "product_id": "PROD-006",
+      "qty_waste": 12,
+      "reason": "Expired",
+      "category": "Dairy & Eggs"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-016"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-017",
+    "source": "io.github.freeapikeys.hfs.retail.store.003",
+    "type": "io.github.freeapikeys.hfs.retail.waste.log",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T21:00:00Z",
+    "data": {
+      "store_id": "STORE-003",
+      "product_id": "PROD-026",
+      "qty_waste": 8,
+      "reason": "Packaging Failure",
+      "category": "Canned & Dry Goods"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-017"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-018",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.stock.update",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T22:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-005",
+      "current_stock": 10
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-018"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-019",
+    "source": "io.github.freeapikeys.hfs.retail.customer.mobile",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.price",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T22:30:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-001",
+      "complaint": "Price of bananas is inconsistent across aisles.",
+      "customer_id": "CUST-105"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-019"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-020",
+    "source": "io.github.freeapikeys.hfs.retail.supplier.001",
+    "type": "io.github.freeapikeys.hfs.retail.complaint.incorrect",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T23:00:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-003",
+      "complaint": "Wrong variety of mangoes delivered again.",
+      "customer_id": "STORE-MANAGER-001"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-020"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-021",
+    "source": "io.github.freeapikeys.hfs.retail.store.002",
+    "type": "io.github.freeapikeys.hfs.retail.stock.update",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T23:30:00Z",
+    "data": {
+      "store_id": "STORE-002",
+      "product_id": "PROD-006",
+      "current_stock": 40
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-021"
+  },
+  {
+    "specversion": "1.0",
+    "id": "EVT-022",
+    "source": "io.github.freeapikeys.hfs.retail.store.001",
+    "type": "io.github.freeapikeys.hfs.retail.waste.log",
+    "datacontenttype": "application/json",
+    "time": "2026-06-13T23:59:00Z",
+    "data": {
+      "store_id": "STORE-001",
+      "product_id": "PROD-005",
+      "qty_waste": 3,
+      "reason": "Quality Decay",
+      "category": "Produce"
+    },
+    "hfstenantid": "demo-mauritius",
+    "hfscontenthash": "hash-022"
+  }
+]

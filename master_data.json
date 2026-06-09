@@ -1,0 +1,47 @@
+{
+  "stores": [
+    { "id": "STORE-001", "name": "Port Louis Central", "location": "Port Louis", "timezone": "Indian/Mauritius", "manager": "Jean-Pierre" },
+    { "id": "STORE-002", "name": "Curepipe Highland", "location": "Curepipe", "timezone": "Indian/Mauritius", "manager": "Anjali" },
+    { "id": "STORE-003", "name": "Grand Baie Coast", "location": "Grand Baie", "timezone": "Indian/Mauritius", "manager": "Marc" }
+  ],
+  "suppliers": [
+    { "id": "SUPP-001", "name": "Island Fresh Produce", "category": "Produce", "contact": "Pierre Fresh" },
+    { "id": "SUPP-002", "name": "Mauritius Dairy Co", "category": "Dairy & Eggs", "contact": "Sita Dairy" },
+    { "id": "SUPP-003", "name": "Oceanic Seafoods", "category": "Meat & Seafood", "contact": "Raj Fish" },
+    { "id": "SUPP-004", "name": "Boulangerie Centrale", "category": "Bakery", "contact": "Luc Bread" },
+    { "id": "SUPP-005", "name": "Global Frozen Goods", "category": "Frozen Foods", "contact": "Mia Frost" },
+    { "id": "SUPP-006", "name": "DryGoods Ltd", "category": "Canned & Dry Goods", "contact": "Sam Dry" }
+  ],
+  "products": [
+    { "id": "PROD-001", "name": "Organic Bananas", "category": "Produce", "supplier": "SUPP-001", "unit": "kg", "price": 45.00 },
+    { "id": "PROD-002", "name": "Local Spinach", "category": "Produce", "supplier": "SUPP-001", "unit": "bunch", "price": 20.00 },
+    { "id": "PROD-003", "name": "Island Mangoes", "category": "Produce", "supplier": "SUPP-001", "unit": "kg", "price": 80.00 },
+    { "id": "PROD-004", "name": "Red Apples", "category": "Produce", "supplier": "SUPP-001", "unit": "kg", "price": 60.00 },
+    { "id": "PROD-005", "name": "Fresh Strawberries", "category": "Produce", "supplier": "SUPP-001", "unit": "punnet", "price": 120.00 },
+    { "id": "PROD-006", "name": "Full Cream Milk", "category": "Dairy & Eggs", "supplier": "SUPP-002", "unit": "L", "price": 35.00 },
+    { "id": "PROD-007", "name": "Greek Yogurt", "category": "Dairy & Eggs", "supplier": "SUPP-002", "unit": "cup", "price": 40.00 },
+    { "id": "PROD-008", "name": "Salted Butter", "category": "Dairy & Eggs", "supplier": "SUPP-002", "unit": "250g", "price": 55.00 },
+    { "id": "PROD-009", "name": "Free Range Eggs", "category": "Dairy & Eggs", "supplier": "SUPP-002", "unit": "12pk", "price": 70.00 },
+    { "id": "PROD-010", "name": "Cheddar Cheese", "category": "Dairy & Eggs", "supplier": "SUPP-002", "unit": "kg", "price": 250.00 },
+    { "id": "PROD-011", "name": "Fresh Salmon Fillet", "category": "Meat & Seafood", "supplier": "SUPP-003", "unit": "kg", "price": 600.00 },
+    { "id": "PROD-012", "name": "Local Sea Bass", "category": "Meat & Seafood", "supplier": "SUPP-003", "unit": "kg", "price": 450.00 },
+    { "id": "PROD-013", "name": "Chicken Breast", "category": "Meat & Seafood", "supplier": "SUPP-003", "unit": "kg", "price": 320.00 },
+    { "id": "PROD-014", "name": "Prawns Jumbo", "category": "Meat & Seafood", "supplier": "SUPP-003", "unit": "kg", "price": 800.00 },
+    { "id": "PROD-015", "name": "Beef Steak", "category": "Meat & Seafood", "supplier": "SUPP-003", "unit": "kg", "price": 750.00 },
+    { "id": "PROD-016", "name": "Baguette Tradition", "category": "Bakery", "supplier": "SUPP-004", "unit": "each", "price": 15.00 },
+    { "id": "PROD-017", "name": "Croissants Butter", "category": "Bakery", "supplier": "SUPP-004", "unit": "pack", "price": 60.00 },
+    { "id": "PROD-018", "name": "Sourdough Loaf", "category": "Bakery", "supplier": "SUPP-004", "unit": "each", "price": 90.00 },
+    { "id": "PROD-019", "name": "Wholemeal Bread", "category": "Bakery", "supplier": "SUPP-004", "unit": "each", "price": 30.00 },
+    { "id": "PROD-020", "name": "Chocolate Cake", "category": "Bakery", "supplier": "SUPP-004", "unit": "each", "price": 200.00 },
+    { "id": "PROD-021", "name": "Frozen Peas", "category": "Frozen Foods", "supplier": "SUPP-005", "unit": "kg", "price": 80.00 },
+    { "id": "PROD-022", "name": "Vanilla Ice Cream", "category": "Frozen Foods", "supplier": "SUPP-005", "unit": "L", "price": 150.00 },
+    { "id": "PROD-023", "name": "Mixed Berries", "category": "Frozen Foods", "supplier": "SUPP-005", "unit": "kg", "price": 220.00 },
+    { "id": "PROD-024", "name": "Frozen Pizza", "category": "Frozen Foods", "supplier": "SUPP-005", "unit": "each", "price": 110.00 },
+    { "id": "PROD-025", "name": "French Fries", "category": "Frozen Foods", "supplier": "SUPP-005", "unit": "kg", "price": 90.00 },
+    { "id": "PROD-026", "name": "Canned Tomatoes", "category": "Canned & Dry Goods", "supplier": "SUPP-006", "unit": "can", "price": 30.00 },
+    { "id": "PROD-027", "name": "Basmati Rice", "category": "Canned & Dry Goods", "supplier": "SUPP-006", "unit": "kg", "price": 100.00 },
+    { "id": "PROD-028", "name": "Olive Oil Extra Virgin", "category": "Canned & Dry Goods", "supplier": "SUPP-006", "unit": "L", "price": 350.00 },
+    { "id": "PROD-029", "name": "Pasta Penne", "category": "Canned & Dry Goods", "supplier": "SUPP-006", "unit": "500g", "price": 45.00 },
+    { "id": "PROD-030", "name": "Sea Salt", "category": "Canned & Dry Goods", "supplier": "SUPP-006", "unit": "500g", "price": 25.00 }
+  ]
+}
