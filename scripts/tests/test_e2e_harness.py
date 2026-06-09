@@ -104,11 +104,14 @@ class DemoHarnessTest(unittest.TestCase):
     def test_connected_model_and_mulesoft_paths_fail_closed_then_succeed(
         self,
     ) -> None:
-        config = json.loads(e2e_harness.CONFIG_PATH.read_text())
+        # Use fixture config instead of file config to ensure tenant key matches
+        contract = e2e_harness.ModelGatewayContract()
+        fixture_config = contract.fixture
+        
         harness = e2e_harness.DemoHarness(
             "test-org",
             runner=FakeRunner(),
-            config=config,
+            config=fixture_config,
         )
         source = {
             "workItemId": "a0E000000000001AAA",
@@ -144,7 +147,7 @@ class DemoHarnessTest(unittest.TestCase):
         self.assertEqual("PERMISSION_DENIED", mulesoft["blockedErrorCode"])
         self.assertEqual(202, mulesoft["executionStatus"])
         self.assertEqual(
-            config["correlationId"],
+            fixture_config["correlationId"],
             mulesoft["outcome"]["correlationId"],
         )
 
