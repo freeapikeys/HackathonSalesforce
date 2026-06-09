@@ -1,9 +1,26 @@
-# North Star Roadmap
+# Closed-Loop Intelligence RM Roadmap
 
-This roadmap is the hackathon checklist. Keep it honest: mark an item complete
-only when the code, fixture, UI, test, or demo evidence exists in the repo.
+This roadmap is the branch checklist. Keep it honest: mark an item complete only
+when the code, fixture, UI, test, or demo evidence exists in the repo.
 
-## North Star
+## Branch Direction
+
+Build a permissioned enterprise intelligence and relationship-management loop
+on Salesforce, Agentforce, Data 360, and MuleSoft.
+
+The product collects authorized first-party business data, preserves source
+evidence, maps fragmented terminology, forms conclusions and recommendations,
+coordinates humans and agents across relationships, records outcomes, and feeds
+those outcomes back into the next cycle.
+
+The supermarket command-center material is one demo vertical. It must prove the
+loop, not replace the broader product direction.
+
+See [docs/closed-loop-intelligence-rm.md](docs/closed-loop-intelligence-rm.md)
+and
+[docs/decisions/0006-closed-loop-intelligence-rm-branch.md](docs/decisions/0006-closed-loop-intelligence-rm-branch.md).
+
+## Retail Demo Vertical
 
 Build a Salesforce and Agentforce command center that helps a supermarket
 manager prevent stockouts, reduce waste, handle supplier quality issues, and
@@ -119,17 +136,22 @@ and UI must support any supermarket product category.
 
 ### 1. Product Direction and Scope
 
-- [x] Supermarket operations selected as the hackathon scope.
-- [x] Product name changed to North Star in active docs.
-- [x] MVP brief created in `docs/north-star-mvp.md`.
-- [x] Implementation plan created in `docs/north-star-implementation-plan.md`.
-- [x] Old broad platform wording removed from active docs.
-- [x] Supermarket issue map added to this roadmap.
-- [x] One-sentence product pitch finalized.
-- [x] Three-minute judge demo narrative drafted.
-- [x] Five-minute extended demo narrative drafted.
+- [x] Closed-loop intelligence RM selected as the private branch direction.
+- [x] Branch doctrine created in `docs/closed-loop-intelligence-rm.md`.
+- [x] Branch decision recorded in
+      `docs/decisions/0006-closed-loop-intelligence-rm-branch.md`.
+- [x] Supermarket operations retained as a retail demo vertical.
+- [x] Retail MVP brief retained in `docs/north-star-mvp.md`.
+- [x] Retail implementation plan retained in
+      `docs/north-star-implementation-plan.md`.
+- [x] Supermarket issue map retained as demo scenario coverage.
+- [ ] Retail roadmap items audited and mapped to reusable relationship
+      intelligence capabilities.
+- [ ] One-sentence branch product pitch finalized.
+- [x] Three-minute retail judge demo narrative drafted.
+- [x] Five-minute retail extended demo narrative drafted.
 - [x] Backup recorded-demo path defined in case live integrations fail.
-- [x] Final non-goals reviewed by whole team.
+- [ ] Final branch non-goals reviewed before any publication.
 
 ### 2. Product Categories and Demo Data
 

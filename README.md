@@ -1,31 +1,25 @@
-# North Star
+# Closed-Loop Intelligence RM
 
-North Star is a Salesforce and Agentforce supermarket operations MVP for the
-hackathon. It helps a store manager spot product risk early, understand the
-evidence, approve the right recovery plan, and coordinate store, supplier, and
-staff actions.
+This private local branch is recentered on the original product: a Salesforce,
+Agentforce, Data 360, and MuleSoft system that turns first-party business data
+into evidence-backed decisions, coordinates people and agents across business
+relationships, captures outcomes, and feeds those outcomes back into the next
+cycle.
 
-The demo is focused on retail operations, not a broad all-purpose business
-platform. The product watches first-party supermarket signals:
+The supermarket command-center work is useful as a demo vertical, but it is not
+the product boundary for this branch. Treat retail as one scenario that proves
+the broader relationship-management intelligence loop.
 
-- POS sales and demand velocity;
-- shelf, backroom, warehouse, and supplier stock;
-- expiry batches and waste risk;
-- customer complaints and refund signals;
-- supplier response and delivery lead time;
-- promotion readiness and price mismatch;
-- staffing, queue risk, and store task execution.
-
-The current repo still contains `HFS_` object and service names because the
-foundation was built first as a governed evidence/action spine. For the
-hackathon, treat that foundation as internal plumbing. The product story is
-North Star.
+Start with [docs/closed-loop-intelligence-rm.md](docs/closed-loop-intelligence-rm.md)
+for the branch doctrine and
+[docs/decisions/0006-closed-loop-intelligence-rm-branch.md](docs/decisions/0006-closed-loop-intelligence-rm-branch.md)
+for the branch decision.
 
 ## Start Here
 
 1. Read [ROADMAP.md](ROADMAP.md).
-2. Read [docs/north-star-mvp.md](docs/north-star-mvp.md).
-3. Read [docs/north-star-implementation-plan.md](docs/north-star-implementation-plan.md).
+2. Read [docs/closed-loop-intelligence-rm.md](docs/closed-loop-intelligence-rm.md).
+3. Read [docs/architecture.md](docs/architecture.md).
 4. Read [AGENTS.md](AGENTS.md).
 5. Run `npm run check` when the local shell can execute the project scripts.
 
@@ -36,24 +30,24 @@ the checklist in [ROADMAP.md](ROADMAP.md) and the lane split in
 
 ## Current Build Target
 
-The first North Star vertical slice is:
+The first branch-level vertical slice is:
 
-`retail risk event -> product, supplier, store, batch, complaint, promotion, and
-staff context -> evidence-backed recommendation -> manager approval -> MuleSoft
-mock actions -> Slack and WhatsApp-style alerts -> outcome -> updated command
-center`
+`authorized source event -> preserved evidence -> semantic mapping -> facts and
+inferences -> recommendation -> human approval -> coordinated task or outreach
+-> outcome -> updated relationship intelligence`
 
-The first demo may use burger patties because it is easy to understand, but the
-implementation must stay product-category neutral. The same flow should work
-for dairy, bakery, frozen food, fresh produce, household goods, electronics, or
-pharmacy shelves.
+Retail fixtures can instantiate this flow with product, supplier, store, staff,
+complaint, promotion, and outcome records. Shared contracts should remain
+adaptable to customers, employees, suppliers, partners, subsidiaries,
+regulators, shareholders, and other business relationships.
 
 ## Repository Map
 
-- `ROADMAP.md`: North Star task checklist and completion gates.
+- `ROADMAP.md`: branch roadmap and completion gates.
 - `AGENTS.md`: rules for Codex and human contributors.
-- `docs/north-star-mvp.md`: product brief, agent roles, demo story, and non-goals.
-- `docs/north-star-implementation-plan.md`: practical build plan for the team.
+- `docs/closed-loop-intelligence-rm.md`: branch product doctrine and loop.
+- `docs/north-star-mvp.md`: retail demo vertical brief.
+- `docs/north-star-implementation-plan.md`: retail demo build plan.
 - `docs/architecture.md`: system architecture and runtime flow.
 - `docs/demo-harness.md`: seed, reset, verification, and demo harness behavior.
 - `docs/event-contract.md`: versioned retail event intake contract.
@@ -69,19 +63,20 @@ pharmacy shelves.
 
 ## Demo Promise
 
-North Star should show five things clearly:
+The branch demo should show five things clearly:
 
-1. messy retail signals becoming one operational picture;
-2. Agentforce separating facts from inference;
-3. supplier evidence changing the recommendation;
-4. manager approval before consequential actions;
+1. fragmented first-party data becoming one operational picture;
+2. Agentforce and models separating facts from inference;
+3. new evidence changing the recommendation;
+4. human approval before consequential actions;
 5. Salesforce records preserving evidence, actions, and outcomes.
 
 ## Non-Goals
 
-- Do not pitch this as a generic all-purpose platform.
+- Do not reduce this branch to a retail-only product.
+- Do not pitch surveillance, scraping, or unauthorized data harvesting.
 - Do not claim live POS, supplier, Slack, WhatsApp, or ERP integrations unless
   they are configured and demonstrated.
 - Do not let Agentforce execute protected external actions directly.
-- Do not hard-code the product, supplier, or scenario to burgers.
+- Do not hard-code the product, supplier, relationship type, or scenario.
 - Do not hide uncertainty behind one unexplained score.
