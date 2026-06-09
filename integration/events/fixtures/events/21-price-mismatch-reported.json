@@ -1,0 +1,32 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000021",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.price.mismatch.reported.v1",
+  "subject": "promotion:PROMO-WEEKEND-GRILL-2026-W23",
+  "time": "2026-06-06T09:16:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-price-mismatch-v1",
+  "hfssourcerecordid": "retail-event-price-001",
+  "hfssourcesequence": 7,
+  "hfsobservedat": "2026-06-06T09:16:01Z",
+  "hfscontenthash": "sha256:24ab831aee3a61c2eb55a13abbac715ed2bae8469af58dda6b999559c0123dac",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "ISSUE-PRICE-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:16:00Z",
+    "attributes": {
+      "eventcode": "PRICE_MISMATCH_REPORTED",
+      "shelfprice": 159,
+      "posprice": 189,
+      "currency": "MUR",
+      "shelfareaid": "SHELF-MEAT-CHILLER-A3",
+      "recommendation": "Create shelf-signage correction task and preserve complaint evidence."
+    }
+  }
+}

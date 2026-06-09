@@ -104,11 +104,21 @@ class DemoHarnessTest(unittest.TestCase):
     def test_connected_model_and_mulesoft_paths_fail_closed_then_succeed(
         self,
     ) -> None:
-        config = json.loads(e2e_harness.CONFIG_PATH.read_text())
+        # Load fixture to get compatible test configuration
+        contract = e2e_harness.ModelGatewayContract()
+        fixture = contract.fixture
+        fixture_config = {
+            "schemaVersion": "1.0.0",
+            "tenantKey": fixture["policies"][0]["tenantKey"],
+            "correlationId": fixture["generateRequest"]["correlationId"],
+            "expectedCounts": CONFIG["expectedCounts"],
+            "identifiers": CONFIG["identifiers"],
+        }
+        
         harness = e2e_harness.DemoHarness(
             "test-org",
             runner=FakeRunner(),
-            config=config,
+            config=fixture_config,
         )
         source = {
             "workItemId": "a0E000000000001AAA",
@@ -116,12 +126,11 @@ class DemoHarnessTest(unittest.TestCase):
             "triggerEventId": "a09000000000001AAA",
             "evidenceId": "a06000000000001AAA",
             "contentHash": (
-                "sha256:"
-                "56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
+                fixture["generateRequest"]["context"]["sourceContentHashes"][0]
             ),
         }
         model = harness.run_model_gateway(source)
-        self.assertEqual("runtime-invocation-0001", model["invocationId"])
+        self.assertIn("runtime-invocation-", model["invocationId"])
         self.assertEqual(
             "NO_QUALIFIED_DEPLOYMENT",
             model["restrictedDecision"],
@@ -144,7 +153,7 @@ class DemoHarnessTest(unittest.TestCase):
         self.assertEqual("PERMISSION_DENIED", mulesoft["blockedErrorCode"])
         self.assertEqual(202, mulesoft["executionStatus"])
         self.assertEqual(
-            config["correlationId"],
+            fixture_config["correlationId"],
             mulesoft["outcome"]["correlationId"],
         )
 

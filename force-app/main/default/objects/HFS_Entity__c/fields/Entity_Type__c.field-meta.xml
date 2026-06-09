@@ -24,6 +24,16 @@
                 <label>Organizational Unit</label>
             </value>
             <value>
+                <fullName>PRODUCT</fullName>
+                <default>false</default>
+                <label>Product</label>
+            </value>
+            <value>
+                <fullName>PRODUCT_BATCH</fullName>
+                <default>false</default>
+                <label>Product Batch</label>
+            </value>
+            <value>
                 <fullName>SUPPLIER</fullName>
                 <default>false</default>
                 <label>Supplier</label>

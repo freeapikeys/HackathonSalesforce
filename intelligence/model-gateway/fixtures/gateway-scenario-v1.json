@@ -4,7 +4,7 @@
     {
       "contractVersion": "1.0.0",
       "version": "1.0.0",
-      "profileKey": "recommendation_reasoning",
+      "profileKey": "north-star-retail-recommendation",
       "taskType": "RECOMMENDATION",
       "inputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/generateRequest",
       "outputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/recommendationOutput",
@@ -58,7 +58,7 @@
       ],
       "contextWindowTokens": 32768,
       "qualifiedProfiles": [
-        "recommendation_reasoning"
+        "north-star-retail-recommendation"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.91
@@ -96,7 +96,7 @@
       ],
       "contextWindowTokens": 16384,
       "qualifiedProfiles": [
-        "recommendation_reasoning"
+        "north-star-retail-recommendation"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.88
@@ -112,12 +112,12 @@
     {
       "contractVersion": "1.0.0",
       "version": "1.0.0",
-      "policyKey": "recommendation-routing-mauritius",
+      "policyKey": "north-star-retail-routing-mauritius",
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
-      "profileKey": "recommendation_reasoning",
+      "profileKey": "north-star-retail-recommendation",
       "permittedPurposes": [
-        "RESOLVE_SERVICE_INTERRUPTION"
+        "RESOLVE_RETAIL_RISK"
       ],
       "candidatePriority": [
         "mock-alpha-primary",
@@ -150,11 +150,11 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
-      "agentKey": "relationship-recommendation-agent",
-      "subagentKey": "case-analysis",
+      "agentKey": "north-star-orchestrator",
+      "subagentKey": "retail-risk-analysis",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-      "profileKey": "recommendation_reasoning",
+      "purpose": "RESOLVE_RETAIL_RISK",
+      "profileKey": "north-star-retail-recommendation",
       "dataClassification": "CONFIDENTIAL",
       "residencyRegion": "mu",
       "language": "en",
@@ -172,11 +172,11 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
-      "agentKey": "relationship-recommendation-agent",
-      "subagentKey": "case-analysis",
+      "agentKey": "north-star-orchestrator",
+      "subagentKey": "retail-risk-analysis",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-      "profileKey": "recommendation_reasoning",
+      "purpose": "RESOLVE_RETAIL_RISK",
+      "profileKey": "north-star-retail-recommendation",
       "dataClassification": "CONFIDENTIAL",
       "residencyRegion": "mu",
       "language": "en",
@@ -196,11 +196,11 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
-      "agentKey": "relationship-recommendation-agent",
-      "subagentKey": "case-analysis",
+      "agentKey": "north-star-orchestrator",
+      "subagentKey": "retail-risk-analysis",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-      "profileKey": "recommendation_reasoning",
+      "purpose": "RESOLVE_RETAIL_RISK",
+      "profileKey": "north-star-retail-recommendation",
       "dataClassification": "RESTRICTED",
       "residencyRegion": "mu",
       "language": "en",
@@ -218,9 +218,9 @@
     "primary": {
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
-      "policyKey": "recommendation-routing-mauritius",
+      "policyKey": "north-star-retail-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "recommendation_reasoning",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
       "decision": "SELECTED",
       "selectedDeploymentKey": "mock-alpha-primary",
@@ -318,9 +318,9 @@
     "fallback": {
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
-      "policyKey": "recommendation-routing-mauritius",
+      "policyKey": "north-star-retail-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "recommendation_reasoning",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
       "decision": "SELECTED",
       "selectedDeploymentKey": "mock-beta-private",
@@ -424,9 +424,9 @@
     "noQualifiedDeployment": {
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
-      "policyKey": "recommendation-routing-mauritius",
+      "policyKey": "north-star-retail-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "recommendation_reasoning",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
       "decision": "NO_QUALIFIED_DEPLOYMENT",
       "selectedDeploymentKey": null,
@@ -455,26 +455,29 @@
     "correlationId": "20000000-0000-4000-8000-000000000001",
     "tenantKey": "demo-mauritius",
     "userId": "integration-user-001",
-    "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-    "agentKey": "relationship-recommendation-agent",
-    "profileKey": "recommendation_reasoning",
+    "purpose": "RESOLVE_RETAIL_RISK",
+    "agentKey": "north-star-orchestrator",
+    "profileKey": "north-star-retail-recommendation",
     "profileVersion": "1.0.0",
-    "promptVersion": "recommendation-prompt-1.0.0",
-    "retrievalVersion": "relationship-context-1.0.0",
+    "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
+    "retrievalVersion": "north-star-retail-context-1.0.0",
     "messages": [
       {
         "role": "SYSTEM",
-        "content": "Separate facts, inferences, and recommendations. Cite accessible evidence and require human approval."
+        "content": "Separate retail facts, inferences, assumptions, and recommendations. Cite inventory, expiry, supplier, complaint, promotion, and staffing evidence. Do not blindly stop all supplier orders because complaints exist; request supplier response and require human approval."
       },
       {
         "role": "USER",
-        "content": "Recommend the next action for the repeated service interruption."
+        "content": "Recommend the next action for the North Star supermarket promotion risk."
       }
     ],
     "context": {
       "dataClassification": "CONFIDENTIAL",
       "evidenceIds": [
-        "evidence-issue-001"
+        "evidence-inventory-north-star-001",
+        "evidence-complaint-north-star-001",
+        "evidence-supplier-north-star-001",
+        "evidence-staffing-north-star-001"
       ],
       "sourceContentHashes": [
         "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
@@ -495,22 +498,25 @@
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "invocationId": "invocation-alpha-001",
-      "profileKey": "recommendation_reasoning",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
       "deploymentKey": "mock-alpha-primary",
       "deploymentVersion": "1.2.0",
       "adapterInterfaceVersion": "hfs.generate.v1",
       "output": {
         "facts": [
-          "The source system reports repeated service interruption."
+          "Shelf and backroom cover is below the weekend promotion threshold."
         ],
         "inferences": [
-          "The affected relationship is likely to require a proactive update."
+          "A warehouse transfer plus supplier replacement is safer than blindly reordering the complained-about batch."
         ],
-        "recommendation": "Prepare a status update using the approved service template and route it for human approval.",
+        "recommendation": "Route a recovery plan for manager approval: transfer safe warehouse stock, quarantine suspect units, mark down only safe near-expiry stock, fix shelf price, open one extra cashier lane, and request supplier replacement.",
         "confidence": 0.87,
         "evidenceIds": [
-          "evidence-issue-001"
+          "evidence-inventory-north-star-001",
+          "evidence-complaint-north-star-001",
+          "evidence-supplier-north-star-001",
+          "evidence-staffing-north-star-001"
         ],
         "requiresHumanApproval": true
       },
@@ -522,22 +528,25 @@
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "invocationId": "invocation-beta-001",
-      "profileKey": "recommendation_reasoning",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
       "deploymentKey": "mock-beta-private",
       "deploymentVersion": "2.0.0",
       "adapterInterfaceVersion": "hfs.generate.v1",
       "output": {
         "facts": [
-          "The source system reports repeated service interruption."
+          "Shelf and backroom cover is below the weekend promotion threshold."
         ],
         "inferences": [
-          "The affected relationship is likely to require a proactive update."
+          "A warehouse transfer plus supplier replacement is safer than blindly reordering the complained-about batch."
         ],
-        "recommendation": "Prepare a status update using the approved service template and route it for human approval.",
+        "recommendation": "Route a recovery plan for manager approval: transfer safe warehouse stock, quarantine suspect units, mark down only safe near-expiry stock, fix shelf price, open one extra cashier lane, and request supplier replacement.",
         "confidence": 0.87,
         "evidenceIds": [
-          "evidence-issue-001"
+          "evidence-inventory-north-star-001",
+          "evidence-complaint-north-star-001",
+          "evidence-supplier-north-star-001",
+          "evidence-staffing-north-star-001"
         ],
         "requiresHumanApproval": true
       },
@@ -553,20 +562,23 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-      "agentKey": "relationship-recommendation-agent",
-      "profileKey": "recommendation_reasoning",
+      "purpose": "RESOLVE_RETAIL_RISK",
+      "agentKey": "north-star-orchestrator",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
-      "policyKey": "recommendation-routing-mauritius",
+      "policyKey": "north-star-retail-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": "mock-alpha-primary",
       "selectedDeploymentVersion": "1.2.0",
-      "promptVersion": "recommendation-prompt-1.0.0",
-      "retrievalVersion": "relationship-context-1.0.0",
-      "inputHash": "sha256:bd2cc4d23dafefc224b41a11b4cf35d8453d56c367b785d0b32d73a3cc8bcf6b",
-      "outputHash": "sha256:5e0a359d72434e19a2dd26a4e30e8d694a87958585773be23ad1e36e38b9e3ef",
+      "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
+      "retrievalVersion": "north-star-retail-context-1.0.0",
+      "inputHash": "sha256:62a6eb7fb2dbdb7c398f6b489d82bbd2ff55f85f943a20c9f88c7e966bfc53b4",
+      "outputHash": "sha256:3169101fe4fc510eca499162f5e2bdf1b2ab3e648615ea7f616a173d49742fe3",
       "evidenceIds": [
-        "evidence-issue-001"
+        "evidence-inventory-north-star-001",
+        "evidence-complaint-north-star-001",
+        "evidence-supplier-north-star-001",
+        "evidence-staffing-north-star-001"
       ],
       "attempts": [
         {
@@ -598,20 +610,23 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-      "agentKey": "relationship-recommendation-agent",
-      "profileKey": "recommendation_reasoning",
+      "purpose": "RESOLVE_RETAIL_RISK",
+      "agentKey": "north-star-orchestrator",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
-      "policyKey": "recommendation-routing-mauritius",
+      "policyKey": "north-star-retail-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": "mock-beta-private",
       "selectedDeploymentVersion": "2.0.0",
-      "promptVersion": "recommendation-prompt-1.0.0",
-      "retrievalVersion": "relationship-context-1.0.0",
-      "inputHash": "sha256:bd2cc4d23dafefc224b41a11b4cf35d8453d56c367b785d0b32d73a3cc8bcf6b",
-      "outputHash": "sha256:5e0a359d72434e19a2dd26a4e30e8d694a87958585773be23ad1e36e38b9e3ef",
+      "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
+      "retrievalVersion": "north-star-retail-context-1.0.0",
+      "inputHash": "sha256:62a6eb7fb2dbdb7c398f6b489d82bbd2ff55f85f943a20c9f88c7e966bfc53b4",
+      "outputHash": "sha256:3169101fe4fc510eca499162f5e2bdf1b2ab3e648615ea7f616a173d49742fe3",
       "evidenceIds": [
-        "evidence-issue-001"
+        "evidence-inventory-north-star-001",
+        "evidence-complaint-north-star-001",
+        "evidence-supplier-north-star-001",
+        "evidence-staffing-north-star-001"
       ],
       "attempts": [
         {
@@ -654,20 +669,23 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-      "agentKey": "relationship-recommendation-agent",
-      "profileKey": "recommendation_reasoning",
+      "purpose": "RESOLVE_RETAIL_RISK",
+      "agentKey": "north-star-orchestrator",
+      "profileKey": "north-star-retail-recommendation",
       "profileVersion": "1.0.0",
-      "policyKey": "recommendation-routing-mauritius",
+      "policyKey": "north-star-retail-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": null,
       "selectedDeploymentVersion": null,
-      "promptVersion": "recommendation-prompt-1.0.0",
-      "retrievalVersion": "relationship-context-1.0.0",
-      "inputHash": "sha256:38da27ad4c72b6ae9499f26cd00f52e14e48bd0c3cdef0ac3bd308640ad0913f",
+      "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
+      "retrievalVersion": "north-star-retail-context-1.0.0",
+      "inputHash": "sha256:765601e23e1e35332b5b685b08bc7c5933247230605e68eee50b203addd58100",
       "outputHash": null,
       "evidenceIds": [
-        "evidence-issue-001"
+        "evidence-inventory-north-star-001",
+        "evidence-complaint-north-star-001",
+        "evidence-supplier-north-star-001",
+        "evidence-staffing-north-star-001"
       ],
       "attempts": [
         {

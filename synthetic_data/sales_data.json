@@ -1,0 +1,128 @@
+[
+  {
+    "date": "2026-05-31",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 20, "total": 900.00 },
+      { "prod_id": "PROD-006", "qty": 15, "total": 525.00 },
+      { "prod_id": "PROD-016", "qty": 50, "total": 750.00 }
+    ]
+  },
+  {
+    "date": "2026-06-01",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 22, "total": 990.00 },
+      { "prod_id": "PROD-006", "qty": 12, "total": 420.00 },
+      { "prod_id": "PROD-016", "qty": 45, "total": 675.00 }
+    ]
+  },
+  {
+    "date": "2026-06-02",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 18, "total": 810.00 },
+      { "prod_id": "PROD-006", "qty": 16, "total": 560.00 },
+      { "prod_id": "PROD-016", "qty": 55, "total": 825.00 }
+    ]
+  },
+  {
+    "date": "2026-06-03",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 25, "total": 1125.00 },
+      { "prod_id": "PROD-006", "qty": 10, "total": 350.00 },
+      { "prod_id": "PROD-016", "qty": 40, "total": 600.00 }
+    ]
+  },
+  {
+    "date": "2026-06-04",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 30, "total": 1350.00 },
+      { "prod_id": "PROD-006", "qty": 14, "total": 490.00 },
+      { "prod_id": "PROD-016", "qty": 60, "total": 900.00 }
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 21, "total": 945.00 },
+      { "prod_id": "PROD-006", "qty": 18, "total": 630.00 },
+      { "prod_id": "PROD-016", "qty": 48, "total": 720.00 }
+    ]
+  },
+  {
+    "date": "2026-06-06",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 15, "total": 675.00 },
+      { "prod_id": "PROD-006", "qty": 20, "total": 700.00 },
+      { "prod_id": "PROD-016", "qty": 35, "total": 525.00 }
+    ]
+  },
+  {
+    "date": "2026-06-07",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 40, "total": 1800.00 },
+      { "prod_id": "PROD-006", "qty": 25, "total": 875.00 },
+      { "prod_id": "PROD-016", "qty": 80, "total": 1200.00 }
+    ]
+  },
+  {
+    "date": "2026-06-08",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 35, "total": 1575.00 },
+      { "prod_id": "PROD-006", "qty": 22, "total": 770.00 },
+      { "prod_id": "PROD-016", "qty": 70, "total": 1050.00 }
+    ]
+  },
+  {
+    "date": "2026-06-09",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 20, "total": 900.00 },
+      { "prod_id": "PROD-006", "qty": 15, "total": 525.00 },
+      { "prod_id": "PROD-016", "qty": 45, "total": 675.00 }
+    ]
+  },
+  {
+    "date": "2026-06-10",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 22, "total": 990.00 },
+      { "prod_id": "PROD-006", "qty": 12, "total": 420.00 },
+      { "prod_id": "PROD-016", "qty": 50, "total": 750.00 }
+    ]
+  },
+  {
+    "date": "2026-06-11",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 18, "total": 810.00 },
+      { "prod_id": "PROD-006", "qty": 16, "total": 560.00 },
+      { "prod_id": "PROD-016", "qty": 55, "total": 825.00 }
+    ]
+  },
+  {
+    "date": "2026-06-12",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 25, "total": 1125.00 },
+      { "prod_id": "PROD-006", "qty": 10, "total": 350.00 },
+      { "prod_id": "PROD-016", "qty": 40, "total": 600.00 }
+    ]
+  },
+  {
+    "date": "2026-06-13",
+    "store_id": "STORE-001",
+    "sales": [
+      { "prod_id": "PROD-001", "qty": 30, "total": 1350.00 },
+      { "prod_id": "PROD-006", "qty": 14, "total": 490.00 },
+      { "prod_id": "PROD-016", "qty": 60, "total": 900.00 }
+    ]
+  }
+]

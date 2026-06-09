@@ -1,0 +1,33 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000028",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.outcome.captured.v1",
+  "subject": "outcome:OUTCOME-NORTH-STAR-001",
+  "time": "2026-06-06T18:45:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-retail-outcome-v1",
+  "hfssourcerecordid": "retail-event-outcome-001",
+  "hfssourcesequence": 14,
+  "hfsobservedat": "2026-06-06T18:45:04Z",
+  "hfscontenthash": "sha256:f17345d4fdd98eee212a8e98e96199d427b4c3d48751c15f69a77b51370dfac6",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "CLOSE",
+    "businesskey": "ISSUE-STOCKOUT-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T18:45:00Z",
+    "attributes": {
+      "eventcode": "RETAIL_OUTCOME_CAPTURED",
+      "stockoutavoidedunits": 54,
+      "wastereductionunits": 18,
+      "complaintriskstate": "CONTAINED",
+      "queuereadiness": "EXTRA_LANE_OPENED",
+      "stafftaskcompletion": "CRITICAL_TASKS_COMPLETE",
+      "supplierslastate": "REPLACEMENT_APPROVED"
+    }
+  }
+}
