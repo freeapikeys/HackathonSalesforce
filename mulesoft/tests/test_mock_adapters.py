@@ -169,6 +169,75 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(0, len(self.api.write_back_adapter.source_records))
         self.assertEqual(0, len(self.api.outcomes))
 
+    def test_retail_action_types_record_delivery_evidence(self) -> None:
+        example = self.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        retail_action_types = [
+            "CREATE_SUPPLIER_QUALITY_CASE",
+            "REQUEST_REPLACEMENT_BATCH",
+            "CREATE_REORDER_REQUEST",
+            "CREATE_WAREHOUSE_TRANSFER",
+            "CREATE_MARKDOWN_PLAN",
+            "CREATE_QUARANTINE_TASK",
+            "CREATE_RESTOCK_TASK",
+            "CREATE_SHELF_LAYOUT_TASK",
+            "OPEN_EXTRA_CASHIER_TASK",
+            "SEND_SLACK_ALERT",
+            "SEND_WHATSAPP_STYLE_ALERT",
+            "CAPTURE_RETAIL_OUTCOME",
+        ]
+
+        for index, action_type in enumerate(retail_action_types, start=1):
+            body = deepcopy(example["value"])
+            body["externalKey"] = f"retail-action-{index}"
+            body["idempotencyKey"] = f"retail-action-{index}-v1"
+            body["approvalId"] = f"retail-approval-{index}"
+            body["actionId"] = f"retail-action-{index}"
+            body["actionType"] = action_type
+            body["payload"] = {
+                "targetRole": "Duty Manager",
+                "messageBody": f"North Star action {action_type}",
+            }
+            headers = deepcopy(example["x-hfs-headers"])
+            headers["X-Idempotency-Key"] = body["idempotencyKey"]
+            self.api.write_back_adapter.register_approval(
+                approval_id=body["approvalId"],
+                tenant_key=body["tenantKey"],
+                recommendation_id=body["recommendationId"],
+                action_id=body["actionId"],
+            )
+
+            response = self.api.request(
+                "POST",
+                "/v1/actions/executions",
+                headers,
+                body,
+            )
+            self.assertEqual(202, response.status, action_type)
+
+        records = list(self.api.write_back_adapter.source_records.values())
+        self.assertEqual(len(retail_action_types), len(records))
+        delivery_by_type = {
+            record["actionType"]: record["delivery"] for record in records
+        }
+        self.assertEqual(
+            "MOCK_SENT",
+            delivery_by_type["SEND_SLACK_ALERT"]["status"],
+        )
+        self.assertIn(
+            "SLACK_WEBHOOK_URL",
+            delivery_by_type["SEND_SLACK_ALERT"]["fallbackReason"],
+        )
+        self.assertEqual(
+            "MOCK_SENT",
+            delivery_by_type["SEND_WHATSAPP_STYLE_ALERT"]["status"],
+        )
+        self.assertIn(
+            "credentials",
+            delivery_by_type["SEND_WHATSAPP_STYLE_ALERT"]["fallbackReason"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

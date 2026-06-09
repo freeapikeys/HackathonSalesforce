@@ -1,0 +1,33 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000024",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.queue.risk.detected.v1",
+  "subject": "store:STORE-GOODLANDS-FRESHMART",
+  "time": "2026-06-06T09:30:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-queue-risk-v1",
+  "hfssourcerecordid": "retail-event-queue-001",
+  "hfssourcesequence": 10,
+  "hfsobservedat": "2026-06-06T09:30:02Z",
+  "hfscontenthash": "sha256:587ff6a1243a4687172d5f7e8a3237a043b0a05b77ced43fd87d7ecf6ade74c5",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "ISSUE-QUEUE-GOODLANDS-001",
+    "effectiveat": "2026-06-06T09:30:00Z",
+    "attributes": {
+      "eventcode": "QUEUE_RISK_DETECTED",
+      "riskwindowstart": "2026-06-06T16:30:00Z",
+      "riskwindowend": "2026-06-06T18:30:00Z",
+      "baselinecashiers": 3,
+      "recommendedcashiers": 4,
+      "agent": "Store Operations Agent",
+      "recommendation": "Open one extra lane and move aisle colleague to checkout if queue exceeds eight."
+    }
+  }
+}

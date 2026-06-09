@@ -185,6 +185,23 @@ class MockOutcomeAdapter:
 class MockWriteBackAdapter:
     """Executes only registered approved actions and emits source outcomes."""
 
+    RETAIL_ACTION_TYPES = frozenset(
+        {
+            "CREATE_SUPPLIER_QUALITY_CASE",
+            "REQUEST_REPLACEMENT_BATCH",
+            "CREATE_REORDER_REQUEST",
+            "CREATE_WAREHOUSE_TRANSFER",
+            "CREATE_MARKDOWN_PLAN",
+            "CREATE_QUARANTINE_TASK",
+            "CREATE_RESTOCK_TASK",
+            "CREATE_SHELF_LAYOUT_TASK",
+            "OPEN_EXTRA_CASHIER_TASK",
+            "SEND_SLACK_ALERT",
+            "SEND_WHATSAPP_STYLE_ALERT",
+            "CAPTURE_RETAIL_OUTCOME",
+        }
+    )
+
     def __init__(self) -> None:
         self.approvals: dict[str, dict[str, str]] = {}
         self.source_records: dict[str, dict[str, Any]] = {}
@@ -232,12 +249,14 @@ class MockWriteBackAdapter:
         source_record_id = (
             "mock-writeback-" + canonical_hash(action)[:16]
         )
+        delivery = self._delivery_evidence(action)
         self.source_records[source_record_id] = {
             "sourceRecordId": source_record_id,
             "sourceSystem": action["sourceSystem"],
             "actionId": action["actionId"],
             "actionType": action["actionType"],
             "payload": deepcopy(action["payload"]),
+            "delivery": deepcopy(delivery),
         }
         outcome = {
             "contractVersion": CONTRACT_VERSION,
@@ -251,14 +270,71 @@ class MockWriteBackAdapter:
             "sourceSystem": action["sourceSystem"],
             "sourceRecordId": source_record_id,
             "outcomeType": "ACTION_EXECUTED",
-            "status": "SUCCESS",
+            "status": "SUCCESS" if delivery["status"] != "FAILED" else "PARTIAL",
             "observedAt": timestamp(),
+            "summary": delivery["summary"],
+            "metricKey": delivery["metricKey"],
+            "metricValue": delivery["metricValue"],
+        }
+        self._executions[scope] = (action_hash, deepcopy(outcome))
+        return outcome
+
+    def _delivery_evidence(self, action: dict[str, Any]) -> dict[str, Any]:
+        action_type = action["actionType"]
+        payload = action.get("payload", {})
+        if action_type == "SEND_SLACK_ALERT":
+            has_webhook = bool(payload.get("webhookConfigured"))
+            return {
+                "channel": "SLACK",
+                "targetRole": payload.get("targetRole", "Duty Manager"),
+                "messageBody": payload.get("messageBody", ""),
+                "status": "SENT" if has_webhook else "MOCK_SENT",
+                "fallbackReason": None
+                if has_webhook
+                else "SLACK_WEBHOOK_URL is not configured in the demo runtime.",
+                "summary": "Approved Slack alert was recorded in mock mode."
+                if not has_webhook
+                else "Approved Slack alert was sent.",
+                "metricKey": "slack_alert_recorded",
+                "metricValue": 1,
+            }
+        if action_type == "SEND_WHATSAPP_STYLE_ALERT":
+            provider = payload.get("providerConfigured")
+            return {
+                "channel": "WHATSAPP_STYLE",
+                "targetRole": payload.get("targetRole", "Fresh Food Lead"),
+                "messageBody": payload.get("messageBody", ""),
+                "status": "SENT" if provider else "MOCK_SENT",
+                "fallbackReason": None
+                if provider
+                else "WhatsApp provider credentials are not configured in the demo runtime.",
+                "summary": "Approved WhatsApp-style alert was recorded in mock mode."
+                if not provider
+                else "Approved WhatsApp alert was sent.",
+                "metricKey": "whatsapp_style_alert_recorded",
+                "metricValue": 1,
+            }
+        if action_type in self.RETAIL_ACTION_TYPES:
+            return {
+                "channel": payload.get("channel", "MULESOFT_MOCK"),
+                "targetRole": payload.get("targetRole", "Store Manager"),
+                "messageBody": payload.get("messageBody", ""),
+                "status": "QUEUED",
+                "fallbackReason": None,
+                "summary": f"Approved retail mock action {action_type} was queued.",
+                "metricKey": "retail_action_queued",
+                "metricValue": 1,
+            }
+        return {
+            "channel": payload.get("channel", "MULESOFT_MOCK"),
+            "targetRole": payload.get("targetRole", "Operations"),
+            "messageBody": payload.get("messageBody", ""),
+            "status": "QUEUED",
+            "fallbackReason": None,
             "summary": "The approved mock action was executed.",
             "metricKey": "action_execution_success",
             "metricValue": 1,
         }
-        self._executions[scope] = (action_hash, deepcopy(outcome))
-        return outcome
 
 
 class MockIntegrationApi:

@@ -29,9 +29,9 @@ function serviceState(error, correlationId) {
     stateName: denied ? "denied" : "error",
     mode: denied ? "denied" : "error",
     title: denied
-      ? "Context is not available"
-      : "The command center could not load",
-    message: error.message || "The relationship service returned an error.",
+      ? "North Star context is not available"
+      : "North Star could not load",
+    message: error.message || "The retail command service returned an error.",
     errorCode: error.code,
     correlationId,
     retryable: Boolean(error.retryable)
@@ -49,7 +49,7 @@ function timelineItem(item, index) {
     type: humanize(item.objectApiName, "Context"),
     title: item.label || humanize(item.recordType),
     detail: item.summary || item.status || "No additional detail recorded.",
-    source: item.sourceUri || "Salesforce relationship context"
+    source: item.sourceUri || "Salesforce retail context"
   };
 }
 
@@ -59,7 +59,7 @@ export function mapCommandCenterPayload(payload, purpose) {
     return serviceState(
       {
         code: "INVALID_RESPONSE",
-        message: "The relationship service returned no context.",
+        message: "The North Star service returned no context.",
         retryable: true
       },
       null
@@ -76,8 +76,9 @@ export function mapCommandCenterPayload(payload, purpose) {
       stateVersion: UI_STATE_VERSION,
       stateName: "empty",
       mode: "empty",
-      title: "No relationship work is assigned",
-      message: "No accessible work item matched this command center request."
+      title: "No North Star work is assigned",
+      message:
+        "No accessible retail work item matched this command center request."
     };
   }
 
@@ -124,6 +125,63 @@ export function mapCommandCenterPayload(payload, purpose) {
       },
       serviceDeadline: workItem.dueAt,
       nextUpdateDue: workItem.dueAt,
+      productContext: {
+        store: entityLabel(
+          entityById,
+          relationship.subjectEntityId,
+          "Accessible store"
+        ),
+        product: entityLabel(
+          entityById,
+          workItem.subjectEntityId,
+          "Accessible product"
+        ),
+        category: "Retail",
+        batch: "Not recorded",
+        supplier: entityLabel(
+          entityById,
+          relationship.objectEntityId,
+          "Accessible supplier"
+        ),
+        promotion: "Not recorded",
+        shelfArea: "Not recorded"
+      },
+      stock: [],
+      riskPulses: [
+        { id: "risk-stockout", label: "Stockout", status: "Review" },
+        { id: "risk-expiry", label: "Expiry", status: "Review" },
+        { id: "risk-overstock", label: "Overstock", status: "Review" },
+        { id: "risk-complaint", label: "Complaint", status: "Review" },
+        { id: "risk-supplier", label: "Supplier", status: "Review" },
+        { id: "risk-queue", label: "Queue", status: "Review" },
+        { id: "risk-shelf", label: "Shelf layout", status: "Review" },
+        { id: "risk-price", label: "Price", status: "Review" },
+        { id: "risk-promotion", label: "Promotion", status: "Review" },
+        { id: "risk-staff", label: "Staff readiness", status: "Review" }
+      ],
+      complaintCluster: {
+        type: "Not recorded",
+        count: 0,
+        product: entityLabel(
+          entityById,
+          workItem.subjectEntityId,
+          "Accessible product"
+        ),
+        batch: "Not recorded",
+        supplier: "Not recorded",
+        window: "Not recorded"
+      },
+      supplierResponse: {
+        status: "Not recorded",
+        leadTime: "Not recorded",
+        replacement: "Not recorded",
+        creditNote: "Not recorded",
+        qualityIssue: "Not recorded"
+      },
+      storeExecution: {
+        cashierRecommendation: "No cashier recommendation recorded.",
+        tasks: []
+      },
       affectedRelationship: {
         label: relationship.label || "Connected relationship",
         subject: entityLabel(
@@ -212,7 +270,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         policy: humanize(approval.recordType, "No approval policy"),
         policyVersion: context.contractVersion,
         requestedAt: approval.requestedAt || approval.occurredAt,
-        requestedBy: "Governed relationship workflow",
+        requestedBy: "Governed North Star workflow",
         decisionDueAt: workItem.dueAt
       },
       actions: (context.actions || []).map((action) => ({
@@ -225,6 +283,8 @@ export function mapCommandCenterPayload(payload, purpose) {
           action.externalReference || "Salesforce and MuleSoft action service",
         correlationId: action.correlationId || context.correlationId
       })),
+      channelLog: [],
+      outcomeMetrics: [],
       outcome: {
         status: humanize(outcome.status, "Awaiting outcome"),
         summary:
@@ -245,7 +305,7 @@ export function mapTransportError(error, correlationId) {
   const message =
     error?.body?.message ||
     error?.message ||
-    "The relationship service could not be reached.";
+    "The North Star service could not be reached.";
   return serviceState(
     {
       code: "RETRYABLE_DEPENDENCY_FAILURE",

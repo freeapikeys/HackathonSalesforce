@@ -1,0 +1,36 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000026",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.store.task.created.v1",
+  "subject": "task:TASK-RESTOCK-FRESH-BEEF-001",
+  "time": "2026-06-06T09:35:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-store-task-v1",
+  "hfssourcerecordid": "retail-event-task-001",
+  "hfssourcesequence": 12,
+  "hfsobservedat": "2026-06-06T09:35:01Z",
+  "hfscontenthash": "sha256:6fb5b2c15d6e0b03d0fed9a1710b6627e6e6d9f38d61800098d06032d0933b15",
+  "data": {
+    "recordtype": "SOP",
+    "operation": "START",
+    "businesskey": "TASK-RESTOCK-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:35:00Z",
+    "attributes": {
+      "eventcode": "STORE_TASK_CREATED",
+      "tasks": [
+        "restock",
+        "rotate near-expiry",
+        "fix shelf price",
+        "open cashier lane"
+      ],
+      "priority": "HIGH",
+      "acknowledgementstatus": "PENDING",
+      "assignedrole": "Duty Manager"
+    }
+  }
+}
