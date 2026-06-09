@@ -7,9 +7,11 @@ Before starting work:
 1. Read `ROADMAP.md`.
 2. Read `docs/north-star-mvp.md`.
 3. Read `docs/north-star-implementation-plan.md`.
-4. Read the relevant contract or source files for the surface you are changing.
-5. Run `bd prime` and `bd ready` if Beads is installed.
-6. If Beads is not installed, use the checklist in `ROADMAP.md` and say which
+4. If you are doing a teammate task, read the matching file in
+   `docs/assignments/`.
+5. Read the relevant contract or source files for the surface you are changing.
+6. Run `bd prime` and `bd ready` if Beads is installed.
+7. If Beads is not installed, use the checklist in `ROADMAP.md` and say which
    checklist item you are advancing.
 
 The roadmap is the visible hackathon checklist. Beads is useful for dependency

@@ -125,13 +125,33 @@ and UI must support any supermarket product category.
 - [x] Implementation plan created in `docs/north-star-implementation-plan.md`.
 - [x] Old broad platform wording removed from active docs.
 - [x] Supermarket issue map added to this roadmap.
+- [x] Teammate assignment docs created in `docs/assignments/`.
 - [ ] One-sentence product pitch finalized.
 - [ ] Three-minute judge demo narrative drafted.
 - [ ] Five-minute extended demo narrative drafted.
 - [ ] Backup recorded-demo path defined in case live integrations fail.
 - [ ] Final non-goals reviewed by whole team.
 
-### 2. Product Categories and Demo Data
+### 2. Team Assignment Checkpoints
+
+Each teammate has a detailed assignment file. AI agents should read the relevant
+file before editing.
+
+- [ ] Aarav: create realistic synthetic retail data, complaints, supplier
+      responses, queue pressure, task templates, and channel recipient aliases.
+- [ ] Fahan: implement `SEND_SLACK_ALERT` behind approved MuleSoft action
+      execution, with real webhook support only through `SLACK_WEBHOOK_URL` and
+      honest `MOCK_SENT` fallback.
+- [ ] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add the
+      voice-mode prototype that converts operator speech/transcript into a
+      governed request without bypassing approval.
+- [ ] Ranveer: implement Inventory and Waste reasoning with deterministic
+      stockout, expiry, waste, overstock, promotion-readiness calculations and
+      evidence-backed recommendation output.
+- [ ] Merge owner: keep branches aligned, review conflicts, protect `main`, and
+      verify the demo still tells one North Star story.
+
+### 3. Product Categories and Demo Data
 
 - [ ] Choose first demo product category and product.
 - [ ] Add at least two other product categories to prove this is not
@@ -147,7 +167,7 @@ and UI must support any supermarket product category.
 - [ ] Define queue-risk window and staffing baseline.
 - [ ] Define expected outcome metrics for the demo.
 
-### 3. Retail Event Fixtures
+### 4. Retail Event Fixtures
 
 - [ ] Add `STOCKOUT_RISK_DETECTED` fixture.
 - [ ] Add `WAREHOUSE_STOCK_CHECKED` fixture.
@@ -166,7 +186,7 @@ and UI must support any supermarket product category.
 - [ ] Keep duplicate, malformed, late, out-of-order, replay, hash, and
       idempotency-conflict cases passing.
 
-### 4. Salesforce Core
+### 5. Salesforce Core
 
 - [ ] Map store to existing Salesforce entity record.
 - [ ] Map product to existing Salesforce entity record.
@@ -185,7 +205,7 @@ and UI must support any supermarket product category.
 - [ ] Apex tests cover success, denial, inaccessible evidence, approval
       mismatch, and invalid state.
 
-### 5. Agentforce and Intelligence
+### 6. Agentforce and Intelligence
 
 - [ ] Define North Star Orchestrator topic.
 - [ ] Define Inventory and Demand topic.
@@ -203,7 +223,7 @@ and UI must support any supermarket product category.
 - [ ] Agentforce fixtures include a denied-action scenario.
 - [ ] Agentforce fixtures include a changed-recommendation scenario.
 
-### 6. MuleSoft and Channel Mocks
+### 7. MuleSoft and Channel Mocks
 
 - [ ] Mock `CREATE_SUPPLIER_QUALITY_CASE`.
 - [ ] Mock `REQUEST_REPLACEMENT_BATCH`.
@@ -214,14 +234,42 @@ and UI must support any supermarket product category.
 - [ ] Mock `CREATE_RESTOCK_TASK`.
 - [ ] Mock `CREATE_SHELF_LAYOUT_TASK`.
 - [ ] Mock `OPEN_EXTRA_CASHIER_TASK`.
-- [ ] Mock `SEND_SLACK_ALERT`.
-- [ ] Mock `SEND_WHATSAPP_STYLE_ALERT`.
+- [x] Mock `SEND_SLACK_ALERT`.
+- [x] If `SLACK_WEBHOOK_URL` exists, send real Slack webhook message.
+- [x] If `SLACK_WEBHOOK_URL` is missing, return honest `MOCK_SENT`.
+- [ ] Mock `SEND_WHATSAPP_ALERT`.
+- [ ] If WhatsApp provider credentials exist, send real WhatsApp sandbox/cloud
+      message.
+- [ ] If WhatsApp credentials are missing, return honest `MOCK_SENT`.
 - [ ] Mock `CAPTURE_RETAIL_OUTCOME`.
-- [ ] Unapproved execution returns denial.
-- [ ] Approved execution returns queued or success response with correlation.
+- [x] Unapproved Slack execution returns denial.
+- [x] Approved Slack execution returns queued response with correlation.
+- [x] Malformed Slack payloads return validation errors.
+- [ ] Malformed WhatsApp payloads return validation errors.
+- [ ] Unapproved non-Slack protected executions return denial.
+- [ ] Approved non-Slack protected executions return queued or success response
+      with correlation.
+- [x] Slack channel responses preserve `tenantId`, `correlationId`,
+      `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
+      reason.
+- [ ] Channel responses preserve `tenantId`, `correlationId`, `approvalId`,
+      `actionId`, evidence IDs, provider, status, and fallback reason.
 - [ ] Mock channel results are visible in the command center.
 
-### 7. Lightning Command Center
+### 8. Voice Mode
+
+- [ ] Add voice transcript input or browser speech input path.
+- [ ] Convert transcript into structured product, issue, store, urgency, and
+      evidence fields.
+- [ ] Voice mode can ask Agentforce for a recommendation.
+- [ ] Voice mode cannot execute Slack, WhatsApp, reorder, markdown, supplier,
+      or task actions directly.
+- [ ] Voice mode refusal is visible when the user asks it to bypass manager
+      approval.
+- [ ] LWC or fixture tests cover transcript-to-request and protected-action
+      refusal.
+
+### 9. Lightning Command Center
 
 - [ ] UI title and labels use North Star.
 - [ ] Risk pulse cards show stockout, expiry, overstock, complaint, supplier,
@@ -238,12 +286,14 @@ and UI must support any supermarket product category.
 - [ ] Approval cockpit supports approve, reject, modify, defer, and executed
       states.
 - [ ] Channel log shows Slack and WhatsApp-style alert results.
+- [ ] Voice transcript or voice request panel is visible if voice mode is in
+      the demo.
 - [ ] Outcome panel shows stockout avoided, waste reduced, complaint risk,
       queue readiness, staff task completion, and supplier SLA state.
 - [ ] LWC tests cover ready, loading, empty, denied, error, restricted,
       approval, action, and outcome states.
 
-### 8. End-to-End Demo
+### 10. End-to-End Demo
 
 - [ ] `npm run check` passes in the intended demo environment.
 - [ ] `npm run demo:reset` works.
@@ -255,10 +305,11 @@ and UI must support any supermarket product category.
 - [ ] Demo shows supplier response changing the recommendation.
 - [ ] Demo shows manager approval before action execution.
 - [ ] Demo shows Slack and WhatsApp-style internal alerts.
+- [ ] Demo shows voice mode only if it is stable and honest.
 - [ ] Demo shows outcome metrics and audit trail.
 - [ ] Final rehearsal completed with the whole team.
 
-### 9. Pitch and Presentation
+### 11. Pitch and Presentation
 
 - [ ] Problem slide explains the supermarket issues from this roadmap.
 - [ ] Agent slide explains the three specialist agents and orchestrator.

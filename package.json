@@ -2,7 +2,7 @@
   "name": "hackathon-salesforce",
   "private": true,
   "version": "1.0.0",
-  "description": "Enterprise relationship intelligence and action system",
+  "description": "North Star retail operations command center",
   "engines": {
     "node": ">=20"
   },

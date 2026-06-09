@@ -66,3 +66,22 @@ It deliberately keeps adapters behind Python interfaces so the same contract
 tests can be applied to Mule flows and real connectors without embedding mock
 behavior in production configuration. The runtime is an integration test
 harness, not a substitute for an Anypoint deployment.
+
+## Slack Alert Path
+
+Slack is modeled as the protected action type `SEND_SLACK_ALERT` behind
+`EXECUTE_APPROVED_ACTION`. In the local reference runtime, an approved Slack
+action validates the role, target channel, message, evidence IDs, and source
+recommendation before producing a channel delivery record.
+
+Use `SLACK_WEBHOOK_URL` only as a local or Anypoint secure property. If it is
+configured, the runtime posts the approved message to the webhook and records
+`SENT`. If it is missing, the runtime records `MOCK_SENT` with
+`provider = mock-slack` and a fallback reason. Unapproved Slack actions are
+denied before payload execution, and malformed Slack payloads return
+`VALIDATION_FAILED`.
+
+For an Anypoint build, keep the same Process API boundary and implement the
+Slack write-back as a Mule flow or connector-backed adapter behind
+`POST /v1/actions/executions`. Store the webhook URL in Anypoint secure
+configuration, never in Git.

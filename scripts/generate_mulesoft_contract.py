@@ -1086,8 +1086,8 @@ def context_item(
 
 def build_examples() -> dict[str, Any]:
     event_request = json.loads(EVENT_FIXTURE_PATH.read_text())
-    action_key = "action-status-update-001-v1"
-    outcome_key = "outcome-message-delivered-001-v1"
+    action_key = "action-slack-alert-001-v1"
+    outcome_key = "outcome-slack-alert-001-v1"
 
     event_success = {
         "contractVersion": CONTRACT_VERSION,
@@ -1175,19 +1175,29 @@ def build_examples() -> dict[str, Any]:
         "contractVersion": CONTRACT_VERSION,
         "tenantKey": TENANT,
         "correlationId": CORRELATION,
-        "purpose": "PROVIDE_APPROVED_STATUS_UPDATE",
-        "externalKey": "action-status-update-001",
+        "purpose": "EXECUTE_APPROVED_RETAIL_ACTION",
+        "externalKey": "action-slack-alert-001",
         "idempotencyKey": action_key,
-        "recommendationId": "recommendation-status-update-001",
-        "approvalId": "approval-status-update-001",
-        "actionId": "action-status-update-001",
-        "targetEntityId": "entity-person-001",
-        "actionType": "SEND_STATUS_UPDATE",
-        "sourceSystem": "service-platform",
+        "recommendationId": "recommendation-north-star-001",
+        "approvalId": "approval-north-star-slack-001",
+        "actionId": "action-slack-alert-001",
+        "targetEntityId": "store-grand-baie-001",
+        "actionType": "SEND_SLACK_ALERT",
+        "sourceSystem": "slack",
         "payload": {
-            "channel": "EMAIL",
-            "templateKey": "service-status-update-v1",
-            "language": "en",
+            "targetRole": "Stockroom Lead",
+            "targetChannel": "#north-star-demo",
+            "messageTitle": "Fresh Food stockout and quality risk",
+            "messageBody": (
+                "Check shelf stock, quarantine the suspect batch, and prepare "
+                "the approved transfer request before the weekend rush."
+            ),
+            "evidenceIds": [
+                "complaint-cluster-003",
+                "inventory-position-041",
+                "supplier-response-002",
+            ],
+            "sourceRecommendationId": "recommendation-north-star-001",
         },
     }
     action_success = {
@@ -1197,8 +1207,8 @@ def build_examples() -> dict[str, Any]:
         "operation": "EXECUTE_APPROVED_ACTION",
         "success": True,
         "replayed": False,
-        "actionId": "action-status-update-001",
-        "sourceSystem": "service-platform",
+        "actionId": "action-slack-alert-001",
+        "sourceSystem": "slack",
         "status": "QUEUED",
         "acceptedAt": "2026-06-05T08:31:00Z",
         "errors": [],
@@ -1210,15 +1220,15 @@ def build_examples() -> dict[str, Any]:
         "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
         "externalKey": "outcome-message-delivered-001",
         "idempotencyKey": outcome_key,
-        "actionId": "action-status-update-001",
-        "sourceEventId": "event-message-delivered-001",
-        "sourceSystem": "service-platform",
-        "sourceRecordId": "message-delivery-001",
-        "outcomeType": "MESSAGE_DELIVERED",
+        "actionId": "action-slack-alert-001",
+        "sourceEventId": "event-slack-alert-001",
+        "sourceSystem": "slack",
+        "sourceRecordId": "slack-alert-delivery-001",
+        "outcomeType": "SLACK_ALERT_DELIVERY",
         "status": "SUCCESS",
         "observedAt": "2026-06-05T08:31:07Z",
-        "summary": "The approved status update was delivered.",
-        "metricKey": "delivery_success",
+        "summary": "The approved Slack alert was delivered or honestly mocked.",
+        "metricKey": "slack_alert_delivery_success",
         "metricValue": 1,
     }
     outcome_success = {
@@ -1228,8 +1238,8 @@ def build_examples() -> dict[str, Any]:
         "operation": "CAPTURE_OUTCOME",
         "success": True,
         "replayed": False,
-        "outcomeId": "outcome-message-delivered-001",
-        "actionId": "action-status-update-001",
+        "outcomeId": "outcome-slack-alert-001",
+        "actionId": "action-slack-alert-001",
         "status": "RECORDED",
         "recordedAt": "2026-06-05T08:31:08Z",
         "errors": [],
@@ -1310,7 +1320,7 @@ def build_examples() -> dict[str, Any]:
         | common_failures("READ_CONTEXT"),
         "executeApprovedAction": {
             "request": example(
-                summary="Approved source-system action",
+                summary="Approved Slack alert action",
                 schema_name="ActionExecutionRequest",
                 value=action_request,
                 request_headers=headers(action_key),
@@ -1327,10 +1337,16 @@ def build_examples() -> dict[str, Any]:
                 value=callback_value(
                     "EXECUTE_APPROVED_ACTION",
                     {
-                        "actionId": "action-status-update-001",
-                        "sourceSystem": "service-platform",
-                        "sourceRecordId": "message-delivery-001",
+                        "actionId": "action-slack-alert-001",
+                        "sourceSystem": "slack",
+                        "sourceRecordId": "slack-alert-delivery-001",
                         "status": "EXECUTED",
+                        "delivery": {
+                            "status": "MOCK_SENT",
+                            "provider": "mock-slack",
+                            "targetRole": "Stockroom Lead",
+                            "targetChannel": "#north-star-demo",
+                        },
                     },
                 ),
             ),
@@ -1338,7 +1354,7 @@ def build_examples() -> dict[str, Any]:
         | common_failures("EXECUTE_APPROVED_ACTION"),
         "receiveOutcomeCallback": {
             "request": example(
-                summary="Delivered message outcome",
+                summary="Slack alert delivery outcome",
                 schema_name="OutcomeCallbackRequest",
                 value=outcome_request,
                 request_headers=headers(outcome_key),
@@ -1355,8 +1371,8 @@ def build_examples() -> dict[str, Any]:
                 value=callback_value(
                     "CAPTURE_OUTCOME",
                     {
-                        "outcomeId": "outcome-message-delivered-001",
-                        "actionId": "action-status-update-001",
+                        "outcomeId": "outcome-slack-alert-001",
+                        "actionId": "action-slack-alert-001",
                         "status": "RECORDED",
                     },
                 ),

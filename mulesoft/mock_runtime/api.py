@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import urllib.error
+import urllib.request
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -11,6 +14,7 @@ from .contract import ContractValidationError, IntegrationContract
 from .intake import EventIntakeClassifier, IntakeDecision
 
 CONTRACT_VERSION = "1.0.0"
+USE_ENV_SLACK_WEBHOOK = object()
 
 
 def canonical_hash(value: dict[str, Any]) -> str:
@@ -51,8 +55,44 @@ class AdapterIdempotencyConflict(RuntimeError):
     pass
 
 
+class ActionPayloadValidationError(ValueError):
+    def __init__(self, field_name: str, message: str) -> None:
+        self.field_name = field_name
+        super().__init__(message)
+
+
 class RetryableDependencyFailure(RuntimeError):
     pass
+
+
+class SlackWebhookTransport:
+    """Posts approved Slack alerts without exposing webhook secrets."""
+
+    def post(
+        self,
+        webhook_url: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        request = urllib.request.Request(
+            webhook_url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                response_body = response.read().decode("utf-8", errors="replace")
+                status_code = getattr(response, "status", response.getcode())
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            raise RetryableDependencyFailure(
+                "Slack webhook request failed."
+            ) from error
+
+        if status_code < 200 or status_code >= 300:
+            raise RetryableDependencyFailure(
+                f"Slack webhook returned HTTP {status_code}."
+            )
+        return {"statusCode": status_code, "body": response_body}
 
 
 class MockCallbackTransport:
@@ -185,12 +225,19 @@ class MockOutcomeAdapter:
 class MockWriteBackAdapter:
     """Executes only registered approved actions and emits source outcomes."""
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        slack_webhook_url: str | None = None,
+        slack_transport: SlackWebhookTransport | None = None,
+    ) -> None:
         self.approvals: dict[str, dict[str, str]] = {}
         self.source_records: dict[str, dict[str, Any]] = {}
         self._executions: dict[
             tuple[str, str], tuple[str, dict[str, Any]]
         ] = {}
+        self.slack_webhook_url = slack_webhook_url
+        self.slack_transport = slack_transport or SlackWebhookTransport()
 
     def register_approval(
         self,
@@ -229,9 +276,16 @@ class MockWriteBackAdapter:
                 )
             return deepcopy(prior_outcome)
 
-        source_record_id = (
-            "mock-writeback-" + canonical_hash(action)[:16]
-        )
+        source_record_id = "mock-writeback-" + canonical_hash(action)[:16]
+        if action["actionType"] == "SEND_SLACK_ALERT":
+            source_record, outcome = self._execute_slack_alert(
+                action,
+                source_record_id,
+            )
+            self.source_records[source_record_id] = source_record
+            self._executions[scope] = (action_hash, deepcopy(outcome))
+            return outcome
+
         self.source_records[source_record_id] = {
             "sourceRecordId": source_record_id,
             "sourceSystem": action["sourceSystem"],
@@ -259,6 +313,132 @@ class MockWriteBackAdapter:
         }
         self._executions[scope] = (action_hash, deepcopy(outcome))
         return outcome
+
+    def _execute_slack_alert(
+        self,
+        action: dict[str, Any],
+        source_record_id: str,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        payload = action["payload"]
+        slack_payload = self._validated_slack_payload(payload)
+        text = self._slack_message_text(slack_payload)
+        sent_at: str | None = None
+        fallback_reason: str | None = None
+        provider_message_id: str | None = None
+
+        if self.slack_webhook_url:
+            provider = "slack-webhook"
+            try:
+                result = self.slack_transport.post(
+                    self.slack_webhook_url,
+                    {"text": text},
+                )
+                status = "SENT"
+                sent_at = timestamp()
+                provider_message_id = result.get("messageId")
+            except RetryableDependencyFailure as error:
+                status = "FAILED"
+                fallback_reason = str(error)
+        else:
+            provider = "mock-slack"
+            status = "MOCK_SENT"
+            sent_at = timestamp()
+            fallback_reason = "SLACK_WEBHOOK_URL is not configured."
+            provider_message_id = (
+                "mock-slack-" + canonical_hash(action)[:12]
+            )
+
+        delivery = {
+            "status": status,
+            "provider": provider,
+            "providerMessageId": provider_message_id,
+            "sentAt": sent_at,
+            "fallbackReason": fallback_reason,
+            "targetRole": slack_payload["targetRole"],
+            "targetChannel": slack_payload["targetChannel"],
+            "messageTitle": slack_payload["messageTitle"],
+            "messageBody": slack_payload["messageBody"],
+            "evidenceIds": deepcopy(slack_payload["evidenceIds"]),
+            "sourceRecommendationId": slack_payload["sourceRecommendationId"],
+            "correlationId": action["correlationId"],
+            "actionId": action["actionId"],
+        }
+        source_record = {
+            "sourceRecordId": source_record_id,
+            "sourceSystem": action["sourceSystem"],
+            "actionId": action["actionId"],
+            "actionType": action["actionType"],
+            "payload": deepcopy(payload),
+            "delivery": delivery,
+        }
+        outcome_status = "SUCCESS" if status in {"SENT", "MOCK_SENT"} else "FAILED"
+        outcome = {
+            "contractVersion": CONTRACT_VERSION,
+            "tenantKey": action["tenantKey"],
+            "correlationId": action["correlationId"],
+            "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
+            "externalKey": f"outcome-{action['externalKey']}",
+            "idempotencyKey": f"outcome-{action['idempotencyKey']}",
+            "actionId": action["actionId"],
+            "sourceEventId": f"event-{source_record_id}",
+            "sourceSystem": action["sourceSystem"],
+            "sourceRecordId": source_record_id,
+            "outcomeType": "SLACK_ALERT_DELIVERY",
+            "status": outcome_status,
+            "observedAt": timestamp(),
+            "summary": (
+                f"Slack alert {status} for "
+                f"{slack_payload['targetRole']} via {provider}."
+            ),
+            "metricKey": "slack_alert_delivery_success",
+            "metricValue": 1 if outcome_status == "SUCCESS" else 0,
+        }
+        return source_record, outcome
+
+    def _validated_slack_payload(
+        self,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        required_text = [
+            "targetRole",
+            "targetChannel",
+            "messageTitle",
+            "messageBody",
+            "sourceRecommendationId",
+        ]
+        for field in required_text:
+            value = payload.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise ActionPayloadValidationError(
+                    f"payload.{field}",
+                    f"Slack payload field {field} is required.",
+                )
+
+        evidence_ids = payload.get("evidenceIds")
+        if (
+            not isinstance(evidence_ids, list)
+            or not evidence_ids
+            or any(
+                not isinstance(evidence_id, str) or not evidence_id.strip()
+                for evidence_id in evidence_ids
+            )
+        ):
+            raise ActionPayloadValidationError(
+                "payload.evidenceIds",
+                "Slack payload field evidenceIds must be a non-empty string array.",
+            )
+        return deepcopy(payload)
+
+    def _slack_message_text(self, payload: dict[str, Any]) -> str:
+        return "\n".join(
+            [
+                f"North Star alert: {payload['messageTitle']}",
+                payload["messageBody"],
+                f"Owner: {payload['targetRole']}",
+                f"Channel: {payload['targetChannel']}",
+                "Evidence: " + ", ".join(payload["evidenceIds"]),
+            ]
+        )
 
 
 class MockIntegrationApi:
@@ -872,6 +1052,16 @@ class MockIntegrationApi:
                 message=str(error),
                 field_name="X-Idempotency-Key",
             )
+        except ActionPayloadValidationError as error:
+            return self._common_error(
+                operation=operation,
+                headers=headers,
+                body=body,
+                status=422,
+                code="VALIDATION_FAILED",
+                message=str(error),
+                field_name=error.field_name,
+            )
 
         outcome_headers = {
             "X-Tenant-Id": outcome["tenantKey"],
@@ -927,6 +1117,11 @@ class MockIntegrationApi:
             "outcomeId": outcome_response.body["outcomeId"],
             "status": "EXECUTED",
         }
+        delivery = self.write_back_adapter.source_records[
+            outcome["sourceRecordId"]
+        ].get("delivery")
+        if delivery is not None:
+            callback_result["delivery"] = deepcopy(delivery)
         self._request_callback(headers, operation, callback_result)
         return response
 
@@ -1063,10 +1258,20 @@ def build_default_api(
     retry_policy: RetryPolicy | None = None,
     maximum_lateness_seconds: int = 86_400,
     replay_purposes: set[str] | None = None,
+    slack_webhook_url: str | None | object = USE_ENV_SLACK_WEBHOOK,
+    slack_transport: SlackWebhookTransport | None = None,
 ) -> MockIntegrationApi:
     contract = IntegrationContract()
     source_adapter = MockSourceAdapter(source_failures)
-    write_back_adapter = MockWriteBackAdapter()
+    resolved_slack_webhook_url = (
+        os.getenv("SLACK_WEBHOOK_URL")
+        if slack_webhook_url is USE_ENV_SLACK_WEBHOOK
+        else slack_webhook_url
+    )
+    write_back_adapter = MockWriteBackAdapter(
+        slack_webhook_url=resolved_slack_webhook_url,
+        slack_transport=slack_transport,
+    )
     outcome_adapter = MockOutcomeAdapter(outcome_failures)
     callback_transport = MockCallbackTransport(
         contract,
