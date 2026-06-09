@@ -1,0 +1,98 @@
+[
+  {
+    "case_id": "CASE-001",
+    "scenario": "High waste in Produce at STORE-001 due to Quality Decay of Strawberries (PROD-005).",
+    "trigger_events": ["EVT-001", "EVT-002", "EVT-022"],
+    "expected_agent": "Inventory/Waste",
+    "expected_recommendation": "Reduce next order for PROD-005 at STORE-001 by 20% and investigate cold chain storage.",
+    "priority": "Medium"
+  },
+  {
+    "case_id": "CASE-002",
+    "scenario": "Near-expiry risk for Milk (PROD-006) at STORE-002.",
+    "trigger_events": ["EVT-003", "EVT-016"],
+    "expected_agent": "Inventory/Waste",
+    "expected_recommendation": "Apply immediate 30% markdown for PROD-006 at STORE-002 for next 48 hours.",
+    "priority": "High"
+  },
+  {
+    "case_id": "CASE-003",
+    "scenario": "Repeated Quality Decay complaints for SUPP-001 (PROD-005) across multiple events.",
+    "trigger_events": ["EVT-001", "EVT-002", "EVT-022"],
+    "expected_agent": "Supplier/Product Trust",
+    "expected_recommendation": "Initiate quality audit for Supplier SUPP-001 and request credit note for wasted strawberries.",
+    "priority": "Medium"
+  },
+  {
+    "case_id": "CASE-004",
+    "scenario": "Supplier SUPP-001 delivered incorrect variety of mangoes (PROD-003) repeatedly.",
+    "trigger_events": ["EVT-009", "EVT-020"],
+    "expected_agent": "Supplier/Product Trust",
+    "expected_recommendation": "Escalate to SUPP-001 account manager; request immediate replacement and formal correction plan.",
+    "priority": "Medium"
+  },
+  {
+    "case_id": "CASE-005",
+    "scenario": "Price mismatch for Salt (PROD-030) at STORE-003.",
+    "trigger_events": ["EVT-006"],
+    "expected_agent": "Store Execution/Outreach",
+    "expected_recommendation": "Dispatch staff to STORE-003 to update shelf label for PROD-030 to 25 Rs.",
+    "priority": "Low"
+  },
+  {
+    "case_id": "CASE-006",
+    "scenario": "Temperature deviation for Chicken (PROD-013) at STORE-001.",
+    "trigger_events": ["EVT-008"],
+    "expected_agent": "Store Execution/Outreach",
+    "expected_recommendation": "Urgent: Store manager at STORE-001 must verify fridge temperature and check for spoilage.",
+    "priority": "Critical"
+  },
+  {
+    "case_id": "CASE-007",
+    "scenario": "Combination of Supplier Delay (SUPP-006) and potential stockout of Rice (PROD-027) at STORE-002.",
+    "trigger_events": ["EVT-007"],
+    "expected_agent": "Orchestrator",
+    "expected_recommendation": "Identify alternative local supplier for Rice and notify STORE-002 manager to implement temporary diversion from other stores.",
+    "priority": "High"
+  },
+  {
+    "case_id": "CASE-008",
+    "scenario": "Quality Decay in Produce leading to High Waste and Customer Complaints at STORE-001.",
+    "trigger_events": ["EVT-001", "EVT-002", "EVT-022"],
+    "expected_agent": "Orchestrator",
+    "expected_recommendation": "Coordinate Inventory reduction, Supplier quality audit, and a customer apology outreach for CUST-101.",
+    "priority": "High"
+  },
+  {
+    "case_id": "CASE-009",
+    "scenario": "Price inconsistency for Bananas (PROD-001) at STORE-001 causing customer friction.",
+    "trigger_events": ["EVT-019"],
+    "expected_agent": "Orchestrator",
+    "expected_recommendation": "Audit all Banana labels at STORE-001 and send a 10% discount voucher to CUST-105 via WhatsApp.",
+    "priority": "Low"
+  },
+  {
+    "case_id": "CASE-010",
+    "scenario": "Potential stockout of Salmon (PROD-011) at STORE-001 due to missing items from SUPP-003.",
+    "trigger_events": ["EVT-005"],
+    "expected_agent": "Inventory/Waste",
+    "expected_recommendation": "Increase next order of Salmon by missing quantity to maintain safety stock levels.",
+    "priority": "Medium"
+  },
+  {
+    "case_id": "CASE-011",
+    "scenario": "Recurring packaging failures (leaking cans) from SUPP-006 for PROD-026.",
+    "trigger_events": ["EVT-004", "EVT-017"],
+    "expected_agent": "Supplier/Product Trust",
+    "expected_recommendation": "Report packaging failure to SUPP-006 and request a batch-level inspection of all canned goods.",
+    "priority": "Medium"
+  },
+  {
+    "case_id": "CASE-012",
+    "scenario": "High-frequency price mismatch events at STORE-003 indicating systemic labeling issue.",
+    "trigger_events": ["EVT-006"],
+    "expected_agent": "Store Execution/Outreach",
+    "expected_recommendation": "Schedule full store price audit for STORE-003 for the upcoming weekend.",
+    "priority": "Low"
+  }
+]
