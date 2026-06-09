@@ -10,7 +10,7 @@
 hfs:CoreOntology
     a owl:Ontology ;
     dcterms:title "Hackathon Salesforce Core Ontology" ;
-    dcterms:description "Portable semantic contract for enterprise relationships, work, decisions, actions, and outcomes." ;
+    dcterms:description "Portable semantic contract for retail operations evidence, work, decisions, actions, and outcomes." ;
     owl:versionIRI <https://freeapikeys.github.io/HackathonSalesforce/ontology/0.1.0> ;
     owl:versionInfo "0.1.0" .
 

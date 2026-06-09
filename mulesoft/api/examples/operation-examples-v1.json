@@ -551,24 +551,31 @@
     },
     "executeApprovedAction": {
       "request": {
-        "summary": "Approved source-system action",
+        "summary": "Approved Slack alert action",
         "value": {
           "contractVersion": "1.0.0",
           "tenantKey": "demo-mauritius",
           "correlationId": "10000000-0000-4000-8000-000000000001",
-          "purpose": "PROVIDE_APPROVED_STATUS_UPDATE",
-          "externalKey": "action-status-update-001",
-          "idempotencyKey": "action-status-update-001-v1",
-          "recommendationId": "recommendation-status-update-001",
-          "approvalId": "approval-status-update-001",
-          "actionId": "action-status-update-001",
-          "targetEntityId": "entity-person-001",
-          "actionType": "SEND_STATUS_UPDATE",
-          "sourceSystem": "service-platform",
+          "purpose": "EXECUTE_APPROVED_RETAIL_ACTION",
+          "externalKey": "action-slack-alert-001",
+          "idempotencyKey": "action-slack-alert-001-v1",
+          "recommendationId": "recommendation-north-star-001",
+          "approvalId": "approval-north-star-slack-001",
+          "actionId": "action-slack-alert-001",
+          "targetEntityId": "store-grand-baie-001",
+          "actionType": "SEND_SLACK_ALERT",
+          "sourceSystem": "slack",
           "payload": {
-            "channel": "EMAIL",
-            "templateKey": "service-status-update-v1",
-            "language": "en"
+            "targetRole": "Stockroom Lead",
+            "targetChannel": "#north-star-demo",
+            "messageTitle": "Fresh Food stockout and quality risk",
+            "messageBody": "Check shelf stock, quarantine the suspect batch, and prepare the approved transfer request before the weekend rush.",
+            "evidenceIds": [
+              "complaint-cluster-003",
+              "inventory-position-041",
+              "supplier-response-002"
+            ],
+            "sourceRecommendationId": "recommendation-north-star-001"
           }
         },
         "x-hfs-schema": "ActionExecutionRequest",
@@ -576,7 +583,7 @@
           "X-Tenant-Id": "demo-mauritius",
           "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
           "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
-          "X-Idempotency-Key": "action-status-update-001-v1"
+          "X-Idempotency-Key": "action-slack-alert-001-v1"
         }
       },
       "success": {
@@ -588,8 +595,8 @@
           "operation": "EXECUTE_APPROVED_ACTION",
           "success": true,
           "replayed": false,
-          "actionId": "action-status-update-001",
-          "sourceSystem": "service-platform",
+          "actionId": "action-slack-alert-001",
+          "sourceSystem": "slack",
           "status": "QUEUED",
           "acceptedAt": "2026-06-05T08:31:00Z",
           "errors": []
@@ -608,10 +615,16 @@
           "completedAt": "2026-06-05T08:31:10Z",
           "retryable": false,
           "result": {
-            "actionId": "action-status-update-001",
-            "sourceSystem": "service-platform",
-            "sourceRecordId": "message-delivery-001",
-            "status": "EXECUTED"
+            "actionId": "action-slack-alert-001",
+            "sourceSystem": "slack",
+            "sourceRecordId": "slack-alert-delivery-001",
+            "status": "EXECUTED",
+            "delivery": {
+              "status": "MOCK_SENT",
+              "provider": "mock-slack",
+              "targetRole": "Stockroom Lead",
+              "targetChannel": "#north-star-demo"
+            }
           },
           "errors": []
         },
@@ -704,23 +717,23 @@
     },
     "receiveOutcomeCallback": {
       "request": {
-        "summary": "Delivered message outcome",
+        "summary": "Slack alert delivery outcome",
         "value": {
           "contractVersion": "1.0.0",
           "tenantKey": "demo-mauritius",
           "correlationId": "10000000-0000-4000-8000-000000000001",
           "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
           "externalKey": "outcome-message-delivered-001",
-          "idempotencyKey": "outcome-message-delivered-001-v1",
-          "actionId": "action-status-update-001",
-          "sourceEventId": "event-message-delivered-001",
-          "sourceSystem": "service-platform",
-          "sourceRecordId": "message-delivery-001",
-          "outcomeType": "MESSAGE_DELIVERED",
+          "idempotencyKey": "outcome-slack-alert-001-v1",
+          "actionId": "action-slack-alert-001",
+          "sourceEventId": "event-slack-alert-001",
+          "sourceSystem": "slack",
+          "sourceRecordId": "slack-alert-delivery-001",
+          "outcomeType": "SLACK_ALERT_DELIVERY",
           "status": "SUCCESS",
           "observedAt": "2026-06-05T08:31:07Z",
-          "summary": "The approved status update was delivered.",
-          "metricKey": "delivery_success",
+          "summary": "The approved Slack alert was delivered or honestly mocked.",
+          "metricKey": "slack_alert_delivery_success",
           "metricValue": 1
         },
         "x-hfs-schema": "OutcomeCallbackRequest",
@@ -728,7 +741,7 @@
           "X-Tenant-Id": "demo-mauritius",
           "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
           "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
-          "X-Idempotency-Key": "outcome-message-delivered-001-v1"
+          "X-Idempotency-Key": "outcome-slack-alert-001-v1"
         }
       },
       "success": {
@@ -740,8 +753,8 @@
           "operation": "CAPTURE_OUTCOME",
           "success": true,
           "replayed": false,
-          "outcomeId": "outcome-message-delivered-001",
-          "actionId": "action-status-update-001",
+          "outcomeId": "outcome-slack-alert-001",
+          "actionId": "action-slack-alert-001",
           "status": "RECORDED",
           "recordedAt": "2026-06-05T08:31:08Z",
           "errors": []
@@ -760,8 +773,8 @@
           "completedAt": "2026-06-05T08:31:10Z",
           "retryable": false,
           "result": {
-            "outcomeId": "outcome-message-delivered-001",
-            "actionId": "action-status-update-001",
+            "outcomeId": "outcome-slack-alert-001",
+            "actionId": "action-slack-alert-001",
             "status": "RECORDED"
           },
           "errors": []

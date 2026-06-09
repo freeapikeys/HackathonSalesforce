@@ -6,9 +6,18 @@ from copy import deepcopy
 from mock_runtime import RetryPolicy, build_default_api
 
 
+class FakeSlackTransport:
+    def __init__(self) -> None:
+        self.posts = []
+
+    def post(self, webhook_url, payload):
+        self.posts.append({"webhookUrl": webhook_url, "payload": payload})
+        return {"messageId": "slack-message-001"}
+
+
 class MockAdapterTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.api = build_default_api()
+        self.api = build_default_api(slack_webhook_url="")
         self.contract = self.api.contract
 
     def request(
@@ -47,6 +56,10 @@ class MockAdapterTest(unittest.TestCase):
         )
         self.assertEqual(action_response.body["actionId"], outcome["actionId"])
         self.assertEqual("SUCCESS", outcome["status"])
+        record = next(iter(self.api.write_back_adapter.source_records.values()))
+        self.assertEqual("SEND_SLACK_ALERT", record["actionType"])
+        self.assertEqual("MOCK_SENT", record["delivery"]["status"])
+        self.assertEqual("mock-slack", record["delivery"]["provider"])
 
         action_callbacks = [
             item
@@ -61,6 +74,10 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(
             outcome["sourceRecordId"],
             action_callbacks[0]["payload"]["result"]["sourceRecordId"],
+        )
+        self.assertEqual(
+            "MOCK_SENT",
+            action_callbacks[0]["payload"]["result"]["delivery"]["status"],
         )
 
     def test_exact_replays_do_not_repeat_side_effects(self) -> None:
@@ -88,6 +105,7 @@ class MockAdapterTest(unittest.TestCase):
         api = build_default_api(
             failures_by_operation={"EXECUTE_APPROVED_ACTION": 1},
             retry_policy=RetryPolicy(max_attempts=3),
+            slack_webhook_url="",
         )
         example = api.contract.examples["operations"][
             "executeApprovedAction"
@@ -165,6 +183,66 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(
             "PERMISSION_DENIED",
             response.body["errors"][0]["code"],
+        )
+        self.assertEqual(0, len(self.api.write_back_adapter.source_records))
+        self.assertEqual(0, len(self.api.outcomes))
+
+    def test_slack_webhook_is_used_when_configured(self) -> None:
+        transport = FakeSlackTransport()
+        api = build_default_api(
+            slack_webhook_url="https://hooks.slack.test/services/demo",
+            slack_transport=transport,
+        )
+        example = api.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+
+        response = api.request(
+            "POST",
+            "/v1/actions/executions",
+            deepcopy(example["x-hfs-headers"]),
+            deepcopy(example["value"]),
+        )
+
+        self.assertEqual(202, response.status)
+        self.assertEqual(1, len(transport.posts))
+        self.assertIn(
+            "North Star alert",
+            transport.posts[0]["payload"]["text"],
+        )
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        self.assertEqual("SENT", record["delivery"]["status"])
+        self.assertEqual("slack-webhook", record["delivery"]["provider"])
+        self.assertEqual(
+            "slack-message-001",
+            record["delivery"]["providerMessageId"],
+        )
+
+    def test_malformed_slack_payload_is_rejected(self) -> None:
+        example = self.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        body = deepcopy(example["value"])
+        del body["payload"]["messageBody"]
+        headers = deepcopy(example["x-hfs-headers"])
+        headers["X-Idempotency-Key"] = "action-slack-alert-malformed-v1"
+        body["idempotencyKey"] = "action-slack-alert-malformed-v1"
+
+        response = self.api.request(
+            "POST",
+            "/v1/actions/executions",
+            headers,
+            body,
+        )
+
+        self.assertEqual(422, response.status)
+        self.assertEqual(
+            "VALIDATION_FAILED",
+            response.body["errors"][0]["code"],
+        )
+        self.assertEqual(
+            "payload.messageBody",
+            response.body["errors"][0]["fieldName"],
         )
         self.assertEqual(0, len(self.api.write_back_adapter.source_records))
         self.assertEqual(0, len(self.api.outcomes))

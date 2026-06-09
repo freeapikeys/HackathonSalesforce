@@ -1,6 +1,7 @@
 """Contract-backed MuleSoft adapter reference runtime."""
 
 from .api import (
+    ActionPayloadValidationError,
     MockCallbackTransport,
     MockHttpResponse,
     MockIntegrationApi,
@@ -8,6 +9,7 @@ from .api import (
     MockSourceAdapter,
     MockWriteBackAdapter,
     RetryPolicy,
+    SlackWebhookTransport,
     build_default_api,
 )
 from .intake import EventIntakeClassifier, IntakeDecision
@@ -19,8 +21,10 @@ __all__ = [
     "MockOutcomeAdapter",
     "MockSourceAdapter",
     "MockWriteBackAdapter",
+    "ActionPayloadValidationError",
     "EventIntakeClassifier",
     "IntakeDecision",
     "RetryPolicy",
+    "SlackWebhookTransport",
     "build_default_api",
 ]

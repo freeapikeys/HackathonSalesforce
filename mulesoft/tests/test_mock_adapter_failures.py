@@ -17,7 +17,7 @@ class MockAdapterFailureTest(unittest.TestCase):
         )
 
     def test_malformed_event_is_non_retryable_validation_failure(self) -> None:
-        api = build_default_api()
+        api = build_default_api(slack_webhook_url="")
         example = api.contract.examples["operations"]["ingestEvent"]["request"]
         body = deepcopy(example["value"])
         del body["source"]
@@ -34,7 +34,7 @@ class MockAdapterFailureTest(unittest.TestCase):
         self.assertEqual(0, len(api.source_adapter.events))
 
     def test_changed_content_under_same_key_is_conflict(self) -> None:
-        api = build_default_api()
+        api = build_default_api(slack_webhook_url="")
         example = api.contract.examples["operations"][
             "executeApprovedAction"
         ]["request"]
@@ -67,7 +67,7 @@ class MockAdapterFailureTest(unittest.TestCase):
         self.assertEqual(1, len(api.outcomes))
 
     def test_retryable_outcome_failure_recovers_without_second_write(self) -> None:
-        api = build_default_api(outcome_failures=1)
+        api = build_default_api(outcome_failures=1, slack_webhook_url="")
 
         first = self.request_example(
             api,
@@ -96,6 +96,7 @@ class MockAdapterFailureTest(unittest.TestCase):
         api = build_default_api(
             failures_by_operation={"EXECUTE_APPROVED_ACTION": 3},
             retry_policy=RetryPolicy(max_attempts=2),
+            slack_webhook_url="",
         )
         response = self.request_example(
             api,
@@ -131,7 +132,7 @@ class MockAdapterFailureTest(unittest.TestCase):
         )
 
     def test_outcome_callback_replay_does_not_duplicate_storage(self) -> None:
-        api = build_default_api()
+        api = build_default_api(slack_webhook_url="")
         first = self.request_example(
             api,
             "receiveOutcomeCallback",
@@ -155,7 +156,7 @@ class MockAdapterFailureTest(unittest.TestCase):
         self.assertEqual(1, callback_count)
 
     def test_tenant_mismatch_fails_before_side_effects(self) -> None:
-        api = build_default_api()
+        api = build_default_api(slack_webhook_url="")
         example = api.contract.examples["operations"][
             "executeApprovedAction"
         ]["request"]
