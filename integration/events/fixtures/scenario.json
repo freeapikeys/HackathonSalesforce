@@ -1,5 +1,5 @@
 {
-  "name": "industry-neutral relationship case",
+  "name": "north star supermarket retail case",
   "maximumLatenessSeconds": 86400,
   "events": [
     {
@@ -28,6 +28,62 @@
     },
     {
       "file": "events/07-issue.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/15-stockout-risk-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/16-warehouse-stock-checked.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/17-supplier-lead-time-updated.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/18-expiry-risk-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/19-near-expiry-markdown-recommended.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/20-complaint-cluster-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/21-price-mismatch-reported.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/22-damaged-packaging-reported.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/23-supplier-response-received.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/24-queue-risk-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/25-shelf-layout-mismatch-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/26-store-task-created.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/27-approved-action-executed.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/28-retail-outcome-captured.json",
       "expected": "ACCEPTED"
     },
     {

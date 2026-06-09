@@ -1,0 +1,35 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000017",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.supplier.leadtime.updated.v1",
+  "subject": "supplier:SUPPLIER-ISLAND-PROTEINS",
+  "time": "2026-06-06T09:05:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-supplier-leadtime-v1",
+  "hfssourcerecordid": "retail-event-supplier-leadtime-001",
+  "hfssourcesequence": 3,
+  "hfsobservedat": "2026-06-06T09:05:02Z",
+  "hfscontenthash": "sha256:981f553385f47997a855551d4b8e267d098ffc2150b612fa0612898301a07573",
+  "data": {
+    "recordtype": "Supplier",
+    "operation": "OBSERVE",
+    "businesskey": "SUPPLIER-ISLAND-PROTEINS",
+    "effectiveat": "2026-06-06T09:05:00Z",
+    "attributes": {
+      "eventcode": "SUPPLIER_LEAD_TIME_UPDATED",
+      "normalleadtimehours": 36,
+      "replacementleadtimehours": 18,
+      "reliabilitystate": "WATCH",
+      "responseoptions": [
+        "replacement batch",
+        "credit note",
+        "delayed delivery"
+      ]
+    }
+  }
+}

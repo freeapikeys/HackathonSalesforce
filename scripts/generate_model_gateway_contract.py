@@ -662,7 +662,7 @@ def check(
 
 
 def build_fixture() -> dict[str, Any]:
-    profile_key = "recommendation_reasoning"
+    profile_key = "north-star-retail-recommendation"
     primary_key = "mock-alpha-primary"
     fallback_key = "mock-beta-private"
     evidence_hash = (
@@ -753,11 +753,11 @@ def build_fixture() -> dict[str, Any]:
     policy = {
         "contractVersion": CONTRACT_VERSION,
         "version": "1.0.0",
-        "policyKey": "recommendation-routing-mauritius",
+        "policyKey": "north-star-retail-routing-mauritius",
         "tenantKey": TENANT,
         "businessUnit": None,
         "profileKey": profile_key,
-        "permittedPurposes": ["RESOLVE_SERVICE_INTERRUPTION"],
+        "permittedPurposes": ["RESOLVE_RETAIL_RISK"],
         "candidatePriority": [primary_key, fallback_key],
         "requiredChecks": [
             "TENANT",
@@ -784,10 +784,10 @@ def build_fixture() -> dict[str, Any]:
         "correlationId": CORRELATION,
         "tenantKey": TENANT,
         "businessUnit": None,
-        "agentKey": "relationship-recommendation-agent",
-        "subagentKey": "case-analysis",
+        "agentKey": "north-star-orchestrator",
+        "subagentKey": "retail-risk-analysis",
         "userId": "integration-user-001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "profileKey": profile_key,
         "dataClassification": "CONFIDENTIAL",
         "residencyRegion": "mu",
@@ -879,31 +879,39 @@ def build_fixture() -> dict[str, Any]:
         "correlationId": CORRELATION,
         "tenantKey": TENANT,
         "userId": "integration-user-001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
-        "agentKey": "relationship-recommendation-agent",
+        "purpose": "RESOLVE_RETAIL_RISK",
+        "agentKey": "north-star-orchestrator",
         "profileKey": profile_key,
         "profileVersion": profile["version"],
-        "promptVersion": "recommendation-prompt-1.0.0",
-        "retrievalVersion": "relationship-context-1.0.0",
+        "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
+        "retrievalVersion": "north-star-retail-context-1.0.0",
         "messages": [
             {
                 "role": "SYSTEM",
                 "content": (
-                    "Separate facts, inferences, and recommendations. Cite "
-                    "accessible evidence and require human approval."
+                    "Separate retail facts, inferences, assumptions, and "
+                    "recommendations. Cite inventory, expiry, supplier, "
+                    "complaint, promotion, and staffing evidence. Do not "
+                    "blindly stop all supplier orders because complaints exist; "
+                    "request supplier response and require human approval."
                 ),
             },
             {
                 "role": "USER",
                 "content": (
-                    "Recommend the next action for the repeated service "
-                    "interruption."
+                    "Recommend the next action for the North Star supermarket "
+                    "promotion risk."
                 ),
             },
         ],
         "context": {
             "dataClassification": "CONFIDENTIAL",
-            "evidenceIds": ["evidence-issue-001"],
+            "evidenceIds": [
+                "evidence-inventory-north-star-001",
+                "evidence-complaint-north-star-001",
+                "evidence-supplier-north-star-001",
+                "evidence-staffing-north-star-001",
+            ],
             "sourceContentHashes": [evidence_hash],
         },
         "responseSchema": response_schema,
@@ -916,17 +924,21 @@ def build_fixture() -> dict[str, Any]:
     }
     output = {
         "facts": [
-            "The source system reports repeated service interruption."
+            "Shelf and backroom cover is below the weekend promotion threshold."
         ],
         "inferences": [
-            "The affected relationship is likely to require a proactive update."
+            "A warehouse transfer plus supplier replacement is safer than blindly reordering the complained-about batch."
         ],
         "recommendation": (
-            "Prepare a status update using the approved service template and "
-            "route it for human approval."
+            "Route a recovery plan for manager approval: transfer safe warehouse stock, quarantine suspect units, mark down only safe near-expiry stock, fix shelf price, open one extra cashier lane, and request supplier replacement."
         ),
         "confidence": 0.87,
-        "evidenceIds": ["evidence-issue-001"],
+        "evidenceIds": [
+            "evidence-inventory-north-star-001",
+            "evidence-complaint-north-star-001",
+            "evidence-supplier-north-star-001",
+            "evidence-staffing-north-star-001",
+        ],
         "requiresHumanApproval": True,
     }
     responses = [

@@ -2,9 +2,9 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
   <apiVersion>66.0</apiVersion>
   <isExposed>true</isExposed>
-  <masterLabel>HFS Relationship Command Center</masterLabel>
+  <masterLabel>North Star Command Center</masterLabel>
   <description
-  >Permission-aware relationship context, recommendation, approval, action, and outcome command center.</description>
+  >Permission-aware retail context, recommendation, approval, action, and outcome command center.</description>
   <targets>
     <target>lightning__AppPage</target>
     <target>lightning__HomePage</target>
@@ -18,13 +18,13 @@
         name="tenantKey"
         type="String"
         label="Tenant key"
-        description="Tenant key enforced by the relationship service."
+        description="Tenant key enforced by the North Star service."
       />
       <property
         name="purpose"
         type="String"
         label="Purpose"
-        default="RELATIONSHIP_SERVICE"
+        default="RESOLVE_RETAIL_RISK"
         description="Declared purpose used for governed context and decisions."
       />
       <property

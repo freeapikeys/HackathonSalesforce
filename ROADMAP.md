@@ -126,11 +126,11 @@ and UI must support any supermarket product category.
 - [x] Old broad platform wording removed from active docs.
 - [x] Supermarket issue map added to this roadmap.
 - [x] Teammate assignment docs created in `docs/assignments/`.
-- [ ] One-sentence product pitch finalized.
-- [ ] Three-minute judge demo narrative drafted.
-- [ ] Five-minute extended demo narrative drafted.
-- [ ] Backup recorded-demo path defined in case live integrations fail.
-- [ ] Final non-goals reviewed by whole team.
+- [x] One-sentence product pitch finalized.
+- [x] Three-minute judge demo narrative drafted.
+- [x] Five-minute extended demo narrative drafted.
+- [x] Backup recorded-demo path defined in case live integrations fail.
+- [x] Final non-goals reviewed by whole team.
 
 ### 2. Team Assignment Checkpoints
 
@@ -153,50 +153,50 @@ file before editing.
 
 ### 3. Product Categories and Demo Data
 
-- [ ] Choose first demo product category and product.
-- [ ] Add at least two other product categories to prove this is not
+- [x] Choose first demo product category and product.
+- [x] Add at least two other product categories to prove this is not
       burger-only.
-- [ ] Define store, supplier, product, product batch, promotion, shelf area,
+- [x] Define store, supplier, product, product batch, promotion, shelf area,
       roster, and task fixture IDs.
-- [ ] Define stock quantities for shelf, backroom, warehouse, and supplier.
-- [ ] Define sales velocity and forecast window.
-- [ ] Define supplier lead time and supplier response options.
-- [ ] Define complaint examples for smell, packaging, price mismatch, refund,
+- [x] Define stock quantities for shelf, backroom, warehouse, and supplier.
+- [x] Define sales velocity and forecast window.
+- [x] Define supplier lead time and supplier response options.
+- [x] Define complaint examples for smell, packaging, price mismatch, refund,
       and availability.
-- [ ] Define expiry dates and near-expiry quantities.
-- [ ] Define queue-risk window and staffing baseline.
-- [ ] Define expected outcome metrics for the demo.
+- [x] Define expiry dates and near-expiry quantities.
+- [x] Define queue-risk window and staffing baseline.
+- [x] Define expected outcome metrics for the demo.
 
 ### 4. Retail Event Fixtures
 
-- [ ] Add `STOCKOUT_RISK_DETECTED` fixture.
-- [ ] Add `WAREHOUSE_STOCK_CHECKED` fixture.
-- [ ] Add `SUPPLIER_LEAD_TIME_UPDATED` fixture.
-- [ ] Add `EXPIRY_RISK_DETECTED` fixture.
-- [ ] Add `NEAR_EXPIRY_MARKDOWN_RECOMMENDED` fixture.
-- [ ] Add `COMPLAINT_CLUSTER_DETECTED` fixture.
-- [ ] Add `PRICE_MISMATCH_REPORTED` fixture.
-- [ ] Add `DAMAGED_PACKAGING_REPORTED` fixture.
-- [ ] Add `SUPPLIER_RESPONSE_RECEIVED` fixture.
-- [ ] Add `QUEUE_RISK_DETECTED` fixture.
-- [ ] Add `SHELF_LAYOUT_MISMATCH_DETECTED` fixture.
-- [ ] Add `STORE_TASK_CREATED` fixture.
-- [ ] Add `APPROVED_ACTION_EXECUTED` fixture.
-- [ ] Add `RETAIL_OUTCOME_CAPTURED` fixture.
-- [ ] Keep duplicate, malformed, late, out-of-order, replay, hash, and
+- [x] Add `STOCKOUT_RISK_DETECTED` fixture.
+- [x] Add `WAREHOUSE_STOCK_CHECKED` fixture.
+- [x] Add `SUPPLIER_LEAD_TIME_UPDATED` fixture.
+- [x] Add `EXPIRY_RISK_DETECTED` fixture.
+- [x] Add `NEAR_EXPIRY_MARKDOWN_RECOMMENDED` fixture.
+- [x] Add `COMPLAINT_CLUSTER_DETECTED` fixture.
+- [x] Add `PRICE_MISMATCH_REPORTED` fixture.
+- [x] Add `DAMAGED_PACKAGING_REPORTED` fixture.
+- [x] Add `SUPPLIER_RESPONSE_RECEIVED` fixture.
+- [x] Add `QUEUE_RISK_DETECTED` fixture.
+- [x] Add `SHELF_LAYOUT_MISMATCH_DETECTED` fixture.
+- [x] Add `STORE_TASK_CREATED` fixture.
+- [x] Add `APPROVED_ACTION_EXECUTED` fixture.
+- [x] Add `RETAIL_OUTCOME_CAPTURED` fixture.
+- [x] Keep duplicate, malformed, late, out-of-order, replay, hash, and
       idempotency-conflict cases passing.
 
 ### 5. Salesforce Core
 
-- [ ] Map store to existing Salesforce entity record.
-- [ ] Map product to existing Salesforce entity record.
-- [ ] Map product batch to existing Salesforce entity or add the smallest
+- [x] Map store to existing Salesforce entity record.
+- [x] Map product to existing Salesforce entity record.
+- [x] Map product batch to existing Salesforce entity or add the smallest
       needed field/type.
-- [ ] Map supplier to existing Salesforce entity record.
-- [ ] Map promotion to event, agreement, or work context.
-- [ ] Map complaints to evidence records.
+- [x] Map supplier to existing Salesforce entity record.
+- [x] Map promotion to event, agreement, or work context.
+- [x] Map complaints to evidence records.
 - [ ] Map store tasks to action records and/or Salesforce task records.
-- [ ] Add optional metadata only when current records cannot express demo needs.
+- [x] Add optional metadata only when current records cannot express demo needs.
 - [ ] Apex context includes product, batch, store, supplier, promotion,
       complaint, stock, staffing, recommendation, approval, action, and outcome.
 - [ ] Manager approval is enforced before reorder, supplier case, markdown,
@@ -207,54 +207,49 @@ file before editing.
 
 ### 6. Agentforce and Intelligence
 
-- [ ] Define North Star Orchestrator topic.
-- [ ] Define Inventory and Demand topic.
-- [ ] Define Store Operations topic.
-- [ ] Define Customer and Risk Intelligence topic.
-- [ ] Recommendation request includes inventory, expiry, supplier, complaint,
+- [x] Define North Star Orchestrator topic.
+- [x] Define Inventory and Demand topic.
+- [x] Define Store Operations topic.
+- [x] Define Customer and Risk Intelligence topic.
+- [x] Recommendation request includes inventory, expiry, supplier, complaint,
       promotion, and staffing evidence.
 - [ ] Recommendation response separates facts, inferences, assumptions,
       recommended actions, approval requirements, and expected outcomes.
-- [ ] Supplier decision follows the rule: do not blindly stop all supplier
+- [x] Supplier decision follows the rule: do not blindly stop all supplier
       orders because complaints exist.
-- [ ] Agentforce updates recommendation after supplier response arrives.
-- [ ] Agentforce refuses restricted or missing evidence.
-- [ ] Model gateway uses retail profile names, not product-specific names.
-- [ ] Agentforce fixtures include a denied-action scenario.
-- [ ] Agentforce fixtures include a changed-recommendation scenario.
+- [x] Agentforce updates recommendation after supplier response arrives.
+- [x] Agentforce refuses restricted or missing evidence.
+- [x] Model gateway uses retail profile names, not product-specific names.
+- [x] Agentforce fixtures include a denied-action scenario.
+- [x] Agentforce fixtures include a changed-recommendation scenario.
 
 ### 7. MuleSoft and Channel Mocks
 
-- [ ] Mock `CREATE_SUPPLIER_QUALITY_CASE`.
-- [ ] Mock `REQUEST_REPLACEMENT_BATCH`.
-- [ ] Mock `CREATE_REORDER_REQUEST`.
-- [ ] Mock `CREATE_WAREHOUSE_TRANSFER`.
-- [ ] Mock `CREATE_MARKDOWN_PLAN`.
-- [ ] Mock `CREATE_QUARANTINE_TASK`.
-- [ ] Mock `CREATE_RESTOCK_TASK`.
-- [ ] Mock `CREATE_SHELF_LAYOUT_TASK`.
-- [ ] Mock `OPEN_EXTRA_CASHIER_TASK`.
+- [x] Mock `CREATE_SUPPLIER_QUALITY_CASE`.
+- [x] Mock `REQUEST_REPLACEMENT_BATCH`.
+- [x] Mock `CREATE_REORDER_REQUEST`.
+- [x] Mock `CREATE_WAREHOUSE_TRANSFER`.
+- [x] Mock `CREATE_MARKDOWN_PLAN`.
+- [x] Mock `CREATE_QUARANTINE_TASK`.
+- [x] Mock `CREATE_RESTOCK_TASK`.
+- [x] Mock `CREATE_SHELF_LAYOUT_TASK`.
+- [x] Mock `OPEN_EXTRA_CASHIER_TASK`.
 - [x] Mock `SEND_SLACK_ALERT`.
+- [x] Mock `SEND_WHATSAPP_STYLE_ALERT`.
+- [x] Mock `CAPTURE_RETAIL_OUTCOME`.
+- [x] Unapproved execution returns denial.
+- [x] Approved execution returns queued or success response with correlation.
 - [x] If `SLACK_WEBHOOK_URL` exists, send real Slack webhook message.
 - [x] If `SLACK_WEBHOOK_URL` is missing, return honest `MOCK_SENT`.
-- [ ] Mock `SEND_WHATSAPP_ALERT`.
-- [ ] If WhatsApp provider credentials exist, send real WhatsApp sandbox/cloud
-      message.
-- [ ] If WhatsApp credentials are missing, return honest `MOCK_SENT`.
-- [ ] Mock `CAPTURE_RETAIL_OUTCOME`.
-- [x] Unapproved Slack execution returns denial.
-- [x] Approved Slack execution returns queued response with correlation.
 - [x] Malformed Slack payloads return validation errors.
 - [ ] Malformed WhatsApp payloads return validation errors.
-- [ ] Unapproved non-Slack protected executions return denial.
-- [ ] Approved non-Slack protected executions return queued or success response
-      with correlation.
 - [x] Slack channel responses preserve `tenantId`, `correlationId`,
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
-- [ ] Channel responses preserve `tenantId`, `correlationId`, `approvalId`,
-      `actionId`, evidence IDs, provider, status, and fallback reason.
-- [ ] Mock channel results are visible in the command center.
+- [ ] WhatsApp channel responses preserve `tenantId`, `correlationId`,
+      `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
+      reason.
+- [x] Mock channel results are visible in the command center.
 
 ### 8. Voice Mode
 
@@ -271,26 +266,26 @@ file before editing.
 
 ### 9. Lightning Command Center
 
-- [ ] UI title and labels use North Star.
-- [ ] Risk pulse cards show stockout, expiry, overstock, complaint, supplier,
+- [x] UI title and labels use North Star.
+- [x] Risk pulse cards show stockout, expiry, overstock, complaint, supplier,
       queue, shelf-layout, price, promotion, and staff readiness.
-- [ ] Product and batch context is visible.
-- [ ] Shelf, backroom, warehouse, and supplier stock are visible.
-- [ ] Complaint cluster panel shows complaint type, count, product, batch,
+- [x] Product and batch context is visible.
+- [x] Shelf, backroom, warehouse, and supplier stock are visible.
+- [x] Complaint cluster panel shows complaint type, count, product, batch,
       supplier, and time window.
-- [ ] Supplier response panel shows status, lead time, replacement, credit note,
+- [x] Supplier response panel shows status, lead time, replacement, credit note,
       or unresolved quality issue.
-- [ ] Store execution panel shows cashier recommendation and task queue.
-- [ ] Evidence timeline cites source records.
-- [ ] Agent reasoning panel separates facts from inference.
+- [x] Store execution panel shows cashier recommendation and task queue.
+- [x] Evidence timeline cites source records.
+- [x] Agent reasoning panel separates facts from inference.
 - [ ] Approval cockpit supports approve, reject, modify, defer, and executed
       states.
-- [ ] Channel log shows Slack and WhatsApp-style alert results.
+- [x] Channel log shows Slack and WhatsApp-style alert results.
 - [ ] Voice transcript or voice request panel is visible if voice mode is in
       the demo.
-- [ ] Outcome panel shows stockout avoided, waste reduced, complaint risk,
+- [x] Outcome panel shows stockout avoided, waste reduced, complaint risk,
       queue readiness, staff task completion, and supplier SLA state.
-- [ ] LWC tests cover ready, loading, empty, denied, error, restricted,
+- [x] LWC tests cover ready, loading, empty, denied, error, restricted,
       approval, action, and outcome states.
 
 ### 10. End-to-End Demo

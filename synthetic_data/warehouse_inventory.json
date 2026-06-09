@@ -1,0 +1,242 @@
+[
+  {
+    "warehousePositionId": "WH-001",
+    "productId": "PROD-001",
+    "availableStock": 500,
+    "reservedStock": 50,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-001"
+  },
+  {
+    "warehousePositionId": "WH-002",
+    "productId": "PROD-002",
+    "availableStock": 200,
+    "reservedStock": 20,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-002"
+  },
+  {
+    "warehousePositionId": "WH-003",
+    "productId": "PROD-003",
+    "availableStock": 300,
+    "reservedStock": 30,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-003"
+  },
+  {
+    "warehousePositionId": "WH-004",
+    "productId": "PROD-004",
+    "availableStock": 400,
+    "reservedStock": 40,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-004"
+  },
+  {
+    "warehousePositionId": "WH-005",
+    "productId": "PROD-005",
+    "availableStock": 100,
+    "reservedStock": 10,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-005"
+  },
+  {
+    "warehousePositionId": "WH-006",
+    "productId": "PROD-006",
+    "availableStock": 600,
+    "reservedStock": 60,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-006"
+  },
+  {
+    "warehousePositionId": "WH-007",
+    "productId": "PROD-007",
+    "availableStock": 200,
+    "reservedStock": 20,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-007"
+  },
+  {
+    "warehousePositionId": "WH-008",
+    "productId": "PROD-008",
+    "availableStock": 100,
+    "reservedStock": 10,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-008"
+  },
+  {
+    "warehousePositionId": "WH-009",
+    "productId": "PROD-009",
+    "availableStock": 300,
+    "reservedStock": 30,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-009"
+  },
+  {
+    "warehousePositionId": "WH-010",
+    "productId": "PROD-010",
+    "availableStock": 50,
+    "reservedStock": 5,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-010"
+  },
+  {
+    "warehousePositionId": "WH-011",
+    "productId": "PROD-011",
+    "availableStock": 50,
+    "reservedStock": 5,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-011"
+  },
+  {
+    "warehousePositionId": "WH-012",
+    "productId": "PROD-012",
+    "availableStock": 40,
+    "reservedStock": 4,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-012"
+  },
+  {
+    "warehousePositionId": "WH-013",
+    "productId": "PROD-013",
+    "availableStock": 100,
+    "reservedStock": 10,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-013"
+  },
+  {
+    "warehousePositionId": "WH-014",
+    "productId": "PROD-014",
+    "availableStock": 40,
+    "reservedStock": 4,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-014"
+  },
+  {
+    "warehousePositionId": "WH-015",
+    "productId": "PROD-015",
+    "availableStock": 60,
+    "reservedStock": 6,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-015"
+  },
+  {
+    "warehousePositionId": "WH-016",
+    "productId": "PROD-016",
+    "availableStock": 1000,
+    "reservedStock": 100,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-016"
+  },
+  {
+    "warehousePositionId": "WH-017",
+    "productId": "PROD-017",
+    "availableStock": 500,
+    "reservedStock": 50,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-017"
+  },
+  {
+    "warehousePositionId": "WH-018",
+    "productId": "PROD-018",
+    "availableStock": 300,
+    "reservedStock": 30,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-018"
+  },
+  {
+    "warehousePositionId": "WH-019",
+    "productId": "PROD-019",
+    "availableStock": 400,
+    "reservedStock": 40,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-019"
+  },
+  {
+    "warehousePositionId": "WH-020",
+    "productId": "PROD-020",
+    "availableStock": 100,
+    "reservedStock": 10,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-020"
+  },
+  {
+    "warehousePositionId": "WH-021",
+    "productId": "PROD-021",
+    "availableStock": 1000,
+    "reservedStock": 100,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-021"
+  },
+  {
+    "warehousePositionId": "WH-022",
+    "productId": "PROD-022",
+    "availableStock": 500,
+    "reservedStock": 50,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-022"
+  },
+  {
+    "warehousePositionId": "WH-023",
+    "productId": "PROD-023",
+    "availableStock": 500,
+    "reservedStock": 50,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-023"
+  },
+  {
+    "warehousePositionId": "WH-024",
+    "productId": "PROD-024",
+    "availableStock": 600,
+    "reservedStock": 60,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-024"
+  },
+  {
+    "warehousePositionId": "WH-025",
+    "productId": "PROD-025",
+    "availableStock": 600,
+    "reservedStock": 50,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-025"
+  },
+  {
+    "warehousePositionId": "WH-026",
+    "productId": "PROD-026",
+    "availableStock": 1000,
+    "reservedStock": 100,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-026"
+  },
+  {
+    "warehousePositionId": "WH-027",
+    "productId": "PROD-027",
+    "availableStock": 1000,
+    "reservedStock": 100,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-027"
+  },
+  {
+    "warehousePositionId": "WH-028",
+    "productId": "PROD-028",
+    "availableStock": 200,
+    "reservedStock": 20,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-028"
+  },
+  {
+    "warehousePositionId": "WH-029",
+    "productId": "PROD-029",
+    "availableStock": 1000,
+    "reservedStock": 100,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-029"
+  },
+  {
+    "warehousePositionId": "WH-030",
+    "productId": "PROD-030",
+    "availableStock": 1000,
+    "reservedStock": 100,
+    "nextDispatchWindow": "2026-06-14T06:00:00Z",
+    "evidenceId": "EVID-WH-030"
+  }
+]

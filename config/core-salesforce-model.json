@@ -156,6 +156,8 @@
             "PERSON",
             "ORGANIZATION",
             "ORGANIZATIONAL_UNIT",
+            "PRODUCT",
+            "PRODUCT_BATCH",
             "SUPPLIER",
             "PARTNER",
             "REGULATOR",

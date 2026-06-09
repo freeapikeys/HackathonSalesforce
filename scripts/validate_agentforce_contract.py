@@ -143,11 +143,20 @@ def main() -> int:
         "unauthorized-external-action-refusal",
         "no-qualified-model-refusal",
         "invalid-approval-request-error",
+        "changed-recommendation-after-supplier-response",
     }
     require(
         required_scenarios <= scenario_names,
         "A material Agentforce contract scenario is missing.",
     )
+    for scenario in fixtures["scenarios"]:
+        recommendation = scenario["response"]["recommendation"]
+        if recommendation:
+            require(
+                recommendation["modelProfile"]
+                == "north-star-retail-recommendation",
+                f"{scenario['name']}: recommendation used a non-retail model profile.",
+            )
     print(
         "Agentforce action contract is valid "
         f"({len(fixtures['actionCatalog'])} actions, "

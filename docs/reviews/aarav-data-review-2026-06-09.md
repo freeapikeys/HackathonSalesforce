@@ -2,54 +2,53 @@
 
 ## Summary
 
-The uploaded data is a useful starter set, but it is not demo-ready yet. It has
-the right direction: three stores, six suppliers, thirty products, twenty-two
-events, and twelve recommendation cases. The main weakness is that it is still
-too shallow for the North Star agent workflow and is not wired into the existing
-event fixture validation path.
+The new fake data is a major improvement over the first upload. It now includes
+the main North Star evidence families: batches, inventory, warehouse stock,
+promotions, complaints, complaint clusters, supplier responses, queue pressure,
+task templates, channel aliases, expected recommendation cases, and validated
+retail event fixtures.
+
+It is much closer to demo-ready. The validated event fixtures are good, and the
+draft JSON files now parse after cleanup on this branch. Remaining issues are
+coverage and canonical-location decisions, not basic file validity.
 
 ## Strengths
 
-- Includes three Mauritius supermarket stores and six synthetic suppliers.
-- Includes thirty products across several categories, so it avoids a
-  burger-only demo.
-- Includes twenty-two retail events, which is close to the roadmap target.
-- Includes twelve recommendation cases, matching the target count.
-- Covers useful issue types: waste, quality complaints, expiry, price mismatch,
-  missing items, supplier delay, and temperature deviation.
+- Adds the missing operational surfaces: batches, inventory positions,
+  warehouse inventory, promotions, complaints, clusters, supplier responses,
+  queue pressure, task templates, and channel aliases.
+- Adds 14 validated retail event-envelope fixtures from stockout through
+  outcome capture.
+- Adds `docs/north-star-demo-data.md`, `docs/north-star-demo-narrative.md`, and
+  `docs/north-star-agentforce-topics.md`, which helps the team keep one story.
+- Includes 60 product batches, 90 inventory positions, 30 warehouse inventory
+  records, 84 queue-pressure records, 20 task templates, 12 channel aliases, 12
+  recommendation cases, 10 supplier responses, and 8 promotions.
+- Includes 50 complaint records, meeting the lower end of the assignment target.
+- The existing event contract now passes with 28 deterministic fixtures,
+  including malformed, late, out-of-order, duplicate, idempotency-conflict, and
+  invalid-hash cases.
+- All root draft JSON and `synthetic_data/` JSON files parse successfully after
+  typo cleanup.
 
 ## Weaknesses To Fix
 
-- Product categories are only six, while the assignment asks for eight:
-  fresh food, frozen food, bakery, dairy, beverages, household, pharmacy shelf,
-  and electronics.
-- Sales data has only fourteen store-day rows for one store. The assignment
-  asks for daily summaries across three stores, thirty products, and fourteen
-  days.
-- There are no product batches, inventory positions, warehouse inventory,
-  promotions, complaint clusters, refund records, supplier responses, roster
-  records, queue pressure records, task templates, or channel recipient aliases.
-- Event IDs such as `EVT-001` are readable, but they do not match the existing
-  event-envelope validator expectation that source event IDs are UUIDs.
-- `EVT-012` intentionally or accidentally has no `type`; if it is meant to be a
-  malformed event, it should live in a clearly named malformed fixture with an
-  expected rejection result.
-- `hfscontenthash` values such as `hash-001` are placeholders, not real
-  `sha256:` hashes, so they will not pass the existing content-hash contract.
-- Root-level JSON files are easy to inspect, but they are not yet integrated
-  into `integration/events/fixtures/` or the Salesforce/LWC seed path.
+- The product catalog still has 6 categories, while the assignment asks for 8.
+  Missing categories are pharmacy shelf and electronics as separate categories.
+- Sales data is still too thin: 14 store-day rows for one store, with 42 product
+  sales entries. The assignment target is 3 stores x 30 products x 14 days.
+- The root JSON files and `synthetic_data/` files duplicate each other. That is
+  okay temporarily, but one canonical location should be chosen before the demo.
+- Some draft source event IDs and hashes in `event_stream.json` are still not
+  contract-valid. Treat `integration/events/fixtures/events/15-28*.json` as the
+  real validated event fixtures.
 
-## Recommended Next Step
+## Recommendation
 
-Keep these files as drafts, then normalize them into the repo's existing
-fixtures:
+Keep the validated event fixtures and demo docs. Next, either remove the
+duplicated root data files or document that `synthetic_data/` is the canonical
+draft-data folder.
 
-- move validated event envelopes under `integration/events/fixtures/retail/`;
-- add one data inventory file that names stores, products, batches, suppliers,
-  evidence IDs, role aliases, and expected recommendation cases;
-- create a smaller coherent demo slice first: one stockout plus complaint case,
-  one supplier response, one approval, one Slack alert, one WhatsApp alert, and
-  one outcome.
-
-This will be much more useful for the team than generating a large dataset that
-the app cannot consume yet.
+After that, expand sales coverage and categories only if the app actually
+consumes those records. For the hackathon, clean parseable data matters more
+than large volume, so this is now in a much healthier place.

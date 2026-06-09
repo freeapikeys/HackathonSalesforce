@@ -1,0 +1,32 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000023",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.supplier.response.received.v1",
+  "subject": "supplier:SUPPLIER-ISLAND-PROTEINS",
+  "time": "2026-06-06T09:25:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-supplier-response-v1",
+  "hfssourcerecordid": "retail-event-supplier-response-001",
+  "hfssourcesequence": 9,
+  "hfsobservedat": "2026-06-06T09:25:03Z",
+  "hfscontenthash": "sha256:c28ceff6af53ee38659d86b2e295f4819693fc3181e087fec6c967d80fae7269",
+  "data": {
+    "recordtype": "Supplier",
+    "operation": "OBSERVE",
+    "businesskey": "SUPPLIER-ISLAND-PROTEINS",
+    "effectiveat": "2026-06-06T09:25:00Z",
+    "attributes": {
+      "eventcode": "SUPPLIER_RESPONSE_RECEIVED",
+      "responsestatus": "REPLACEMENT_APPROVED",
+      "replacementbatchid": "BATCH-FRESH-BEEF-2026-06-08-B",
+      "replacementleadtimehours": 18,
+      "creditnote": true,
+      "qualityissueunresolved": false
+    }
+  }
+}

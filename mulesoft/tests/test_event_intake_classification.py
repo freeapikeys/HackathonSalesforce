@@ -84,14 +84,19 @@ class EventIntakeClassificationTest(unittest.TestCase):
                     )
                     self.assertFalse(attempt["preserved"])
 
-        self.assertEqual(14, len(api.source_adapter.attempts))
-        self.assertEqual(10, len(api.source_adapter.events))
+        preserved_count = sum(
+            1
+            for case in SCENARIO["events"]
+            if case["expected"] in PRESERVED_RESULTS
+        )
+        self.assertEqual(len(SCENARIO["events"]), len(api.source_adapter.attempts))
+        self.assertEqual(preserved_count, len(api.source_adapter.events))
         ingestion_callbacks = [
             item
             for item in api.callback_transport.received
             if item["payload"]["operation"] == "INGEST_EVENT"
         ]
-        self.assertEqual(10, len(ingestion_callbacks))
+        self.assertEqual(preserved_count, len(ingestion_callbacks))
         self.assertEqual(
             sorted(
                 case["expected"]

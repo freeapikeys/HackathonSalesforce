@@ -1,0 +1,33 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000018",
+  "source": "urn:hfs:source:retail",
+  "type": "io.github.freeapikeys.hfs.retail.expiry.risk.detected.v1",
+  "subject": "batch:BATCH-FRESH-BEEF-2026-06-07-A",
+  "time": "2026-06-06T09:08:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "north-star-expiry-risk-v1",
+  "hfssourcerecordid": "retail-event-expiry-001",
+  "hfssourcesequence": 4,
+  "hfsobservedat": "2026-06-06T09:08:02Z",
+  "hfscontenthash": "sha256:3c257a0bc187133b6ce0673992ce70eca8a21cc09a73442149290036bc1a21f7",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "ISSUE-EXPIRY-FRESH-BEEF-001",
+    "effectiveat": "2026-06-06T09:08:00Z",
+    "attributes": {
+      "eventcode": "EXPIRY_RISK_DETECTED",
+      "productid": "PROD-FRESH-BEEF-PATTIES-400G",
+      "batchid": "BATCH-FRESH-BEEF-2026-06-07-A",
+      "expirydate": "2026-06-08",
+      "nearexpiryquantity": 18,
+      "wasteatriskunits": 18,
+      "recommendation": "Rotate safe near-expiry units and quarantine units tied to quality complaints."
+    }
+  }
+}

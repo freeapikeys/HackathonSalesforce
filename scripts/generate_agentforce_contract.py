@@ -401,7 +401,7 @@ def base_request(action: str) -> dict[str, Any]:
         "action": action,
         "tenantKey": TENANT,
         "correlationId": CORRELATION,
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": WORK_ITEM,
         "recommendationId": None,
         "approvalPolicyKey": None,
@@ -416,8 +416,8 @@ def audit(
 ) -> dict[str, Any]:
     return {
         "actorUserId": "005000000000001AAA",
-        "agentKey": "relationship-management-agent",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "agentKey": "north-star-orchestrator",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "permissionEvaluated": True,
         "modelInvocationId": model_invocation_id,
         "humanApprovalRequired": human_approval_required,
@@ -443,19 +443,17 @@ def response(action: str, status: str) -> dict[str, Any]:
     }
 
 
-def citation(evidence_id: str, summary: str, suffix: str) -> dict[str, Any]:
+def citation(
+    evidence_id: str,
+    summary: str,
+    suffix: str,
+    content_hash: str,
+) -> dict[str, Any]:
     return {
         "evidenceId": evidence_id,
         "sourceEventId": "a09000000000001AAA",
         "sourceUri": f"urn:hfs:source:{suffix}",
-        "contentHash": (
-            "sha256:"
-            + (
-                "56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
-                if suffix == "operations"
-                else "7549cf0c63ad4a64f178d8500c1f3874d97478f6ee323e4debbab6d89b168b69"
-            )
-        ),
+        "contentHash": content_hash,
         "summary": summary,
         "accessible": True,
     }
@@ -471,41 +469,98 @@ def refusal(code: str, message: str, retryable: bool = False) -> dict[str, Any]:
 
 
 def fixtures() -> dict[str, Any]:
-    incident = citation(
+    inventory = citation(
         "a06000000000001AAA",
-        "The operations source reported repeated service interruption.",
-        "operations",
+        "Shelf has 18 units, backroom has 24 units, warehouse has 72 units, supplier has 180 units, and promotion sales velocity is 28 units per hour.",
+        "retail:inventory",
+        "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
     )
-    agreement = citation(
+    complaint = citation(
         "a06000000000002AAA",
-        "The agreement requires an update within two hours.",
-        "contracts",
+        "Five complaints mention smell, damaged packaging, refunds, and price mismatch for the same product, batch, store, and promotion window.",
+        "retail:complaints",
+        "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
+    )
+    supplier = citation(
+        "a06000000000003AAA",
+        "Supplier approved replacement batch B with 18-hour lead time and a credit note; quality issue is not supplier-wide.",
+        "retail:supplier",
+        "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+    )
+    staffing = citation(
+        "a06000000000004AAA",
+        "Queue risk is forecast from 16:30 to 18:30 with three baseline cashiers and four recommended cashiers.",
+        "retail:roster",
+        "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
+    )
+    expiry = citation(
+        "a06000000000005AAA",
+        "Batch A expires on 2026-06-08 and has 18 near-expiry units that need rotation, markdown, or quarantine.",
+        "retail:expiry",
+        "sha256:9b7c6068af1620f1bc46f5ba418dc983d1d73f2b1f9892718b58a9708a924c4a",
+    )
+    promotion = citation(
+        "a06000000000006AAA",
+        "Weekend Grill promotion is active and shelf price is MUR 159 while POS price is MUR 189.",
+        "retail:promotion",
+        "sha256:b832255db1ee6b95f3a5ba91d39da05a0839c32bc7b1cfb7d7c32868a5ead507",
     )
 
     explain_request = base_request("EXPLAIN_RELATIONSHIP_CASE")
     explain_response = response("EXPLAIN_RELATIONSHIP_CASE", "SUCCESS")
-    explain_response["citations"] = [incident, agreement]
+    explain_response["citations"] = [
+        inventory,
+        complaint,
+        supplier,
+        staffing,
+        expiry,
+        promotion,
+    ]
     explain_response["facts"] = [
         {
-            "factId": "fact-interruption",
-            "statement": incident["summary"],
-            "evidenceIds": [incident["evidenceId"]],
+            "factId": "fact-inventory-cover",
+            "statement": inventory["summary"],
+            "evidenceIds": [inventory["evidenceId"]],
         },
         {
-            "factId": "fact-update-obligation",
-            "statement": agreement["summary"],
-            "evidenceIds": [agreement["evidenceId"]],
+            "factId": "fact-complaint-cluster",
+            "statement": complaint["summary"],
+            "evidenceIds": [complaint["evidenceId"]],
+        },
+        {
+            "factId": "fact-supplier-response",
+            "statement": supplier["summary"],
+            "evidenceIds": [supplier["evidenceId"]],
+        },
+        {
+            "factId": "fact-staffing-risk",
+            "statement": staffing["summary"],
+            "evidenceIds": [staffing["evidenceId"]],
+        },
+        {
+            "factId": "fact-expiry-risk",
+            "statement": expiry["summary"],
+            "evidenceIds": [expiry["evidenceId"]],
+        },
+        {
+            "factId": "fact-promotion-price",
+            "statement": promotion["summary"],
+            "evidenceIds": [promotion["evidenceId"]],
         },
     ]
     explain_response["inferences"] = [
         {
-            "inferenceId": "inference-update-risk",
-            "statement": "A delayed update is likely to increase status chasing.",
+            "inferenceId": "inference-recovery-plan",
+            "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
-                "fact-interruption",
-                "fact-update-obligation",
+                "fact-inventory-cover",
+                "fact-complaint-cluster",
+                "fact-supplier-response",
+                "fact-staffing-risk",
+                "fact-expiry-risk",
+                "fact-promotion-price",
             ],
-            "confidence": 0.82,
+            "confidence": 0.86,
         }
     ]
 
@@ -513,28 +568,31 @@ def fixtures() -> dict[str, Any]:
         "DRAFT_RELATIONSHIP_RECOMMENDATION"
     )
     recommendation_request["desiredOutcome"] = (
-        "Reduce repeated status chasing without sending an unapproved message."
+        "Avoid a weekend stockout, reduce waste, contain complaint risk, and keep checkout ready without executing unapproved actions."
     )
-    recommendation_request["modelProfile"] = "recommendation_reasoning"
+    recommendation_request["modelProfile"] = "north-star-retail-recommendation"
     recommendation_response = response(
         "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
     )
-    recommendation_response["citations"] = [incident, agreement]
+    recommendation_response["citations"] = explain_response["citations"]
     recommendation_response["facts"] = explain_response["facts"]
     recommendation_response["inferences"] = explain_response["inferences"]
     recommendation_response["recommendation"] = {
         "recommendationType": "PROACTIVE_RELATIONSHIP_UPDATE",
-        "proposedActionType": "SEND_STATUS_UPDATE",
+        "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
         "rationale": (
-            "Prepare a grounded update naming the owner and next update time, "
-            "then route it for human approval."
+            "Use warehouse transfer and supplier replacement for safe availability, quarantine suspect batch units, mark down only safe near-expiry units, fix shelf price, and open one extra cashier lane. Complaints require investigation and supplier response first, not an automatic block on all supplier orders."
         ),
         "confidence": 0.87,
         "evidenceIds": [
-            incident["evidenceId"],
-            agreement["evidenceId"],
+            inventory["evidenceId"],
+            complaint["evidenceId"],
+            supplier["evidenceId"],
+            staffing["evidenceId"],
+            expiry["evidenceId"],
+            promotion["evidenceId"],
         ],
-        "modelProfile": "recommendation_reasoning",
+        "modelProfile": "north-star-retail-recommendation",
         "modelInvocationId": "model-invocation-agentforce-001",
         "requiresHumanApproval": True,
     }
@@ -544,14 +602,12 @@ def fixtures() -> dict[str, Any]:
 
     approval_request = base_request("REQUEST_HUMAN_APPROVAL")
     approval_request["recommendationId"] = "a07000000000001AAA"
-    approval_request["approvalPolicyKey"] = (
-        "external-relationship-communication-v1"
-    )
+    approval_request["approvalPolicyKey"] = "north-star-manager-approval-v1"
     approval_response = response("REQUEST_HUMAN_APPROVAL", "SUCCESS")
     approval_response["approval"] = {
         "approvalId": "a08000000000001AAA",
         "recommendationId": "a07000000000001AAA",
-        "policyKey": "external-relationship-communication-v1",
+        "policyKey": "north-star-manager-approval-v1",
         "status": "PENDING",
         "externalActionExecuted": False,
     }
@@ -574,7 +630,7 @@ def fixtures() -> dict[str, Any]:
     execution_response["audit"] = audit(None, True)
 
     model_request = base_request("DRAFT_RELATIONSHIP_RECOMMENDATION")
-    model_request["modelProfile"] = "recommendation_reasoning"
+    model_request["modelProfile"] = "north-star-retail-recommendation"
     model_response = response(
         "DRAFT_RELATIONSHIP_RECOMMENDATION", "REFUSED"
     )
@@ -593,6 +649,51 @@ def fixtures() -> dict[str, Any]:
             "retryable": False,
         }
     ]
+
+    changed_request = base_request("DRAFT_RELATIONSHIP_RECOMMENDATION")
+    changed_request["desiredOutcome"] = (
+        "Update the plan after supplier response confirms replacement batch availability."
+    )
+    changed_request["modelProfile"] = "north-star-retail-recommendation"
+    changed_response = response("DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS")
+    changed_response["citations"] = explain_response["citations"]
+    changed_response["facts"] = explain_response["facts"]
+    changed_response["inferences"] = [
+        {
+            "inferenceId": "inference-changed-recommendation",
+            "statement": "Supplier response changes the plan from blind reorder to replacement plus warehouse transfer and batch-specific quarantine.",
+            "basisFactIds": [
+                "fact-inventory-cover",
+                "fact-complaint-cluster",
+                "fact-supplier-response",
+                "fact-expiry-risk",
+                "fact-promotion-price",
+            ],
+            "confidence": 0.88,
+        }
+    ]
+    changed_response["recommendation"] = {
+        "recommendationType": "NORTH_STAR_RETAIL_RECOVERY_PLAN_UPDATED",
+        "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
+        "rationale": (
+            "After supplier response, approve replacement batch request and warehouse transfer, quarantine only suspect batch A units, and avoid stopping all Island Proteins orders because evidence is batch-specific rather than supplier-wide."
+        ),
+        "confidence": 0.88,
+        "evidenceIds": [
+            inventory["evidenceId"],
+            complaint["evidenceId"],
+            supplier["evidenceId"],
+            staffing["evidenceId"],
+            expiry["evidenceId"],
+            promotion["evidenceId"],
+        ],
+        "modelProfile": "north-star-retail-recommendation",
+        "modelInvocationId": "model-invocation-agentforce-002",
+        "requiresHumanApproval": True,
+    }
+    changed_response["audit"] = audit(
+        "model-invocation-agentforce-002", True
+    )
 
     return {
         "contractVersion": CONTRACT_VERSION,
@@ -669,6 +770,11 @@ def fixtures() -> dict[str, Any]:
                 "name": "invalid-approval-request-error",
                 "request": invalid_request,
                 "response": invalid_response,
+            },
+            {
+                "name": "changed-recommendation-after-supplier-response",
+                "request": changed_request,
+                "response": changed_response,
             },
         ],
     }

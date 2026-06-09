@@ -37,7 +37,7 @@
         "action": "EXPLAIN_RELATIONSHIP_CASE",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -52,46 +52,110 @@
         "status": "SUCCESS",
         "facts": [
           {
-            "factId": "fact-interruption",
-            "statement": "The operations source reported repeated service interruption.",
+            "factId": "fact-inventory-cover",
+            "statement": "Shelf has 18 units, backroom has 24 units, warehouse has 72 units, supplier has 180 units, and promotion sales velocity is 28 units per hour.",
             "evidenceIds": [
               "a06000000000001AAA"
             ]
           },
           {
-            "factId": "fact-update-obligation",
-            "statement": "The agreement requires an update within two hours.",
+            "factId": "fact-complaint-cluster",
+            "statement": "Five complaints mention smell, damaged packaging, refunds, and price mismatch for the same product, batch, store, and promotion window.",
             "evidenceIds": [
               "a06000000000002AAA"
+            ]
+          },
+          {
+            "factId": "fact-supplier-response",
+            "statement": "Supplier approved replacement batch B with 18-hour lead time and a credit note; quality issue is not supplier-wide.",
+            "evidenceIds": [
+              "a06000000000003AAA"
+            ]
+          },
+          {
+            "factId": "fact-staffing-risk",
+            "statement": "Queue risk is forecast from 16:30 to 18:30 with three baseline cashiers and four recommended cashiers.",
+            "evidenceIds": [
+              "a06000000000004AAA"
+            ]
+          },
+          {
+            "factId": "fact-expiry-risk",
+            "statement": "Batch A expires on 2026-06-08 and has 18 near-expiry units that need rotation, markdown, or quarantine.",
+            "evidenceIds": [
+              "a06000000000005AAA"
+            ]
+          },
+          {
+            "factId": "fact-promotion-price",
+            "statement": "Weekend Grill promotion is active and shelf price is MUR 159 while POS price is MUR 189.",
+            "evidenceIds": [
+              "a06000000000006AAA"
             ]
           }
         ],
         "inferences": [
           {
-            "inferenceId": "inference-update-risk",
-            "statement": "A delayed update is likely to increase status chasing.",
+            "inferenceId": "inference-recovery-plan",
+            "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
-              "fact-interruption",
-              "fact-update-obligation"
+              "fact-inventory-cover",
+              "fact-complaint-cluster",
+              "fact-supplier-response",
+              "fact-staffing-risk",
+              "fact-expiry-risk",
+              "fact-promotion-price"
             ],
-            "confidence": 0.82
+            "confidence": 0.86
           }
         ],
         "citations": [
           {
             "evidenceId": "a06000000000001AAA",
             "sourceEventId": "a09000000000001AAA",
-            "sourceUri": "urn:hfs:source:operations",
-            "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
-            "summary": "The operations source reported repeated service interruption.",
+            "sourceUri": "urn:hfs:source:retail:inventory",
+            "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
+            "summary": "Shelf has 18 units, backroom has 24 units, warehouse has 72 units, supplier has 180 units, and promotion sales velocity is 28 units per hour.",
             "accessible": true
           },
           {
             "evidenceId": "a06000000000002AAA",
             "sourceEventId": "a09000000000001AAA",
-            "sourceUri": "urn:hfs:source:contracts",
-            "contentHash": "sha256:7549cf0c63ad4a64f178d8500c1f3874d97478f6ee323e4debbab6d89b168b69",
-            "summary": "The agreement requires an update within two hours.",
+            "sourceUri": "urn:hfs:source:retail:complaints",
+            "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
+            "summary": "Five complaints mention smell, damaged packaging, refunds, and price mismatch for the same product, batch, store, and promotion window.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000003AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:supplier",
+            "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+            "summary": "Supplier approved replacement batch B with 18-hour lead time and a credit note; quality issue is not supplier-wide.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000004AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:roster",
+            "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
+            "summary": "Queue risk is forecast from 16:30 to 18:30 with three baseline cashiers and four recommended cashiers.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000005AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:expiry",
+            "contentHash": "sha256:9b7c6068af1620f1bc46f5ba418dc983d1d73f2b1f9892718b58a9708a924c4a",
+            "summary": "Batch A expires on 2026-06-08 and has 18 near-expiry units that need rotation, markdown, or quarantine.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000006AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:promotion",
+            "contentHash": "sha256:b832255db1ee6b95f3a5ba91d39da05a0839c32bc7b1cfb7d7c32868a5ead507",
+            "summary": "Weekend Grill promotion is active and shelf price is MUR 159 while POS price is MUR 189.",
             "accessible": true
           }
         ],
@@ -101,8 +165,8 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "relationship-management-agent",
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
@@ -117,12 +181,12 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
-        "desiredOutcome": "Reduce repeated status chasing without sending an unapproved message.",
-        "modelProfile": "recommendation_reasoning"
+        "desiredOutcome": "Avoid a weekend stockout, reduce waste, contain complaint risk, and keep checkout ready without executing unapproved actions.",
+        "modelProfile": "north-star-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -132,59 +196,127 @@
         "status": "SUCCESS",
         "facts": [
           {
-            "factId": "fact-interruption",
-            "statement": "The operations source reported repeated service interruption.",
+            "factId": "fact-inventory-cover",
+            "statement": "Shelf has 18 units, backroom has 24 units, warehouse has 72 units, supplier has 180 units, and promotion sales velocity is 28 units per hour.",
             "evidenceIds": [
               "a06000000000001AAA"
             ]
           },
           {
-            "factId": "fact-update-obligation",
-            "statement": "The agreement requires an update within two hours.",
+            "factId": "fact-complaint-cluster",
+            "statement": "Five complaints mention smell, damaged packaging, refunds, and price mismatch for the same product, batch, store, and promotion window.",
             "evidenceIds": [
               "a06000000000002AAA"
+            ]
+          },
+          {
+            "factId": "fact-supplier-response",
+            "statement": "Supplier approved replacement batch B with 18-hour lead time and a credit note; quality issue is not supplier-wide.",
+            "evidenceIds": [
+              "a06000000000003AAA"
+            ]
+          },
+          {
+            "factId": "fact-staffing-risk",
+            "statement": "Queue risk is forecast from 16:30 to 18:30 with three baseline cashiers and four recommended cashiers.",
+            "evidenceIds": [
+              "a06000000000004AAA"
+            ]
+          },
+          {
+            "factId": "fact-expiry-risk",
+            "statement": "Batch A expires on 2026-06-08 and has 18 near-expiry units that need rotation, markdown, or quarantine.",
+            "evidenceIds": [
+              "a06000000000005AAA"
+            ]
+          },
+          {
+            "factId": "fact-promotion-price",
+            "statement": "Weekend Grill promotion is active and shelf price is MUR 159 while POS price is MUR 189.",
+            "evidenceIds": [
+              "a06000000000006AAA"
             ]
           }
         ],
         "inferences": [
           {
-            "inferenceId": "inference-update-risk",
-            "statement": "A delayed update is likely to increase status chasing.",
+            "inferenceId": "inference-recovery-plan",
+            "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
-              "fact-interruption",
-              "fact-update-obligation"
+              "fact-inventory-cover",
+              "fact-complaint-cluster",
+              "fact-supplier-response",
+              "fact-staffing-risk",
+              "fact-expiry-risk",
+              "fact-promotion-price"
             ],
-            "confidence": 0.82
+            "confidence": 0.86
           }
         ],
         "citations": [
           {
             "evidenceId": "a06000000000001AAA",
             "sourceEventId": "a09000000000001AAA",
-            "sourceUri": "urn:hfs:source:operations",
-            "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
-            "summary": "The operations source reported repeated service interruption.",
+            "sourceUri": "urn:hfs:source:retail:inventory",
+            "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
+            "summary": "Shelf has 18 units, backroom has 24 units, warehouse has 72 units, supplier has 180 units, and promotion sales velocity is 28 units per hour.",
             "accessible": true
           },
           {
             "evidenceId": "a06000000000002AAA",
             "sourceEventId": "a09000000000001AAA",
-            "sourceUri": "urn:hfs:source:contracts",
-            "contentHash": "sha256:7549cf0c63ad4a64f178d8500c1f3874d97478f6ee323e4debbab6d89b168b69",
-            "summary": "The agreement requires an update within two hours.",
+            "sourceUri": "urn:hfs:source:retail:complaints",
+            "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
+            "summary": "Five complaints mention smell, damaged packaging, refunds, and price mismatch for the same product, batch, store, and promotion window.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000003AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:supplier",
+            "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+            "summary": "Supplier approved replacement batch B with 18-hour lead time and a credit note; quality issue is not supplier-wide.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000004AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:roster",
+            "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
+            "summary": "Queue risk is forecast from 16:30 to 18:30 with three baseline cashiers and four recommended cashiers.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000005AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:expiry",
+            "contentHash": "sha256:9b7c6068af1620f1bc46f5ba418dc983d1d73f2b1f9892718b58a9708a924c4a",
+            "summary": "Batch A expires on 2026-06-08 and has 18 near-expiry units that need rotation, markdown, or quarantine.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000006AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:promotion",
+            "contentHash": "sha256:b832255db1ee6b95f3a5ba91d39da05a0839c32bc7b1cfb7d7c32868a5ead507",
+            "summary": "Weekend Grill promotion is active and shelf price is MUR 159 while POS price is MUR 189.",
             "accessible": true
           }
         ],
         "recommendation": {
           "recommendationType": "PROACTIVE_RELATIONSHIP_UPDATE",
-          "proposedActionType": "SEND_STATUS_UPDATE",
-          "rationale": "Prepare a grounded update naming the owner and next update time, then route it for human approval.",
+          "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
+          "rationale": "Use warehouse transfer and supplier replacement for safe availability, quarantine suspect batch units, mark down only safe near-expiry units, fix shelf price, and open one extra cashier lane. Complaints require investigation and supplier response first, not an automatic block on all supplier orders.",
           "confidence": 0.87,
           "evidenceIds": [
             "a06000000000001AAA",
-            "a06000000000002AAA"
+            "a06000000000002AAA",
+            "a06000000000003AAA",
+            "a06000000000004AAA",
+            "a06000000000005AAA",
+            "a06000000000006AAA"
           ],
-          "modelProfile": "recommendation_reasoning",
+          "modelProfile": "north-star-retail-recommendation",
           "modelInvocationId": "model-invocation-agentforce-001",
           "requiresHumanApproval": true
         },
@@ -193,8 +325,8 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "relationship-management-agent",
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-001",
           "humanApprovalRequired": true,
@@ -209,10 +341,10 @@
         "action": "REQUEST_HUMAN_APPROVAL",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": "a07000000000001AAA",
-        "approvalPolicyKey": "external-relationship-communication-v1",
+        "approvalPolicyKey": "north-star-manager-approval-v1",
         "desiredOutcome": null,
         "modelProfile": null
       },
@@ -229,7 +361,7 @@
         "approval": {
           "approvalId": "a08000000000001AAA",
           "recommendationId": "a07000000000001AAA",
-          "policyKey": "external-relationship-communication-v1",
+          "policyKey": "north-star-manager-approval-v1",
           "status": "PENDING",
           "externalActionExecuted": false
         },
@@ -237,8 +369,8 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "relationship-management-agent",
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": true,
@@ -253,7 +385,7 @@
         "action": "EXPLAIN_RELATIONSHIP_CASE",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -280,8 +412,8 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "relationship-management-agent",
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
@@ -296,7 +428,7 @@
         "action": "EXECUTE_EXTERNAL_ACTION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": "a07000000000001AAA",
         "approvalPolicyKey": null,
@@ -323,8 +455,8 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "relationship-management-agent",
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": true,
@@ -339,12 +471,12 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": null,
-        "modelProfile": "recommendation_reasoning"
+        "modelProfile": "north-star-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -366,8 +498,8 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "relationship-management-agent",
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
@@ -382,7 +514,7 @@
         "action": "REQUEST_HUMAN_APPROVAL",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_RETAIL_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -410,11 +542,170 @@
         ],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "relationship-management-agent",
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "changed-recommendation-after-supplier-response",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_RETAIL_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Update the plan after supplier response confirms replacement batch availability.",
+        "modelProfile": "north-star-retail-recommendation"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-inventory-cover",
+            "statement": "Shelf has 18 units, backroom has 24 units, warehouse has 72 units, supplier has 180 units, and promotion sales velocity is 28 units per hour.",
+            "evidenceIds": [
+              "a06000000000001AAA"
+            ]
+          },
+          {
+            "factId": "fact-complaint-cluster",
+            "statement": "Five complaints mention smell, damaged packaging, refunds, and price mismatch for the same product, batch, store, and promotion window.",
+            "evidenceIds": [
+              "a06000000000002AAA"
+            ]
+          },
+          {
+            "factId": "fact-supplier-response",
+            "statement": "Supplier approved replacement batch B with 18-hour lead time and a credit note; quality issue is not supplier-wide.",
+            "evidenceIds": [
+              "a06000000000003AAA"
+            ]
+          },
+          {
+            "factId": "fact-staffing-risk",
+            "statement": "Queue risk is forecast from 16:30 to 18:30 with three baseline cashiers and four recommended cashiers.",
+            "evidenceIds": [
+              "a06000000000004AAA"
+            ]
+          },
+          {
+            "factId": "fact-expiry-risk",
+            "statement": "Batch A expires on 2026-06-08 and has 18 near-expiry units that need rotation, markdown, or quarantine.",
+            "evidenceIds": [
+              "a06000000000005AAA"
+            ]
+          },
+          {
+            "factId": "fact-promotion-price",
+            "statement": "Weekend Grill promotion is active and shelf price is MUR 159 while POS price is MUR 189.",
+            "evidenceIds": [
+              "a06000000000006AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-changed-recommendation",
+            "statement": "Supplier response changes the plan from blind reorder to replacement plus warehouse transfer and batch-specific quarantine.",
+            "basisFactIds": [
+              "fact-inventory-cover",
+              "fact-complaint-cluster",
+              "fact-supplier-response",
+              "fact-expiry-risk",
+              "fact-promotion-price"
+            ],
+            "confidence": 0.88
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000001AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:inventory",
+            "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
+            "summary": "Shelf has 18 units, backroom has 24 units, warehouse has 72 units, supplier has 180 units, and promotion sales velocity is 28 units per hour.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000002AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:complaints",
+            "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
+            "summary": "Five complaints mention smell, damaged packaging, refunds, and price mismatch for the same product, batch, store, and promotion window.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000003AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:supplier",
+            "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+            "summary": "Supplier approved replacement batch B with 18-hour lead time and a credit note; quality issue is not supplier-wide.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000004AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:roster",
+            "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
+            "summary": "Queue risk is forecast from 16:30 to 18:30 with three baseline cashiers and four recommended cashiers.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000005AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:expiry",
+            "contentHash": "sha256:9b7c6068af1620f1bc46f5ba418dc983d1d73f2b1f9892718b58a9708a924c4a",
+            "summary": "Batch A expires on 2026-06-08 and has 18 near-expiry units that need rotation, markdown, or quarantine.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000006AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:promotion",
+            "contentHash": "sha256:b832255db1ee6b95f3a5ba91d39da05a0839c32bc7b1cfb7d7c32868a5ead507",
+            "summary": "Weekend Grill promotion is active and shelf price is MUR 159 while POS price is MUR 189.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_RETAIL_RECOVERY_PLAN_UPDATED",
+          "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
+          "rationale": "After supplier response, approve replacement batch request and warehouse transfer, quarantine only suspect batch A units, and avoid stopping all Island Proteins orders because evidence is batch-specific rather than supplier-wide.",
+          "confidence": 0.88,
+          "evidenceIds": [
+            "a06000000000001AAA",
+            "a06000000000002AAA",
+            "a06000000000003AAA",
+            "a06000000000004AAA",
+            "a06000000000005AAA",
+            "a06000000000006AAA"
+          ],
+          "modelProfile": "north-star-retail-recommendation",
+          "modelInvocationId": "model-invocation-agentforce-002",
+          "requiresHumanApproval": true
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-002",
+          "humanApprovalRequired": true,
           "externalActionExecuted": false
         }
       }
