@@ -27,6 +27,7 @@ From the repository root:
 npm run check:ontology
 npm run check:mappings
 npm run check:temporal
+npm run verify:shared-semantics
 ```
 
 The validator must prove both sides of the contract:
@@ -64,6 +65,9 @@ mapping records claim the same concrete field.
 before a late-arriving claim, current state after the late claim, belief before
 restoration, and current state after restoration. Each result must carry source
 record, source activity, and source agent evidence.
+
+`npm run verify:shared-semantics` runs the ontology, mapping, and temporal gates
+together and emits a JSON evidence summary for the checkpoint.
 
 ## North Star Extension Plan
 

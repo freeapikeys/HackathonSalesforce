@@ -253,6 +253,9 @@ and UI must support any supermarket product category.
       transformation rules, and ambiguity notes.
 - [x] Add deterministic current-state and historical-belief queries over
       versioned assertions.
+- [x] Add a shared semantics verification harness that proves ontology,
+      mappings, temporal queries, source terminology, supersession, and source
+      evidence together.
 
 ### 5. Salesforce Core
 

@@ -173,6 +173,11 @@ This lets the system answer "what is our current best-known state for that date?
 and "what did we believe on that date before later evidence arrived?" without
 deleting late or superseded claims.
 
+`npm run verify:shared-semantics` is the C02 checkpoint harness. It runs the
+ontology, mapping, and temporal validators and emits machine-readable counts for
+source terminology mappings, source assertions, supersession edges, Salesforce
+field mappings, event attribute mappings, and event type patterns.
+
 A separate graph database is not required for the initial vertical slice.
 Introduce one only when measured traversal, inference, or scale requirements
 cannot be satisfied by the platform architecture.
