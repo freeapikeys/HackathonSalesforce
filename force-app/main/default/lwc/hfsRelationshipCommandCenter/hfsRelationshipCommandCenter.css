@@ -119,7 +119,8 @@
 
 .case-metrics div,
 .model-meta div,
-.evidence-card dl div {
+.evidence-card dl div,
+.history-card dl div {
   display: grid;
   gap: 0.15rem;
 }
@@ -314,18 +315,25 @@ dd {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.evidence-card {
+.evidence-card,
+.history-card,
+.correction-card {
   background: #f8fafc;
   border: 1px solid var(--hfs-line);
   border-radius: 0.65rem;
   padding: 0.85rem;
 }
 
-.evidence-card p {
+.evidence-card p,
+.history-card p,
+.source-links p,
+.contradiction-list p,
+.correction-card p {
   color: var(--hfs-muted);
 }
 
-.evidence-card dl {
+.evidence-card dl,
+.history-card dl {
   display: grid;
   gap: 0.5rem;
   grid-template-columns: 1fr 1fr;
@@ -342,14 +350,18 @@ dd {
 .action-list,
 .blockers ul,
 .fact-list,
-.inference-list {
+.inference-list,
+.source-links,
+.contradiction-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .action-list li,
-.blockers li {
+.blockers li,
+.source-links li,
+.contradiction-list li {
   border-bottom: 1px solid var(--hfs-line);
   gap: 0.75rem;
   padding: 0.65rem 0;
@@ -359,6 +371,45 @@ dd {
 .blockers li div {
   display: grid;
   gap: 0.1rem;
+}
+
+.history-grid,
+.correction-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.history-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.source-links,
+.contradiction-list,
+.correction-list {
+  margin-top: 0.75rem;
+}
+
+.source-links li,
+.contradiction-list li {
+  display: grid;
+}
+
+.source-links li span,
+.contradiction-list li span {
+  color: var(--hfs-muted);
+  font-size: 0.78rem;
+}
+
+.contradiction-list li {
+  border-left: 3px solid var(--hfs-accent);
+  padding-left: 0.7rem;
+}
+
+.correction-card {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
 }
 
 .outcome {
@@ -506,6 +557,7 @@ dd {
   .case-metrics,
   .entity-grid,
   .evidence-list,
+  .history-grid,
   .model-meta,
   .outcome {
     grid-template-columns: 1fr;

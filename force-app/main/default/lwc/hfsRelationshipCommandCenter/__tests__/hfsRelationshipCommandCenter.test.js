@@ -88,9 +88,24 @@ const livePayload = {
         recordId: "a03000000000001AAA",
         objectApiName: "HFS_Relationship__c",
         label: "Customer relationship",
+        status: "ACTIVE",
+        summary: "Live source evidence links customer and business.",
         relationshipType: "CUSTOMER_OF",
         subjectEntityId: "a02000000000001AAA",
-        objectEntityId: "a02000000000002AAA"
+        objectEntityId: "a02000000000002AAA",
+        sourceEventId: "a05000000000001AAA",
+        confidence: 0.93
+      }
+    ],
+    eventParticipants: [
+      {
+        recordId: "a09000000000001AAA",
+        objectApiName: "HFS_Event_Participant__c",
+        recordType: "EVENT_PARTICIPANT",
+        participantRole: "SUBJECT",
+        subjectEntityId: "a02000000000001AAA",
+        sourceEventId: "a05000000000001AAA",
+        summary: "Live customer participated in the source status event."
       }
     ],
     agreements: [],
@@ -167,6 +182,11 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("North Star weekend promotion recovery");
     expect(root.textContent).toContain("North Star retail signals");
     expect(root.textContent).toContain("Product, batch, and stock");
+    expect(root.textContent).toContain("Relationship inspection");
+    expect(root.textContent).toContain("Contradictory claims");
+    expect(root.querySelector('[data-testid="correction-button"]').label).toBe(
+      "Request correction review"
+    );
     expect(root.textContent).toContain("Complaint cluster");
     expect(root.textContent).toContain("Supplier response");
     expect(root.textContent).toContain("Source records");
@@ -181,6 +201,7 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
     expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
+    expect(root.querySelectorAll(".history-card")).toHaveLength(2);
   });
 
   it("renders the Nexavenu revenue gift profile without replacing North Star", () => {
@@ -191,6 +212,7 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Nexavenu champion nurture tower");
     expect(root.textContent).toContain("Revenue and buyer-readiness signals");
     expect(root.textContent).toContain("Prospect, champion, and opportunity");
+    expect(root.textContent).toContain("Champion role");
     expect(root.textContent).toContain("Contact-sourced assumptions");
     expect(root.textContent).toContain("Approve champion nurture actions");
     expect(root.textContent).toContain("Revenue approval decision");
@@ -223,6 +245,30 @@ describe("c-hfs-relationship-command-center", () => {
       root.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();
     expect(root.querySelector('[data-testid="approval-controls"]')).toBeNull();
+    expect(
+      root.querySelector('[data-testid="correction-button"]').disabled
+    ).toBe(true);
+  });
+
+  it("emits governed relationship correction intent without mutating data", () => {
+    const element = createComponent();
+    const handler = jest.fn();
+    element.addEventListener("relationshipcorrectionrequest", handler);
+
+    element.shadowRoot
+      .querySelector('[data-testid="correction-button"]')
+      .dispatchEvent(new CustomEvent("click"));
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler.mock.calls[0][0].detail).toEqual({
+      action: expect.objectContaining({
+        id: "correction-batch-scope-001",
+        target: "Batch scope"
+      }),
+      correlationId: "20000000-0000-4000-8000-000000000001",
+      stateVersion: UI_STATE_VERSION
+    });
+    expect(decideApproval).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -299,6 +345,10 @@ describe("c-hfs-relationship-command-center", () => {
     );
     expect(element.shadowRoot.textContent).toContain("Live North Star case");
     expect(element.shadowRoot.textContent).toContain("Live customer");
+    expect(element.shadowRoot.textContent).toContain("93%");
+    expect(element.shadowRoot.textContent).toContain(
+      "Live customer participated in the source status event."
+    );
     expect(element.shadowRoot.textContent).toContain(
       "Send a grounded service update."
     );

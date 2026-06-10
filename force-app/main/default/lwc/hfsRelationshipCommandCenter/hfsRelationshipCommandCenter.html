@@ -223,6 +223,103 @@
               </ul>
             </section>
 
+            <section class="panel" aria-labelledby="history-heading">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">Identity history</p>
+                  <h2 id="history-heading">
+                    Relationship inspection and correction
+                  </h2>
+                </div>
+                <span class="status-pill">Human review</span>
+              </div>
+
+              <template lwc:if={hasRelationshipHistory}>
+                <div class="history-grid" data-testid="relationship-history">
+                  <template
+                    for:each={state.case.relationshipHistory}
+                    for:item="history"
+                  >
+                    <article key={history.id} class="history-card">
+                      <span class="entity-type">{history.type}</span>
+                      <h3>{history.subject} -> {history.object}</h3>
+                      <dl>
+                        <div>
+                          <dt>Status</dt>
+                          <dd>{history.status}</dd>
+                        </div>
+                        <div>
+                          <dt>Confidence</dt>
+                          <dd>{history.confidencePercent}</dd>
+                        </div>
+                        <div>
+                          <dt>Source event</dt>
+                          <dd>{history.sourceEventId}</dd>
+                        </div>
+                        <div>
+                          <dt>Correction state</dt>
+                          <dd>{history.correctionState}</dd>
+                        </div>
+                      </dl>
+                      <p>{history.evidenceSummary}</p>
+                    </article>
+                  </template>
+                </div>
+              </template>
+
+              <template lwc:if={hasIdentityLinks}>
+                <h3>Source participant links</h3>
+                <ul class="source-links">
+                  <template for:each={state.case.identityLinks} for:item="link">
+                    <li key={link.id}>
+                      <strong>{link.entity}</strong>
+                      <span>{link.role} | {link.sourceEventId}</span>
+                      <p>{link.evidenceSummary}</p>
+                    </li>
+                  </template>
+                </ul>
+              </template>
+
+              <template lwc:if={hasRelationshipContradictions}>
+                <h3>Contradictory claims</h3>
+                <ul class="contradiction-list">
+                  <template
+                    for:each={state.case.relationshipContradictions}
+                    for:item="contradiction"
+                  >
+                    <li key={contradiction.id}>
+                      <strong>{contradiction.claim}</strong>
+                      <span>{contradiction.counterclaim}</span>
+                      <p>{contradiction.resolution}</p>
+                    </li>
+                  </template>
+                </ul>
+              </template>
+
+              <template lwc:if={hasCorrectionActions}>
+                <div class="correction-list">
+                  <template
+                    for:each={state.case.correctionActions}
+                    for:item="action"
+                  >
+                    <article key={action.id} class="correction-card">
+                      <div>
+                        <span class="entity-type">{action.target}</span>
+                        <p>{action.reason}</p>
+                      </div>
+                      <lightning-button
+                        data-testid="correction-button"
+                        data-action-id={action.id}
+                        label={action.label}
+                        disabled={disableCorrectionControls}
+                        onclick={handleCorrectionRequest}
+                      ></lightning-button>
+                    </article>
+                  </template>
+                </div>
+              </template>
+            </section>
+
             <section class="panel" aria-labelledby="complaint-heading">
               <div class="panel-heading">
                 <div>

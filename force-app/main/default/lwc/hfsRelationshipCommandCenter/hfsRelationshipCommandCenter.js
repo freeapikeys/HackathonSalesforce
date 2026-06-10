@@ -148,6 +148,26 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
     return Boolean(this.state.case?.recommendation?.assumptions?.length);
   }
 
+  get hasRelationshipHistory() {
+    return Boolean(this.state.case?.relationshipHistory?.length);
+  }
+
+  get hasIdentityLinks() {
+    return Boolean(this.state.case?.identityLinks?.length);
+  }
+
+  get hasRelationshipContradictions() {
+    return Boolean(this.state.case?.relationshipContradictions?.length);
+  }
+
+  get hasCorrectionActions() {
+    return Boolean(this.state.case?.correctionActions?.length);
+  }
+
+  get disableCorrectionControls() {
+    return !this.state.permissions.canRequestCorrection;
+  }
+
   withProfile(state) {
     return {
       ...state,
@@ -179,6 +199,22 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
     if (!this.mockMode) {
       this.loadState();
     }
+  }
+
+  handleCorrectionRequest(event) {
+    const actionId = event.currentTarget.dataset.actionId;
+    const action = (this.state.case.correctionActions || []).find(
+      (candidate) => candidate.id === actionId
+    );
+    this.dispatchEvent(
+      new CustomEvent("relationshipcorrectionrequest", {
+        detail: {
+          action,
+          correlationId: this.state.correlationId,
+          stateVersion: this.state.stateVersion
+        }
+      })
+    );
   }
 
   dispatchDecision(decision) {

@@ -225,6 +225,70 @@ const caseState = {
     type: "STOCKS_PRODUCT",
     status: "Active"
   },
+  relationshipHistory: [
+    {
+      id: "history-store-product-001",
+      type: "STOCKS_PRODUCT",
+      subject: "Goodlands FreshMart",
+      object: "Island beef burger patties 400g",
+      status: "Active",
+      confidencePercent: "98%",
+      sourceEventId: "event-stockout-risk-detected",
+      evidenceSummary:
+        "Inventory and promotion evidence link the store, product, and weekend demand spike.",
+      correctionState: "Current"
+    },
+    {
+      id: "history-supplier-batch-001",
+      type: "SUPPLIES_BATCH",
+      subject: "Island Proteins Ltd",
+      object: "BATCH-FRESH-BEEF-2026-06-07-A",
+      status: "Under review",
+      confidencePercent: "92%",
+      sourceEventId: "event-supplier-response-received",
+      evidenceSummary:
+        "Supplier response narrows the issue to a replacement and batch review, not a full supplier stop.",
+      correctionState: "Reviewable"
+    }
+  ],
+  identityLinks: [
+    {
+      id: "participant-store-001",
+      role: "STORE",
+      entity: "Goodlands FreshMart",
+      sourceEventId: "event-stockout-risk-detected",
+      evidenceSummary: "Store participated in the demand and stockout signal."
+    },
+    {
+      id: "participant-supplier-001",
+      role: "SUPPLIER",
+      entity: "Island Proteins Ltd",
+      sourceEventId: "event-supplier-response-received",
+      evidenceSummary:
+        "Supplier participated in the response that changed the recommendation."
+    }
+  ],
+  relationshipContradictions: [
+    {
+      id: "contradiction-batch-scope-001",
+      claim:
+        "Complaint cluster supports quarantining suspect Batch A units before the rush.",
+      counterclaim:
+        "Supplier response supports replacement and continued supplier relationship.",
+      resolution:
+        "Quarantine suspect batch units only; keep supplier ordering decisions evidence-scoped."
+    }
+  ],
+  correctionActions: [
+    {
+      id: "correction-batch-scope-001",
+      label: "Request correction review",
+      target: "Batch scope",
+      reason:
+        "Ask a manager to supersede the batch-risk claim only if inspection evidence changes.",
+      sourceEventId: "event-supplier-response-received"
+    }
+  ],
   connectedEntities: [
     {
       id: "STORE-GOODLANDS-FRESHMART",
@@ -536,6 +600,69 @@ const nexavenuCaseState = {
     type: "NURTURES_PROSPECT",
     status: "Active"
   },
+  relationshipHistory: [
+    {
+      id: "history-nexavenu-prospect-001",
+      type: "NURTURES_PROSPECT",
+      subject: "Nexavenu",
+      object: "Synthetic LiftOps Manufacturing",
+      status: "Active",
+      confidencePercent: "83%",
+      sourceEventId: "event-nexavenu-lead-source-captured",
+      evidenceSummary:
+        "Lead source and ICP evidence make the account promising but not yet discovery-ready.",
+      correctionState: "Current"
+    },
+    {
+      id: "history-nexavenu-champion-001",
+      type: "INFLUENCES_DEAL",
+      subject: "Operations manager",
+      object: "Synthetic LiftOps Manufacturing",
+      status: "Emerging champion",
+      confidencePercent: "76%",
+      sourceEventId: "event-nexavenu-buying-committee-mapped",
+      evidenceSummary:
+        "Champion map identifies influence but still lacks CFO, CIO, sponsor, and data-owner confirmation.",
+      correctionState: "Needs human confirmation"
+    }
+  ],
+  identityLinks: [
+    {
+      id: "participant-nexavenu-account-001",
+      role: "ACCOUNT",
+      entity: "Synthetic LiftOps Manufacturing",
+      sourceEventId: "event-nexavenu-lead-source-captured",
+      evidenceSummary: "Prospect account participated in the attribution event."
+    },
+    {
+      id: "participant-nexavenu-champion-001",
+      role: "CHAMPION",
+      entity: "Operations manager",
+      sourceEventId: "event-nexavenu-buying-committee-mapped",
+      evidenceSummary:
+        "Champion role is inferred from buying-committee mapping and should be confirmed."
+    }
+  ],
+  relationshipContradictions: [
+    {
+      id: "contradiction-readiness-handoff-001",
+      claim: "ICP score indicates the account is worth working.",
+      counterclaim:
+        "Discovery readiness is 48/100, so senior solution-consultant handoff should wait.",
+      resolution:
+        "Keep the prospect in nurture, equip the champion, and only supersede HOLD after readiness evidence improves."
+    }
+  ],
+  correctionActions: [
+    {
+      id: "correction-champion-role-001",
+      label: "Request correction review",
+      target: "Champion role",
+      reason:
+        "Ask revenue owner to confirm, correct, or supersede the inferred champion before outreach.",
+      sourceEventId: "event-nexavenu-buying-committee-mapped"
+    }
+  ],
   connectedEntities: [
     {
       id: "ORG-NEXAVENU",
@@ -785,7 +912,8 @@ const readyState = {
     canApprove: true,
     canModify: true,
     canReject: true,
-    canExecute: false
+    canExecute: false,
+    canRequestCorrection: true
   },
   case: caseState
 };
@@ -800,7 +928,8 @@ export const UI_STATES = {
       canApprove: false,
       canModify: false,
       canReject: false,
-      canExecute: false
+      canExecute: false,
+      canRequestCorrection: false
     }
   },
   loading: {

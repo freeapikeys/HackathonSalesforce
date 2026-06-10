@@ -28,6 +28,16 @@ governed API:
 - `READ_PROVENANCE` accepts `HFS_Event_Participant__c` roots and traces those
   participant links back to their immutable source event.
 
-This is not yet the full C03 product surface. The next C03 slice should add UI
-inspection and correction affordances so humans can review and amend
-relationship history without losing source evidence.
+The command center now adds a human-facing inspection surface:
+
+- relationship-history cards show subject, object, assertion type, status,
+  confidence, source event, and correction state;
+- source participant links show which entity was attached to which source
+  event and under which role;
+- contradictory claims stay visible with the proposed resolution instead of
+  being overwritten;
+- correction controls emit a governed review intent and do not mutate records or
+  execute external actions directly.
+
+This is not yet the full C03 product surface. The next C03 slice should persist
+correction-review work items and supersession decisions after human approval.

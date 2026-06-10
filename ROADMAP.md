@@ -270,7 +270,9 @@ and UI must support any supermarket product category.
 - [x] Prove a traversable person-to-organization-to-supplier path.
 - [x] Expose event participant identity links in Salesforce context and
       provenance responses.
-- [ ] Add user-facing relationship inspection and correction affordances.
+- [x] Add user-facing relationship inspection and correction affordances.
+- [ ] Persist correction-review work items and supersession decisions after
+      human approval.
 
 ### 6. Salesforce Core
 

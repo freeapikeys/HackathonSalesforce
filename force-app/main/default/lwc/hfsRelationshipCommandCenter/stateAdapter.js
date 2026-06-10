@@ -42,6 +42,12 @@ function entityLabel(entityById, entityId, fallback) {
   return entityById.get(entityId)?.label || fallback;
 }
 
+function confidencePercent(confidence) {
+  return confidence === null || confidence === undefined
+    ? "Not scored"
+    : `${Math.round(Number(confidence) * 100)}%`;
+}
+
 function timelineItem(item, index) {
   return {
     id: item.recordId || `timeline-${index}`,
@@ -50,6 +56,99 @@ function timelineItem(item, index) {
     title: item.label || humanize(item.recordType),
     detail: item.summary || item.status || "No additional detail recorded.",
     source: item.sourceUri || "Salesforce retail context"
+  };
+}
+
+function relationshipHistoryItem(entityById, relationship, index) {
+  return {
+    id: relationship.recordId || `relationship-history-${index}`,
+    type: relationship.relationshipType || humanize(relationship.recordType),
+    subject: entityLabel(
+      entityById,
+      relationship.subjectEntityId,
+      "Accessible subject"
+    ),
+    object: entityLabel(
+      entityById,
+      relationship.objectEntityId,
+      "Accessible object"
+    ),
+    status: humanize(relationship.status, "Current"),
+    confidencePercent: confidencePercent(relationship.confidence),
+    sourceEventId: relationship.sourceEventId || "Source event not recorded",
+    evidenceSummary:
+      relationship.summary ||
+      "Relationship assertion preserved from accessible Salesforce context.",
+    correctionState: "Reviewable"
+  };
+}
+
+function participantLinkItem(entityById, participant, index) {
+  return {
+    id: participant.recordId || `participant-link-${index}`,
+    role: participant.participantRole || humanize(participant.recordType),
+    entity: entityLabel(
+      entityById,
+      participant.subjectEntityId,
+      "Accessible participant"
+    ),
+    sourceEventId: participant.sourceEventId || "Source event not recorded",
+    evidenceSummary:
+      participant.summary ||
+      "Source event participant link preserved for identity history."
+  };
+}
+
+function agreementContradictions(agreements, entityById) {
+  const byRelationship = new Map();
+  for (const agreement of agreements) {
+    const key = [
+      agreement.relationshipType || agreement.recordType,
+      agreement.subjectEntityId,
+      agreement.objectEntityId
+    ].join("|");
+    if (!byRelationship.has(key)) {
+      byRelationship.set(key, []);
+    }
+    byRelationship.get(key).push(agreement);
+  }
+
+  const contradictions = [];
+  for (const claims of byRelationship.values()) {
+    const statuses = new Set(
+      claims.map((claim) => claim.status).filter(Boolean)
+    );
+    if (statuses.size < 2) {
+      continue;
+    }
+    const firstClaim = claims[0];
+    contradictions.push({
+      id: `contradiction-${firstClaim.recordId}`,
+      claim: `${entityLabel(
+        entityById,
+        firstClaim.subjectEntityId,
+        "Accessible party"
+      )} and ${entityLabel(
+        entityById,
+        firstClaim.objectEntityId,
+        "accessible party"
+      )} have competing ${humanize(firstClaim.recordType)} statuses.`,
+      counterclaim: Array.from(statuses).map(humanize).join(" vs "),
+      resolution:
+        "Keep both claims visible until a human supersedes one with source evidence."
+    });
+  }
+  return contradictions;
+}
+
+function correctionActionForRelationship(relationship, index) {
+  return {
+    id: relationship.recordId || `relationship-correction-${index}`,
+    label: "Request correction review",
+    target: relationship.relationshipType || humanize(relationship.recordType),
+    reason:
+      "Open a governed review instead of overwriting relationship history silently.",
+    sourceEventId: relationship.sourceEventId
   };
 }
 
@@ -87,6 +186,9 @@ export function mapCommandCenterPayload(payload, purpose) {
     entities.map((entity) => [entity.recordId, entity])
   );
   const relationship = first(context.relationships) || {};
+  const relationships = context.relationships || [];
+  const eventParticipants = context.eventParticipants || [];
+  const agreements = context.agreements || [];
   const sop = first(context.sopExecutions) || {};
   const recommendation = first(context.recommendations) || {};
   const approval = first(context.approvals) || {};
@@ -109,7 +211,8 @@ export function mapCommandCenterPayload(payload, purpose) {
       canApprove: Boolean(rawPermissions.canApprove && approvalIsPending),
       canModify: Boolean(rawPermissions.canModify && approvalIsPending),
       canReject: Boolean(rawPermissions.canReject && approvalIsPending),
-      canExecute: Boolean(rawPermissions.canExecute)
+      canExecute: Boolean(rawPermissions.canExecute),
+      canRequestCorrection: Boolean(rawPermissions.canModify)
     },
     case: {
       id: workItem.recordId,
@@ -197,6 +300,19 @@ export function mapCommandCenterPayload(payload, purpose) {
         type: relationship.relationshipType || "RELATED_TO",
         status: humanize(relationship.status, "Current")
       },
+      relationshipHistory: relationships.map((item, index) =>
+        relationshipHistoryItem(entityById, item, index)
+      ),
+      identityLinks: eventParticipants.map((item, index) =>
+        participantLinkItem(entityById, item, index)
+      ),
+      relationshipContradictions: agreementContradictions(
+        agreements,
+        entityById
+      ),
+      correctionActions: relationships.map((item, index) =>
+        correctionActionForRelationship(item, index)
+      ),
       connectedEntities: entities.map((entity) => ({
         id: entity.recordId,
         label: entity.label,
