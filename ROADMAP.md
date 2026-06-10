@@ -38,6 +38,53 @@ North Star must answer:
 - Which actions need manager approval?
 - What action was executed, through which mock channel, and what happened next?
 
+## Jury Gift Verticals
+
+The jury gifts are tailored demo verticals that reuse the same closed-loop
+evidence/action spine. They should feel specific to the company, but they must
+not become five separate products.
+
+Research source:
+[docs/research/jury-gift-dossiers-2026-06-10.md](docs/research/jury-gift-dossiers-2026-06-10.md).
+
+### Flagship Gifts
+
+- [ ] Air Mauritius Passenger Recovery Command Center: claims, disruption,
+      baggage, compensation triage, approval, passenger updates, and outcome
+      feedback.
+- [ ] Constance Guest Revenue and Operations Loop: reservations email
+      extraction, FX-to-ERP, sentiment-to-occupancy, approved hospitality
+      actions, and outcome feedback.
+- [ ] Nexavenu Revenue Intelligence and Champion Nurture Tower: attribution,
+      lead qualification, buyer education, champion mapping, discovery
+      readiness, close plan, retention/ascension signals, and content gaps.
+
+### Tailored Overlays
+
+- [ ] AfrAsia Relationship Intelligence Control Tower: private banking, KYC/AML
+      guardrails, cross-border RM, FX/wealth signals, approval, and outcome
+      feedback.
+- [ ] Sunlife Guest Recovery and Experience Intelligence Loop: WhatsApp-style
+      guest recovery, staff task coordination, sustainability evidence, service
+      quality, and repeat-stay risk.
+
+### Nexavenu Business-System Notes
+
+- [x] Contact-sourced signals captured privately: 10% close rate, 6-month
+      discovery, big client churn, and dissatisfaction despite previous loyalty.
+- [x] Public OSINT confluence captured: BDR hiring, qualification/nurture
+      responsibilities, C-level engagement, marketing handoffs, CRM pipeline
+      reporting, AI/Data 360 readiness positioning, MuleSoft modernization, and
+      long-run customer success language.
+- [ ] Build synthetic Nexavenu revenue pipeline fixtures without presenting
+      contact-sourced metrics as public fact.
+- [ ] Show the full business pipeline:
+      `lead generation -> lead nurture -> sales -> fulfillment -> retention/ascension`.
+- [ ] Show the buyer journey:
+      `problem -> awareness -> struggle -> education -> search -> comparison -> test -> purchase -> first impressions`.
+- [ ] Recommendation separates public facts, contact-sourced assumptions,
+      inferences, next actions, approval requirements, and expected outcomes.
+
 ## Supermarket Issues We Solve
 
 These are the issues from the multi-agent brief that North Star must cover.

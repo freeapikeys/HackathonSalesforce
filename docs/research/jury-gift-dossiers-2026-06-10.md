@@ -17,6 +17,8 @@ Evidence grades:
   facts.
 - **Weak signal**: public review, social chatter, third-party article, or
   incomplete source that should not be presented as fact.
+- **Contact-sourced signal**: direct conversation or private participant notes.
+  Useful for product direction, but do not present as public proof.
 - **Unknown**: needs direct confirmation from the company, organizer, or jury.
 
 Product boundary:
@@ -61,7 +63,7 @@ The gifts should feel different per juror, but share one platform spine.
 | Air Mauritius | Passenger Recovery Command Center               | Salesforce airline claims console          | "You can turn disruption chaos into governed recovery."       |
 | Constance     | Guest Revenue and Operations Loop               | Salesforce hospitality console + sidecar   | "Your bookings, FX, reviews, and occupancy become one brief." |
 | AfrAsia       | Relationship Intelligence Control Tower         | Secure banker relationship cockpit         | "AI strengthens the relationship banker safely."              |
-| Nexavenu      | Client AI Readiness and Action Command Center   | Salesforce delivery/discovery cockpit      | "You can reuse this to sell Agentforce transformation."       |
+| Nexavenu      | Revenue Intelligence and Champion Nurture Tower | Salesforce revenue/discovery cockpit       | "Your pipeline stops leaking before delivery starts."         |
 | Sunlife       | Guest Recovery and Experience Intelligence Loop | Hospitality command center + WhatsApp mock | "Premium guest experience scales without losing control."     |
 
 ## Air Mauritius
@@ -402,70 +404,185 @@ and digital transformation partner with Australia and Mauritius presence. Public
 positioning emphasizes Agentforce, Data 360, MuleSoft integration/API strategy,
 Field Service, Service Cloud, AI readiness, and operational productivity.
 
+### Contact-Sourced Operating Signals
+
+Private participant notes from a conversation with someone familiar with
+Nexavenu's current situation:
+
+- close rate around 10%;
+- discovery can stretch to roughly 6 months;
+- big client churn;
+- dissatisfaction despite previous loyalty;
+- likely unqualified or under-educated lead flow;
+- need to work/nurture leads more before sales;
+- possible gap in sales SOP, champion development, decision-maker targeting,
+  B2B buyer education, and retention/ascension motion.
+
+These are not public facts. Treat them as high-value diagnostic clues that must
+be framed privately and gently.
+
 ### Top Pains / Opportunities
 
-1. **AI readiness is a board-level customer concern**
+1. **Revenue pipeline quality is likely the sharper pain**
+   - Contact-sourced signal: low close rate, long discovery cycle, churn, and
+     dissatisfied loyal clients.
+   - Confirmed confluence: Nexavenu is hiring a Middle East BDR role whose
+     responsibilities explicitly include identifying, qualifying, nurturing
+     leads, high-volume outbound, C-level engagement, meeting/demo setting,
+     marketing handoffs, Salesforce CRM records, and pipeline reporting.
+   - Likely inference: the business does not only need more leads. It needs a
+     closed-loop GTM system that educates leads, qualifies fit, maps buying
+     committees, builds internal champions, and tracks why deals stall or churn.
+
+2. **AI readiness is a board-level customer concern**
    - Confirmed: Nexavenu sells Data 360, Agentforce, AI readiness, AI rollout,
      governance, and Salesforce implementation services.
-   - Likely inference: a reusable client AI-readiness cockpit is useful as a
-     sales and delivery accelerator.
+   - Confirmed: Nexavenu's Data 360 page says weak data governance leads to
+     unreliable data, missed opportunities, and resource waste.
+   - Likely inference: "AI readiness" is also a buyer-education problem.
+     Prospects may not know what data, governance, budget, stakeholders, or
+     rollout sequence they need before discovery.
 
-2. **Integration sprawl is central to their value proposition**
+3. **Integration sprawl is central to their value proposition**
    - Confirmed: Nexavenu event and service pages discuss modernization for AI,
      API-led architecture, point-to-point integration reduction, microservices,
      RPA, IDP, and AI agents.
-   - Likely inference: they will reward a demo where MuleSoft is visibly the
-     action/integration layer.
+   - Likely inference: uneducated prospects may enter discovery asking for
+     "AI" while actually needing integration inventory, data readiness, process
+     cleanup, and operating-model decisions.
 
-3. **Field service and physical operations are a sweet spot**
+4. **Field service and physical operations are a sweet spot**
    - Confirmed: Nexavenu public materials reference Field Service, ServiceMax,
      Asset360, integrations, energy/utilities, manufacturing, transport,
      logistics, and operational industries.
    - Likely inference: EV charging / field-service / asset-lifecycle demos fit
      better than generic CRM or retail.
 
-4. **Clients need end-to-end operational visibility**
+5. **Clients need end-to-end operational visibility**
    - Confirmed: Nexavenu customer material references tracking an EV charging
      site from inception through ongoing management and maintenance.
    - Likely inference: a closed-loop asset/service intelligence demo can become
      a client-facing sales asset for Nexavenu.
 
-5. **Scaling delivery across regions and talent**
+6. **Scaling delivery across regions and talent**
    - Confirmed: Nexavenu careers and office pages show multi-region presence and
      hiring in Salesforce/MuleSoft roles.
-   - Likely inference: standardized discovery, qualification, demo, and
-     proposal artifacts are valuable.
+   - Confirmed: the BDR role offers commission on sourced project revenue and
+     ongoing accounts, suggesting growth depends on repeatable sourcing and
+     account development.
+   - Likely inference: delivery quality can be strong while sales motion remains
+     under-systematized.
+
+### Business-System Diagnosis
+
+The signal is not "Nexavenu needs a chatbot." The signal is a full pipeline
+problem:
+
+```mermaid
+flowchart LR
+    ATTR["Attribution and signal capture"]
+    LG["Lead generation"]
+    LN["Lead nurture and buyer education"]
+    SALES["Sales and discovery"]
+    FULFILL["Fulfillment and delivery"]
+    RETAIN["Retention and ascension"]
+    OUTCOME["Churn, loyalty, referral, expansion"]
+
+    ATTR --> LG --> LN --> SALES --> FULFILL --> RETAIN --> OUTCOME
+    OUTCOME -->|"feedback"| ATTR
+```
+
+Buyer journey to support:
+
+```mermaid
+flowchart LR
+    PROBLEM["Problem"]
+    AWARE["Awareness"]
+    STRUGGLE["Struggle"]
+    EDU["Education"]
+    SEARCH["Search for solutions"]
+    COMPARE["Comparison"]
+    TEST["Test"]
+    BUY["Purchase"]
+    FIRST["First impressions"]
+
+    PROBLEM --> AWARE --> STRUGGLE --> EDU --> SEARCH --> COMPARE --> TEST --> BUY --> FIRST
+```
+
+Likely root causes to validate:
+
+- Leads arrive before they understand Salesforce, Agentforce, Data 360,
+  MuleSoft, implementation cost, change management, or readiness prerequisites.
+- Discovery stretches because the prospect's problem, buying committee,
+  authority, budget, urgency, data readiness, and success criteria are not
+  resolved before senior delivery time enters the conversation.
+- Close rate suffers because qualification, content, champion enablement, and
+  decision-maker mapping are inconsistent.
+- Churn can happen even after good delivery if expectations, first impressions,
+  adoption, executive alignment, and retention/ascension playbooks are weak.
+- Strong delivery reputation can coexist with weak revenue operations.
 
 ### Gift Concept
 
-**Client AI Readiness and Action Command Center**
+**Revenue Intelligence and Champion Nurture Tower**
 
-Gift angle: give Nexavenu a demo they can reuse in client discovery. A
-consultant loads messy client signals: CRM cases, field-service work orders,
-asset/site records, emails/docs, integration inventory, customer complaints, SLA
-breaches, and operational KPIs. Agentforce classifies facts, claims, and
-inferences; detects the top bottleneck; recommends an AI/MuleSoft/Salesforce
-modernization path; drafts a client-facing action plan; and routes protected
-actions for approval.
+Gift angle: give Nexavenu the system it needs to turn unqualified interest into
+educated, champion-backed, decision-ready pipeline, then retain and expand the
+clients it wins.
 
-Best story vertical: EV charging / field service / asset maintenance, inspired
-by Nexavenu's JOLT-type customer story and public industry positioning.
+Scenario: a manufacturing/field-service prospect enters through an Agentforce or
+MuleSoft campaign after vaguely asking for "AI." The system collects first-party
+signals from the web form, event attendance, LinkedIn/outbound sequence,
+Salesforce CRM, discovery notes, emails, content engagement, industry page, and
+current-system questionnaire.
+
+Agentforce produces:
+
+- ICP fit and disqualification reasons;
+- buyer education gaps;
+- likely buying committee and missing stakeholders;
+- champion map and relationship plan;
+- recommended next content assets;
+- discovery agenda and qualification questions;
+- close plan with risks, blockers, and approvals;
+- handoff to solution consultant only after readiness gates pass;
+- post-sale first-impressions and retention risk monitoring.
+
+This still gives Nexavenu a reusable client AI-readiness demo, but the real gift
+is the business system around the demo: qualified pipeline, shorter discovery,
+better champion creation, better buyer education, and retention feedback.
 
 ### Best Surface
 
-Primary: Salesforce Lightning AI Readiness Command Center.
+Primary: Salesforce Lightning revenue/discovery cockpit.
 
 Panels:
 
-- evidence timeline;
-- client/site/asset relationship graph;
-- Agentforce facts/inferences/actions panel;
-- MuleSoft integration map;
-- approval cockpit;
-- outcome loop.
+- pipeline stage and buyer-journey stage;
+- lead source, attribution, content engagement, and campaign touchpoints;
+- ICP score with explicit formula and disqualification reasons;
+- stakeholder/champion map by role, influence, pain, objection, and next touch;
+- buyer education gaps and recommended content;
+- discovery readiness checklist;
+- close plan and next-best actions;
+- handoff gate from BDR to solution consultant;
+- retention/ascension signals after delivery.
+
+Secondary surfaces:
+
+- AI-assisted BDR workspace for follow-up, objection handling, and nurture
+  cadence;
+- content-gap board for founder/marketing posts and case-study assets;
+- partner/co-sell view showing Salesforce-sourced opportunities and handoffs.
 
 ### Claims To Avoid
 
+- Do not present contact-sourced metrics as public facts.
+- Do not say Nexavenu has poor delivery; public testimonials suggest strong
+  delivery and long-term partnership.
+- Do not say "they do not know B2B sales" in external material. Internally, the
+  diagnosis can be "sales motion and revenue operations appear
+  under-systematized."
 - Do not claim Nexavenu itself has internal data fragmentation unless confirmed.
 - Do not claim a specific person is on the jury unless event material confirms
   it.
@@ -491,6 +608,18 @@ Panels:
   <https://nexavenu.com/careers>
 - Nexavenu BDR role:
   <https://nexavenu.com/bdr-middle-east>
+- Nexavenu MuleSoft/Salesforce Consultant Mauritius role:
+  <https://nexavenu.com/mulesoft-salesforce-consultant-mauritius>
+- Aircall partner directory weak signal:
+  <https://aircall.io/partner-services/>
+- Salesforce AI sales agent reference:
+  <https://www.salesforce.com/ap/sales/ai-sales-agent/>
+- Gartner B2B buying journey:
+  <https://www.gartner.com/en/sales/insights/b2b-buying-journey>
+- Forrester self-service B2B buying:
+  <https://www.forrester.com/blogs/self-service-buying-is-a-wake-up-call-for-b2b-sales/>
+- Forrester preference/front-runner B2B buying signal:
+  <https://www.forrester.com/blogs/building-preference-is-the-key-to-winning-b2b-buyers/>
 - Agentforce hackathon criteria:
   <https://agentforcehackathon.devpost.com/>
 
@@ -583,15 +712,18 @@ Use three layers for the demo strategy:
 
 1. **Universal platform demo**: evidence, Agentforce reasoning, approval, action,
    outcome.
-2. **Two flagship gifts**:
+2. **Three flagship gifts**:
    - Air Mauritius Passenger Recovery Command Center because the provided DOCX
      maps directly to MuleSoft + AI + claims and is highly demoable.
    - Constance Guest Revenue and Operations Loop because the screenshot gives
      explicit requested workflows and the demo has three obvious wow moments.
-3. **Three tailored overlays**:
+   - Nexavenu Revenue Intelligence and Champion Nurture Tower because the
+     contact-sourced business signals and public BDR/job/content signals
+     converge on pipeline quality, buyer education, discovery compression,
+     champion creation, and retention.
+3. **Two tailored overlays**:
    - AfrAsia secure banker cockpit for regulated RM.
    - Sunlife guest recovery loop for WhatsApp/staff/service execution.
-   - Nexavenu AI readiness command center as a reusable partner sales asset.
 
 The product should not become five unrelated demos. Build the same evidence and
 action spine once, then swap scenario fixtures, labels, agent prompts, and mock
