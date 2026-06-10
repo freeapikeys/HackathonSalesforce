@@ -368,8 +368,8 @@ file before editing.
 - [x] `npm run demo:run` completes trigger through outcome.
 - [x] Clean-clone runbook reflects the hospital/global flow.
 - [x] Demo starts from one clear hospital operations surge event.
-- [ ] Demo shows conflicting recommendations before orchestration.
-- [ ] Demo shows partner or capacity response changing the recommendation.
+- [x] Demo shows conflicting recommendations before orchestration.
+- [x] Demo shows partner or capacity response changing the recommendation.
 - [x] Demo shows manager approval before action execution.
 - [x] Demo shows Slack and WhatsApp-style internal alerts.
 - [x] Demo shows clinical-decision refusal.

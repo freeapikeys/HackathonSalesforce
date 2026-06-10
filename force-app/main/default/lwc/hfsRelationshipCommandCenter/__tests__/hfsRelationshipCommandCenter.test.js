@@ -166,6 +166,11 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Resource, partner, and capacity");
     expect(root.textContent).toContain("Complaint cluster");
     expect(root.textContent).toContain("Partner response");
+    expect(root.textContent).toContain("Conflicts before orchestration");
+    expect(root.textContent).toContain(
+      "Partner and capacity response changed the plan"
+    );
+    expect(root.textContent).toContain("Second courier route");
     expect(root.textContent).toContain("Source records");
     expect(root.textContent).toContain("Accessible source evidence");
     expect(root.textContent).toContain(

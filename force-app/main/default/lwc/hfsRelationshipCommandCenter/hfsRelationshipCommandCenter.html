@@ -279,6 +279,61 @@
               </dl>
             </section>
 
+            <template lwc:if={state.case.orchestrationConflicts}>
+              <section class="panel" aria-labelledby="conflicts-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">Orchestration</p>
+                    <h2 id="conflicts-heading">
+                      Conflicts before orchestration
+                    </h2>
+                  </div>
+                </div>
+                <ul class="action-list">
+                  <template
+                    for:each={state.case.orchestrationConflicts}
+                    for:item="conflict"
+                  >
+                    <li key={conflict.id}>
+                      <div>
+                        <strong>{conflict.agent}</strong>
+                        <span>{conflict.conflict}</span>
+                        <span>{conflict.resolution}</span>
+                      </div>
+                    </li>
+                  </template>
+                </ul>
+              </section>
+            </template>
+
+            <template lwc:if={state.case.recommendationUpdates}>
+              <section class="panel" aria-labelledby="updates-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">Recommendation update</p>
+                    <h2 id="updates-heading">
+                      Partner and capacity response changed the plan
+                    </h2>
+                  </div>
+                </div>
+                <ul class="action-list">
+                  <template
+                    for:each={state.case.recommendationUpdates}
+                    for:item="update"
+                  >
+                    <li key={update.id}>
+                      <div>
+                        <strong>{update.trigger}</strong>
+                        <span>{update.before}</span>
+                        <span>{update.after}</span>
+                        <span>Evidence: {update.evidence}</span>
+                      </div>
+                    </li>
+                  </template>
+                </ul>
+              </section>
+            </template>
+
             <section class="panel" aria-labelledby="timeline-heading">
               <div class="panel-heading">
                 <div>

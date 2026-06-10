@@ -57,6 +57,52 @@ const caseState = {
     creditNote: "Not applicable",
     qualityIssue: "Operational SLA delay, not clinical interpretation"
   },
+  orchestrationConflicts: [
+    {
+      id: "conflict-patient-capacity",
+      agent: "Patient Trust vs Resource and Capacity",
+      conflict:
+        "Patient Trust wants immediate service recovery, but Resource and Capacity shows rooms are still blocked.",
+      resolution:
+        "Approve internal updates now, then release rooms only after cleaning and porter tasks are acknowledged."
+    },
+    {
+      id: "conflict-pharmacy-billing",
+      agent: "Resource and Capacity vs Financial Impact",
+      conflict:
+        "Pharmacy stock needs restock or transfer while billing approvals are stuck for affected cases.",
+      resolution:
+        "Route pharmacy and billing actions through one manager approval instead of creating disconnected work."
+    },
+    {
+      id: "conflict-clinical-boundary",
+      agent: "Risk and Approval",
+      conflict:
+        "The fastest-sounding question asks who should receive treatment first.",
+      resolution:
+        "Refuse clinical priority decisions and keep North Star on operations coordination only."
+    }
+  ],
+  recommendationUpdates: [
+    {
+      id: "update-lab-response",
+      trigger: "Partner response changed the plan",
+      before:
+        "Before partner evidence, North Star keeps lab escalation pending and names missing response evidence.",
+      after:
+        "After Island Diagnostics confirms the delay and second courier route, North Star narrows the action to approved SLA escalation plus alternate courier request.",
+      evidence: "evidence-partner-hospital-001"
+    },
+    {
+      id: "update-capacity-evidence",
+      trigger: "Capacity evidence qualified the plan",
+      before:
+        "A generic complaint workflow would send a manager message and stop.",
+      after:
+        "North Star ties the complaint to blocked rooms, queue pressure, staff coverage, pharmacy stock, billing, and outcome metrics.",
+      evidence: "evidence-capacity-hospital-001"
+    }
+  ],
   storeExecution: {
     cashierRecommendation:
       "Move one front-desk staff member to outpatient check-in, dispatch cleaning and porter tasks, and open billing review after manager approval.",
