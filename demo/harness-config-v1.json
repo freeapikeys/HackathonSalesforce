@@ -28,7 +28,7 @@
     "HFS_Evidence__c": 6,
     "HFS_Recommendation__c": 1,
     "HFS_Approval__c": 1,
-    "HFS_Action__c": 2,
+    "HFS_Action__c": 7,
     "HFS_Outcome__c": 2,
     "HFS_Evaluation__c": 2
   },

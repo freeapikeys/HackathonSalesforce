@@ -6,6 +6,10 @@ const DENIED_CODES = new Set([
   "SOURCE_EVIDENCE_INACCESSIBLE",
   "TENANT_MISMATCH"
 ]);
+const CHANNEL_ACTION_TYPES = new Set([
+  "SEND_SLACK_ALERT",
+  "SEND_WHATSAPP_ALERT"
+]);
 
 function first(values) {
   return Array.isArray(values) && values.length ? values[0] : null;
@@ -15,11 +19,13 @@ function humanize(value, fallback = "Not available") {
   if (!value) {
     return fallback;
   }
-  return value
+  const words = value
     .replace(/^HFS_/, "")
     .replace(/__c$/, "")
-    .replaceAll("_", " ")
-    .replace(/\b\w/g, (character) => character.toUpperCase());
+    .replaceAll("_", " ");
+  const normalized =
+    words === words.toUpperCase() ? words.toLowerCase() : words;
+  return normalized.replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function serviceState(error, correlationId) {
@@ -51,6 +57,33 @@ function timelineItem(item, index) {
     title: item.label || humanize(item.recordType),
     detail: item.summary || item.status || "No additional detail recorded.",
     source: item.sourceUri || "Salesforce operations context"
+  };
+}
+
+function isChannelAction(action) {
+  return CHANNEL_ACTION_TYPES.has(action.recordType);
+}
+
+function taskAction(action, index, entityById) {
+  return {
+    id: action.recordId || `task-action-${index}`,
+    label: humanize(action.recordType, "Operations task"),
+    owner: entityLabel(entityById, action.subjectEntityId, "Target role"),
+    status: humanize(action.status)
+  };
+}
+
+function channelAction(action, index) {
+  const channel =
+    action.recordType === "SEND_WHATSAPP_ALERT" ? "WhatsApp-style" : "Slack";
+  return {
+    id: action.recordId || `channel-action-${index}`,
+    channel,
+    detail:
+      action.externalReference ||
+      action.correlationId ||
+      "Approved channel action record",
+    status: humanize(action.status)
   };
 }
 
@@ -94,6 +127,9 @@ export function mapCommandCenterPayload(payload, purpose) {
   const outcome = first(context.outcomes) || {};
   const evaluation = first(context.evaluations) || {};
   const workItem = context.workItem;
+  const actions = context.actions || [];
+  const taskActions = actions.filter((action) => !isChannelAction(action));
+  const channelActions = actions.filter(isChannelAction);
   const approvalIsPending = approval.status === "PENDING";
   const rawPermissions = payload.permissions || {};
   const confidence = recommendation.confidence;
@@ -179,8 +215,12 @@ export function mapCommandCenterPayload(payload, purpose) {
         qualityIssue: "Not recorded"
       },
       storeExecution: {
-        cashierRecommendation: "No operations task recommendation recorded.",
-        tasks: []
+        cashierRecommendation: taskActions.length
+          ? "Approved Salesforce action records map the recovery plan into role-owned operations tasks."
+          : "No operations task action records have been logged yet.",
+        tasks: taskActions.map((action, index) =>
+          taskAction(action, index, entityById)
+        )
       },
       affectedRelationship: {
         label: relationship.label || "Connected relationship",
@@ -273,7 +313,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         requestedBy: "Governed North Star workflow",
         decisionDueAt: workItem.dueAt
       },
-      actions: (context.actions || []).map((action) => ({
+      actions: actions.map((action) => ({
         id: action.recordId,
         type: humanize(action.recordType),
         status: humanize(action.status),
@@ -283,7 +323,7 @@ export function mapCommandCenterPayload(payload, purpose) {
           action.externalReference || "Salesforce and MuleSoft action service",
         correlationId: action.correlationId || context.correlationId
       })),
-      channelLog: [],
+      channelLog: channelActions.map(channelAction),
       outcomeMetrics: [],
       outcome: {
         status: humanize(outcome.status, "Awaiting outcome"),

@@ -167,6 +167,13 @@ class DemoHarnessTest(unittest.TestCase):
             "contentHash": (
                 fixture["generateRequest"]["context"]["sourceContentHashes"][0]
             ),
+            "targetEntityIds": {
+                "DEPT-OUTPATIENT-RECEPTION": "a01000000000002AAA",
+                "PARTNER-ISLAND-DIAGNOSTICS": "a01000000000003AAA",
+                "PROCESS-BILLING-INSURANCE-REVIEW": "a01000000000004AAA",
+                "RESOURCE-PHARMACY-IV-KITS": "a01000000000005AAA",
+                "RESOURCE-WARD-A3-DISCHARGE-ROOMS": "a01000000000006AAA",
+            },
         }
         model = harness.run_model_gateway(source)
         self.assertIn("runtime-invocation-", model["invocationId"])
@@ -182,7 +189,7 @@ class DemoHarnessTest(unittest.TestCase):
             "actionId": "a00000000000001AAA",
             "actionExternalKey": "action-demo-001",
             "actionIdempotencyKey": "action-demo-001-v1",
-            "actions": [
+            "channelActions": [
                 {
                     "channel": "slack",
                     "actionType": "SEND_SLACK_ALERT",

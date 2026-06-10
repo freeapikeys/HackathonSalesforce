@@ -24,7 +24,8 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 5. create a pending human approval through Agentforce;
 6. prove a clinical treatment-priority request is refused before storage;
 7. prove Salesforce refuses action logging before approval;
-8. record the human approval and log pending Slack and WhatsApp-style actions;
+8. record the human approval and log five pending operational task actions plus
+   pending Slack and WhatsApp-style channel actions;
 9. prove MuleSoft refuses an unregistered approval;
 10. execute approved Slack and WhatsApp-style mock write-backs and preserve
     correlation;
@@ -40,6 +41,8 @@ North Star hospital assertions:
   staffing evidence;
 - clinical decision requests are refused;
 - manager approval is required before protected write-back;
+- service, bed-cleaning, pharmacy, lab, and billing task actions are mapped to
+  approved Salesforce action records;
 - Slack and WhatsApp-style internal alerts are recorded after approved
   execution;
 - outcome metrics include wait time reduced, bed released, stockout avoided,
@@ -83,8 +86,10 @@ The seed report includes the Salesforce IDs for
 `work-north-star-hospital-surge-001`,
 `recommendation-north-star-hospital-001`, and
 `approval-north-star-hospital-001`. The connected report also includes the
-hospital Slack and WhatsApp-style action, outcome, and evaluation IDs plus the
-model deployment, profile, policy, and invocation versions used by the run.
+hospital Slack and WhatsApp-style action, outcome, and evaluation IDs, and the
+final action count includes five Salesforce task action records plus two
+channel action records. The report also includes the model deployment, profile,
+policy, and invocation versions used by the run.
 
 Configure the Lightning command center with:
 
@@ -104,8 +109,10 @@ The connected report must show:
 - `externalActionExecuted = false` for Agentforce;
 - `INVALID_STATE` before human approval in Salesforce;
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
-- two approved channel actions, two correlated outcomes, and two evaluations;
-- final action statuses `EXECUTED` and work item status `COMPLETED`;
+- five approved task action records, two approved channel actions, two
+  correlated outcomes, and two evaluations;
+- final channel action statuses `EXECUTED`, task action statuses `PENDING`, and
+  work item status `COMPLETED`;
 - Lightning controller permissions and refreshed final context.
 
 ## Failure Behavior

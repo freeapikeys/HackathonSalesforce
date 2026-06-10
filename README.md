@@ -31,8 +31,8 @@ The first North Star hospital proof is:
 
 `hospital operations surge -> global primitives and evidence -> Agentforce
 recovery recommendation -> clinical-refusal guardrail -> manager approval ->
-MuleSoft Slack and WhatsApp-style mock alerts -> Salesforce outcomes ->
-updated command center`
+Salesforce task action records -> MuleSoft Slack and WhatsApp-style mock alerts
+-> Salesforce outcomes -> updated command center`
 
 The demo starts from rising patient complaints, blocked discharge rooms,
 outpatient queue pressure, low pharmacy stock, delayed lab response, and stuck

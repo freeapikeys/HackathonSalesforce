@@ -32,7 +32,7 @@ REQUIRED_STEPS = [
     "verify-connected",
 ]
 FINAL_COUNT_MINIMUMS = {
-    "HFS_Action__c": 2,
+    "HFS_Action__c": 7,
     "HFS_Evaluation__c": 2,
     "HFS_Event__c": 3,
     "HFS_Outcome__c": 2,
@@ -227,6 +227,15 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         and outcome.get("workItemStatus") == "COMPLETED",
         "The final governed outcome is incomplete",
     )
+    require(
+        integer(outcome.get("taskActionCount", 0), "task action count") >= 5
+        and integer(
+            outcome.get("executedChannelActionCount", 0),
+            "executed channel action count",
+        )
+        >= 2,
+        "The final governed context is missing task or channel actions",
+    )
 
     for object_name, minimum in FINAL_COUNT_MINIMUMS.items():
         require(
@@ -262,6 +271,10 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             "slackDeliveryStatus": delivery_by_type["SEND_SLACK_ALERT"]["status"],
             "whatsappDeliveryStatus": delivery_by_type["SEND_WHATSAPP_ALERT"][
                 "status"
+            ],
+            "taskActionCount": outcome["taskActionCount"],
+            "executedChannelActionCount": outcome[
+                "executedChannelActionCount"
             ],
             "finalActionStatus": outcome["actionStatus"],
             "finalOutcomeStatus": outcome["outcomeStatus"],

@@ -206,11 +206,11 @@ patient identifiers, insurer records, medical notes, or real vendor contacts.
 
 | Proposed action type              | Approval needed | Demo status                    | Outcome metric                         |
 | --------------------------------- | --------------- | ------------------------------ | -------------------------------------- |
-| `CREATE_PATIENT_SERVICE_TASK`     | Yes             | MuleSoft mock catalog          | `METRIC-COMPLAINT-CONTAINMENT`         |
-| `REQUEST_BED_CLEANING`            | Yes             | MuleSoft mock catalog          | `METRIC-BEDS-RELEASED`                 |
-| `ESCALATE_LAB_VENDOR_CASE`        | Yes             | MuleSoft mock catalog          | `METRIC-PARTNER-SLA`                   |
-| `CREATE_PHARMACY_RESTOCK_REQUEST` | Yes             | MuleSoft mock catalog          | `METRIC-STOCKOUT-AVOIDED`              |
-| `OPEN_BILLING_REVIEW`             | Yes             | MuleSoft mock catalog          | `METRIC-BILLING-ROUTED`                |
+| `CREATE_PATIENT_SERVICE_TASK`     | Yes             | Salesforce task action record  | `METRIC-COMPLAINT-CONTAINMENT`         |
+| `REQUEST_BED_CLEANING`            | Yes             | Salesforce task action record  | `METRIC-BEDS-RELEASED`                 |
+| `ESCALATE_LAB_VENDOR_CASE`        | Yes             | Salesforce task action record  | `METRIC-PARTNER-SLA`                   |
+| `CREATE_PHARMACY_RESTOCK_REQUEST` | Yes             | Salesforce task action record  | `METRIC-STOCKOUT-AVOIDED`              |
+| `OPEN_BILLING_REVIEW`             | Yes             | Salesforce task action record  | `METRIC-BILLING-ROUTED`                |
 | `REQUEST_INSURANCE_FOLLOWUP`      | Yes             | MuleSoft mock catalog          | `METRIC-BILLING-ROUTED`                |
 | `SEND_SLACK_ALERT`                | Yes             | Live harness channel execution | `slack_alert_delivery_success`         |
 | `SEND_WHATSAPP_ALERT`             | Yes             | Live harness channel execution | `whatsapp_alert_delivery_success`      |

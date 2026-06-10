@@ -7,8 +7,9 @@ hospital MVP without manual Salesforce record edits:
 
 `hospital operations surge -> global primitives and evidence -> model-routed
 Agentforce recommendation -> clinical-refusal guardrail -> manager approval ->
-approved Slack and WhatsApp-style MuleSoft channel actions -> hospital outcomes
-and evaluations -> refreshed North Star command center`
+approved Salesforce task action records plus Slack and WhatsApp-style MuleSoft
+channel actions -> hospital outcomes and evaluations -> refreshed North Star
+command center`
 
 The verifier creates a temporary clone, installs locked dependencies, runs all
 repository checks, deploys Salesforce metadata with the four Apex test suites,
@@ -111,9 +112,10 @@ Evidence validation fails unless all of these are true:
 - MuleSoft accepts approved channel write-backs with `202 QUEUED`;
 - approved Slack delivery is recorded as `SENT` or honest `MOCK_SENT`;
 - approved WhatsApp-style delivery is recorded as `SENT` or honest `MOCK_SENT`;
-- the final actions are `EXECUTED`, outcomes are `SUCCESS`, work item is
-  `COMPLETED`, and evaluations exist;
-- final Salesforce counts include at least three events, two actions, two
+- five task action records remain visible in the final Salesforce context, and
+  two channel actions are `EXECUTED`;
+- outcomes are `SUCCESS`, work item is `COMPLETED`, and evaluations exist;
+- final Salesforce counts include at least three events, seven actions, two
   outcomes, two evaluations, one recommendation, and one work item.
 
 ## Recovery

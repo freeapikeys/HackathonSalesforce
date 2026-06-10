@@ -48,6 +48,37 @@ HOSPITAL_RECOMMENDATION_TYPE = "NORTH_STAR_HOSPITAL_RECOVERY_PLAN"
 HOSPITAL_PROPOSED_ACTION_TYPE = "APPROVE_HOSPITAL_RECOVERY_ACTIONS"
 HOSPITAL_SLACK_ACTION_TYPE = "SEND_SLACK_ALERT"
 HOSPITAL_WHATSAPP_ACTION_TYPE = "SEND_WHATSAPP_ALERT"
+HOSPITAL_CHANNEL_ACTION_TYPES = {
+    HOSPITAL_SLACK_ACTION_TYPE,
+    HOSPITAL_WHATSAPP_ACTION_TYPE,
+}
+HOSPITAL_TASK_ACTIONS = [
+    {
+        "key": "action-north-star-hospital-task-service-001",
+        "actionType": "CREATE_PATIENT_SERVICE_TASK",
+        "targetEntityKey": "DEPT-OUTPATIENT-RECEPTION",
+    },
+    {
+        "key": "action-north-star-hospital-task-bed-cleaning-001",
+        "actionType": "REQUEST_BED_CLEANING",
+        "targetEntityKey": "RESOURCE-WARD-A3-DISCHARGE-ROOMS",
+    },
+    {
+        "key": "action-north-star-hospital-task-pharmacy-001",
+        "actionType": "CREATE_PHARMACY_RESTOCK_REQUEST",
+        "targetEntityKey": "RESOURCE-PHARMACY-IV-KITS",
+    },
+    {
+        "key": "action-north-star-hospital-task-lab-001",
+        "actionType": "ESCALATE_LAB_VENDOR_CASE",
+        "targetEntityKey": "PARTNER-ISLAND-DIAGNOSTICS",
+    },
+    {
+        "key": "action-north-star-hospital-task-billing-001",
+        "actionType": "OPEN_BILLING_REVIEW",
+        "targetEntityKey": "PROCESS-BILLING-INSURANCE-REVIEW",
+    },
+]
 HOSPITAL_APPROVAL_POLICY_KEY = "north-star-hospital-manager-approval-v1"
 CLINICAL_DECISION_REFUSED = "CLINICAL_DECISION_REFUSED"
 
@@ -309,12 +340,20 @@ class DemoHarness:
             "ORDER BY Captured_At__c ASC LIMIT 1",
             "connected evidence",
         )
+        target_keys = {
+            task["targetEntityKey"] for task in HOSPITAL_TASK_ACTIONS
+        }
+        target_entity_ids = {
+            target_key: self.query_identifier("HFS_Entity__c", target_key)
+            for target_key in sorted(target_keys)
+        }
         return {
             "workItemId": work_item["Id"],
             "subjectEntityId": work_item["Primary_Entity__c"],
             "triggerEventId": work_item["Trigger_Event__c"],
             "evidenceId": evidence["Id"],
             "contentHash": evidence["Content_Hash__c"],
+            "targetEntityIds": target_entity_ids,
         }
 
     def run_model_gateway(self, source: dict[str, Any]) -> dict[str, Any]:
@@ -610,6 +649,53 @@ System.debug(
         whatsapp_action_key = self.config["identifiers"][
             "whatsappActionExternalKey"
         ]
+        task_blocks = []
+        task_maps = []
+        for index, task in enumerate(HOSPITAL_TASK_ACTIONS):
+            command_name = f"taskCommand{index}"
+            result_name = f"taskLogged{index}"
+            target_entity_id = source["targetEntityIds"][
+                task["targetEntityKey"]
+            ]
+            task_key = task["key"]
+            task_type = task["actionType"]
+            task_blocks.append(
+                f"""
+HFS_ActionCommand {command_name} = new HFS_ActionCommand();
+{command_name}.contractVersion = HFS_ServiceContract.VERSION;
+{command_name}.correlationId = actionCommand.correlationId;
+{command_name}.tenantKey = actionCommand.tenantKey;
+{command_name}.purpose = actionCommand.purpose;
+{command_name}.externalKey = '{apex_string(task_key)}';
+{command_name}.idempotencyKey = '{apex_string(task_key)}-v1';
+{command_name}.recommendationId = actionCommand.recommendationId;
+{command_name}.approvalId = actionCommand.approvalId;
+{command_name}.targetEntityId = '{apex_string(target_entity_id)}';
+{command_name}.actionType = '{apex_string(task_type)}';
+HFS_CommandResult {result_name} = service.logAction({command_name});
+System.assertEquals(
+  true,
+  {result_name}.success,
+  JSON.serialize({result_name}.errors)
+);
+System.assertEquals('PENDING', {result_name}.status);
+"""
+            )
+            task_maps.append(
+                f"""
+  new Map<String, Object>{{
+    'channel' => 'task',
+    'actionType' => {command_name}.actionType,
+    'sourceSystem' => 'salesforce-action',
+    'actionId' => {result_name}.recordId,
+    'actionStatus' => {result_name}.status,
+    'actionExternalKey' => {command_name}.externalKey,
+    'actionIdempotencyKey' => {command_name}.idempotencyKey,
+    'targetEntityId' => {command_name}.targetEntityId
+  }}"""
+            )
+        task_action_script = "\n".join(task_blocks)
+        task_actions_literal = ",\n".join(task_maps)
         script = f"""
 HFS_ActionCommand actionCommand = new HFS_ActionCommand();
 actionCommand.contractVersion = HFS_ServiceContract.VERSION;
@@ -665,7 +751,9 @@ System.assertEquals(
 );
 System.assertEquals('PENDING', whatsappLogged.status);
 
-List<Object> actions = new List<Object>{{
+{task_action_script}
+
+List<Object> channelActions = new List<Object>{{
   new Map<String, Object>{{
     'channel' => 'slack',
     'actionType' => actionCommand.actionType,
@@ -685,6 +773,12 @@ List<Object> actions = new List<Object>{{
     'actionIdempotencyKey' => whatsappCommand.idempotencyKey
   }}
 }};
+List<Object> taskActions = new List<Object>{{
+{task_actions_literal}
+}};
+List<Object> actions = new List<Object>();
+actions.addAll(channelActions);
+actions.addAll(taskActions);
 Map<String, Object> result = new Map<String, Object>{{
   'blockedErrorCode' => blocked.errors[0].code,
   'approvalId' => approved.recordId,
@@ -693,6 +787,8 @@ Map<String, Object> result = new Map<String, Object>{{
   'actionStatus' => logged.status,
   'actionExternalKey' => actionCommand.externalKey,
   'actionIdempotencyKey' => actionCommand.idempotencyKey,
+  'channelActions' => channelActions,
+  'taskActions' => taskActions,
   'actions' => actions
 }};
 System.debug(
@@ -712,7 +808,9 @@ System.debug(
         example = api.contract.examples["operations"][
             "executeApprovedAction"
         ]["request"]
-        channel_actions = action.get("actions") or [
+        channel_actions = action.get("channelActions") or action.get(
+            "actions"
+        ) or [
             {
                 "channel": "slack",
                 "actionType": HOSPITAL_SLACK_ACTION_TYPE,
@@ -971,8 +1069,10 @@ System.debug(
     def verify_lightning_after_outcomes(
         self,
         source: dict[str, Any],
-        expected_count: int,
+        expected_channel_count: int,
+        expected_task_count: int,
     ) -> dict[str, Any]:
+        expected_action_count = expected_channel_count + expected_task_count
         script = f"""
 HFS_ContextRequest contextRequest = new HFS_ContextRequest();
 contextRequest.contractVersion = HFS_ServiceContract.VERSION;
@@ -986,29 +1086,45 @@ HFS_CommandCenterResponse commandCenter =
   HFS_RelationshipController.loadCommandCenter(contextRequest);
 System.assertEquals(0, commandCenter.context.errors.size());
 System.assertEquals('COMPLETED', commandCenter.context.workItem.status);
-System.assertEquals({expected_count}, commandCenter.context.actions.size());
-System.assertEquals({expected_count}, commandCenter.context.outcomes.size());
-System.assertEquals({expected_count}, commandCenter.context.evaluations.size());
+System.assertEquals({expected_action_count}, commandCenter.context.actions.size());
+System.assertEquals({expected_channel_count}, commandCenter.context.outcomes.size());
+System.assertEquals({expected_channel_count}, commandCenter.context.evaluations.size());
 Set<String> actionTypes = new Set<String>();
 Integer executedActions = 0;
+Integer pendingTaskActions = 0;
 for (HFS_ContextItem item : commandCenter.context.actions) {{
   actionTypes.add(item.recordType);
   if (item.status == 'EXECUTED') {{
     executedActions++;
   }}
+  if (
+    item.status == 'PENDING' &&
+    item.recordType != '{HOSPITAL_SLACK_ACTION_TYPE}' &&
+    item.recordType != '{HOSPITAL_WHATSAPP_ACTION_TYPE}'
+  ) {{
+    pendingTaskActions++;
+  }}
 }}
-System.assertEquals({expected_count}, executedActions);
+System.assertEquals({expected_channel_count}, executedActions);
+System.assertEquals({expected_task_count}, pendingTaskActions);
 System.assertEquals(true, actionTypes.contains('{HOSPITAL_SLACK_ACTION_TYPE}'));
 System.assertEquals(
   true,
   actionTypes.contains('{HOSPITAL_WHATSAPP_ACTION_TYPE}')
 );
+System.assertEquals(true, actionTypes.contains('CREATE_PATIENT_SERVICE_TASK'));
+System.assertEquals(true, actionTypes.contains('REQUEST_BED_CLEANING'));
+System.assertEquals(true, actionTypes.contains('CREATE_PHARMACY_RESTOCK_REQUEST'));
+System.assertEquals(true, actionTypes.contains('ESCALATE_LAB_VENDOR_CASE'));
+System.assertEquals(true, actionTypes.contains('OPEN_BILLING_REVIEW'));
 System.assertEquals(true, commandCenter.permissions.canApprove);
 System.assertEquals(true, commandCenter.permissions.canExecute);
 Map<String, Object> result = new Map<String, Object>{{
   'workItemStatus' => commandCenter.context.workItem.status,
   'actionStatus' => 'EXECUTED',
   'actionCount' => commandCenter.context.actions.size(),
+  'taskActionCount' => pendingTaskActions,
+  'executedChannelActionCount' => executedActions,
   'outcomeCount' => commandCenter.context.outcomes.size(),
   'evaluationCount' => commandCenter.context.evaluations.size(),
   'actionTypes' => new List<String>(actionTypes),
@@ -1047,6 +1163,7 @@ System.debug(
         verification = self.verify_lightning_after_outcomes(
             source,
             len(channel_outcomes),
+            len(action.get("taskActions") or []),
         )
         return {
             **verification,

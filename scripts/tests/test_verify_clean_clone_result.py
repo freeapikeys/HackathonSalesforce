@@ -77,7 +77,9 @@ def passing_demo():
             },
             "outcome": {
                 "actionStatus": "EXECUTED",
+                "executedChannelActionCount": 2,
                 "outcomeStatus": "SUCCESS",
+                "taskActionCount": 5,
                 "workItemStatus": "COMPLETED",
             },
             "connected": {

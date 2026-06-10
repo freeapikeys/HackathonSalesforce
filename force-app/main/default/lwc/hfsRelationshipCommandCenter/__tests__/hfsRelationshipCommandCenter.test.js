@@ -78,6 +78,11 @@ const livePayload = {
         recordId: "a02000000000002AAA",
         recordType: "ORGANIZATION",
         label: "Live business"
+      },
+      {
+        recordId: "a02000000000003AAA",
+        recordType: "RESOURCE",
+        label: "Ward A3 discharge rooms"
       }
     ],
     relationships: [
@@ -141,7 +146,24 @@ const livePayload = {
         requestedAt: "2026-06-07T07:05:00.000Z"
       }
     ],
-    actions: [],
+    actions: [
+      {
+        recordId: "a09000000000001AAA",
+        recordType: "REQUEST_BED_CLEANING",
+        status: "PENDING",
+        requestedAt: "2026-06-07T07:06:00.000Z",
+        subjectEntityId: "a02000000000003AAA",
+        correlationId: "20000000-0000-4000-8000-000000099001"
+      },
+      {
+        recordId: "a09000000000002AAA",
+        recordType: "SEND_SLACK_ALERT",
+        status: "EXECUTED",
+        requestedAt: "2026-06-07T07:07:00.000Z",
+        externalReference: "mock-slack",
+        correlationId: "20000000-0000-4000-8000-000000099001"
+      }
+    ],
     outcomes: [],
     evaluations: [],
     errors: []
@@ -318,6 +340,9 @@ describe("c-hfs-relationship-command-center", () => {
     expect(element.shadowRoot.textContent).toContain(
       "Send a grounded service update."
     );
+    expect(element.shadowRoot.textContent).toContain("Request Bed Cleaning");
+    expect(element.shadowRoot.textContent).toContain("Ward A3 discharge rooms");
+    expect(element.shadowRoot.textContent).toContain("mock-slack");
     expect(
       element.shadowRoot.querySelector('[data-testid="modify-button"]')
     ).toBeNull();

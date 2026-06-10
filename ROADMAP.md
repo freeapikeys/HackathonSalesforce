@@ -259,7 +259,7 @@ file before editing.
 - [x] Map patient and visitor aliases without personal data.
 - [x] Map hospital partners to entity records.
 - [x] Map complaints to evidence records.
-- [ ] Map tasks to action records and/or Salesforce task records.
+- [x] Map tasks to action records and/or Salesforce task records.
 - [ ] Apex context includes customer alias, department, location, resource,
       partner, complaint, capacity, stock, billing, recommendation, approval,
       action, and outcome.
