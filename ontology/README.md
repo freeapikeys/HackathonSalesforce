@@ -1,6 +1,6 @@
 # Semantic Contract
 
-This directory is the executable seed of the shared retail operations
+This directory is the executable seed of the shared relationship-intelligence
 vocabulary.
 Salesforce and Data 360 remain the operational stores; these files define the
 portable meaning and validation rules used at integration boundaries.
@@ -28,9 +28,22 @@ The validator must prove both sides of the contract:
 - the valid fixture conforms;
 - the invalid fixture does not conform;
 - the invalid report includes the expected human-readable violation messages.
+- contradictory source assertions are not silently overwritten; they must be
+  explicitly superseded.
 
 Ontology changes require matching updates to shapes, context, examples, and
 downstream Salesforce or MuleSoft mappings when their contract changes.
+
+## Shared Contract Coverage
+
+The base contract now covers:
+
+- organization terminology with source-local terms mapped to canonical SKOS
+  concepts;
+- W3C PROV-compatible source agents and source activities;
+- source and derived assertions with valid time, recorded time, attribution, and
+  generation provenance;
+- explicit assertion supersession for contradictory claims.
 
 ## North Star Extension Plan
 

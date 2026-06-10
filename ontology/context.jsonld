@@ -2,23 +2,60 @@
   "@context": {
     "@version": 1.1,
     "hfs": "https://freeapikeys.github.io/HackathonSalesforce/ontology#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
     "id": "@id",
     "type": "@type",
     "Organization": "hfs:Organization",
     "Person": "hfs:Person",
     "Relationship": "hfs:Relationship",
+    "Assertion": "hfs:Assertion",
+    "TerminologyEntry": "hfs:TerminologyEntry",
+    "SourceAgent": "hfs:SourceAgent",
+    "SourceActivity": "hfs:SourceActivity",
+    "ConceptScheme": "skos:ConceptScheme",
     "Evidence": "hfs:Evidence",
     "Recommendation": "hfs:Recommendation",
     "Action": "hfs:Action",
     "EmploymentRelationship": "hfs:EmploymentRelationship",
     "CustomerRelationship": "hfs:CustomerRelationship",
     "SupplierRelationship": "hfs:SupplierRelationship",
+    "SourceClaim": "hfs:SourceClaim",
+    "DerivedInference": "hfs:DerivedInference",
     "SendMessageAction": "hfs:SendMessageAction",
     "CreateWorkItemAction": "hfs:CreateWorkItemAction",
+    "relationshipStatus": "hfs:relationshipStatus",
     "identifier": "hfs:identifier",
     "sourceSystem": "hfs:sourceSystem",
     "sourceRecordId": "hfs:sourceRecordId",
+    "localTerm": "hfs:localTerm",
+    "preferredLabel": "skos:prefLabel",
+    "definition": "skos:definition",
+    "inScheme": {
+      "@id": "skos:inScheme",
+      "@type": "@id"
+    },
+    "canonicalConcept": {
+      "@id": "hfs:canonicalConcept",
+      "@type": "@id"
+    },
+    "generatedBy": {
+      "@id": "hfs:generatedBy",
+      "@type": "@id"
+    },
+    "attributedTo": {
+      "@id": "hfs:attributedTo",
+      "@type": "@id"
+    },
+    "associatedWith": {
+      "@id": "prov:wasAssociatedWith",
+      "@type": "@id"
+    },
+    "used": {
+      "@id": "prov:used",
+      "@type": "@id"
+    },
     "recordedAt": {
       "@id": "hfs:recordedAt",
       "@type": "xsd:dateTime"
@@ -29,6 +66,10 @@
     },
     "validTo": {
       "@id": "hfs:validTo",
+      "@type": "xsd:dateTime"
+    },
+    "supersededAt": {
+      "@id": "hfs:supersededAt",
       "@type": "xsd:dateTime"
     },
     "subjectEntity": {
@@ -45,6 +86,23 @@
     },
     "actionType": {
       "@id": "hfs:actionType",
+      "@type": "@id"
+    },
+    "assertionSubject": {
+      "@id": "hfs:assertionSubject",
+      "@type": "@id"
+    },
+    "assertionPredicate": {
+      "@id": "hfs:assertionPredicate",
+      "@type": "@id"
+    },
+    "assertionObject": "hfs:assertionObject",
+    "assertionKind": {
+      "@id": "hfs:assertionKind",
+      "@type": "@id"
+    },
+    "supersedes": {
+      "@id": "hfs:supersedes",
       "@type": "@id"
     },
     "supportedBy": {

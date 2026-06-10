@@ -2,6 +2,11 @@
   "@context": "../context.jsonld",
   "@graph": [
     {
+      "id": "https://example.org/data/terminology/acme-sales",
+      "type": "ConceptScheme",
+      "preferredLabel": "ACME source terminology"
+    },
+    {
       "id": "https://example.org/data/organization/acme",
       "type": "Organization",
       "identifier": "org-acme",
@@ -18,6 +23,30 @@
       "recordedAt": "2026-06-05T08:00:00Z"
     },
     {
+      "id": "https://example.org/data/agent/crm",
+      "type": "SourceAgent",
+      "preferredLabel": "CRM source system"
+    },
+    {
+      "id": "https://example.org/data/activity/crm-sync-001",
+      "type": "SourceActivity",
+      "preferredLabel": "CRM sync 001",
+      "associatedWith": "https://example.org/data/agent/crm"
+    },
+    {
+      "id": "https://example.org/data/term/client",
+      "type": "TerminologyEntry",
+      "identifier": "term-client",
+      "sourceSystem": "crm",
+      "sourceRecordId": "term-client",
+      "recordedAt": "2026-06-05T08:00:30Z",
+      "localTerm": "client",
+      "preferredLabel": "client",
+      "definition": "ACME CRM term for a customer relationship.",
+      "inScheme": "https://example.org/data/terminology/acme-sales",
+      "canonicalConcept": "CustomerRelationship"
+    },
+    {
       "id": "https://example.org/data/relationship/alice-acme",
       "type": "Relationship",
       "identifier": "relationship-alice-acme",
@@ -28,6 +57,38 @@
       "subjectEntity": "https://example.org/data/person/alice",
       "objectEntity": "https://example.org/data/organization/acme",
       "relationshipType": "EmploymentRelationship"
+    },
+    {
+      "id": "https://example.org/data/assertion/relationship-status-active",
+      "type": "Assertion",
+      "identifier": "assertion-relationship-status-active",
+      "sourceSystem": "crm",
+      "sourceRecordId": "case-status-001",
+      "recordedAt": "2026-06-05T08:01:30Z",
+      "validFrom": "2026-06-01T00:00:00Z",
+      "supersededAt": "2026-06-05T08:02:30Z",
+      "assertionSubject": "https://example.org/data/relationship/alice-acme",
+      "assertionPredicate": "relationshipStatus",
+      "assertionObject": "ACTIVE",
+      "assertionKind": "SourceClaim",
+      "generatedBy": "https://example.org/data/activity/crm-sync-001",
+      "attributedTo": "https://example.org/data/agent/crm"
+    },
+    {
+      "id": "https://example.org/data/assertion/relationship-status-paused",
+      "type": "Assertion",
+      "identifier": "assertion-relationship-status-paused",
+      "sourceSystem": "crm",
+      "sourceRecordId": "case-status-002",
+      "recordedAt": "2026-06-05T08:02:30Z",
+      "validFrom": "2026-06-01T00:00:00Z",
+      "assertionSubject": "https://example.org/data/relationship/alice-acme",
+      "assertionPredicate": "relationshipStatus",
+      "assertionObject": "PAUSED",
+      "assertionKind": "SourceClaim",
+      "generatedBy": "https://example.org/data/activity/crm-sync-001",
+      "attributedTo": "https://example.org/data/agent/crm",
+      "supersedes": "https://example.org/data/assertion/relationship-status-active"
     },
     {
       "id": "https://example.org/data/evidence/service-case-001",

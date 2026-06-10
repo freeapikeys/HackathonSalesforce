@@ -1,4 +1,5 @@
 @prefix hfs: <https://freeapikeys.github.io/HackathonSalesforce/ontology#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -37,6 +38,42 @@ hfs:ProvenancedRecordShape
         sh:maxCount 1 ;
         sh:datatype xsd:dateTime ;
         sh:message "Every record must declare when it entered the system."
+    ] .
+
+hfs:TerminologyEntryShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:TerminologyEntry ;
+    sh:property [
+        sh:path hfs:localTerm ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:minLength 1 ;
+        sh:message "A terminology entry must preserve the source organization's local term."
+    ] ;
+    sh:property [
+        sh:path hfs:canonicalConcept ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:Concept ;
+        sh:message "A terminology entry must map to a canonical concept."
+    ] ;
+    sh:property [
+        sh:path skos:inScheme ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:ConceptScheme ;
+        sh:message "A terminology entry must belong to a source terminology scheme."
+    ] .
+
+hfs:SourceActivityShape
+    a sh:NodeShape ;
+    sh:targetClass hfs:SourceActivity ;
+    sh:property [
+        sh:path prov:wasAssociatedWith ;
+        sh:minCount 1 ;
+        sh:class hfs:SourceAgent ;
+        sh:message "A source activity must identify the responsible source agent."
     ] .
 
 hfs:RelationshipShape
@@ -84,8 +121,15 @@ hfs:AssertionShape
         sh:path hfs:assertionSubject ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:class hfs:Entity ;
+        sh:class hfs:ProvenancedRecord ;
         sh:message "An assertion must identify its subject."
+    ] ;
+    sh:property [
+        sh:path hfs:assertionKind ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class skos:Concept ;
+        sh:message "An assertion must declare whether it is a source claim or derived inference."
     ] ;
     sh:property [
         sh:path hfs:assertionPredicate ;
@@ -106,6 +150,36 @@ hfs:AssertionShape
         sh:maxCount 1 ;
         sh:datatype xsd:dateTime ;
         sh:message "An assertion must declare when it became valid."
+    ] ;
+    sh:property [
+        sh:path hfs:validTo ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "An assertion valid-to value must be a date-time."
+    ] ;
+    sh:property [
+        sh:path hfs:supersededAt ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "An assertion superseded-at value must be a date-time."
+    ] ;
+    sh:property [
+        sh:path hfs:generatedBy ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class hfs:SourceActivity ;
+        sh:message "An assertion must link to the source activity that generated it."
+    ] ;
+    sh:property [
+        sh:path hfs:attributedTo ;
+        sh:minCount 1 ;
+        sh:class hfs:SourceAgent ;
+        sh:message "An assertion must name the source agent it is attributed to."
+    ] ;
+    sh:property [
+        sh:path hfs:supersedes ;
+        sh:class hfs:Assertion ;
+        sh:message "An assertion supersession must point to another assertion."
     ] .
 
 hfs:EventShape
