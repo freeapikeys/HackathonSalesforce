@@ -115,39 +115,41 @@ Correct behavior:
 
 ## Implementation Checklist
 
-- [ ] Pull latest `main`.
-- [ ] Read this file and the required docs.
-- [ ] Inspect existing Agentforce fixtures and generated contract scripts.
-- [ ] Identify the current recommendation action shape.
-- [ ] Add or update Inventory/Waste fixture scenarios.
-- [ ] Add deterministic calculations for days of cover, sales at risk, and
+- [x] Pull latest `main`.
+- [x] Read this file and the required docs.
+- [x] Inspect existing Agentforce fixtures and generated contract scripts.
+- [x] Identify the current recommendation action shape.
+- [x] Add or update Inventory/Waste fixture scenarios.
+- [x] Add deterministic calculations for days of cover, sales at risk, and
       waste risk where appropriate.
-- [ ] Ensure every recommendation cites inventory, expiry, promotion, complaint,
+- [x] Ensure every recommendation cites inventory, expiry, promotion, complaint,
       supplier, and staffing evidence when available.
-- [ ] Ensure facts and inferences are separate.
-- [ ] Add `missingEvidence` when data is absent.
-- [ ] Add `blockedActions` for unsafe direct actions or unsupported claims.
-- [ ] Ensure recommendations feed the approval/action path rather than execute
+- [x] Ensure facts and inferences are separate.
+- [x] Add `missingEvidence` when data is absent.
+- [x] Add `blockedActions` for unsafe direct actions or unsupported claims.
+- [x] Ensure recommendations feed the approval/action path rather than execute
       actions directly.
-- [ ] Keep labels product-category neutral.
+- [x] Keep labels product-category neutral.
 
 ## Scenario Checklist
 
-- [ ] Stockout risk with clean supplier history.
-- [ ] Stockout risk with active complaint cluster.
-- [ ] Near-expiry fresh food with markdown recommendation.
-- [ ] Overstock household item with transfer or promotion adjustment.
-- [ ] Promotion demand spike with insufficient shelf stock.
-- [ ] Supplier replacement batch changes the recommendation.
-- [ ] Missing expiry data causes a cautious recommendation.
-- [ ] Missing supplier response blocks supplier-wide decision.
+- [x] Stockout risk with clean supplier history.
+- [x] Stockout risk with active complaint cluster.
+- [x] Near-expiry fresh food with markdown recommendation.
+- [x] Overstock household item with transfer or promotion adjustment.
+- [x] Promotion demand spike with insufficient shelf stock.
+- [x] Supplier replacement batch changes the recommendation.
+- [x] Missing expiry data causes a cautious recommendation.
+- [x] Missing supplier response blocks supplier-wide decision.
 
 ## Testing Checklist
 
-- [ ] Run `npm run check:agentforce`.
-- [ ] Run `npm run check:models` if model gateway fixtures change.
-- [ ] Run `npm run check:project` if Apex metadata or classes change.
-- [ ] Add or update tests for: - evidence citation; - fact versus inference separation; - supplier complaint caution; - missing evidence; - refusal to execute protected actions directly.
+- [x] Run `npm run check:agentforce`.
+- [x] Run `npm run check:models` if model gateway fixtures change. Not
+      applicable: model gateway fixtures did not change.
+- [x] Run `npm run check:project` if Apex metadata or classes change. Not
+      applicable: Apex metadata and classes did not change.
+- [x] Add or update tests for: - evidence citation; - fact versus inference separation; - supplier complaint caution; - missing evidence; - refusal to execute protected actions directly.
 
 ## Demo Acceptance
 
