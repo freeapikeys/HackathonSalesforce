@@ -288,6 +288,10 @@ and UI must support any supermarket product category.
 - [x] Mock `SEND_SLACK_ALERT`.
 - [x] Mock `SEND_WHATSAPP_STYLE_ALERT`.
 - [x] Mock `CAPTURE_RETAIL_OUTCOME`.
+- [x] Mock Nexavenu revenue actions: `CREATE_NURTURE_TASK`,
+      `DRAFT_CHAMPION_EMAIL`, `UPDATE_OPPORTUNITY_STAGE`,
+      `ASSIGN_CONTENT_ASSET`, `CREATE_SOLUTION_CONSULTANT_HANDOFF`, and
+      `CAPTURE_RETENTION_ASCENSION_OUTCOME`.
 - [x] Unapproved execution returns denial.
 - [x] Approved execution returns queued or success response with correlation.
 - [x] Mock channel results are visible in the command center.

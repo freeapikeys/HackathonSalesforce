@@ -62,6 +62,22 @@ Use real Slack or WhatsApp credentials only when they are available and safe to
 configure. Otherwise the mock runtime should return deterministic channel
 delivery records that are clearly presented as demo channel results.
 
+## Nexavenu Revenue Mock Actions
+
+The Nexavenu jury-gift scenario uses the same approved-action execution path for
+revenue operations:
+
+- create nurture task;
+- draft champion email;
+- update opportunity stage;
+- assign content asset;
+- create solution-consultant handoff;
+- capture retention/ascension outcome.
+
+Each action is still a protected write-back. The runtime records only actions
+with a matching approved action ID and returns correlated source-record and
+outcome evidence for the command center.
+
 It deliberately keeps adapters behind Python interfaces so the same contract
 tests can be applied to Mule flows and real connectors without embedding mock
 behavior in production configuration. The runtime is an integration test

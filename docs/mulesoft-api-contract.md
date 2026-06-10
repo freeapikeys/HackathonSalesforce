@@ -63,3 +63,10 @@ transfer, markdown plan, store tasks, Slack alert, WhatsApp-style alert, and
 retail outcome capture. These can remain action payloads behind the existing
 `EXECUTE_APPROVED_ACTION` operation unless a real integration requires a new
 contract version.
+
+For the Nexavenu revenue-intelligence gift, the same approved-action operation
+supports synthetic revenue actions: nurture task creation, champion email draft,
+opportunity stage update, content asset assignment, solution-consultant handoff,
+and retention/ascension outcome capture. These remain protected external actions
+and require a matching approved Salesforce action before the MuleSoft mock
+write-back records source evidence or outcome metrics.

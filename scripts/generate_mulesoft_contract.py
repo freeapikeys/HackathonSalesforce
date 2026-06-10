@@ -1086,8 +1086,8 @@ def context_item(
 
 def build_examples() -> dict[str, Any]:
     event_request = json.loads(EVENT_FIXTURE_PATH.read_text())
-    action_key = "action-status-update-001-v1"
-    outcome_key = "outcome-message-delivered-001-v1"
+    action_key = "action-nexavenu-champion-email-001-v1"
+    outcome_key = "outcome-nexavenu-champion-email-001-v1"
 
     event_success = {
         "contractVersion": CONTRACT_VERSION,
@@ -1175,19 +1175,21 @@ def build_examples() -> dict[str, Any]:
         "contractVersion": CONTRACT_VERSION,
         "tenantKey": TENANT,
         "correlationId": CORRELATION,
-        "purpose": "PROVIDE_APPROVED_STATUS_UPDATE",
-        "externalKey": "action-status-update-001",
+        "purpose": "EXECUTE_APPROVED_REVENUE_ACTION",
+        "externalKey": "action-nexavenu-champion-email-001",
         "idempotencyKey": action_key,
-        "recommendationId": "recommendation-status-update-001",
-        "approvalId": "approval-status-update-001",
-        "actionId": "action-status-update-001",
-        "targetEntityId": "entity-person-001",
-        "actionType": "SEND_STATUS_UPDATE",
-        "sourceSystem": "service-platform",
+        "recommendationId": "recommendation-nexavenu-revenue-001",
+        "approvalId": "approval-nexavenu-revenue-001",
+        "actionId": "action-nexavenu-champion-email-001",
+        "targetEntityId": "prospect-synth-liftops",
+        "actionType": "DRAFT_CHAMPION_EMAIL",
+        "sourceSystem": "salesforce-revenue-cloud",
         "payload": {
-            "channel": "EMAIL",
-            "templateKey": "service-status-update-v1",
+            "channel": "SALESFORCE_REVENUE_MOCK",
+            "targetRole": "Revenue Owner",
+            "templateKey": "nexavenu-champion-briefing-v1",
             "language": "en",
+            "requiresHumanApprovalBeforeSend": True,
         },
     }
     action_success = {
@@ -1197,8 +1199,8 @@ def build_examples() -> dict[str, Any]:
         "operation": "EXECUTE_APPROVED_ACTION",
         "success": True,
         "replayed": False,
-        "actionId": "action-status-update-001",
-        "sourceSystem": "service-platform",
+        "actionId": "action-nexavenu-champion-email-001",
+        "sourceSystem": "salesforce-revenue-cloud",
         "status": "QUEUED",
         "acceptedAt": "2026-06-05T08:31:00Z",
         "errors": [],
@@ -1208,17 +1210,17 @@ def build_examples() -> dict[str, Any]:
         "tenantKey": TENANT,
         "correlationId": CORRELATION,
         "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
-        "externalKey": "outcome-message-delivered-001",
+        "externalKey": "outcome-nexavenu-champion-email-001",
         "idempotencyKey": outcome_key,
-        "actionId": "action-status-update-001",
-        "sourceEventId": "event-message-delivered-001",
-        "sourceSystem": "service-platform",
-        "sourceRecordId": "message-delivery-001",
-        "outcomeType": "MESSAGE_DELIVERED",
+        "actionId": "action-nexavenu-champion-email-001",
+        "sourceEventId": "event-nexavenu-champion-email-001",
+        "sourceSystem": "salesforce-revenue-cloud",
+        "sourceRecordId": "nexavenu-champion-email-draft-001",
+        "outcomeType": "CHAMPION_EMAIL_DRAFTED",
         "status": "SUCCESS",
         "observedAt": "2026-06-05T08:31:07Z",
-        "summary": "The approved status update was delivered.",
-        "metricKey": "delivery_success",
+        "summary": "The approved champion email draft was created.",
+        "metricKey": "nexavenu_champion_email_drafted",
         "metricValue": 1,
     }
     outcome_success = {
@@ -1228,8 +1230,8 @@ def build_examples() -> dict[str, Any]:
         "operation": "CAPTURE_OUTCOME",
         "success": True,
         "replayed": False,
-        "outcomeId": "outcome-message-delivered-001",
-        "actionId": "action-status-update-001",
+        "outcomeId": "outcome-nexavenu-champion-email-001",
+        "actionId": "action-nexavenu-champion-email-001",
         "status": "RECORDED",
         "recordedAt": "2026-06-05T08:31:08Z",
         "errors": [],
@@ -1327,9 +1329,11 @@ def build_examples() -> dict[str, Any]:
                 value=callback_value(
                     "EXECUTE_APPROVED_ACTION",
                     {
-                        "actionId": "action-status-update-001",
-                        "sourceSystem": "service-platform",
-                        "sourceRecordId": "message-delivery-001",
+                        "actionId": "action-nexavenu-champion-email-001",
+                        "sourceSystem": "salesforce-revenue-cloud",
+                        "sourceRecordId": (
+                            "nexavenu-champion-email-draft-001"
+                        ),
                         "status": "EXECUTED",
                     },
                 ),
@@ -1338,7 +1342,7 @@ def build_examples() -> dict[str, Any]:
         | common_failures("EXECUTE_APPROVED_ACTION"),
         "receiveOutcomeCallback": {
             "request": example(
-                summary="Delivered message outcome",
+                summary="Drafted champion email outcome",
                 schema_name="OutcomeCallbackRequest",
                 value=outcome_request,
                 request_headers=headers(outcome_key),
@@ -1355,8 +1359,8 @@ def build_examples() -> dict[str, Any]:
                 value=callback_value(
                     "CAPTURE_OUTCOME",
                     {
-                        "outcomeId": "outcome-message-delivered-001",
-                        "actionId": "action-status-update-001",
+                        "outcomeId": "outcome-nexavenu-champion-email-001",
+                        "actionId": "action-nexavenu-champion-email-001",
                         "status": "RECORDED",
                     },
                 ),

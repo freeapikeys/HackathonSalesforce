@@ -556,19 +556,21 @@
           "contractVersion": "1.0.0",
           "tenantKey": "demo-mauritius",
           "correlationId": "10000000-0000-4000-8000-000000000001",
-          "purpose": "PROVIDE_APPROVED_STATUS_UPDATE",
-          "externalKey": "action-status-update-001",
-          "idempotencyKey": "action-status-update-001-v1",
-          "recommendationId": "recommendation-status-update-001",
-          "approvalId": "approval-status-update-001",
-          "actionId": "action-status-update-001",
-          "targetEntityId": "entity-person-001",
-          "actionType": "SEND_STATUS_UPDATE",
-          "sourceSystem": "service-platform",
+          "purpose": "EXECUTE_APPROVED_REVENUE_ACTION",
+          "externalKey": "action-nexavenu-champion-email-001",
+          "idempotencyKey": "action-nexavenu-champion-email-001-v1",
+          "recommendationId": "recommendation-nexavenu-revenue-001",
+          "approvalId": "approval-nexavenu-revenue-001",
+          "actionId": "action-nexavenu-champion-email-001",
+          "targetEntityId": "prospect-synth-liftops",
+          "actionType": "DRAFT_CHAMPION_EMAIL",
+          "sourceSystem": "salesforce-revenue-cloud",
           "payload": {
-            "channel": "EMAIL",
-            "templateKey": "service-status-update-v1",
-            "language": "en"
+            "channel": "SALESFORCE_REVENUE_MOCK",
+            "targetRole": "Revenue Owner",
+            "templateKey": "nexavenu-champion-briefing-v1",
+            "language": "en",
+            "requiresHumanApprovalBeforeSend": true
           }
         },
         "x-hfs-schema": "ActionExecutionRequest",
@@ -576,7 +578,7 @@
           "X-Tenant-Id": "demo-mauritius",
           "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
           "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
-          "X-Idempotency-Key": "action-status-update-001-v1"
+          "X-Idempotency-Key": "action-nexavenu-champion-email-001-v1"
         }
       },
       "success": {
@@ -588,8 +590,8 @@
           "operation": "EXECUTE_APPROVED_ACTION",
           "success": true,
           "replayed": false,
-          "actionId": "action-status-update-001",
-          "sourceSystem": "service-platform",
+          "actionId": "action-nexavenu-champion-email-001",
+          "sourceSystem": "salesforce-revenue-cloud",
           "status": "QUEUED",
           "acceptedAt": "2026-06-05T08:31:00Z",
           "errors": []
@@ -608,9 +610,9 @@
           "completedAt": "2026-06-05T08:31:10Z",
           "retryable": false,
           "result": {
-            "actionId": "action-status-update-001",
-            "sourceSystem": "service-platform",
-            "sourceRecordId": "message-delivery-001",
+            "actionId": "action-nexavenu-champion-email-001",
+            "sourceSystem": "salesforce-revenue-cloud",
+            "sourceRecordId": "nexavenu-champion-email-draft-001",
             "status": "EXECUTED"
           },
           "errors": []
@@ -704,23 +706,23 @@
     },
     "receiveOutcomeCallback": {
       "request": {
-        "summary": "Delivered message outcome",
+        "summary": "Drafted champion email outcome",
         "value": {
           "contractVersion": "1.0.0",
           "tenantKey": "demo-mauritius",
           "correlationId": "10000000-0000-4000-8000-000000000001",
           "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
-          "externalKey": "outcome-message-delivered-001",
-          "idempotencyKey": "outcome-message-delivered-001-v1",
-          "actionId": "action-status-update-001",
-          "sourceEventId": "event-message-delivered-001",
-          "sourceSystem": "service-platform",
-          "sourceRecordId": "message-delivery-001",
-          "outcomeType": "MESSAGE_DELIVERED",
+          "externalKey": "outcome-nexavenu-champion-email-001",
+          "idempotencyKey": "outcome-nexavenu-champion-email-001-v1",
+          "actionId": "action-nexavenu-champion-email-001",
+          "sourceEventId": "event-nexavenu-champion-email-001",
+          "sourceSystem": "salesforce-revenue-cloud",
+          "sourceRecordId": "nexavenu-champion-email-draft-001",
+          "outcomeType": "CHAMPION_EMAIL_DRAFTED",
           "status": "SUCCESS",
           "observedAt": "2026-06-05T08:31:07Z",
-          "summary": "The approved status update was delivered.",
-          "metricKey": "delivery_success",
+          "summary": "The approved champion email draft was created.",
+          "metricKey": "nexavenu_champion_email_drafted",
           "metricValue": 1
         },
         "x-hfs-schema": "OutcomeCallbackRequest",
@@ -728,7 +730,7 @@
           "X-Tenant-Id": "demo-mauritius",
           "X-Correlation-Id": "10000000-0000-4000-8000-000000000001",
           "X-Callback-Url": "https://callbacks.example.test/hfs/completions",
-          "X-Idempotency-Key": "outcome-message-delivered-001-v1"
+          "X-Idempotency-Key": "outcome-nexavenu-champion-email-001-v1"
         }
       },
       "success": {
@@ -740,8 +742,8 @@
           "operation": "CAPTURE_OUTCOME",
           "success": true,
           "replayed": false,
-          "outcomeId": "outcome-message-delivered-001",
-          "actionId": "action-status-update-001",
+          "outcomeId": "outcome-nexavenu-champion-email-001",
+          "actionId": "action-nexavenu-champion-email-001",
           "status": "RECORDED",
           "recordedAt": "2026-06-05T08:31:08Z",
           "errors": []
@@ -760,8 +762,8 @@
           "completedAt": "2026-06-05T08:31:10Z",
           "retryable": false,
           "result": {
-            "outcomeId": "outcome-message-delivered-001",
-            "actionId": "action-status-update-001",
+            "outcomeId": "outcome-nexavenu-champion-email-001",
+            "actionId": "action-nexavenu-champion-email-001",
             "status": "RECORDED"
           },
           "errors": []

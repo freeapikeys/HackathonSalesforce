@@ -201,6 +201,28 @@ class MockWriteBackAdapter:
             "CAPTURE_RETAIL_OUTCOME",
         }
     )
+    NEXAVENU_REVENUE_ACTION_TYPES = frozenset(
+        {
+            "CREATE_NURTURE_TASK",
+            "DRAFT_CHAMPION_EMAIL",
+            "UPDATE_OPPORTUNITY_STAGE",
+            "ASSIGN_CONTENT_ASSET",
+            "CREATE_SOLUTION_CONSULTANT_HANDOFF",
+            "CAPTURE_RETENTION_ASCENSION_OUTCOME",
+        }
+    )
+    NEXAVENU_REVENUE_METRICS = {
+        "CREATE_NURTURE_TASK": "nexavenu_nurture_task_created",
+        "DRAFT_CHAMPION_EMAIL": "nexavenu_champion_email_drafted",
+        "UPDATE_OPPORTUNITY_STAGE": "nexavenu_opportunity_stage_updated",
+        "ASSIGN_CONTENT_ASSET": "nexavenu_content_asset_assigned",
+        "CREATE_SOLUTION_CONSULTANT_HANDOFF": (
+            "nexavenu_solution_consultant_handoff_created"
+        ),
+        "CAPTURE_RETENTION_ASCENSION_OUTCOME": (
+            "nexavenu_retention_ascension_outcome_captured"
+        ),
+    }
 
     def __init__(self) -> None:
         self.approvals: dict[str, dict[str, str]] = {}
@@ -323,6 +345,22 @@ class MockWriteBackAdapter:
                 "fallbackReason": None,
                 "summary": f"Approved retail mock action {action_type} was queued.",
                 "metricKey": "retail_action_queued",
+                "metricValue": 1,
+            }
+        if action_type in self.NEXAVENU_REVENUE_ACTION_TYPES:
+            return {
+                "channel": payload.get(
+                    "channel", "SALESFORCE_REVENUE_MOCK"
+                ),
+                "targetRole": payload.get("targetRole", "Revenue Owner"),
+                "messageBody": payload.get("messageBody", ""),
+                "status": "QUEUED",
+                "fallbackReason": None,
+                "summary": (
+                    "Approved Nexavenu revenue mock action "
+                    f"{action_type} was queued."
+                ),
+                "metricKey": self.NEXAVENU_REVENUE_METRICS[action_type],
                 "metricValue": 1,
             }
         return {
