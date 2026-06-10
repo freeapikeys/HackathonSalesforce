@@ -2,6 +2,7 @@ import { createElement } from "lwc";
 import HfsRelationshipCommandCenter from "c/hfsRelationshipCommandCenter";
 import loadCommandCenter from "@salesforce/apex/HFS_RelationshipController.loadCommandCenter";
 import decideApproval from "@salesforce/apex/HFS_RelationshipController.decideApproval";
+import requestCorrectionReview from "@salesforce/apex/HFS_RelationshipController.requestCorrectionReview";
 import { UI_STATE_VERSION } from "../fixtures";
 
 jest.mock(
@@ -11,6 +12,11 @@ jest.mock(
 );
 jest.mock(
   "@salesforce/apex/HFS_RelationshipController.decideApproval",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
+jest.mock(
+  "@salesforce/apex/HFS_RelationshipController.requestCorrectionReview",
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
@@ -269,6 +275,7 @@ describe("c-hfs-relationship-command-center", () => {
       stateVersion: UI_STATE_VERSION
     });
     expect(decideApproval).not.toHaveBeenCalled();
+    expect(requestCorrectionReview).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -426,6 +433,50 @@ describe("c-hfs-relationship-command-center", () => {
           correlationId: "correlation-decision-test"
         })
       })
+    );
+  });
+
+  it("requests a live correction review and refreshes governed context", async () => {
+    loadCommandCenter.mockResolvedValue({
+      ...livePayload,
+      permissions: {
+        ...livePayload.permissions,
+        canModify: true
+      }
+    });
+    requestCorrectionReview.mockResolvedValue({
+      contractVersion: "1.0.0",
+      correlationId: "correlation-correction-test",
+      operation: "REQUEST_CORRECTION_REVIEW",
+      success: true,
+      replayed: false,
+      recordId: "a10000000000001AAA",
+      recordType: "HFS_Work_Item__c",
+      status: "AWAITING_APPROVAL",
+      errors: []
+    });
+    const element = createLiveComponent();
+    await flushPromises();
+
+    element.shadowRoot
+      .querySelector('[data-testid="correction-button"]')
+      .dispatchEvent(new CustomEvent("click"));
+    await flushPromises();
+    await flushPromises();
+
+    expect(requestCorrectionReview).toHaveBeenCalledTimes(1);
+    expect(requestCorrectionReview.mock.calls[0][0].command).toEqual(
+      expect.objectContaining({
+        tenantKey: "tenant-live-test",
+        sourceRelationshipId: "a03000000000001AAA",
+        targetLabel: "CUSTOMER_OF",
+        reason:
+          "Open a governed review instead of overwriting relationship history silently."
+      })
+    );
+    expect(loadCommandCenter).toHaveBeenCalledTimes(2);
+    expect(element.shadowRoot.textContent).toContain(
+      "Correction review work item created"
     );
   });
 

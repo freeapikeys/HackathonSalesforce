@@ -7,6 +7,7 @@ and integration adapters. It covers:
 
 - permission-aware relationship context retrieval;
 - source provenance and evidence citations;
+- relationship correction review requests from the command center;
 - accepted and review-required event intake persistence;
 - recommendation storage;
 - approval requests and human decisions;
@@ -33,6 +34,9 @@ authorization, replay, and error behavior.
 - Event participants are exposed as first-class context items so users and
   agents can inspect which source event linked an entity into the relationship
   graph.
+- Command-center correction review creates a governed work item, evidence,
+  recommendation, and pending approval. It does not supersede or delete the
+  original relationship assertion by itself.
 - Event persistence stores accepted, late, out-of-order, and conflict-review
   intake results as immutable `HFS_Event__c` records, preserves the normalized
   payload JSON, and rejects changed content under the same tenant/source
@@ -78,6 +82,13 @@ users. It proves:
 | `LOG_ACTION`           | `HFS_ActionCommand`           | `HFS_CommandResult`      |
 | `CAPTURE_OUTCOME`      | `HFS_OutcomeCommand`          | `HFS_CommandResult`      |
 
+`HFS_RelationshipController.requestCorrectionReview` is a Lightning-facing
+controller endpoint for the command center. It accepts
+`HFS_CorrectionReviewCommand` and persists review work through the same
+`HFS_Work_Item__c -> HFS_Evidence__c -> HFS_Recommendation__c ->
+HFS_Approval__c` chain. It is intentionally not an external action and does not
+modify relationship history without later human approval.
+
 Every request carries `contractVersion`, `tenantKey`, `correlationId`, and a
 non-empty `purpose`. Write commands use stable external keys or action
 idempotency keys where the Salesforce model supports them.
@@ -99,6 +110,7 @@ implementation may authorize from a role-name string alone.
 | Decide approval      | Deny              | Allow    | Deny             | `HFS_Approve_Recommendation`                          |
 | Log action           | Deny              | Deny     | Allow            | `HFS_Execute_Action` and approved approval            |
 | Capture outcome      | Deny              | Deny     | Allow            | `HFS_Execute_Action`                                  |
+| Correction review    | CRUD/FLS          | CRUD/FLS | CRUD/FLS         | Work, evidence, recommendation, and approval create   |
 
 `HFS_AuthorizationMatrix` is the executable policy definition. It names the
 objects, fields, custom permissions, sharing mode, user-mode data access, and
@@ -119,19 +131,22 @@ transaction boundary for every operation.
   callout in the DML transaction.
 - External action execution requires an approved approval linked to the same
   recommendation.
+- Correction review requests create pending review work only; supersession
+  requires a later approved decision and preserved evidence.
 - No partial record graph is committed when a command fails.
 
 ## Transaction Boundaries
 
-| Operation                    | Boundary                                           |
-| ---------------------------- | -------------------------------------------------- |
-| Context and provenance reads | Read-only user-mode transaction                    |
-| Event persistence            | All-or-nothing DML                                 |
-| Recommendation storage       | All-or-nothing DML                                 |
-| Approval request             | All-or-nothing DML                                 |
-| Approval decision            | All-or-nothing DML                                 |
-| Action logging               | All-or-nothing pending-action DML; no callout      |
-| Outcome capture              | All-or-nothing outcome, action, and work-state DML |
+| Operation                    | Boundary                                                               |
+| ---------------------------- | ---------------------------------------------------------------------- |
+| Context and provenance reads | Read-only user-mode transaction                                        |
+| Event persistence            | All-or-nothing DML                                                     |
+| Recommendation storage       | All-or-nothing DML                                                     |
+| Approval request             | All-or-nothing DML                                                     |
+| Approval decision            | All-or-nothing DML                                                     |
+| Action logging               | All-or-nothing pending-action DML; no callout                          |
+| Outcome capture              | All-or-nothing outcome, action, and work-state DML                     |
+| Correction review request    | All-or-nothing review work, evidence, recommendation, and approval DML |
 
 The implementation may return `PARTIAL_FAILURE` only for an explicitly batched
 future endpoint. The version `1.0.0` single-command methods roll back on any

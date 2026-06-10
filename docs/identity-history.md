@@ -38,6 +38,9 @@ The command center now adds a human-facing inspection surface:
   being overwritten;
 - correction controls emit a governed review intent and do not mutate records or
   execute external actions directly.
+- live correction-review requests persist a governed work item, source
+  evidence, recommendation, and pending approval using existing HFS records.
 
 This is not yet the full C03 product surface. The next C03 slice should persist
-correction-review work items and supersession decisions after human approval.
+approved supersession decisions onto relationship/assertion history after human
+approval.

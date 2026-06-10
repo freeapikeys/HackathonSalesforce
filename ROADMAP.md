@@ -271,8 +271,10 @@ and UI must support any supermarket product category.
 - [x] Expose event participant identity links in Salesforce context and
       provenance responses.
 - [x] Add user-facing relationship inspection and correction affordances.
-- [ ] Persist correction-review work items and supersession decisions after
-      human approval.
+- [x] Persist correction-review work items, source evidence, recommendations,
+      and pending approvals.
+- [ ] Persist approved supersession decisions onto relationship/assertion
+      history.
 
 ### 6. Salesforce Core
 

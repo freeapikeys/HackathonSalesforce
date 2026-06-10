@@ -148,7 +148,8 @@ function correctionActionForRelationship(relationship, index) {
     target: relationship.relationshipType || humanize(relationship.recordType),
     reason:
       "Open a governed review instead of overwriting relationship history silently.",
-    sourceEventId: relationship.sourceEventId
+    sourceEventId: relationship.sourceEventId,
+    sourceRelationshipId: relationship.recordId
   };
 }
 

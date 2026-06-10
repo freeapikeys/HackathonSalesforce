@@ -1,6 +1,7 @@
 import { api, LightningElement } from "lwc";
 import loadCommandCenter from "@salesforce/apex/HFS_RelationshipController.loadCommandCenter";
 import decideApproval from "@salesforce/apex/HFS_RelationshipController.decideApproval";
+import requestCorrectionReview from "@salesforce/apex/HFS_RelationshipController.requestCorrectionReview";
 import {
   DEFAULT_PROFILE_KEY,
   getProfile,
@@ -201,7 +202,7 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
     }
   }
 
-  handleCorrectionRequest(event) {
+  async handleCorrectionRequest(event) {
     const actionId = event.currentTarget.dataset.actionId;
     const action = (this.state.case.correctionActions || []).find(
       (candidate) => candidate.id === actionId
@@ -215,6 +216,41 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
         }
       })
     );
+    if (this.mockMode || !action || this.disableCorrectionControls) {
+      return;
+    }
+
+    this.commandMessage = null;
+    this.commandError = null;
+    try {
+      const result = await requestCorrectionReview({
+        command: {
+          contractVersion: UI_STATE_VERSION,
+          correlationId: this.createCorrelationId(),
+          tenantKey: this.tenantKey,
+          purpose: this.purpose,
+          externalKey: `correction-${action.id}`,
+          sourceRelationshipId: action.sourceRelationshipId,
+          sourceParticipantId: action.sourceParticipantId,
+          targetLabel: action.target,
+          reason: action.reason
+        }
+      });
+      if (!result?.success) {
+        const error = result?.errors?.[0];
+        this.commandError =
+          error?.message || "The correction review was not accepted.";
+        return;
+      }
+      await this.loadState(true);
+      this.commandMessage =
+        "Correction review work item created and approval requested.";
+    } catch (error) {
+      this.commandError =
+        error?.body?.message ||
+        error?.message ||
+        "The correction review could not be requested.";
+    }
   }
 
   dispatchDecision(decision) {
