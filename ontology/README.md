@@ -15,6 +15,8 @@ portable meaning and validation rules used at integration boundaries.
   and ontology mapping registry.
 - `examples/valid.jsonld`: a conforming relationship and recommendation trace.
 - `examples/invalid.jsonld`: deliberate business-level contract violations.
+- `examples/temporal.jsonld`: assertion history for current-state and
+  historical-belief queries.
 
 ## Validate
 
@@ -24,6 +26,7 @@ From the repository root:
 ./scripts/bootstrap-runtime.sh
 npm run check:ontology
 npm run check:mappings
+npm run check:temporal
 ```
 
 The validator must prove both sides of the contract:
@@ -50,10 +53,17 @@ The base contract now covers:
 - semantic mappings from event envelope paths, source-local fixture attributes,
   event type families, and generated Salesforce fields to intended Data 360 and
   ontology concepts.
+- temporal queries that distinguish current best-known state at a business time
+  from what the system believed at an earlier recorded time.
 
 `npm run check:mappings` fails when a source event path, fixture attribute,
 event type pattern, or generated Salesforce field lacks a mapping, or when two
 mapping records claim the same concrete field.
+
+`npm run check:temporal` validates four assertion-history scenarios: belief
+before a late-arriving claim, current state after the late claim, belief before
+restoration, and current state after restoration. Each result must carry source
+record, source activity, and source agent evidence.
 
 ## North Star Extension Plan
 

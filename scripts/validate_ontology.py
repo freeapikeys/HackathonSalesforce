@@ -133,6 +133,16 @@ def main() -> None:
     )
     supersedes_count = len(list(valid_data.triples((None, HFS.supersedes, None))))
     assert supersedes_count == 1, "Valid fixture must prove explicit supersession."
+    assert (
+        None,
+        HFS.assertionPredicate,
+        HFS.relationshipStatus,
+    ) in valid_data, "Valid fixture must use the canonical HFS relationshipStatus IRI."
+    assert (
+        None,
+        HFS.assertionKind,
+        HFS.SourceClaim,
+    ) in valid_data, "Valid fixture must use the canonical HFS SourceClaim IRI."
 
     invalid_conforms, invalid_data, invalid_results, invalid_report = validate_fixture(
         ONTOLOGY_DIR / "examples" / "invalid.jsonld", ontology, shapes

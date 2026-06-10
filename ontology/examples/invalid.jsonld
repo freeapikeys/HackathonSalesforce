@@ -49,7 +49,7 @@
       "sourceSystem": "hris",
       "recordedAt": "2026-06-05T08:01:00Z",
       "subjectEntity": "https://example.org/data/person/alice",
-      "relationshipType": "EmploymentRelationship"
+      "relationshipType": "hfs:EmploymentRelationship"
     },
     {
       "id": "https://example.org/data/assertion/relationship-status-active",
@@ -60,7 +60,7 @@
       "recordedAt": "2026-06-05T08:01:30Z",
       "validFrom": "2026-06-01T00:00:00Z",
       "assertionSubject": "https://example.org/data/relationship/alice-acme",
-      "assertionPredicate": "relationshipStatus",
+      "assertionPredicate": "hfs:relationshipStatus",
       "assertionObject": "ACTIVE",
       "generatedBy": "https://example.org/data/activity/crm-sync-001",
       "attributedTo": "https://example.org/data/agent/crm"
@@ -74,9 +74,9 @@
       "recordedAt": "2026-06-05T08:02:30Z",
       "validFrom": "2026-06-01T00:00:00Z",
       "assertionSubject": "https://example.org/data/relationship/alice-acme",
-      "assertionPredicate": "relationshipStatus",
+      "assertionPredicate": "hfs:relationshipStatus",
       "assertionObject": "PAUSED",
-      "assertionKind": "SourceClaim",
+      "assertionKind": "hfs:SourceClaim",
       "generatedBy": "https://example.org/data/activity/crm-sync-001",
       "attributedTo": "https://example.org/data/agent/crm"
     },

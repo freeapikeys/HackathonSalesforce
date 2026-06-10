@@ -44,7 +44,7 @@
       "preferredLabel": "client",
       "definition": "ACME CRM term for a customer relationship.",
       "inScheme": "https://example.org/data/terminology/acme-sales",
-      "canonicalConcept": "CustomerRelationship"
+      "canonicalConcept": "hfs:CustomerRelationship"
     },
     {
       "id": "https://example.org/data/relationship/alice-acme",
@@ -56,7 +56,7 @@
       "validFrom": "2025-01-15T00:00:00Z",
       "subjectEntity": "https://example.org/data/person/alice",
       "objectEntity": "https://example.org/data/organization/acme",
-      "relationshipType": "EmploymentRelationship"
+      "relationshipType": "hfs:EmploymentRelationship"
     },
     {
       "id": "https://example.org/data/assertion/relationship-status-active",
@@ -68,9 +68,9 @@
       "validFrom": "2026-06-01T00:00:00Z",
       "supersededAt": "2026-06-05T08:02:30Z",
       "assertionSubject": "https://example.org/data/relationship/alice-acme",
-      "assertionPredicate": "relationshipStatus",
+      "assertionPredicate": "hfs:relationshipStatus",
       "assertionObject": "ACTIVE",
-      "assertionKind": "SourceClaim",
+      "assertionKind": "hfs:SourceClaim",
       "generatedBy": "https://example.org/data/activity/crm-sync-001",
       "attributedTo": "https://example.org/data/agent/crm"
     },
@@ -83,9 +83,9 @@
       "recordedAt": "2026-06-05T08:02:30Z",
       "validFrom": "2026-06-01T00:00:00Z",
       "assertionSubject": "https://example.org/data/relationship/alice-acme",
-      "assertionPredicate": "relationshipStatus",
+      "assertionPredicate": "hfs:relationshipStatus",
       "assertionObject": "PAUSED",
-      "assertionKind": "SourceClaim",
+      "assertionKind": "hfs:SourceClaim",
       "generatedBy": "https://example.org/data/activity/crm-sync-001",
       "attributedTo": "https://example.org/data/agent/crm",
       "supersedes": "https://example.org/data/assertion/relationship-status-active"
@@ -105,7 +105,7 @@
       "sourceSystem": "relationship-system",
       "sourceRecordId": "action-001",
       "recordedAt": "2026-06-05T08:03:00Z",
-      "actionType": "SendMessageAction"
+      "actionType": "hfs:SendMessageAction"
     },
     {
       "id": "https://example.org/data/recommendation/check-in-001",

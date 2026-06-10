@@ -251,7 +251,7 @@ and UI must support any supermarket product category.
       recommendation support, and unsuperseded contradictions are rejected.
 - [x] Map event, Salesforce, and Data 360 semantics with versioned ownership,
       transformation rules, and ambiguity notes.
-- [ ] Add deterministic current-state and historical-belief queries over
+- [x] Add deterministic current-state and historical-belief queries over
       versioned assertions.
 
 ### 5. Salesforce Core

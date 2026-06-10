@@ -163,6 +163,16 @@ the contracts. It maps:
 Run `npm run check:mappings` to fail on missing or duplicate source paths,
 fixture attributes, event type coverage, or generated Salesforce field targets.
 
+`ontology/examples/temporal.jsonld` and `npm run check:temporal` validate the
+bitemporal assertion rule. A query always states both:
+
+- the business time being asked about;
+- the recorded-time cutoff representing what the system knew then.
+
+This lets the system answer "what is our current best-known state for that date?"
+and "what did we believe on that date before later evidence arrived?" without
+deleting late or superseded claims.
+
 A separate graph database is not required for the initial vertical slice.
 Introduce one only when measured traversal, inference, or scale requirements
 cannot be satisfied by the platform architecture.
