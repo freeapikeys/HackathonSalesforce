@@ -182,6 +182,24 @@ class DemoHarnessTest(unittest.TestCase):
             "actionId": "a00000000000001AAA",
             "actionExternalKey": "action-demo-001",
             "actionIdempotencyKey": "action-demo-001-v1",
+            "actions": [
+                {
+                    "channel": "slack",
+                    "actionType": "SEND_SLACK_ALERT",
+                    "sourceSystem": "slack",
+                    "actionId": "a00000000000001AAA",
+                    "actionExternalKey": "action-demo-slack-001",
+                    "actionIdempotencyKey": "action-demo-slack-001-v1",
+                },
+                {
+                    "channel": "whatsapp",
+                    "actionType": "SEND_WHATSAPP_ALERT",
+                    "sourceSystem": "whatsapp",
+                    "actionId": "a00000000000002AAA",
+                    "actionExternalKey": "action-demo-whatsapp-001",
+                    "actionIdempotencyKey": "action-demo-whatsapp-001-v1",
+                },
+            ],
         }
         mulesoft = harness.run_mulesoft(
             source,
@@ -194,6 +212,15 @@ class DemoHarnessTest(unittest.TestCase):
         self.assertEqual(
             fixture_config["correlationId"],
             mulesoft["outcome"]["correlationId"],
+        )
+        self.assertEqual(2, len(mulesoft["outcomes"]))
+        self.assertEqual(
+            "MOCK_SENT",
+            mulesoft["deliveryByActionType"]["SEND_SLACK_ALERT"]["status"],
+        )
+        self.assertEqual(
+            "MOCK_SENT",
+            mulesoft["deliveryByActionType"]["SEND_WHATSAPP_ALERT"]["status"],
         )
 
     def test_count_mismatch_returns_machine_readable_failure(self) -> None:

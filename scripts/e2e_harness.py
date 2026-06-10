@@ -46,7 +46,8 @@ HOSPITAL_ACTION_PURPOSE = "EXECUTE_APPROVED_HOSPITAL_ACTION"
 HOSPITAL_OUTCOME_PURPOSE = "CAPTURE_APPROVED_HOSPITAL_OUTCOME"
 HOSPITAL_RECOMMENDATION_TYPE = "NORTH_STAR_HOSPITAL_RECOVERY_PLAN"
 HOSPITAL_PROPOSED_ACTION_TYPE = "APPROVE_HOSPITAL_RECOVERY_ACTIONS"
-HOSPITAL_ALERT_ACTION_TYPE = "SEND_SLACK_ALERT"
+HOSPITAL_SLACK_ACTION_TYPE = "SEND_SLACK_ALERT"
+HOSPITAL_WHATSAPP_ACTION_TYPE = "SEND_WHATSAPP_ALERT"
 HOSPITAL_APPROVAL_POLICY_KEY = "north-star-hospital-manager-approval-v1"
 CLINICAL_DECISION_REFUSED = "CLINICAL_DECISION_REFUSED"
 
@@ -606,6 +607,9 @@ System.debug(
         agentforce: dict[str, Any],
     ) -> dict[str, Any]:
         action_key = self.config["identifiers"]["actionExternalKey"]
+        whatsapp_action_key = self.config["identifiers"][
+            "whatsappActionExternalKey"
+        ]
         script = f"""
 HFS_ActionCommand actionCommand = new HFS_ActionCommand();
 actionCommand.contractVersion = HFS_ServiceContract.VERSION;
@@ -618,7 +622,7 @@ actionCommand.recommendationId =
   '{apex_string(recommendation["recommendationId"])}';
 actionCommand.approvalId = '{apex_string(agentforce["approvalId"])}';
 actionCommand.targetEntityId = '{apex_string(source["subjectEntityId"])}';
-actionCommand.actionType = '{HOSPITAL_ALERT_ACTION_TYPE}';
+actionCommand.actionType = '{HOSPITAL_SLACK_ACTION_TYPE}';
 HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
 HFS_CommandResult blocked = service.logAction(actionCommand);
 System.assertEquals(false, blocked.success);
@@ -641,6 +645,46 @@ System.assertEquals(true, approved.success, JSON.serialize(approved.errors));
 HFS_CommandResult logged = service.logAction(actionCommand);
 System.assertEquals(true, logged.success, JSON.serialize(logged.errors));
 System.assertEquals('PENDING', logged.status);
+
+HFS_ActionCommand whatsappCommand = new HFS_ActionCommand();
+whatsappCommand.contractVersion = HFS_ServiceContract.VERSION;
+whatsappCommand.correlationId = actionCommand.correlationId;
+whatsappCommand.tenantKey = actionCommand.tenantKey;
+whatsappCommand.purpose = actionCommand.purpose;
+whatsappCommand.externalKey = '{apex_string(whatsapp_action_key)}';
+whatsappCommand.idempotencyKey = '{apex_string(whatsapp_action_key)}-v1';
+whatsappCommand.recommendationId = actionCommand.recommendationId;
+whatsappCommand.approvalId = actionCommand.approvalId;
+whatsappCommand.targetEntityId = actionCommand.targetEntityId;
+whatsappCommand.actionType = '{HOSPITAL_WHATSAPP_ACTION_TYPE}';
+HFS_CommandResult whatsappLogged = service.logAction(whatsappCommand);
+System.assertEquals(
+  true,
+  whatsappLogged.success,
+  JSON.serialize(whatsappLogged.errors)
+);
+System.assertEquals('PENDING', whatsappLogged.status);
+
+List<Object> actions = new List<Object>{{
+  new Map<String, Object>{{
+    'channel' => 'slack',
+    'actionType' => actionCommand.actionType,
+    'sourceSystem' => 'slack',
+    'actionId' => logged.recordId,
+    'actionStatus' => logged.status,
+    'actionExternalKey' => actionCommand.externalKey,
+    'actionIdempotencyKey' => actionCommand.idempotencyKey
+  }},
+  new Map<String, Object>{{
+    'channel' => 'whatsapp',
+    'actionType' => whatsappCommand.actionType,
+    'sourceSystem' => 'whatsapp',
+    'actionId' => whatsappLogged.recordId,
+    'actionStatus' => whatsappLogged.status,
+    'actionExternalKey' => whatsappCommand.externalKey,
+    'actionIdempotencyKey' => whatsappCommand.idempotencyKey
+  }}
+}};
 Map<String, Object> result = new Map<String, Object>{{
   'blockedErrorCode' => blocked.errors[0].code,
   'approvalId' => approved.recordId,
@@ -648,7 +692,8 @@ Map<String, Object> result = new Map<String, Object>{{
   'actionId' => logged.recordId,
   'actionStatus' => logged.status,
   'actionExternalKey' => actionCommand.externalKey,
-  'actionIdempotencyKey' => actionCommand.idempotencyKey
+  'actionIdempotencyKey' => actionCommand.idempotencyKey,
+  'actions' => actions
 }};
 System.debug(
   'HFS_CP3_ACTION:' +
@@ -664,29 +709,41 @@ System.debug(
         action: dict[str, Any],
     ) -> dict[str, Any]:
         api = build_default_api()
-        api.write_back_adapter.register_approval(
-            approval_id=action["approvalId"],
-            tenant_key=self.config["tenantKey"],
-            recommendation_id=recommendation["recommendationId"],
-            action_id=action["actionId"],
-        )
         example = api.contract.examples["operations"][
             "executeApprovedAction"
         ]["request"]
-        body = deepcopy(example["value"])
-        body.update(
+        channel_actions = action.get("actions") or [
             {
-                "tenantKey": self.config["tenantKey"],
-                "correlationId": self.config["correlationId"],
-                "externalKey": action["actionExternalKey"],
-                "idempotencyKey": action["actionIdempotencyKey"],
-                "recommendationId": recommendation["recommendationId"],
-                "approvalId": action["approvalId"],
-                "actionId": action["actionId"],
-                "targetEntityId": source["subjectEntityId"],
-                "actionType": HOSPITAL_ALERT_ACTION_TYPE,
+                "channel": "slack",
+                "actionType": HOSPITAL_SLACK_ACTION_TYPE,
                 "sourceSystem": "slack",
-                "payload": {
+                "actionId": action["actionId"],
+                "actionExternalKey": action["actionExternalKey"],
+                "actionIdempotencyKey": action["actionIdempotencyKey"],
+            }
+        ]
+
+        def execution_body(channel_action: dict[str, Any]) -> dict[str, Any]:
+            action_type = channel_action["actionType"]
+            channel = channel_action["channel"]
+            body = deepcopy(example["value"])
+            if action_type == HOSPITAL_WHATSAPP_ACTION_TYPE:
+                payload = {
+                    "targetRole": "Patient Experience Lead",
+                    "targetChannel": "wa-role-patient-experience-lead",
+                    "messageTitle": "Hospital operations surge recovery",
+                    "messageBody": (
+                        "Coordinate patient-safe internal updates for "
+                        "room readiness, pharmacy stock, lab response, "
+                        "and billing review."
+                    ),
+                    "evidenceIds": [source["evidenceId"]],
+                    "sourceRecommendationId": recommendation[
+                        "recommendationId"
+                    ],
+                }
+            else:
+                payload = {
                     "targetRole": "Operations Manager",
                     "targetChannel": "#north-star-demo",
                     "messageTitle": "Hospital operations surge recovery",
@@ -699,20 +756,41 @@ System.debug(
                     "sourceRecommendationId": recommendation[
                         "recommendationId"
                     ],
-                },
-            }
-        )
-        headers = deepcopy(example["x-hfs-headers"])
-        headers["X-Tenant-Id"] = self.config["tenantKey"]
-        headers["X-Correlation-Id"] = self.config["correlationId"]
-        headers["X-Idempotency-Key"] = action["actionIdempotencyKey"]
+                }
+            body.update(
+                {
+                    "tenantKey": self.config["tenantKey"],
+                    "correlationId": self.config["correlationId"],
+                    "externalKey": channel_action["actionExternalKey"],
+                    "idempotencyKey": channel_action[
+                        "actionIdempotencyKey"
+                    ],
+                    "recommendationId": recommendation["recommendationId"],
+                    "approvalId": action["approvalId"],
+                    "actionId": channel_action["actionId"],
+                    "targetEntityId": source["subjectEntityId"],
+                    "actionType": action_type,
+                    "sourceSystem": channel_action.get(
+                        "sourceSystem",
+                        channel,
+                    ),
+                    "payload": payload,
+                }
+            )
+            return body
 
-        blocked_body = deepcopy(body)
+        def execution_headers(body: dict[str, Any]) -> dict[str, str]:
+            headers = deepcopy(example["x-hfs-headers"])
+            headers["X-Tenant-Id"] = self.config["tenantKey"]
+            headers["X-Correlation-Id"] = self.config["correlationId"]
+            headers["X-Idempotency-Key"] = body["idempotencyKey"]
+            return headers
+
+        blocked_body = execution_body(channel_actions[0])
         blocked_body["externalKey"] = "action-demo-unapproved"
         blocked_body["idempotencyKey"] = "action-demo-unapproved-v1"
         blocked_body["approvalId"] = "approval-not-approved"
-        blocked_headers = deepcopy(headers)
-        blocked_headers["X-Idempotency-Key"] = blocked_body["idempotencyKey"]
+        blocked_headers = execution_headers(blocked_body)
         blocked = api.request(
             "POST",
             "/v1/actions/executions",
@@ -724,52 +802,116 @@ System.debug(
                 "The MuleSoft unapproved-action path did not fail closed."
             )
 
-        executed = api.request(
-            "POST",
-            "/v1/actions/executions",
-            headers,
-            body,
-        )
-        if executed.status != 202 or len(api.outcomes) != 1:
-            raise HarnessFailure(
-                "The approved MuleSoft action did not produce one outcome."
+        execution_results = []
+        outcomes = []
+        delivery_by_type = {}
+        for channel_action in channel_actions:
+            api.write_back_adapter.register_approval(
+                approval_id=action["approvalId"],
+                tenant_key=self.config["tenantKey"],
+                recommendation_id=recommendation["recommendationId"],
+                action_id=channel_action["actionId"],
             )
-        outcome = next(iter(api.outcomes.values()))
-        if outcome["correlationId"] != self.config["correlationId"]:
-            raise HarnessFailure("MuleSoft lost the correlation identifier.")
+            body = execution_body(channel_action)
+            executed = api.request(
+                "POST",
+                "/v1/actions/executions",
+                execution_headers(body),
+                body,
+            )
+            if executed.status != 202:
+                raise HarnessFailure(
+                    f"The approved MuleSoft {channel_action['channel']} "
+                    "action was not accepted."
+                )
+            outcome_key = f"outcome-{channel_action['actionExternalKey']}"
+            outcome = api.outcomes.get(outcome_key)
+            if outcome is None:
+                raise HarnessFailure(
+                    f"The approved MuleSoft {channel_action['channel']} "
+                    "action did not produce its expected outcome."
+                )
+            if outcome["correlationId"] != self.config["correlationId"]:
+                raise HarnessFailure(
+                    "MuleSoft lost the correlation identifier."
+                )
+            source_record = api.write_back_adapter.source_records[
+                outcome["sourceRecordId"]
+            ]
+            delivery = source_record.get("delivery", {})
+            delivery_by_type[channel_action["actionType"]] = delivery
+            outcomes.append(
+                {
+                    "channel": channel_action["channel"],
+                    "actionType": channel_action["actionType"],
+                    "actionId": channel_action["actionId"],
+                    "outcome": outcome,
+                    "delivery": delivery,
+                }
+            )
+            execution_results.append(
+                {
+                    "channel": channel_action["channel"],
+                    "actionType": channel_action["actionType"],
+                    "status": executed.status,
+                    "state": executed.body["status"],
+                    "deliveryStatus": delivery.get("status"),
+                    "provider": delivery.get("provider"),
+                }
+            )
+
+        if len(api.outcomes) != len(channel_actions):
+            raise HarnessFailure(
+                "The approved MuleSoft channel actions did not produce "
+                "one outcome each."
+            )
         return {
             "blockedStatus": blocked.status,
             "blockedErrorCode": blocked.body["errors"][0]["code"],
-            "executionStatus": executed.status,
-            "executionState": executed.body["status"],
-            "sourceRecordId": outcome["sourceRecordId"],
-            "outcome": outcome,
+            "executionStatus": execution_results[-1]["status"],
+            "executionState": execution_results[-1]["state"],
+            "sourceRecordId": outcomes[-1]["outcome"]["sourceRecordId"],
+            "executionResults": execution_results,
+            "deliveryByActionType": delivery_by_type,
+            "outcomes": outcomes,
+            "outcome": outcomes[0]["outcome"],
         }
 
-    def capture_outcome(
+    def capture_single_outcome(
         self,
         source: dict[str, Any],
-        action: dict[str, Any],
-        mulesoft: dict[str, Any],
+        channel_outcome: dict[str, Any],
+        index: int,
     ) -> dict[str, Any]:
-        outcome = mulesoft["outcome"]
+        outcome = channel_outcome["outcome"]
         observed_at = (
             outcome["observedAt"].replace("T", " ").replace("Z", "")
         )
         payload_json = json.dumps(outcome, separators=(",", ":"), sort_keys=True)
-        evaluation_key = self.config["identifiers"]["evaluationExternalKey"]
+        identifiers = self.config["identifiers"]
+        evaluation_key = (
+            identifiers["evaluationExternalKey"]
+            if index == 1
+            else identifiers["whatsappEvaluationExternalKey"]
+        )
+        event_external_key = f"event-demo-outcome-{index:03d}"
+        source_uri = (
+            "urn:hfs:source:hospital:whatsapp-alert"
+            if channel_outcome["actionType"] == HOSPITAL_WHATSAPP_ACTION_TYPE
+            else "urn:hfs:source:hospital:slack-alert"
+        )
         script = f"""
 HFS_Event__c outcomeEvent = new HFS_Event__c(
-  Event_Id__c = 'event-demo-outcome-001',
+  Event_Id__c = '{event_external_key}',
   Tenant_Key__c = '{apex_string(self.config["tenantKey"])}',
-  Source_URI__c = 'urn:hfs:source:hospital:slack-alert',
+  Source_URI__c = '{source_uri}',
   Source_Record_Id__c = '{apex_string(outcome["sourceRecordId"])}',
   Event_Type__c = 'HOSPITAL_APPROVED_ACTION_EXECUTED',
   Subject__c = '{apex_string(outcome["summary"])}',
   Occurred_At__c = Datetime.valueOfGmt('{observed_at}'),
   Observed_At__c = Datetime.valueOfGmt('{observed_at}'),
-  Source_Sequence__c = 2,
-  Idempotency_Key__c = 'event-demo-outcome-001-v1',
+  Source_Sequence__c = {index + 1},
+  Idempotency_Key__c = '{event_external_key}-v1',
   Correlation_Id__c = '{apex_string(self.config["correlationId"])}',
   Schema_Version__c = HFS_ServiceContract.VERSION,
   Content_Hash__c =
@@ -785,7 +927,7 @@ command.correlationId = '{apex_string(self.config["correlationId"])}';
 command.tenantKey = '{apex_string(self.config["tenantKey"])}';
 command.purpose = '{HOSPITAL_OUTCOME_PURPOSE}';
 command.externalKey = '{apex_string(outcome["externalKey"])}';
-command.actionId = '{apex_string(action["actionId"])}';
+command.actionId = '{apex_string(channel_outcome["actionId"])}';
 command.sourceEventId = outcomeEvent.Id;
 command.outcomeType = '{apex_string(outcome["outcomeType"])}';
 command.status = '{apex_string(outcome["status"])}';
@@ -811,39 +953,113 @@ HFS_Evaluation__c evaluation = new HFS_Evaluation__c(
 );
 insert as user evaluation;
 
+Map<String, Object> result = new Map<String, Object>{{
+  'channel' => '{apex_string(channel_outcome["channel"])}',
+  'actionType' => '{apex_string(channel_outcome["actionType"])}',
+  'outcomeId' => captured.recordId,
+  'outcomeStatus' => captured.status,
+  'evaluationId' => evaluation.Id,
+  'actionId' => '{apex_string(channel_outcome["actionId"])}'
+}};
+System.debug(
+  'HFS_CP3_CAPTURED_OUTCOME:' +
+  EncodingUtil.base64Encode(Blob.valueOf(JSON.serialize(result)))
+);
+"""
+        return self.run_apex_source(script, "HFS_CP3_CAPTURED_OUTCOME")
+
+    def verify_lightning_after_outcomes(
+        self,
+        source: dict[str, Any],
+        expected_count: int,
+    ) -> dict[str, Any]:
+        script = f"""
 HFS_ContextRequest contextRequest = new HFS_ContextRequest();
 contextRequest.contractVersion = HFS_ServiceContract.VERSION;
-contextRequest.tenantKey = command.tenantKey;
+contextRequest.tenantKey = '{apex_string(self.config["tenantKey"])}';
 contextRequest.workItemId = '{apex_string(source["workItemId"])}';
 contextRequest.purpose = '{HOSPITAL_PURPOSE}';
-contextRequest.correlationId = command.correlationId;
+contextRequest.correlationId = '{apex_string(self.config["correlationId"])}';
 contextRequest.includeProvenance = true;
 contextRequest.timelineLimit = 100;
 HFS_CommandCenterResponse commandCenter =
   HFS_RelationshipController.loadCommandCenter(contextRequest);
 System.assertEquals(0, commandCenter.context.errors.size());
 System.assertEquals('COMPLETED', commandCenter.context.workItem.status);
-System.assertEquals(1, commandCenter.context.actions.size());
-System.assertEquals('EXECUTED', commandCenter.context.actions[0].status);
-System.assertEquals(1, commandCenter.context.outcomes.size());
-System.assertEquals(1, commandCenter.context.evaluations.size());
+System.assertEquals({expected_count}, commandCenter.context.actions.size());
+System.assertEquals({expected_count}, commandCenter.context.outcomes.size());
+System.assertEquals({expected_count}, commandCenter.context.evaluations.size());
+Set<String> actionTypes = new Set<String>();
+Integer executedActions = 0;
+for (HFS_ContextItem item : commandCenter.context.actions) {{
+  actionTypes.add(item.recordType);
+  if (item.status == 'EXECUTED') {{
+    executedActions++;
+  }}
+}}
+System.assertEquals({expected_count}, executedActions);
+System.assertEquals(true, actionTypes.contains('{HOSPITAL_SLACK_ACTION_TYPE}'));
+System.assertEquals(
+  true,
+  actionTypes.contains('{HOSPITAL_WHATSAPP_ACTION_TYPE}')
+);
 System.assertEquals(true, commandCenter.permissions.canApprove);
 System.assertEquals(true, commandCenter.permissions.canExecute);
 Map<String, Object> result = new Map<String, Object>{{
-  'outcomeId' => captured.recordId,
-  'outcomeStatus' => captured.status,
-  'evaluationId' => evaluation.Id,
   'workItemStatus' => commandCenter.context.workItem.status,
-  'actionStatus' => commandCenter.context.actions[0].status,
+  'actionStatus' => 'EXECUTED',
+  'actionCount' => commandCenter.context.actions.size(),
+  'outcomeCount' => commandCenter.context.outcomes.size(),
+  'evaluationCount' => commandCenter.context.evaluations.size(),
+  'actionTypes' => new List<String>(actionTypes),
   'lightningCanApprove' => commandCenter.permissions.canApprove,
   'lightningCanExecute' => commandCenter.permissions.canExecute
 }};
 System.debug(
-  'HFS_CP3_OUTCOME:' +
+  'HFS_CP3_OUTCOME_VERIFY:' +
   EncodingUtil.base64Encode(Blob.valueOf(JSON.serialize(result)))
 );
 """
-        return self.run_apex_source(script, "HFS_CP3_OUTCOME")
+        return self.run_apex_source(script, "HFS_CP3_OUTCOME_VERIFY")
+
+    def capture_outcome(
+        self,
+        source: dict[str, Any],
+        action: dict[str, Any],
+        mulesoft: dict[str, Any],
+    ) -> dict[str, Any]:
+        channel_outcomes = mulesoft.get("outcomes") or [
+            {
+                "channel": "slack",
+                "actionType": HOSPITAL_SLACK_ACTION_TYPE,
+                "actionId": action["actionId"],
+                "outcome": mulesoft["outcome"],
+                "delivery": mulesoft.get("deliveryByActionType", {}).get(
+                    HOSPITAL_SLACK_ACTION_TYPE,
+                    {},
+                ),
+            }
+        ]
+        captured = [
+            self.capture_single_outcome(source, channel_outcome, index)
+            for index, channel_outcome in enumerate(channel_outcomes, start=1)
+        ]
+        verification = self.verify_lightning_after_outcomes(
+            source,
+            len(channel_outcomes),
+        )
+        return {
+            **verification,
+            "outcomeStatus": "SUCCESS",
+            "capturedOutcomes": captured,
+            "channelDeliveries": {
+                channel_outcome["actionType"]: channel_outcome.get(
+                    "delivery",
+                    {},
+                )
+                for channel_outcome in channel_outcomes
+            },
+        }
 
     def verify_connected(self) -> dict[str, Any]:
         identifiers = self.config["identifiers"]
@@ -864,13 +1080,25 @@ System.debug(
                     "HFS_Action__c",
                     identifiers["actionExternalKey"],
                 ),
+                "whatsappActionId": self.query_identifier(
+                    "HFS_Action__c",
+                    identifiers["whatsappActionExternalKey"],
+                ),
                 "outcomeId": self.query_identifier(
                     "HFS_Outcome__c",
                     identifiers["outcomeExternalKey"],
                 ),
+                "whatsappOutcomeId": self.query_identifier(
+                    "HFS_Outcome__c",
+                    identifiers["whatsappOutcomeExternalKey"],
+                ),
                 "evaluationId": self.query_identifier(
                     "HFS_Evaluation__c",
                     identifiers["evaluationExternalKey"],
+                ),
+                "whatsappEvaluationId": self.query_identifier(
+                    "HFS_Evaluation__c",
+                    identifiers["whatsappEvaluationExternalKey"],
                 ),
             },
         }

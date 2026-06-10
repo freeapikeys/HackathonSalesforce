@@ -191,10 +191,10 @@ North Star should produce one recovery plan:
 - [x] Universal primitive list added to active docs.
 - [x] Hospital non-clinical boundary documented.
 - [x] Teammate assignment docs exist in `docs/assignments/`.
-- [ ] One-sentence hospital/global product pitch finalized.
-- [ ] Three-minute judge demo narrative updated.
-- [ ] Five-minute extended demo narrative updated.
-- [ ] Backup recorded-demo path updated for hospital scenario.
+- [x] One-sentence hospital/global product pitch finalized.
+- [x] Three-minute judge demo narrative updated.
+- [x] Five-minute extended demo narrative updated.
+- [x] Backup recorded-demo path updated for hospital scenario.
 - [ ] Final non-goals reviewed by whole team.
 
 ### 2. Team Assignment Checkpoints
@@ -366,12 +366,12 @@ file before editing.
 - [x] `npm run demo:reset` works.
 - [x] `npm run demo:seed` creates the hospital operations case.
 - [x] `npm run demo:run` completes trigger through outcome.
-- [ ] Clean-clone runbook reflects the hospital/global flow.
+- [x] Clean-clone runbook reflects the hospital/global flow.
 - [x] Demo starts from one clear hospital operations surge event.
 - [ ] Demo shows conflicting recommendations before orchestration.
 - [ ] Demo shows partner or capacity response changing the recommendation.
 - [x] Demo shows manager approval before action execution.
-- [ ] Demo shows Slack and WhatsApp-style internal alerts.
+- [x] Demo shows Slack and WhatsApp-style internal alerts.
 - [x] Demo shows clinical-decision refusal.
 - [x] Demo shows outcome metrics and audit trail.
 - [ ] Final rehearsal completed with the whole team.

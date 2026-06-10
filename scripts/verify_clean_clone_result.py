@@ -32,10 +32,10 @@ REQUIRED_STEPS = [
     "verify-connected",
 ]
 FINAL_COUNT_MINIMUMS = {
-    "HFS_Action__c": 1,
-    "HFS_Evaluation__c": 1,
-    "HFS_Event__c": 2,
-    "HFS_Outcome__c": 1,
+    "HFS_Action__c": 2,
+    "HFS_Evaluation__c": 2,
+    "HFS_Event__c": 3,
+    "HFS_Outcome__c": 2,
     "HFS_Recommendation__c": 1,
     "HFS_Work_Item__c": 1,
 }
@@ -160,6 +160,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
     clinical_refusal = details.get("clinicalRefusal") or {}
     action = details.get("action") or {}
     mulesoft = details.get("mulesoft") or {}
+    delivery_by_type = mulesoft.get("deliveryByActionType") or {}
     outcome = details.get("outcome") or {}
     connected = details.get("connected") or {}
     counts = connected.get("counts") or {}
@@ -210,6 +211,16 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         and mulesoft.get("executionState") == "QUEUED",
         "MuleSoft did not accept the approved write-back",
     )
+    for action_type in ("SEND_SLACK_ALERT", "SEND_WHATSAPP_ALERT"):
+        delivery = delivery_by_type.get(action_type) or {}
+        require(
+            delivery.get("status") in {"SENT", "MOCK_SENT"},
+            f"MuleSoft did not record approved {action_type} delivery",
+        )
+        require(
+            delivery.get("provider"),
+            f"MuleSoft {action_type} delivery has no provider evidence",
+        )
     require(
         outcome.get("actionStatus") == "EXECUTED"
         and outcome.get("outcomeStatus") == "SUCCESS"
@@ -248,6 +259,10 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             "mulesoftPreApprovalStatus": mulesoft["blockedStatus"],
             "mulesoftPreApprovalError": mulesoft["blockedErrorCode"],
             "mulesoftApprovedStatus": mulesoft["executionStatus"],
+            "slackDeliveryStatus": delivery_by_type["SEND_SLACK_ALERT"]["status"],
+            "whatsappDeliveryStatus": delivery_by_type["SEND_WHATSAPP_ALERT"][
+                "status"
+            ],
             "finalActionStatus": outcome["actionStatus"],
             "finalOutcomeStatus": outcome["outcomeStatus"],
             "finalWorkItemStatus": outcome["workItemStatus"],

@@ -2,20 +2,13 @@
 
 ## Purpose
 
-This runbook proves that a repository ref can reproduce the first complete
-vertical slice without manual Salesforce record edits:
+This runbook proves that a repository ref can reproduce the current North Star
+hospital MVP without manual Salesforce record edits:
 
-`source event -> mapped relationship context -> work item -> recommendation ->
-human approval -> mocked MuleSoft write-back -> outcome -> evaluation ->
-refreshed Lightning context`
-
-This is currently the generic HFS vertical slice. North Star should reuse the
-same verifier once the hospital seed, event fixtures, channel mocks, and
-command center are wired. The North Star proof should become:
-
-`hospital operations event -> global primitives and evidence -> recovery
-recommendation -> manager approval -> MuleSoft task/channel actions -> hospital
-outcome -> refreshed North Star command center`
+`hospital operations surge -> global primitives and evidence -> model-routed
+Agentforce recommendation -> clinical-refusal guardrail -> manager approval ->
+approved Slack and WhatsApp-style MuleSoft channel actions -> hospital outcomes
+and evaluations -> refreshed North Star command center`
 
 The verifier creates a temporary clone, installs locked dependencies, runs all
 repository checks, deploys Salesforce metadata with the four Apex test suites,
@@ -27,7 +20,8 @@ sanitized JSON evidence artifact.
 The operator needs:
 
 - access to the private Git repository;
-- Git, Node.js 20 or newer, npm, Python 3.12 or newer, and Salesforce CLI v2;
+- Git, Node.js 20 or newer, npm, Python 3.12 or newer, Salesforce CLI v2, and
+  a Unix-style shell for `scripts/verify-clean-clone.sh`;
 - an authenticated Salesforce development org;
 - permission to deploy metadata and assign the demo permission sets.
 
@@ -40,6 +34,10 @@ sf org display --target-org hfs-dev
 
 Expected result: Salesforce CLI reports the org as connected. Do not add its
 credentials, username, URL, or local auth state to the repository.
+
+On Windows, run the shell script from Git Bash or WSL. Local npm checks and
+demo commands are Windows-aware, but the clean-clone wrapper itself is a Bash
+script.
 
 ## Completion Command
 
@@ -72,8 +70,8 @@ npm run verify:clean-clone -- \
 | Bootstrap           | `./scripts/bootstrap-runtime.sh`                             | Locked Python and npm dependencies install                                                                               |
 | Repository checks   | `npm run check`                                              | Contracts, ontology, events, MuleSoft, models, Agentforce, metadata, formatting, lint, harness tests, and LWC tests pass |
 | Salesforce deploy   | `sf project deploy start ... --test-level RunSpecifiedTests` | Metadata succeeds; all Apex test classes run with zero failures                                                          |
-| Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes and emits a sanitized demo report                                                            |
-| Evidence validation | `scripts/verify_clean_clone_result.py`                       | Required success and refusal invariants pass                                                                             |
+| Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes, including clinical refusal plus Slack and WhatsApp-style mock delivery                      |
+| Evidence validation | `scripts/verify_clean_clone_result.py`                       | Required success, refusal, approval, channel, and outcome invariants pass                                                |
 
 The final terminal line contains `Clean-clone verification passed`. The JSON
 artifact has:
@@ -110,18 +108,13 @@ Evidence validation fails unless all of these are true:
   execute the external action;
 - Salesforce rejects action logging before approval with `INVALID_STATE`;
 - MuleSoft rejects an unregistered approval with `403 PERMISSION_DENIED`;
-- MuleSoft accepts the approved mock write-back with `202 QUEUED`;
-- the final action is `EXECUTED`, outcome is `SUCCESS`, work item is
-  `COMPLETED`, and an evaluation exists.
-
-North Star hospital should add these invariants when implemented:
-
-- global primitives can represent customer alias, resource, partner, approval,
-  action, outcome, and metric without new architecture;
-- clinical decision requests are refused and routed to human review;
-- Slack and WhatsApp-style alerts are recorded only after approved execution;
-- outcome metrics include wait time, bed release, stock risk, complaint
-  containment, billing resolution, partner SLA, and staff-task completion.
+- MuleSoft accepts approved channel write-backs with `202 QUEUED`;
+- approved Slack delivery is recorded as `SENT` or honest `MOCK_SENT`;
+- approved WhatsApp-style delivery is recorded as `SENT` or honest `MOCK_SENT`;
+- the final actions are `EXECUTED`, outcomes are `SUCCESS`, work item is
+  `COMPLETED`, and evaluations exist;
+- final Salesforce counts include at least three events, two actions, two
+  outcomes, two evaluations, one recommendation, and one work item.
 
 ## Recovery
 

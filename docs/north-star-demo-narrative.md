@@ -30,11 +30,13 @@ request pharmacy restock, open billing review, escalate the lab partner, and
 prepare approved internal alerts.
 
 The operations manager approves consequential actions in the command center.
-MuleSoft mocks then execute the approved service task, bed-cleaning request,
-vendor escalation, billing review, Slack alert, WhatsApp-style internal alert,
-and outcome callback. The final view shows wait time reduced, beds released,
-stockout avoided, complaint risk contained, billing issue routed, vendor SLA
-preserved, and staff tasks acknowledged.
+The live harness executes approved Slack and WhatsApp-style MuleSoft channel
+actions and captures the resulting Salesforce outcomes. The broader recovery
+plan names the service task, bed-cleaning request, vendor escalation, billing
+review, pharmacy restock, and outcome metrics that the mocked action catalog
+supports. The final view shows wait time reduced, beds released, stockout
+avoided, complaint risk contained, billing issue routed, vendor SLA preserved,
+and staff tasks acknowledged.
 
 ## Five-Minute Extended Demo
 

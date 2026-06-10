@@ -64,6 +64,16 @@ def passing_demo():
                 "blockedErrorCode": "PERMISSION_DENIED",
                 "executionStatus": 202,
                 "executionState": "QUEUED",
+                "deliveryByActionType": {
+                    "SEND_SLACK_ALERT": {
+                        "status": "MOCK_SENT",
+                        "provider": "mock-slack",
+                    },
+                    "SEND_WHATSAPP_ALERT": {
+                        "status": "MOCK_SENT",
+                        "provider": "mock-whatsapp",
+                    },
+                },
             },
             "outcome": {
                 "actionStatus": "EXECUTED",

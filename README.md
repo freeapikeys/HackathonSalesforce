@@ -1,25 +1,17 @@
 # North Star
 
-North Star is a Salesforce and Agentforce supermarket operations MVP for the
-hackathon. It helps a store manager spot product risk early, understand the
-evidence, approve the right recovery plan, and coordinate store, supplier, and
-staff actions.
+North Star is a Salesforce, Agentforce, and MuleSoft operations command center
+for messy cross-functional business issues. It is not a generic chatbot. It
+turns one operational signal into source-backed evidence, specialist-agent
+reasoning, manager-approved action, protected channel execution, and outcome
+tracking.
 
-The demo is focused on retail operations, not a broad all-purpose business
-platform. The product watches first-party supermarket signals:
+The hackathon demo profile is a large private hospital. The architecture is
+global: the same primitives can map to hotel rooms, airport gates, bank cases,
+supermarket batches, cruise cabins, and hospital beds.
 
-- POS sales and demand velocity;
-- shelf, backroom, warehouse, and supplier stock;
-- expiry batches and waste risk;
-- customer complaints and refund signals;
-- supplier response and delivery lead time;
-- promotion readiness and price mismatch;
-- staffing, queue risk, and store task execution.
-
-The current repo still contains `HFS_` object and service names because the
-foundation was built first as a governed evidence/action spine. For the
-hackathon, treat that foundation as internal plumbing. The product story is
-North Star.
+North Star handles non-clinical operations only. It must not diagnose, treat,
+recommend dosage, triage patients, or decide clinical priority.
 
 ## Start Here
 
@@ -31,32 +23,35 @@ North Star.
 
 If Beads is installed, run `bd prime`, `bd ready`, and
 `./scripts/team-status.sh` before claiming work. If Beads is not installed, use
-the checklist in [ROADMAP.md](ROADMAP.md) and the lane split in
-[docs/north-star-implementation-plan.md](docs/north-star-implementation-plan.md).
+the checklist in [ROADMAP.md](ROADMAP.md).
 
 ## Current Build Target
 
-The first North Star vertical slice is:
+The first North Star hospital proof is:
 
-`retail risk event -> product, supplier, store, batch, complaint, promotion, and
-staff context -> evidence-backed recommendation -> manager approval -> MuleSoft
-mock actions -> Slack and WhatsApp-style alerts -> outcome -> updated command
-center`
+`hospital operations surge -> global primitives and evidence -> Agentforce
+recovery recommendation -> clinical-refusal guardrail -> manager approval ->
+MuleSoft Slack and WhatsApp-style mock alerts -> Salesforce outcomes ->
+updated command center`
 
-The first demo may use burger patties because it is easy to understand, but the
-implementation must stay product-category neutral. The same flow should work
-for dairy, bakery, frozen food, fresh produce, household goods, electronics, or
-pharmacy shelves.
+The demo starts from rising patient complaints, blocked discharge rooms,
+outpatient queue pressure, low pharmacy stock, delayed lab response, and stuck
+billing or insurance approvals. North Star expands that one surge into patient
+trust, capacity, partner/vendor, financial, communication, risk, and outcome
+work.
 
 ## Repository Map
 
-- `ROADMAP.md`: North Star task checklist and completion gates.
+- `ROADMAP.md`: hackathon checklist and completion gates.
 - `AGENTS.md`: rules for Codex and human contributors.
 - `docs/north-star-mvp.md`: product brief, agent roles, demo story, and non-goals.
 - `docs/north-star-implementation-plan.md`: practical build plan for the team.
+- `docs/north-star-demo-narrative.md`: judge demo script and backup path.
+- `docs/north-star-demo-data.md`: synthetic private-hospital demo data summary.
 - `docs/architecture.md`: system architecture and runtime flow.
-- `docs/demo-harness.md`: seed, reset, verification, and demo harness behavior.
-- `docs/event-contract.md`: versioned retail event intake contract.
+- `docs/demo-harness.md`: seed, reset, verification, and connected demo behavior.
+- `docs/clean-clone-runbook.md`: clean-clone verification path.
+- `docs/event-contract.md`: versioned event intake contract.
 - `docs/mulesoft-api-contract.md`: mock integration and write-back boundary.
 - `docs/model-gateway-contract.md`: model routing and audit contract.
 - `docs/agentforce-action-contract.md`: governed Agentforce action boundary.
@@ -71,17 +66,23 @@ pharmacy shelves.
 
 North Star should show five things clearly:
 
-1. messy retail signals becoming one operational picture;
-2. Agentforce separating facts from inference;
-3. supplier evidence changing the recommendation;
-4. manager approval before consequential actions;
-5. Salesforce records preserving evidence, actions, and outcomes.
+1. messy hospital operations signals becoming one coordinated recovery plan;
+2. Agentforce separating source-backed facts from inference;
+3. global primitives that judges can map to their own sectors;
+4. manager approval before protected Slack, WhatsApp-style, vendor, billing,
+   pharmacy, room/bed, staff-task, or patient-message actions;
+5. Salesforce records preserving evidence, approvals, actions, outcomes,
+   evaluations, and clinical refusal.
 
 ## Non-Goals
 
-- Do not pitch this as a generic all-purpose platform.
-- Do not claim live POS, supplier, Slack, WhatsApp, or ERP integrations unless
-  they are configured and demonstrated.
+- Do not pitch this as zero-configuration magic. Say "global primitives plus a
+  business profile."
+- Do not claim diagnosis, treatment, dosage, triage, or clinical priority
+  decisions.
+- Do not claim real hospital, patient, insurer, Slack, WhatsApp, vendor,
+  pharmacy, billing, or task integrations unless configured and demonstrated.
 - Do not let Agentforce execute protected external actions directly.
-- Do not hard-code the product, supplier, or scenario to burgers.
+- Do not commit real patient, staff, vendor, insurer, phone, email, credential,
+  or medical-record data.
 - Do not hide uncertainty behind one unexplained score.
