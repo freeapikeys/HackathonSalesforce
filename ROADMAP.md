@@ -265,9 +265,9 @@ file before editing.
       action, and outcome.
 - [x] Manager approval is enforced before vendor, billing, pharmacy, Slack,
       WhatsApp, patient-message, room/bed, or staff-task write-back.
-- [ ] Clinical decision requests are refused.
+- [x] Clinical decision requests are refused.
 - [x] Action and outcome records preserve correlation IDs and evidence IDs.
-- [ ] Apex tests cover success, denial, inaccessible evidence, approval
+- [x] Apex tests cover success, denial, inaccessible evidence, approval
       mismatch, invalid state, and clinical refusal.
 
 ### 6. Agentforce And Intelligence

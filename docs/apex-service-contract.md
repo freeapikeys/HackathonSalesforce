@@ -71,11 +71,13 @@ users. It proves:
   `SOURCE_EVIDENCE_INACCESSIBLE`;
 - conflicting external or idempotency keys return `IDEMPOTENCY_CONFLICT`;
 - invalid approval and action states are rejected;
+- explicit clinical action types return `CLINICAL_DECISION_REFUSED` before
+  recommendation or action records are inserted;
 - a failure after outcome insertion rolls back the outcome, action update, and
   work update, so a single-command transaction never returns a partial commit.
 
-Hospital-specific tests should also prove clinical-decision refusal and
-protected-action denial before approval.
+Hospital-specific tests prove clinical-decision refusal and protected-action
+denial before approval.
 
 ## Service Interface
 

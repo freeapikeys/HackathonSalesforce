@@ -18,6 +18,7 @@ public class HFS_ServiceContract {
   public static final String TENANT_MISMATCH = 'TENANT_MISMATCH';
   public static final String INVALID_STATE = 'INVALID_STATE';
   public static final String IDEMPOTENCY_CONFLICT = 'IDEMPOTENCY_CONFLICT';
+  public static final String CLINICAL_DECISION_REFUSED = 'CLINICAL_DECISION_REFUSED';
   public static final String VALIDATION_FAILED = 'VALIDATION_FAILED';
   public static final String RETRYABLE_DEPENDENCY_FAILURE = 'RETRYABLE_DEPENDENCY_FAILURE';
   public static final String PARTIAL_FAILURE = 'PARTIAL_FAILURE';

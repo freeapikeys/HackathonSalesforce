@@ -91,11 +91,14 @@ private class HFS_AgentActionServiceTest {
 
   @IsTest
   static void explainsAccessibleEvidenceAndSeparatesInference() {
-    HFS_AgentActionResult result = HFS_AgentExplainAction.invoke(
-      new List<HFS_AgentActionRequest>{
-        request(HFS_AgentActionService.EXPLAIN)
-      }
-    )[0];
+    HFS_AgentActionResult result;
+    System.runAs(createUser('agentread', 'HFS_Relationship_User')) {
+      result = HFS_AgentExplainAction.invoke(
+        new List<HFS_AgentActionRequest>{
+          request(HFS_AgentActionService.EXPLAIN)
+        }
+      )[0];
+    }
 
     System.assertEquals('SUCCESS', result.status);
     System.assertEquals(false, result.externalActionExecuted);
@@ -116,15 +119,18 @@ private class HFS_AgentActionServiceTest {
 
   @IsTest
   static void returnsQualifiedRecommendationWithModelProvenance() {
-    HFS_AgentActionRequest actionRequest = request(
-      HFS_AgentActionService.RECOMMEND
-    );
-    actionRequest.modelProfile = 'recommendation_reasoning';
-    actionRequest.desiredOutcome = 'Reduce repeated status chasing.';
+    HFS_AgentActionResult result;
+    System.runAs(createUser('agentrec', 'HFS_Relationship_User')) {
+      HFS_AgentActionRequest actionRequest = request(
+        HFS_AgentActionService.RECOMMEND
+      );
+      actionRequest.modelProfile = 'recommendation_reasoning';
+      actionRequest.desiredOutcome = 'Reduce repeated status chasing.';
 
-    HFS_AgentActionResult result = HFS_AgentRecommendationAction.invoke(
-      new List<HFS_AgentActionRequest>{ actionRequest }
-    )[0];
+      result = HFS_AgentRecommendationAction.invoke(
+        new List<HFS_AgentActionRequest>{ actionRequest }
+      )[0];
+    }
 
     System.assertEquals('SUCCESS', result.status);
     System.assertEquals(
@@ -147,23 +153,32 @@ private class HFS_AgentActionServiceTest {
 
   @IsTest
   static void failsClosedWithoutEvidenceOrQualifiedModel() {
-    HFS_AgentActionRequest noModel = request(HFS_AgentActionService.RECOMMEND);
-    noModel.modelProfile = 'unqualified-profile';
-    HFS_AgentActionResult noModelResult = HFS_AgentRecommendationAction.invoke(
-      new List<HFS_AgentActionRequest>{ noModel }
-    )[0];
-    assertRefusal(noModelResult, 'NO_QUALIFIED_MODEL');
+    HFS_AgentActionResult noModelResult;
+    HFS_AgentActionResult noEvidenceResult;
+    System.runAs(createUser('agentfail', 'HFS_Relationship_User')) {
+      HFS_AgentActionRequest noModel = request(
+        HFS_AgentActionService.RECOMMEND
+      );
+      noModel.modelProfile = 'unqualified-profile';
+      noModelResult = HFS_AgentRecommendationAction.invoke(
+        new List<HFS_AgentActionRequest>{ noModel }
+      )[0];
 
-    HFS_AgentActionRequest noEvidence = request(HFS_AgentActionService.EXPLAIN);
-    noEvidence.workItemId = [
-      SELECT Id
-      FROM HFS_Work_Item__c
-      WHERE External_Key__c = 'work-agent-action-no-evidence'
-    ]
-    .Id;
-    HFS_AgentActionResult noEvidenceResult = HFS_AgentExplainAction.invoke(
-      new List<HFS_AgentActionRequest>{ noEvidence }
-    )[0];
+      HFS_AgentActionRequest noEvidence = request(
+        HFS_AgentActionService.EXPLAIN
+      );
+      noEvidence.workItemId = [
+        SELECT Id
+        FROM HFS_Work_Item__c
+        WHERE External_Key__c = 'work-agent-action-no-evidence'
+      ]
+      .Id;
+      noEvidenceResult = HFS_AgentExplainAction.invoke(
+        new List<HFS_AgentActionRequest>{ noEvidence }
+      )[0];
+    }
+
+    assertRefusal(noModelResult, 'NO_QUALIFIED_MODEL');
     assertRefusal(noEvidenceResult, 'INACCESSIBLE_EVIDENCE');
   }
 
@@ -283,6 +298,42 @@ private class HFS_AgentActionServiceTest {
 
   private static List<Object> asList(Map<String, Object> value, String key) {
     return (List<Object>) value.get(key);
+  }
+
+  private static User createUser(String key, String permissionSetName) {
+    Profile minimumAccess = [
+      SELECT Id
+      FROM Profile
+      WHERE Name = 'Minimum Access - Salesforce'
+      LIMIT 1
+    ];
+    String uniqueValue =
+      String.valueOf(System.now().getTime()) +
+      String.valueOf(Math.abs(Crypto.getRandomInteger()));
+    User userValue = new User(
+      Alias = key.left(8),
+      CommunityNickname = (key + uniqueValue).left(40),
+      Email = key + uniqueValue + '@hfs.example',
+      EmailEncodingKey = 'UTF-8',
+      LanguageLocaleKey = 'en_US',
+      LastName = 'HFS ' + key,
+      LocaleSidKey = 'en_US',
+      ProfileId = minimumAccess.Id,
+      TimeZoneSidKey = 'America/Los_Angeles',
+      Username = key + uniqueValue + '@hfs.example'
+    );
+    insert userValue;
+    PermissionSet permissionSetValue = [
+      SELECT Id
+      FROM PermissionSet
+      WHERE Name = :permissionSetName
+      LIMIT 1
+    ];
+    insert new PermissionSetAssignment(
+      AssigneeId = userValue.Id,
+      PermissionSetId = permissionSetValue.Id
+    );
+    return userValue;
   }
 
   private class DeniedService implements HFS_RelationshipService {

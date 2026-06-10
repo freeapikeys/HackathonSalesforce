@@ -18,6 +18,15 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
     'NO_EFFECT',
     'NEGATIVE'
   };
+  private static final Set<String> CLINICAL_ACTION_TYPES = new Set<String>{
+    'CLINICAL_TRIAGE_DECISION',
+    'CLINICAL_PRIORITY_DECISION',
+    'DECIDE_TREATMENT_PRIORITY',
+    'DIAGNOSE_PATIENT',
+    'RECOMMEND_TREATMENT',
+    'PRESCRIBE_TREATMENT',
+    'SET_DOSAGE'
+  };
 
   public HFS_ContextResponse getContext(HFS_ContextRequest request) {
     try {
@@ -79,6 +88,10 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         'recommendationType'
       );
       HFS_ServiceSupport.requireText(
+        command.proposedActionType,
+        'proposedActionType'
+      );
+      requireNonClinicalActionType(
         command.proposedActionType,
         'proposedActionType'
       );
@@ -370,6 +383,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       HFS_ServiceSupport.requireText(command.externalKey, 'externalKey');
       HFS_ServiceSupport.requireText(command.idempotencyKey, 'idempotencyKey');
       HFS_ServiceSupport.requireText(command.actionType, 'actionType');
+      requireNonClinicalActionType(command.actionType, 'actionType');
 
       List<HFS_Action__c> existingRecords = [
         SELECT
@@ -612,6 +626,19 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       purpose,
       correlationId
     );
+  }
+
+  private static void requireNonClinicalActionType(
+    String actionType,
+    String fieldName
+  ) {
+    if (CLINICAL_ACTION_TYPES.contains(actionType)) {
+      HFS_ServiceSupport.fail(
+        HFS_ServiceContract.CLINICAL_DECISION_REFUSED,
+        'North Star cannot store or execute diagnosis, treatment, dosage, triage, or clinical priority decisions.',
+        fieldName
+      );
+    }
   }
 
   private static HFS_Work_Item__c workItem(String recordId) {

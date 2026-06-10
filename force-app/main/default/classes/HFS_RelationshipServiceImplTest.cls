@@ -120,196 +120,278 @@ private class HFS_RelationshipServiceImplTest {
 
   @IsTest
   static void completesGovernedVerticalSliceAndReadsContext() {
-    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
-    HFS_Work_Item__c workItem = workItem();
-    HFS_Entity__c customer = customer();
-    HFS_Evidence__c evidence = evidence();
-    HFS_Event__c sourceEvent = sourceEvent();
+    System.runAs(createUser('slice', 'HFS_Integration_User')) {
+      HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+      HFS_Work_Item__c workItem = workItem();
+      HFS_Entity__c customer = customer();
+      HFS_Evidence__c evidence = evidence();
+      HFS_Event__c sourceEvent = sourceEvent();
 
-    HFS_CommandResult recommendationResult = service.storeRecommendation(
-      recommendationCommand(workItem.Id, customer.Id, evidence.Id)
-    );
-    System.assertEquals(true, recommendationResult.success);
-    System.assertEquals('DRAFT', recommendationResult.status);
+      HFS_CommandResult recommendationResult = service.storeRecommendation(
+        recommendationCommand(workItem.Id, customer.Id, evidence.Id)
+      );
+      System.assertEquals(true, recommendationResult.success);
+      System.assertEquals('DRAFT', recommendationResult.status);
 
-    HFS_CommandResult replayedRecommendation = service.storeRecommendation(
-      recommendationCommand(workItem.Id, customer.Id, evidence.Id)
-    );
-    System.assertEquals(true, replayedRecommendation.success);
-    System.assertEquals(true, replayedRecommendation.replayed);
-    System.assertEquals(
-      recommendationResult.recordId,
-      replayedRecommendation.recordId
-    );
+      HFS_CommandResult replayedRecommendation = service.storeRecommendation(
+        recommendationCommand(workItem.Id, customer.Id, evidence.Id)
+      );
+      System.assertEquals(true, replayedRecommendation.success);
+      System.assertEquals(true, replayedRecommendation.replayed);
+      System.assertEquals(
+        recommendationResult.recordId,
+        replayedRecommendation.recordId
+      );
 
-    HFS_CommandResult approvalResult = service.requestApproval(
-      approvalRequest(recommendationResult.recordId)
-    );
-    System.assertEquals(true, approvalResult.success);
-    System.assertEquals('PENDING', approvalResult.status);
-    HFS_CommandResult replayedApproval = service.requestApproval(
-      approvalRequest(recommendationResult.recordId)
-    );
-    System.assertEquals(true, replayedApproval.replayed);
-    System.assertEquals(approvalResult.recordId, replayedApproval.recordId);
+      HFS_CommandResult approvalResult = service.requestApproval(
+        approvalRequest(recommendationResult.recordId)
+      );
+      System.assertEquals(true, approvalResult.success);
+      System.assertEquals('PENDING', approvalResult.status);
+      HFS_CommandResult replayedApproval = service.requestApproval(
+        approvalRequest(recommendationResult.recordId)
+      );
+      System.assertEquals(true, replayedApproval.replayed);
+      System.assertEquals(approvalResult.recordId, replayedApproval.recordId);
 
-    HFS_ServiceSupport.setPermissionOverride(
-      'HFS_Approve_Recommendation',
-      true
-    );
-    HFS_CommandResult decisionResult = service.decideApproval(
-      approvalDecision(approvalResult.recordId, 'APPROVED')
-    );
-    System.assertEquals(true, decisionResult.success);
-    System.assertEquals('APPROVED', decisionResult.status);
-    HFS_CommandResult replayedDecision = service.decideApproval(
-      approvalDecision(approvalResult.recordId, 'APPROVED')
-    );
-    System.assertEquals(true, replayedDecision.replayed);
+      HFS_ServiceSupport.setPermissionOverride(
+        'HFS_Approve_Recommendation',
+        true
+      );
+      HFS_CommandResult decisionResult = service.decideApproval(
+        approvalDecision(approvalResult.recordId, 'APPROVED')
+      );
+      System.assertEquals(true, decisionResult.success);
+      System.assertEquals('APPROVED', decisionResult.status);
+      HFS_CommandResult replayedDecision = service.decideApproval(
+        approvalDecision(approvalResult.recordId, 'APPROVED')
+      );
+      System.assertEquals(true, replayedDecision.replayed);
 
-    HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
-    HFS_ActionCommand actionCommandValue = actionCommand(
-      recommendationResult.recordId,
-      approvalResult.recordId,
-      customer.Id
-    );
-    HFS_CommandResult actionResult = service.logAction(actionCommandValue);
-    System.assertEquals(true, actionResult.success);
-    System.assertEquals('PENDING', actionResult.status);
-    HFS_CommandResult replayedAction = service.logAction(actionCommandValue);
-    System.assertEquals(true, replayedAction.replayed);
+      HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
+      HFS_ActionCommand actionCommandValue = actionCommand(
+        recommendationResult.recordId,
+        approvalResult.recordId,
+        customer.Id
+      );
+      HFS_CommandResult actionResult = service.logAction(actionCommandValue);
+      System.assertEquals(true, actionResult.success);
+      System.assertEquals('PENDING', actionResult.status);
+      HFS_CommandResult replayedAction = service.logAction(actionCommandValue);
+      System.assertEquals(true, replayedAction.replayed);
 
-    HFS_OutcomeCommand outcomeCommandValue = outcomeCommand(
-      actionResult.recordId,
-      sourceEvent.Id
-    );
-    HFS_CommandResult outcomeResult = service.captureOutcome(
-      outcomeCommandValue
-    );
-    System.assertEquals(true, outcomeResult.success);
-    System.assertEquals('SUCCESS', outcomeResult.status);
-    HFS_CommandResult replayedOutcome = service.captureOutcome(
-      outcomeCommandValue
-    );
-    System.assertEquals(true, replayedOutcome.replayed);
+      HFS_OutcomeCommand outcomeCommandValue = outcomeCommand(
+        actionResult.recordId,
+        sourceEvent.Id
+      );
+      HFS_CommandResult outcomeResult = service.captureOutcome(
+        outcomeCommandValue
+      );
+      System.assertEquals(true, outcomeResult.success);
+      System.assertEquals('SUCCESS', outcomeResult.status);
+      HFS_CommandResult replayedOutcome = service.captureOutcome(
+        outcomeCommandValue
+      );
+      System.assertEquals(true, replayedOutcome.replayed);
 
-    HFS_ContextRequest contextRequest = new HFS_ContextRequest();
-    contextRequest.contractVersion = HFS_ServiceContract.VERSION;
-    contextRequest.tenantKey = TENANT;
-    contextRequest.workItemId = workItem.Id;
-    contextRequest.purpose = 'TEST_RELATIONSHIP_CONTEXT';
-    contextRequest.correlationId = CORRELATION;
-    contextRequest.includeProvenance = true;
-    contextRequest.timelineLimit = 25;
+      HFS_ContextRequest contextRequest = new HFS_ContextRequest();
+      contextRequest.contractVersion = HFS_ServiceContract.VERSION;
+      contextRequest.tenantKey = TENANT;
+      contextRequest.workItemId = workItem.Id;
+      contextRequest.purpose = 'TEST_RELATIONSHIP_CONTEXT';
+      contextRequest.correlationId = CORRELATION;
+      contextRequest.includeProvenance = true;
+      contextRequest.timelineLimit = 25;
 
-    HFS_ContextResponse context = service.getContext(contextRequest);
-    System.assertEquals(0, context.errors.size());
-    System.assertEquals(workItem.Id, context.workItem.recordId);
-    System.assertNotEquals(null, context.workItem.dueAt);
-    System.assertEquals(
-      'Human approval is required before outreach.',
-      context.workItem.blockedReason
-    );
-    System.assert(context.entities.size() >= 3);
-    System.assertEquals(1, context.relationships.size());
-    System.assertEquals(1, context.agreements.size());
-    System.assertEquals(1, context.sopExecutions.size());
-    System.assertEquals(1, context.evidence.size());
-    System.assertEquals(1, context.recommendations.size());
-    System.assertEquals(1, context.approvals.size());
-    System.assertEquals(1, context.actions.size());
-    System.assertEquals(1, context.outcomes.size());
-    System.assert(context.timeline.size() >= 5);
-    System.assertEquals('1.0.0', context.sopExecutions[0].definitionVersion);
-    System.assertEquals(
-      'SEND_STATUS_UPDATE',
-      context.recommendations[0].proposedActionType
-    );
-    System.assertEquals(
-      'relationship-recommendation',
-      context.recommendations[0].modelProfile
-    );
-    System.assertNotEquals(null, context.approvals[0].requestedAt);
-    System.assertEquals(CORRELATION, context.actions[0].correlationId);
-    System.assertEquals('delivery_success', context.outcomes[0].metricKey);
-    System.assertEquals(1, context.outcomes[0].metricValue);
+      HFS_ContextResponse context = service.getContext(contextRequest);
+      System.assertEquals(0, context.errors.size());
+      System.assertEquals(workItem.Id, context.workItem.recordId);
+      System.assertNotEquals(null, context.workItem.dueAt);
+      System.assertEquals(
+        'Human approval is required before outreach.',
+        context.workItem.blockedReason
+      );
+      System.assert(context.entities.size() >= 3);
+      System.assertEquals(1, context.relationships.size());
+      System.assertEquals(1, context.agreements.size());
+      System.assertEquals(1, context.sopExecutions.size());
+      System.assertEquals(1, context.evidence.size());
+      System.assertEquals(1, context.recommendations.size());
+      System.assertEquals(1, context.approvals.size());
+      System.assertEquals(1, context.actions.size());
+      System.assertEquals(1, context.outcomes.size());
+      System.assert(context.timeline.size() >= 5);
+      System.assertEquals('1.0.0', context.sopExecutions[0].definitionVersion);
+      System.assertEquals(
+        'SEND_STATUS_UPDATE',
+        context.recommendations[0].proposedActionType
+      );
+      System.assertEquals(
+        'relationship-recommendation',
+        context.recommendations[0].modelProfile
+      );
+      System.assertNotEquals(null, context.approvals[0].requestedAt);
+      System.assertEquals(CORRELATION, context.actions[0].correlationId);
+      System.assertEquals('delivery_success', context.outcomes[0].metricKey);
+      System.assertEquals(1, context.outcomes[0].metricValue);
 
-    HFS_ProvenanceRequest provenanceRequest = new HFS_ProvenanceRequest();
-    provenanceRequest.contractVersion = HFS_ServiceContract.VERSION;
-    provenanceRequest.tenantKey = TENANT;
-    provenanceRequest.objectApiName = 'HFS_Recommendation__c';
-    provenanceRequest.recordId = recommendationResult.recordId;
-    provenanceRequest.purpose = 'EXPLAIN_RECOMMENDATION';
-    provenanceRequest.correlationId = CORRELATION;
-    provenanceRequest.maxDepth = 4;
+      HFS_ProvenanceRequest provenanceRequest = new HFS_ProvenanceRequest();
+      provenanceRequest.contractVersion = HFS_ServiceContract.VERSION;
+      provenanceRequest.tenantKey = TENANT;
+      provenanceRequest.objectApiName = 'HFS_Recommendation__c';
+      provenanceRequest.recordId = recommendationResult.recordId;
+      provenanceRequest.purpose = 'EXPLAIN_RECOMMENDATION';
+      provenanceRequest.correlationId = CORRELATION;
+      provenanceRequest.maxDepth = 4;
 
-    HFS_ProvenanceResponse provenance = service.getProvenance(
-      provenanceRequest
-    );
-    System.assertEquals(0, provenance.errors.size());
-    System.assertEquals(
-      recommendationResult.recordId,
-      provenance.rootRecord.recordId
-    );
-    System.assertEquals(1, provenance.citations.size());
-    System.assert(provenance.lineage.size() >= 2);
+      HFS_ProvenanceResponse provenance = service.getProvenance(
+        provenanceRequest
+      );
+      System.assertEquals(0, provenance.errors.size());
+      System.assertEquals(
+        recommendationResult.recordId,
+        provenance.rootRecord.recordId
+      );
+      System.assertEquals(1, provenance.citations.size());
+      System.assert(provenance.lineage.size() >= 2);
 
-    HFS_Action__c storedAction = [
-      SELECT Status__c, Executed_At__c
-      FROM HFS_Action__c
-      WHERE Id = :actionResult.recordId
-    ];
-    System.assertEquals('EXECUTED', storedAction.Status__c);
-    System.assertNotEquals(null, storedAction.Executed_At__c);
-    System.assertEquals(
-      'COMPLETED',
-      [SELECT Status__c FROM HFS_Work_Item__c WHERE Id = :workItem.Id].Status__c
-    );
+      HFS_Action__c storedAction = [
+        SELECT Status__c, Executed_At__c
+        FROM HFS_Action__c
+        WHERE Id = :actionResult.recordId
+      ];
+      System.assertEquals('EXECUTED', storedAction.Status__c);
+      System.assertNotEquals(null, storedAction.Executed_At__c);
+      System.assertEquals(
+        'COMPLETED',
+        [
+          SELECT Status__c
+          FROM HFS_Work_Item__c
+          WHERE Id = :workItem.Id
+        ]
+        .Status__c
+      );
+    }
   }
 
   @IsTest
   static void enforcesPermissionTenantAndApprovalState() {
-    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
-    HFS_Work_Item__c workItem = workItem();
-    HFS_Entity__c customer = customer();
-    HFS_Evidence__c evidence = evidence();
+    System.runAs(createUser('state', 'HFS_Integration_User')) {
+      HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+      HFS_Work_Item__c workItem = workItem();
+      HFS_Entity__c customer = customer();
+      HFS_Evidence__c evidence = evidence();
 
-    HFS_RecommendationCommand wrongTenant = recommendationCommand(
-      workItem.Id,
-      customer.Id,
-      evidence.Id
-    );
-    wrongTenant.externalKey = 'recommendation-wrong-tenant-test';
-    wrongTenant.tenantKey = 'tenant-other';
-    HFS_CommandResult tenantResult = service.storeRecommendation(wrongTenant);
-    assertError(tenantResult, HFS_ServiceContract.TENANT_MISMATCH);
+      HFS_RecommendationCommand wrongTenant = recommendationCommand(
+        workItem.Id,
+        customer.Id,
+        evidence.Id
+      );
+      wrongTenant.externalKey = 'recommendation-wrong-tenant-test';
+      wrongTenant.tenantKey = 'tenant-other';
+      HFS_CommandResult tenantResult = service.storeRecommendation(wrongTenant);
+      assertError(tenantResult, HFS_ServiceContract.TENANT_MISMATCH);
 
-    HFS_CommandResult recommendationResult = service.storeRecommendation(
-      recommendationCommand(workItem.Id, customer.Id, evidence.Id)
-    );
-    HFS_CommandResult approvalResult = service.requestApproval(
-      approvalRequest(recommendationResult.recordId)
-    );
+      HFS_CommandResult recommendationResult = service.storeRecommendation(
+        recommendationCommand(workItem.Id, customer.Id, evidence.Id)
+      );
+      HFS_CommandResult approvalResult = service.requestApproval(
+        approvalRequest(recommendationResult.recordId)
+      );
 
-    HFS_ServiceSupport.setPermissionOverride(
-      'HFS_Approve_Recommendation',
-      false
-    );
-    HFS_CommandResult deniedDecision = service.decideApproval(
-      approvalDecision(approvalResult.recordId, 'APPROVED')
-    );
-    assertError(deniedDecision, HFS_ServiceContract.CUSTOM_PERMISSION_REQUIRED);
+      HFS_ServiceSupport.setPermissionOverride(
+        'HFS_Approve_Recommendation',
+        false
+      );
+      HFS_CommandResult deniedDecision = service.decideApproval(
+        approvalDecision(approvalResult.recordId, 'APPROVED')
+      );
+      assertError(
+        deniedDecision,
+        HFS_ServiceContract.CUSTOM_PERMISSION_REQUIRED
+      );
 
-    HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
-    HFS_CommandResult invalidAction = service.logAction(
-      actionCommand(
+      HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
+      HFS_CommandResult invalidAction = service.logAction(
+        actionCommand(
+          recommendationResult.recordId,
+          approvalResult.recordId,
+          customer.Id
+        )
+      );
+      assertError(invalidAction, HFS_ServiceContract.INVALID_STATE);
+      System.assertEquals(0, [SELECT COUNT() FROM HFS_Action__c]);
+    }
+  }
+
+  @IsTest
+  static void refusesClinicalDecisionRecommendationsAndActions() {
+    System.runAs(createUser('clinical', 'HFS_Integration_User')) {
+      HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+      HFS_Work_Item__c workItem = workItem();
+      HFS_Entity__c customer = customer();
+      HFS_Evidence__c evidence = evidence();
+
+      HFS_RecommendationCommand clinicalRecommendation = recommendationCommand(
+        workItem.Id,
+        customer.Id,
+        evidence.Id
+      );
+      clinicalRecommendation.externalKey = 'recommendation-clinical-refused';
+      clinicalRecommendation.recommendationType = 'CLINICAL_DECISION_REQUEST';
+      clinicalRecommendation.proposedActionType = 'DECIDE_TREATMENT_PRIORITY';
+      clinicalRecommendation.rationale = 'Decide which patient should receive treatment first.';
+
+      assertError(
+        service.storeRecommendation(clinicalRecommendation),
+        HFS_ServiceContract.CLINICAL_DECISION_REFUSED
+      );
+      System.assertEquals(
+        0,
+        [
+          SELECT COUNT()
+          FROM HFS_Recommendation__c
+          WHERE External_Key__c = 'recommendation-clinical-refused'
+        ]
+      );
+
+      HFS_CommandResult recommendationResult = service.storeRecommendation(
+        recommendationCommand(workItem.Id, customer.Id, evidence.Id)
+      );
+      HFS_CommandResult approvalResult = service.requestApproval(
+        approvalRequest(recommendationResult.recordId)
+      );
+      HFS_ServiceSupport.setPermissionOverride(
+        'HFS_Approve_Recommendation',
+        true
+      );
+      service.decideApproval(
+        approvalDecision(approvalResult.recordId, 'APPROVED')
+      );
+
+      HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
+      HFS_ActionCommand clinicalAction = actionCommand(
         recommendationResult.recordId,
         approvalResult.recordId,
         customer.Id
-      )
-    );
-    assertError(invalidAction, HFS_ServiceContract.INVALID_STATE);
-    System.assertEquals(0, [SELECT COUNT() FROM HFS_Action__c]);
+      );
+      clinicalAction.externalKey = 'action-clinical-refused';
+      clinicalAction.idempotencyKey = 'action-clinical-refused-v1';
+      clinicalAction.actionType = 'CLINICAL_TRIAGE_DECISION';
+
+      assertError(
+        service.logAction(clinicalAction),
+        HFS_ServiceContract.CLINICAL_DECISION_REFUSED
+      );
+      System.assertEquals(
+        0,
+        [
+          SELECT COUNT()
+          FROM HFS_Action__c
+          WHERE External_Key__c = 'action-clinical-refused'
+        ]
+      );
+    }
   }
 
   @IsTest
@@ -522,128 +604,137 @@ private class HFS_RelationshipServiceImplTest {
 
   @IsTest
   static void rejectsConflictingDuplicateCommands() {
-    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
-    HFS_Work_Item__c workItem = workItem();
-    HFS_Entity__c customer = customer();
-    HFS_Evidence__c evidence = evidence();
-    HFS_Event__c sourceEvent = sourceEvent();
+    System.runAs(createUser('conflict', 'HFS_Integration_User')) {
+      HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+      HFS_Work_Item__c workItem = workItem();
+      HFS_Entity__c customer = customer();
+      HFS_Evidence__c evidence = evidence();
+      HFS_Event__c sourceEvent = sourceEvent();
 
-    HFS_RecommendationCommand recommendation = recommendationCommand(
-      workItem.Id,
-      customer.Id,
-      evidence.Id
-    );
-    HFS_CommandResult recommendationResult = service.storeRecommendation(
-      recommendation
-    );
-    recommendation.rationale = 'Different recommendation content.';
-    assertError(
-      service.storeRecommendation(recommendation),
-      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
-    );
+      HFS_RecommendationCommand recommendation = recommendationCommand(
+        workItem.Id,
+        customer.Id,
+        evidence.Id
+      );
+      HFS_CommandResult recommendationResult = service.storeRecommendation(
+        recommendation
+      );
+      recommendation.rationale = 'Different recommendation content.';
+      assertError(
+        service.storeRecommendation(recommendation),
+        HFS_ServiceContract.IDEMPOTENCY_CONFLICT
+      );
 
-    HFS_ApprovalRequestCommand approval = approvalRequest(
-      recommendationResult.recordId
-    );
-    HFS_CommandResult approvalResult = service.requestApproval(approval);
-    approval.policyKey = 'different-policy';
-    assertError(
-      service.requestApproval(approval),
-      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
-    );
+      HFS_ApprovalRequestCommand approval = approvalRequest(
+        recommendationResult.recordId
+      );
+      HFS_CommandResult approvalResult = service.requestApproval(approval);
+      approval.policyKey = 'different-policy';
+      assertError(
+        service.requestApproval(approval),
+        HFS_ServiceContract.IDEMPOTENCY_CONFLICT
+      );
 
-    HFS_ServiceSupport.setPermissionOverride(
-      'HFS_Approve_Recommendation',
-      true
-    );
-    service.decideApproval(
-      approvalDecision(approvalResult.recordId, 'APPROVED')
-    );
-    HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
+      HFS_ServiceSupport.setPermissionOverride(
+        'HFS_Approve_Recommendation',
+        true
+      );
+      service.decideApproval(
+        approvalDecision(approvalResult.recordId, 'APPROVED')
+      );
+      HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
 
-    HFS_ActionCommand action = actionCommand(
-      recommendationResult.recordId,
-      approvalResult.recordId,
-      customer.Id
-    );
-    HFS_CommandResult actionResult = service.logAction(action);
-    action.actionType = 'DIFFERENT_ACTION';
-    assertError(
-      service.logAction(action),
-      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
-    );
+      HFS_ActionCommand action = actionCommand(
+        recommendationResult.recordId,
+        approvalResult.recordId,
+        customer.Id
+      );
+      HFS_CommandResult actionResult = service.logAction(action);
+      action.actionType = 'DIFFERENT_ACTION';
+      assertError(
+        service.logAction(action),
+        HFS_ServiceContract.IDEMPOTENCY_CONFLICT
+      );
 
-    HFS_OutcomeCommand outcome = outcomeCommand(
-      actionResult.recordId,
-      sourceEvent.Id
-    );
-    service.captureOutcome(outcome);
-    outcome.summary = 'Different outcome content.';
-    assertError(
-      service.captureOutcome(outcome),
-      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
-    );
+      HFS_OutcomeCommand outcome = outcomeCommand(
+        actionResult.recordId,
+        sourceEvent.Id
+      );
+      service.captureOutcome(outcome);
+      outcome.summary = 'Different outcome content.';
+      assertError(
+        service.captureOutcome(outcome),
+        HFS_ServiceContract.IDEMPOTENCY_CONFLICT
+      );
+    }
   }
 
   @IsTest
   static void rollsBackOutcomeWhenDerivedActionUpdateFails() {
-    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
-    HFS_Work_Item__c workItem = workItem();
-    HFS_Entity__c customer = customer();
-    HFS_Evidence__c evidence = evidence();
-    HFS_Event__c sourceEvent = sourceEvent();
-    HFS_CommandResult recommendationResult = service.storeRecommendation(
-      recommendationCommand(workItem.Id, customer.Id, evidence.Id)
-    );
-    HFS_CommandResult approvalResult = service.requestApproval(
-      approvalRequest(recommendationResult.recordId)
-    );
-    HFS_ServiceSupport.setPermissionOverride(
-      'HFS_Approve_Recommendation',
-      true
-    );
-    service.decideApproval(
-      approvalDecision(approvalResult.recordId, 'APPROVED')
-    );
-    HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
-    HFS_CommandResult actionResult = service.logAction(
-      actionCommand(
-        recommendationResult.recordId,
-        approvalResult.recordId,
-        customer.Id
-      )
-    );
+    System.runAs(createUser('rollback', 'HFS_Integration_User')) {
+      HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+      HFS_Work_Item__c workItem = workItem();
+      HFS_Entity__c customer = customer();
+      HFS_Evidence__c evidence = evidence();
+      HFS_Event__c sourceEvent = sourceEvent();
+      HFS_CommandResult recommendationResult = service.storeRecommendation(
+        recommendationCommand(workItem.Id, customer.Id, evidence.Id)
+      );
+      HFS_CommandResult approvalResult = service.requestApproval(
+        approvalRequest(recommendationResult.recordId)
+      );
+      HFS_ServiceSupport.setPermissionOverride(
+        'HFS_Approve_Recommendation',
+        true
+      );
+      service.decideApproval(
+        approvalDecision(approvalResult.recordId, 'APPROVED')
+      );
+      HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
+      HFS_CommandResult actionResult = service.logAction(
+        actionCommand(
+          recommendationResult.recordId,
+          approvalResult.recordId,
+          customer.Id
+        )
+      );
 
-    HFS_OutcomeCommand outcome = outcomeCommand(
-      actionResult.recordId,
-      sourceEvent.Id
-    );
-    outcome.externalKey = 'outcome-rollback-test';
-    outcome.observedAt = System.now().addDays(-1);
-    HFS_CommandResult result = service.captureOutcome(outcome);
+      HFS_OutcomeCommand outcome = outcomeCommand(
+        actionResult.recordId,
+        sourceEvent.Id
+      );
+      outcome.externalKey = 'outcome-rollback-test';
+      outcome.observedAt = System.now().addDays(-1);
+      HFS_CommandResult result = service.captureOutcome(outcome);
 
-    assertError(result, HFS_ServiceContract.VALIDATION_FAILED);
-    System.assertEquals(
-      0,
-      [
-        SELECT COUNT()
-        FROM HFS_Outcome__c
-        WHERE External_Key__c = 'outcome-rollback-test'
-      ]
-    );
-    System.assertEquals(
-      'PENDING',
-      [
-        SELECT Status__c
-        FROM HFS_Action__c
-        WHERE Id = :actionResult.recordId
-      ]
-      .Status__c
-    );
-    System.assertEquals(
-      'IN_PROGRESS',
-      [SELECT Status__c FROM HFS_Work_Item__c WHERE Id = :workItem.Id].Status__c
-    );
+      assertError(result, HFS_ServiceContract.VALIDATION_FAILED);
+      System.assertEquals(
+        0,
+        [
+          SELECT COUNT()
+          FROM HFS_Outcome__c
+          WHERE External_Key__c = 'outcome-rollback-test'
+        ]
+      );
+      System.assertEquals(
+        'PENDING',
+        [
+          SELECT Status__c
+          FROM HFS_Action__c
+          WHERE Id = :actionResult.recordId
+        ]
+        .Status__c
+      );
+      System.assertEquals(
+        'IN_PROGRESS',
+        [
+          SELECT Status__c
+          FROM HFS_Work_Item__c
+          WHERE Id = :workItem.Id
+        ]
+        .Status__c
+      );
+    }
   }
 
   private static HFS_RecommendationCommand recommendationCommand(
