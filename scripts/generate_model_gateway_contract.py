@@ -662,7 +662,7 @@ def check(
 
 
 def build_fixture() -> dict[str, Any]:
-    profile_key = "north-star-retail-recommendation"
+    profile_key = "hospital_recovery_reasoning"
     primary_key = "mock-alpha-primary"
     fallback_key = "mock-beta-private"
     evidence_hash = (
@@ -753,11 +753,11 @@ def build_fixture() -> dict[str, Any]:
     policy = {
         "contractVersion": CONTRACT_VERSION,
         "version": "1.0.0",
-        "policyKey": "north-star-retail-routing-mauritius",
+        "policyKey": "north-star-hospital-routing-mauritius",
         "tenantKey": TENANT,
         "businessUnit": None,
         "profileKey": profile_key,
-        "permittedPurposes": ["RESOLVE_RETAIL_RISK"],
+        "permittedPurposes": ["RESOLVE_HOSPITAL_OPERATION_RISK"],
         "candidatePriority": [primary_key, fallback_key],
         "requiredChecks": [
             "TENANT",
@@ -785,9 +785,9 @@ def build_fixture() -> dict[str, Any]:
         "tenantKey": TENANT,
         "businessUnit": None,
         "agentKey": "north-star-orchestrator",
-        "subagentKey": "retail-risk-analysis",
+        "subagentKey": "hospital-recovery-analysis",
         "userId": "integration-user-001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "profileKey": profile_key,
         "dataClassification": "CONFIDENTIAL",
         "residencyRegion": "mu",
@@ -879,38 +879,40 @@ def build_fixture() -> dict[str, Any]:
         "correlationId": CORRELATION,
         "tenantKey": TENANT,
         "userId": "integration-user-001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "agentKey": "north-star-orchestrator",
         "profileKey": profile_key,
         "profileVersion": profile["version"],
-        "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
-        "retrievalVersion": "north-star-retail-context-1.0.0",
+        "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+        "retrievalVersion": "north-star-hospital-context-1.0.0",
         "messages": [
             {
                 "role": "SYSTEM",
                 "content": (
-                    "Separate retail facts, inferences, assumptions, and "
-                    "recommendations. Cite inventory, expiry, supplier, "
-                    "complaint, promotion, and staffing evidence. Do not "
-                    "blindly stop all supplier orders because complaints exist; "
-                    "request supplier response and require human approval."
+                    "Separate hospital operations facts, inferences, "
+                    "assumptions, and recommendations. Cite complaint, "
+                    "capacity, pharmacy stock, partner, billing, staffing, "
+                    "approval, and outcome evidence. Refuse diagnosis, "
+                    "treatment, dosage, triage, and clinical priority "
+                    "decisions; require human approval for protected actions."
                 ),
             },
             {
                 "role": "USER",
                 "content": (
-                    "Recommend the next action for the North Star supermarket "
-                    "promotion risk."
+                    "Recommend the next action for the North Star private "
+                    "hospital morning operations surge."
                 ),
             },
         ],
         "context": {
             "dataClassification": "CONFIDENTIAL",
             "evidenceIds": [
-                "evidence-inventory-north-star-001",
-                "evidence-complaint-north-star-001",
-                "evidence-supplier-north-star-001",
-                "evidence-staffing-north-star-001",
+                "evidence-complaint-hospital-001",
+                "evidence-capacity-hospital-001",
+                "evidence-pharmacy-hospital-001",
+                "evidence-partner-hospital-001",
+                "evidence-billing-hospital-001",
             ],
             "sourceContentHashes": [evidence_hash],
         },
@@ -924,20 +926,21 @@ def build_fixture() -> dict[str, Any]:
     }
     output = {
         "facts": [
-            "Shelf and backroom cover is below the weekend promotion threshold."
+            "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
         "inferences": [
-            "A warehouse transfer plus supplier replacement is safer than blindly reordering the complained-about batch."
+            "The safest recovery path is an operations plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
         "recommendation": (
-            "Route a recovery plan for manager approval: transfer safe warehouse stock, quarantine suspect units, mark down only safe near-expiry stock, fix shelf price, open one extra cashier lane, and request supplier replacement."
+            "Route a hospital operations recovery plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes."
         ),
         "confidence": 0.87,
         "evidenceIds": [
-            "evidence-inventory-north-star-001",
-            "evidence-complaint-north-star-001",
-            "evidence-supplier-north-star-001",
-            "evidence-staffing-north-star-001",
+            "evidence-complaint-hospital-001",
+            "evidence-capacity-hospital-001",
+            "evidence-pharmacy-hospital-001",
+            "evidence-partner-hospital-001",
+            "evidence-billing-hospital-001",
         ],
         "requiresHumanApproval": True,
     }

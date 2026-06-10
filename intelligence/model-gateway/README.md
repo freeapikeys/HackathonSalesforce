@@ -18,11 +18,11 @@ Two mock deployments implement the same `hfs.generate.v1` adapter interface.
 The scenario demonstrates primary selection, qualified fallback, and
 fail-closed behavior when no deployment satisfies the data policy.
 
-For North Star, the same gateway should route retail recommendations and message
-drafts through logical profiles. A retail recommendation request should include
-only accessible product, store, supplier, batch, complaint, inventory,
-promotion, staff, and outcome evidence. It should never select a provider or
-model by name from Agentforce or UI code.
+For North Star, the same gateway should route hospital recovery
+recommendations and message drafts through logical profiles. A hospital
+recovery request should include only accessible complaint, capacity, resource,
+partner, pharmacy stock, billing, staffing, approval, and outcome evidence. It
+should never select a provider or model by name from Agentforce or UI code.
 
 Run:
 

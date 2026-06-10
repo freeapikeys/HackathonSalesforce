@@ -4,7 +4,7 @@
     {
       "contractVersion": "1.0.0",
       "version": "1.0.0",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "taskType": "RECOMMENDATION",
       "inputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/generateRequest",
       "outputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/recommendationOutput",
@@ -58,7 +58,7 @@
       ],
       "contextWindowTokens": 32768,
       "qualifiedProfiles": [
-        "north-star-retail-recommendation"
+        "hospital_recovery_reasoning"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.91
@@ -96,7 +96,7 @@
       ],
       "contextWindowTokens": 16384,
       "qualifiedProfiles": [
-        "north-star-retail-recommendation"
+        "hospital_recovery_reasoning"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.88
@@ -112,12 +112,12 @@
     {
       "contractVersion": "1.0.0",
       "version": "1.0.0",
-      "policyKey": "north-star-retail-routing-mauritius",
+      "policyKey": "north-star-hospital-routing-mauritius",
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "permittedPurposes": [
-        "RESOLVE_RETAIL_RISK"
+        "RESOLVE_HOSPITAL_OPERATION_RISK"
       ],
       "candidatePriority": [
         "mock-alpha-primary",
@@ -151,10 +151,10 @@
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
       "agentKey": "north-star-orchestrator",
-      "subagentKey": "retail-risk-analysis",
+      "subagentKey": "hospital-recovery-analysis",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_RETAIL_RISK",
-      "profileKey": "north-star-retail-recommendation",
+      "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+      "profileKey": "hospital_recovery_reasoning",
       "dataClassification": "CONFIDENTIAL",
       "residencyRegion": "mu",
       "language": "en",
@@ -173,10 +173,10 @@
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
       "agentKey": "north-star-orchestrator",
-      "subagentKey": "retail-risk-analysis",
+      "subagentKey": "hospital-recovery-analysis",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_RETAIL_RISK",
-      "profileKey": "north-star-retail-recommendation",
+      "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+      "profileKey": "hospital_recovery_reasoning",
       "dataClassification": "CONFIDENTIAL",
       "residencyRegion": "mu",
       "language": "en",
@@ -197,10 +197,10 @@
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
       "agentKey": "north-star-orchestrator",
-      "subagentKey": "retail-risk-analysis",
+      "subagentKey": "hospital-recovery-analysis",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_RETAIL_RISK",
-      "profileKey": "north-star-retail-recommendation",
+      "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+      "profileKey": "hospital_recovery_reasoning",
       "dataClassification": "RESTRICTED",
       "residencyRegion": "mu",
       "language": "en",
@@ -218,9 +218,9 @@
     "primary": {
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
-      "policyKey": "north-star-retail-routing-mauritius",
+      "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
       "decision": "SELECTED",
       "selectedDeploymentKey": "mock-alpha-primary",
@@ -318,9 +318,9 @@
     "fallback": {
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
-      "policyKey": "north-star-retail-routing-mauritius",
+      "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
       "decision": "SELECTED",
       "selectedDeploymentKey": "mock-beta-private",
@@ -424,9 +424,9 @@
     "noQualifiedDeployment": {
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
-      "policyKey": "north-star-retail-routing-mauritius",
+      "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
       "decision": "NO_QUALIFIED_DEPLOYMENT",
       "selectedDeploymentKey": null,
@@ -455,29 +455,30 @@
     "correlationId": "20000000-0000-4000-8000-000000000001",
     "tenantKey": "demo-mauritius",
     "userId": "integration-user-001",
-    "purpose": "RESOLVE_RETAIL_RISK",
+    "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
     "agentKey": "north-star-orchestrator",
-    "profileKey": "north-star-retail-recommendation",
+    "profileKey": "hospital_recovery_reasoning",
     "profileVersion": "1.0.0",
-    "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
-    "retrievalVersion": "north-star-retail-context-1.0.0",
+    "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+    "retrievalVersion": "north-star-hospital-context-1.0.0",
     "messages": [
       {
         "role": "SYSTEM",
-        "content": "Separate retail facts, inferences, assumptions, and recommendations. Cite inventory, expiry, supplier, complaint, promotion, and staffing evidence. Do not blindly stop all supplier orders because complaints exist; request supplier response and require human approval."
+        "content": "Separate hospital operations facts, inferences, assumptions, and recommendations. Cite complaint, capacity, pharmacy stock, partner, billing, staffing, approval, and outcome evidence. Refuse diagnosis, treatment, dosage, triage, and clinical priority decisions; require human approval for protected actions."
       },
       {
         "role": "USER",
-        "content": "Recommend the next action for the North Star supermarket promotion risk."
+        "content": "Recommend the next action for the North Star private hospital morning operations surge."
       }
     ],
     "context": {
       "dataClassification": "CONFIDENTIAL",
       "evidenceIds": [
-        "evidence-inventory-north-star-001",
-        "evidence-complaint-north-star-001",
-        "evidence-supplier-north-star-001",
-        "evidence-staffing-north-star-001"
+        "evidence-complaint-hospital-001",
+        "evidence-capacity-hospital-001",
+        "evidence-pharmacy-hospital-001",
+        "evidence-partner-hospital-001",
+        "evidence-billing-hospital-001"
       ],
       "sourceContentHashes": [
         "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10"
@@ -498,25 +499,26 @@
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "invocationId": "invocation-alpha-001",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
       "deploymentKey": "mock-alpha-primary",
       "deploymentVersion": "1.2.0",
       "adapterInterfaceVersion": "hfs.generate.v1",
       "output": {
         "facts": [
-          "Shelf and backroom cover is below the weekend promotion threshold."
+          "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
         "inferences": [
-          "A warehouse transfer plus supplier replacement is safer than blindly reordering the complained-about batch."
+          "The safest recovery path is an operations plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
-        "recommendation": "Route a recovery plan for manager approval: transfer safe warehouse stock, quarantine suspect units, mark down only safe near-expiry stock, fix shelf price, open one extra cashier lane, and request supplier replacement.",
+        "recommendation": "Route a hospital operations recovery plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes.",
         "confidence": 0.87,
         "evidenceIds": [
-          "evidence-inventory-north-star-001",
-          "evidence-complaint-north-star-001",
-          "evidence-supplier-north-star-001",
-          "evidence-staffing-north-star-001"
+          "evidence-complaint-hospital-001",
+          "evidence-capacity-hospital-001",
+          "evidence-pharmacy-hospital-001",
+          "evidence-partner-hospital-001",
+          "evidence-billing-hospital-001"
         ],
         "requiresHumanApproval": true
       },
@@ -528,25 +530,26 @@
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "invocationId": "invocation-beta-001",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
       "deploymentKey": "mock-beta-private",
       "deploymentVersion": "2.0.0",
       "adapterInterfaceVersion": "hfs.generate.v1",
       "output": {
         "facts": [
-          "Shelf and backroom cover is below the weekend promotion threshold."
+          "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
         "inferences": [
-          "A warehouse transfer plus supplier replacement is safer than blindly reordering the complained-about batch."
+          "The safest recovery path is an operations plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
-        "recommendation": "Route a recovery plan for manager approval: transfer safe warehouse stock, quarantine suspect units, mark down only safe near-expiry stock, fix shelf price, open one extra cashier lane, and request supplier replacement.",
+        "recommendation": "Route a hospital operations recovery plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes.",
         "confidence": 0.87,
         "evidenceIds": [
-          "evidence-inventory-north-star-001",
-          "evidence-complaint-north-star-001",
-          "evidence-supplier-north-star-001",
-          "evidence-staffing-north-star-001"
+          "evidence-complaint-hospital-001",
+          "evidence-capacity-hospital-001",
+          "evidence-pharmacy-hospital-001",
+          "evidence-partner-hospital-001",
+          "evidence-billing-hospital-001"
         ],
         "requiresHumanApproval": true
       },
@@ -562,23 +565,24 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_RETAIL_RISK",
+      "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
       "agentKey": "north-star-orchestrator",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
-      "policyKey": "north-star-retail-routing-mauritius",
+      "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": "mock-alpha-primary",
       "selectedDeploymentVersion": "1.2.0",
-      "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
-      "retrievalVersion": "north-star-retail-context-1.0.0",
-      "inputHash": "sha256:62a6eb7fb2dbdb7c398f6b489d82bbd2ff55f85f943a20c9f88c7e966bfc53b4",
-      "outputHash": "sha256:3169101fe4fc510eca499162f5e2bdf1b2ab3e648615ea7f616a173d49742fe3",
+      "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+      "retrievalVersion": "north-star-hospital-context-1.0.0",
+      "inputHash": "sha256:317c0b984322bbee73ba082b5e0281535b5409de40f4fd4650cfa110e4afb337",
+      "outputHash": "sha256:206dfb316a0f35ee8188d78e665c942c94a3bed0fe7a63fb5e330ddac1c4bbbd",
       "evidenceIds": [
-        "evidence-inventory-north-star-001",
-        "evidence-complaint-north-star-001",
-        "evidence-supplier-north-star-001",
-        "evidence-staffing-north-star-001"
+        "evidence-complaint-hospital-001",
+        "evidence-capacity-hospital-001",
+        "evidence-pharmacy-hospital-001",
+        "evidence-partner-hospital-001",
+        "evidence-billing-hospital-001"
       ],
       "attempts": [
         {
@@ -610,23 +614,24 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_RETAIL_RISK",
+      "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
       "agentKey": "north-star-orchestrator",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
-      "policyKey": "north-star-retail-routing-mauritius",
+      "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": "mock-beta-private",
       "selectedDeploymentVersion": "2.0.0",
-      "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
-      "retrievalVersion": "north-star-retail-context-1.0.0",
-      "inputHash": "sha256:62a6eb7fb2dbdb7c398f6b489d82bbd2ff55f85f943a20c9f88c7e966bfc53b4",
-      "outputHash": "sha256:3169101fe4fc510eca499162f5e2bdf1b2ab3e648615ea7f616a173d49742fe3",
+      "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+      "retrievalVersion": "north-star-hospital-context-1.0.0",
+      "inputHash": "sha256:317c0b984322bbee73ba082b5e0281535b5409de40f4fd4650cfa110e4afb337",
+      "outputHash": "sha256:206dfb316a0f35ee8188d78e665c942c94a3bed0fe7a63fb5e330ddac1c4bbbd",
       "evidenceIds": [
-        "evidence-inventory-north-star-001",
-        "evidence-complaint-north-star-001",
-        "evidence-supplier-north-star-001",
-        "evidence-staffing-north-star-001"
+        "evidence-complaint-hospital-001",
+        "evidence-capacity-hospital-001",
+        "evidence-pharmacy-hospital-001",
+        "evidence-partner-hospital-001",
+        "evidence-billing-hospital-001"
       ],
       "attempts": [
         {
@@ -669,23 +674,24 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
       "userId": "integration-user-001",
-      "purpose": "RESOLVE_RETAIL_RISK",
+      "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
       "agentKey": "north-star-orchestrator",
-      "profileKey": "north-star-retail-recommendation",
+      "profileKey": "hospital_recovery_reasoning",
       "profileVersion": "1.0.0",
-      "policyKey": "north-star-retail-routing-mauritius",
+      "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": null,
       "selectedDeploymentVersion": null,
-      "promptVersion": "north-star-retail-recommendation-prompt-1.0.0",
-      "retrievalVersion": "north-star-retail-context-1.0.0",
-      "inputHash": "sha256:765601e23e1e35332b5b685b08bc7c5933247230605e68eee50b203addd58100",
+      "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+      "retrievalVersion": "north-star-hospital-context-1.0.0",
+      "inputHash": "sha256:8e68124dfa1c5033266070b07c6b467b182664307611636f723beed98e32f308",
       "outputHash": null,
       "evidenceIds": [
-        "evidence-inventory-north-star-001",
-        "evidence-complaint-north-star-001",
-        "evidence-supplier-north-star-001",
-        "evidence-staffing-north-star-001"
+        "evidence-complaint-hospital-001",
+        "evidence-capacity-hospital-001",
+        "evidence-pharmacy-hospital-001",
+        "evidence-partner-hospital-001",
+        "evidence-billing-hospital-001"
       ],
       "attempts": [
         {

@@ -338,14 +338,10 @@ class DemoHarness:
         generation_request = deepcopy(fixture["generateRequest"])
         output = deepcopy(fixture["normalizedResponses"][0]["output"])
         
-        # Use the fixture's purpose until the model-gateway profile is
-        # fully migrated; align tenantKey and correlationId with config.
-        fixture_purpose = fixture["generateRequest"]["purpose"]
-        
         for value in (routing_request, generation_request):
             value["tenantKey"] = self.config["tenantKey"]
             value["correlationId"] = self.config["correlationId"]
-            value["purpose"] = fixture_purpose
+            value["purpose"] = HOSPITAL_PURPOSE
         
         generation_request["context"]["evidenceIds"] = [
             source["evidenceId"]

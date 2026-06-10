@@ -293,7 +293,7 @@ file before editing.
       inventory/waste work.
 - [x] Agentforce fixtures include a denied-action scenario.
 - [x] Agentforce fixtures include a changed-recommendation scenario.
-- [ ] Model gateway uses global/hospital profile names, not retail-only names.
+- [x] Model gateway uses global/hospital profile names, not retail-only names.
 
 ### 7. MuleSoft And Channel Mocks
 
