@@ -76,13 +76,13 @@ Research source:
       responsibilities, C-level engagement, marketing handoffs, CRM pipeline
       reporting, AI/Data 360 readiness positioning, MuleSoft modernization, and
       long-run customer success language.
-- [ ] Build synthetic Nexavenu revenue pipeline fixtures without presenting
+- [x] Build synthetic Nexavenu revenue pipeline fixtures without presenting
       contact-sourced metrics as public fact.
-- [ ] Show the full business pipeline:
+- [x] Show the full business pipeline:
       `lead generation -> lead nurture -> sales -> fulfillment -> retention/ascension`.
-- [ ] Show the buyer journey:
+- [x] Show the buyer journey:
       `problem -> awareness -> struggle -> education -> search -> comparison -> test -> purchase -> first impressions`.
-- [ ] Recommendation separates public facts, contact-sourced assumptions,
+- [x] Recommendation separates public facts, contact-sourced assumptions,
       inferences, next actions, approval requirements, and expected outcomes.
 
 ## Supermarket Issues We Solve

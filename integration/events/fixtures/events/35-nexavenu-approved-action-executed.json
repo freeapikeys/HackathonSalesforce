@@ -1,0 +1,43 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000035",
+  "source": "urn:hfs:source:nexavenu-revenue",
+  "type": "io.github.freeapikeys.hfs.nexavenu.revenue.approved.action.executed.v1",
+  "subject": "action:ACTION-NEXAVENU-REVENUE-001",
+  "time": "2026-06-10T09:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "30000000-0000-4000-8000-000000000001",
+  "hfscausationid": "00000000-0000-4000-8000-000000000033",
+  "hfsidempotencykey": "nexavenu-approved-action-executed-v1",
+  "hfssourcerecordid": "nexavenu-revenue-event-action-001",
+  "hfssourcesequence": 7,
+  "hfsobservedat": "2026-06-10T09:00:03Z",
+  "hfscontenthash": "sha256:6a9bc015873001ab871ac79d4a0fc5ef674451485f8922e4c29cf829fd6ef6a6",
+  "data": {
+    "recordtype": "SOP",
+    "operation": "UPDATE",
+    "businesskey": "ACTION-NEXAVENU-REVENUE-001",
+    "effectiveat": "2026-06-10T09:00:00Z",
+    "attributes": {
+      "eventcode": "NEXAVENU_APPROVED_ACTION_EXECUTED",
+      "approvalid": "APPROVAL-NEXAVENU-REVENUE-001",
+      "approved_by_role": "head_of_growth",
+      "actiontypes": [
+        "CREATE_NURTURE_TASK",
+        "DRAFT_CHAMPION_EMAIL",
+        "ASSIGN_BUYER_EDUCATION_CONTENT",
+        "UPDATE_OPPORTUNITY_STAGE",
+        "CREATE_RETENTION_REVIEW"
+      ],
+      "executionstatus": "SUCCESS",
+      "protected_external_actions": [
+        "champion email draft requires manager approval before send",
+        "opportunity stage update requires revenue-owner approval"
+      ],
+      "correlationid": "CORR-NEXAVENU-REVENUE-INTELLIGENCE-001"
+    }
+  }
+}
