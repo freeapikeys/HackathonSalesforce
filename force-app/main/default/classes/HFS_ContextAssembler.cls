@@ -320,6 +320,7 @@ public with sharing class HFS_ContextAssembler {
     response.workItem = item(workItem);
     response.entities = items(entityRecords);
     response.relationships = items(relationshipRecords);
+    response.eventParticipants = items(participantRecords);
     response.agreements = items(agreementRecords);
     response.sopExecutions = items(sopRecords);
     response.evidence = citations(evidenceRecords);
@@ -952,6 +953,7 @@ public with sharing class HFS_ContextAssembler {
     response.generatedAt = System.now();
     response.entities = new List<HFS_ContextItem>();
     response.relationships = new List<HFS_ContextItem>();
+    response.eventParticipants = new List<HFS_ContextItem>();
     response.agreements = new List<HFS_ContextItem>();
     response.sopExecutions = new List<HFS_ContextItem>();
     response.timeline = new List<HFS_ContextItem>();

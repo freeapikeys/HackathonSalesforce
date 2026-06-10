@@ -21,6 +21,9 @@ public class HFS_ContextResponse {
   public List<HFS_ContextItem> relationships { get; set; }
 
   @AuraEnabled
+  public List<HFS_ContextItem> eventParticipants { get; set; }
+
+  @AuraEnabled
   public List<HFS_ContextItem> agreements { get; set; }
 
   @AuraEnabled

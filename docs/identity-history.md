@@ -20,5 +20,14 @@ It proves the first identity-history slice can:
   them;
 - traverse a person-to-organization-to-supplier relationship path with evidence.
 
-This is not yet the full C03 product surface. The next C03 slices should connect
-the same behavior to Salesforce records, API responses, and UI inspection.
+The Salesforce service layer now projects part of that history back through the
+governed API:
+
+- `HFS_ContextResponse.eventParticipants` exposes event-to-entity participant
+  links beside entities and relationships.
+- `READ_PROVENANCE` accepts `HFS_Event_Participant__c` roots and traces those
+  participant links back to their immutable source event.
+
+This is not yet the full C03 product surface. The next C03 slice should add UI
+inspection and correction affordances so humans can review and amend
+relationship history without losing source evidence.

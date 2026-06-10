@@ -26,10 +26,13 @@ authorization, replay, and error behavior.
 ## Implemented Behavior
 
 - Context reads start from a work item or subject entity and assemble the
-  connected entity, relationship, agreement, SOP, evidence, recommendation,
-  approval, action, outcome, evaluation, and event graph.
+  connected entity, relationship, event-participant, agreement, SOP, evidence,
+  recommendation, approval, action, outcome, evaluation, and event graph.
 - Provenance reads use an explicit object allowlist and trace records back to
   citable evidence and immutable source events.
+- Event participants are exposed as first-class context items so users and
+  agents can inspect which source event linked an entity into the relationship
+  graph.
 - Event persistence stores accepted, late, out-of-order, and conflict-review
   intake results as immutable `HFS_Event__c` records, preserves the normalized
   payload JSON, and rejects changed content under the same tenant/source

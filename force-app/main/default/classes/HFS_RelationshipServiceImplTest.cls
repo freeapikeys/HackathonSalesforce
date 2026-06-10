@@ -390,6 +390,7 @@ private class HFS_RelationshipServiceImplTest {
     );
     System.assert(context.entities.size() >= 3);
     System.assertEquals(1, context.relationships.size());
+    System.assertEquals(1, context.eventParticipants.size());
     System.assertEquals(1, context.agreements.size());
     System.assertEquals(1, context.sopExecutions.size());
     System.assertEquals(1, context.evidence.size());
@@ -402,6 +403,22 @@ private class HFS_RelationshipServiceImplTest {
     System.assertEquals(
       'SEND_STATUS_UPDATE',
       context.recommendations[0].proposedActionType
+    );
+    System.assertEquals(
+      'EVENT_PARTICIPANT',
+      context.eventParticipants[0].recordType
+    );
+    System.assertEquals(
+      'SUBJECT',
+      context.eventParticipants[0].participantRole
+    );
+    System.assertEquals(
+      String.valueOf(customer.Id),
+      context.eventParticipants[0].subjectEntityId
+    );
+    System.assertEquals(
+      String.valueOf(sourceEvent.Id),
+      context.eventParticipants[0].sourceEventId
     );
     System.assertEquals(
       'relationship-recommendation',
@@ -431,6 +448,41 @@ private class HFS_RelationshipServiceImplTest {
     );
     System.assertEquals(1, provenance.citations.size());
     System.assert(provenance.lineage.size() >= 2);
+
+    HFS_Event_Participant__c participant = [
+      SELECT Id
+      FROM HFS_Event_Participant__c
+      WHERE External_Key__c = 'participant-customer-test'
+      LIMIT 1
+    ];
+    HFS_ProvenanceRequest participantProvenanceRequest = new HFS_ProvenanceRequest();
+    participantProvenanceRequest.contractVersion = HFS_ServiceContract.VERSION;
+    participantProvenanceRequest.tenantKey = TENANT;
+    participantProvenanceRequest.objectApiName = 'HFS_Event_Participant__c';
+    participantProvenanceRequest.recordId = participant.Id;
+    participantProvenanceRequest.purpose = 'EXPLAIN_EVENT_PARTICIPANT';
+    participantProvenanceRequest.correlationId = CORRELATION;
+    participantProvenanceRequest.maxDepth = 4;
+
+    HFS_ProvenanceResponse participantProvenance = service.getProvenance(
+      participantProvenanceRequest
+    );
+    System.assertEquals(0, participantProvenance.errors.size());
+    System.assertEquals(
+      'EVENT_PARTICIPANT',
+      participantProvenance.rootRecord.recordType
+    );
+    System.assertEquals(
+      'SUBJECT',
+      participantProvenance.rootRecord.participantRole
+    );
+    System.assertEquals(
+      String.valueOf(sourceEvent.Id),
+      participantProvenance.rootRecord.sourceEventId
+    );
+    System.assert(
+      containsObject(participantProvenance.lineage, 'HFS_Event__c')
+    );
 
     HFS_Action__c storedAction = [
       SELECT Status__c, Executed_At__c
@@ -845,6 +897,18 @@ private class HFS_RelationshipServiceImplTest {
     command.modelProfile = 'relationship-recommendation';
     command.modelInvocationId = 'model-invocation-service-test';
     return command;
+  }
+
+  private static Boolean containsObject(
+    List<HFS_ContextItem> items,
+    String objectApiName
+  ) {
+    for (HFS_ContextItem item : items) {
+      if (item.objectApiName == objectApiName) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static HFS_ContextRequest contextRequest(Id workItemId) {

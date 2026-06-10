@@ -267,6 +267,9 @@ private class HFS_ServiceContractTest {
       response.relationships = new List<HFS_ContextItem>{
         contextItemFixture()
       };
+      response.eventParticipants = new List<HFS_ContextItem>{
+        contextItemFixture()
+      };
       response.agreements = new List<HFS_ContextItem>{ contextItemFixture() };
       response.sopExecutions = new List<HFS_ContextItem>{
         contextItemFixture()

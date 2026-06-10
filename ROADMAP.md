@@ -268,7 +268,8 @@ and UI must support any supermarket product category.
 - [x] Keep contradictory agreement status assertions visible instead of
       overwriting them.
 - [x] Prove a traversable person-to-organization-to-supplier path.
-- [ ] Connect identity history to Salesforce records and service responses.
+- [x] Expose event participant identity links in Salesforce context and
+      provenance responses.
 - [ ] Add user-facing relationship inspection and correction affordances.
 
 ### 6. Salesforce Core
