@@ -1,10 +1,387 @@
 [
-  { "clusterId": "CLUS-001", "productId": "PROD-005", "batchId": "BATCH-005", "storeIds": ["STORE-001"], "supplierId": "SUPP-001", "firstReportedAt": "2026-06-13T09:30:00Z", "lastReportedAt": "2026-06-13T23:59:00Z", "complaintCount": 8, "dominantTypes": ["quality"], "riskInterpretation": "batch_specific", "recommendedCaution": "Quarantine remaining BATCH-005 strawberries at STORE-001.", "evidenceIds": ["EVT-001", "EVT-002", "EVT-022"] },
-  { "clusterId": "CLUS-002", "productId": "PROD-006", "batchId": "BATCH-006", "storeIds": ["STORE-002"], "supplierId": "SUPP-002", "firstReportedAt": "2026-06-13T10:15:00Z", "lastReportedAt": "2026-06-13T23:59:00Z", "complaintCount": 5, "dominantTypes": ["expiry"], "riskInterpretation": "store_specific", "recommendedCaution": "Accelerate markdown for BATCH-006 milk at STORE-002.", "evidenceIds": ["EVT-003", "EVT-016"] },
-  { "clusterId": "CLUS-003", "productId": "PROD-026", "batchId": "BATCH-026", "storeIds": ["STORE-003"], "supplierId": "SUPP-006", "firstReportedAt": "2026-06-13T11:00:00Z", "lastReportedAt": "2026-06-13T23:59:00Z", "complaintCount": 6, "dominantTypes": ["packaging"], "riskInterpretation": "batch_specific", "recommendedCaution": "Inspect BATCH-026 canned tomatoes for seam leaks.", "evidenceIds": ["EVT-004", "EVT-017"] },
-  { "clusterId": "CLUS-004", "productId": "PROD-003", "batchId": "BATCH-003", "storeIds": ["STORE-003", "STORE-001"], "supplierId": "SUPP-001", "firstReportedAt": "2026-06-13T16:00:00Z", "lastReportedAt": "2026-06-13T23:00:00Z", "complaintCount": 4, "dominantTypes": ["incorrect"], "riskInterpretation": "supplier_suspected", "recommendedCaution": "Verify variety of mangoes for all recent SUPP-001 deliveries.", "evidenceIds": ["EVT-009", "EVT-020"] },
-  { "clusterId": "CLUS-005", "productId": "PROD-030", "batchId": "BATCH-030", "storeIds": ["STORE-003"], "supplierId": "SUPP-006", "firstReportedAt": "2026-06-13T13:00:00Z", "lastReportedAt": "2026-06-13T23:59:00Z", "complaintCount": 4, "dominantTypes": ["price"], "riskInterpretation": "price_signage", "recommendedCaution": "Audit shelf labels for salt at STORE-003.", "evidenceIds": ["EVT-006"] },
-  { "clusterId": "CLUS-006", "productId": "PROD-013", "batchId": "BATCH-013", "storeIds": ["STORE-001"], "supplierId": "SUPP-003", "firstReportedAt": "2026-06-13T15:00:00Z", "lastReportedAt": "2026-06-13T23:59:00Z", "complaintCount": 3, "dominantTypes": ["cold_chain"], "riskInterpretation": "store_specific", "recommendedCaution": "Immediate check of fridge 2 at STORE-001.", "evidenceIds": ["EVT-008"] },
-  { "clusterId": "CLUS-007", "productId": "PROD-001", "batchId": "BATCH-001", "storeIds": ["STORE-001"], "supplierId": "SUPP-001", "firstReportedAt": "2026-06-13T22:30:00Z", "lastReportedAt": "2026-06-13T23:59:00Z", "complaintCount": 4, "dominantTypes": ["price"], "riskInterpretation": "price_signage", "recommendedCaution": "Audit banana pricing labels at STORE-001.", "evidenceIds": ["EVT-019"] },
-  { "clusterId": "CLUS-008", "productId": "PROD-027", "batchId": "BATCH-027", "storeIds": ["STORE-002"], "supplierId": "SUPP-006", "firstReportedAt": "2026-06-13T14:00:00Z", "lastReportedAt": "2026-06-13T23:59:00Z", "complaintCount": 2, "dominantTypes": ["delay"], "riskInterpretation": "supplier_suspected", "recommendedCaution": "Monitor rice delivery reliability from SUPP-006.", "evidenceIds": ["EVT-007"] }
+  {
+    "clusterId": "CLUSTER-HOS-001",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-OUTPATIENT-RECEPTION-001",
+    "locationIds": [
+      "LOC-001-A",
+      "LOC-002-B",
+      "LOC-006-B",
+      "LOC-003-A",
+      "LOC-004-B"
+    ],
+    "resourceIds": ["RESOURCE-HOS-012", "RESOURCE-HOS-056", "RESOURCE-HOS-033"],
+    "sourceComplaintIds": [
+      "COMP-HOS-001",
+      "COMP-HOS-002",
+      "COMP-HOS-006",
+      "COMP-HOS-013",
+      "COMP-HOS-014"
+    ],
+    "firstReportedAt": "2026-06-13T07:00:00+04:00",
+    "lastReportedAt": "2026-06-13T12:31:00+04:00",
+    "complaintCount": 5,
+    "dominantTypes": ["wait_time", "room_readiness", "discharge_delay"],
+    "riskInterpretation": "capacity_driven",
+    "recommendedCaution": "avoid_over_escalation_until_capacity_evidence_is_checked",
+    "evidenceIds": [
+      "evidence-complaint-001",
+      "evidence-complaint-002",
+      "evidence-complaint-006",
+      "evidence-complaint-013",
+      "evidence-complaint-014",
+      "evidence-cluster-001"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-002",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-EMERGENCY-INTAKE-002",
+    "locationIds": [
+      "LOC-001-B",
+      "LOC-010-B",
+      "LOC-003-B",
+      "LOC-002-A",
+      "LOC-005-A",
+      "LOC-004-A"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-041",
+      "RESOURCE-HOS-010",
+      "RESOURCE-HOS-073",
+      "RESOURCE-HOS-032",
+      "RESOURCE-HOS-015",
+      "RESOURCE-HOS-064"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-005",
+      "COMP-HOS-010",
+      "COMP-HOS-017",
+      "COMP-HOS-022",
+      "COMP-HOS-029",
+      "COMP-HOS-034"
+    ],
+    "firstReportedAt": "2026-06-13T11:28:00+04:00",
+    "lastReportedAt": "2026-06-13T08:51:00+04:00",
+    "complaintCount": 6,
+    "dominantTypes": ["billing", "privacy"],
+    "riskInterpretation": "billing_driven",
+    "recommendedCaution": "avoid_over_escalation_until_capacity_evidence_is_checked",
+    "evidenceIds": [
+      "evidence-complaint-005",
+      "evidence-complaint-010",
+      "evidence-complaint-017",
+      "evidence-complaint-022",
+      "evidence-complaint-029",
+      "evidence-complaint-034",
+      "evidence-cluster-002"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-003",
+    "globalPrimitive": "Signal",
+    "departmentId": "WARD-DISCHARGE-003",
+    "locationIds": [
+      "LOC-004-A",
+      "LOC-007-A",
+      "LOC-006-B",
+      "LOC-009-A",
+      "LOC-008-B",
+      "LOC-001-A",
+      "LOC-010-B"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-034",
+      "RESOURCE-HOS-067",
+      "RESOURCE-HOS-066",
+      "RESOURCE-HOS-009",
+      "RESOURCE-HOS-008",
+      "RESOURCE-HOS-031"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-004",
+      "COMP-HOS-007",
+      "COMP-HOS-016",
+      "COMP-HOS-019",
+      "COMP-HOS-028",
+      "COMP-HOS-031",
+      "COMP-HOS-040"
+    ],
+    "firstReportedAt": "2026-06-13T10:21:00+04:00",
+    "lastReportedAt": "2026-06-13T14:33:00+04:00",
+    "complaintCount": 7,
+    "dominantTypes": ["pharmacy_delay", "food"],
+    "riskInterpretation": "partner_driven",
+    "recommendedCaution": "avoid_over_escalation_until_capacity_evidence_is_checked",
+    "evidenceIds": [
+      "evidence-complaint-004",
+      "evidence-complaint-007",
+      "evidence-complaint-016",
+      "evidence-complaint-019",
+      "evidence-complaint-028",
+      "evidence-complaint-031",
+      "evidence-complaint-040",
+      "evidence-cluster-003"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-004",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-HOUSEKEEPING-004",
+    "locationIds": [
+      "LOC-003-C",
+      "LOC-002-C",
+      "LOC-005-A",
+      "LOC-004-C",
+      "LOC-007-A"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-023",
+      "RESOURCE-HOS-022",
+      "RESOURCE-HOS-055",
+      "RESOURCE-HOS-054"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-003",
+      "COMP-HOS-012",
+      "COMP-HOS-015",
+      "COMP-HOS-024",
+      "COMP-HOS-027"
+    ],
+    "firstReportedAt": "2026-06-13T09:14:00+04:00",
+    "lastReportedAt": "2026-06-13T09:02:00+04:00",
+    "complaintCount": 5,
+    "dominantTypes": ["cleanliness", "staff_interaction"],
+    "riskInterpretation": "service_recovery",
+    "recommendedCaution": "avoid_over_escalation_until_capacity_evidence_is_checked",
+    "evidenceIds": [
+      "evidence-complaint-003",
+      "evidence-complaint-012",
+      "evidence-complaint-015",
+      "evidence-complaint-024",
+      "evidence-complaint-027",
+      "evidence-cluster-004"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-005",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-PHARMACY-005",
+    "locationIds": [
+      "LOC-009-A",
+      "LOC-001-B",
+      "LOC-001-C",
+      "LOC-003-B",
+      "LOC-003-C",
+      "LOC-005-A"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-089",
+      "RESOURCE-HOS-011",
+      "RESOURCE-HOS-021",
+      "RESOURCE-HOS-043",
+      "RESOURCE-HOS-053",
+      "RESOURCE-HOS-075"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-009",
+      "COMP-HOS-011",
+      "COMP-HOS-021",
+      "COMP-HOS-023",
+      "COMP-HOS-033",
+      "COMP-HOS-035"
+    ],
+    "firstReportedAt": "2026-06-13T07:56:00+04:00",
+    "lastReportedAt": "2026-06-13T09:58:00+04:00",
+    "complaintCount": 6,
+    "dominantTypes": ["safety", "accessibility"],
+    "riskInterpretation": "safety_sensitive",
+    "recommendedCaution": "manager_escalation_required",
+    "evidenceIds": [
+      "evidence-complaint-009",
+      "evidence-complaint-011",
+      "evidence-complaint-021",
+      "evidence-complaint-023",
+      "evidence-complaint-033",
+      "evidence-complaint-035",
+      "evidence-cluster-005"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-006",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-LAB-COORDINATION-006",
+    "locationIds": [
+      "LOC-001-B",
+      "LOC-010-B",
+      "LOC-003-B",
+      "LOC-002-A",
+      "LOC-005-A",
+      "LOC-004-A",
+      "LOC-007-A"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-041",
+      "RESOURCE-HOS-010",
+      "RESOURCE-HOS-073",
+      "RESOURCE-HOS-032",
+      "RESOURCE-HOS-015",
+      "RESOURCE-HOS-064",
+      "RESOURCE-HOS-047"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-005",
+      "COMP-HOS-010",
+      "COMP-HOS-017",
+      "COMP-HOS-022",
+      "COMP-HOS-029",
+      "COMP-HOS-034",
+      "COMP-HOS-041"
+    ],
+    "firstReportedAt": "2026-06-13T11:28:00+04:00",
+    "lastReportedAt": "2026-06-13T07:40:00+04:00",
+    "complaintCount": 7,
+    "dominantTypes": ["privacy", "billing"],
+    "riskInterpretation": "privacy_sensitive",
+    "recommendedCaution": "manager_escalation_required",
+    "evidenceIds": [
+      "evidence-complaint-005",
+      "evidence-complaint-010",
+      "evidence-complaint-017",
+      "evidence-complaint-022",
+      "evidence-complaint-029",
+      "evidence-complaint-034",
+      "evidence-complaint-041",
+      "evidence-cluster-006"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-007",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-BILLING-INSURANCE-007",
+    "locationIds": [
+      "LOC-008-B",
+      "LOC-010-B",
+      "LOC-002-B",
+      "LOC-004-B",
+      "LOC-006-B"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-078",
+      "RESOURCE-HOS-020",
+      "RESOURCE-HOS-042",
+      "RESOURCE-HOS-074",
+      "RESOURCE-HOS-016"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-008",
+      "COMP-HOS-020",
+      "COMP-HOS-032",
+      "COMP-HOS-044",
+      "COMP-HOS-056"
+    ],
+    "firstReportedAt": "2026-06-13T14:49:00+04:00",
+    "lastReportedAt": "2026-06-13T14:25:00+04:00",
+    "complaintCount": 5,
+    "dominantTypes": ["lost_item"],
+    "riskInterpretation": "isolated",
+    "recommendedCaution": "avoid_over_escalation_until_capacity_evidence_is_checked",
+    "evidenceIds": [
+      "evidence-complaint-008",
+      "evidence-complaint-020",
+      "evidence-complaint-032",
+      "evidence-complaint-044",
+      "evidence-complaint-056",
+      "evidence-cluster-007"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-008",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-FOOD-HOSPITALITY-008",
+    "locationIds": [
+      "LOC-001-A",
+      "LOC-007-A",
+      "LOC-003-A",
+      "LOC-009-A",
+      "LOC-005-A"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-067",
+      "RESOURCE-HOS-033",
+      "RESOURCE-HOS-009",
+      "RESOURCE-HOS-065",
+      "RESOURCE-HOS-031"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-001",
+      "COMP-HOS-007",
+      "COMP-HOS-013",
+      "COMP-HOS-019",
+      "COMP-HOS-025",
+      "COMP-HOS-031"
+    ],
+    "firstReportedAt": "2026-06-13T07:00:00+04:00",
+    "lastReportedAt": "2026-06-13T13:30:00+04:00",
+    "complaintCount": 6,
+    "dominantTypes": ["wait_time", "pharmacy_delay"],
+    "riskInterpretation": "capacity_driven",
+    "recommendedCaution": "avoid_over_escalation_until_capacity_evidence_is_checked",
+    "evidenceIds": [
+      "evidence-complaint-001",
+      "evidence-complaint-007",
+      "evidence-complaint-013",
+      "evidence-complaint-019",
+      "evidence-complaint-025",
+      "evidence-complaint-031",
+      "evidence-cluster-008"
+    ]
+  },
+  {
+    "clusterId": "CLUSTER-HOS-009",
+    "globalPrimitive": "Signal",
+    "departmentId": "DEPT-FACILITIES-009",
+    "locationIds": [
+      "LOC-003-C",
+      "LOC-004-A",
+      "LOC-005-A",
+      "LOC-006-B",
+      "LOC-007-A",
+      "LOC-008-B",
+      "LOC-009-A"
+    ],
+    "resourceIds": [
+      "RESOURCE-HOS-023",
+      "RESOURCE-HOS-034",
+      "RESOURCE-HOS-055",
+      "RESOURCE-HOS-066",
+      "RESOURCE-HOS-008",
+      "RESOURCE-HOS-029"
+    ],
+    "sourceComplaintIds": [
+      "COMP-HOS-003",
+      "COMP-HOS-004",
+      "COMP-HOS-015",
+      "COMP-HOS-016",
+      "COMP-HOS-027",
+      "COMP-HOS-028",
+      "COMP-HOS-039"
+    ],
+    "firstReportedAt": "2026-06-13T09:14:00+04:00",
+    "lastReportedAt": "2026-06-13T13:26:00+04:00",
+    "complaintCount": 7,
+    "dominantTypes": ["food", "cleanliness"],
+    "riskInterpretation": "partner_driven",
+    "recommendedCaution": "avoid_over_escalation_until_capacity_evidence_is_checked",
+    "evidenceIds": [
+      "evidence-complaint-003",
+      "evidence-complaint-004",
+      "evidence-complaint-015",
+      "evidence-complaint-016",
+      "evidence-complaint-027",
+      "evidence-complaint-028",
+      "evidence-complaint-039",
+      "evidence-cluster-009"
+    ]
+  }
 ]

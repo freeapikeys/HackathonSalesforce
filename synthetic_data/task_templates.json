@@ -1,22 +1,200 @@
 [
-  { "taskTemplateId": "TASK-T01", "taskType": "restock", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 60, "requiresApproval": false, "messageTemplate": "Restock product {productId} at {storeId} shelf." },
-  { "taskTemplateId": "TASK-T02", "taskType": "shelf_check", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 120, "requiresApproval": false, "messageTemplate": "Perform quality check for product {productId} at {storeId}." },
-  { "taskTemplateId": "TASK-T03", "taskType": "quarantine", "defaultOwnerRole": "role:duty-manager", "defaultDueMinutes": 30, "requiresApproval": true, "messageTemplate": "QUARANTINE required for batch {batchId} at {storeId} due to {reason}." },
-  { "taskTemplateId": "TASK-T04", "taskType": "markdown", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 180, "requiresApproval": true, "messageTemplate": "Apply {percentage}% markdown to product {productId} at {storeId}." },
-  { "taskTemplateId": "TASK-T05", "taskType": "signage", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 60, "requiresApproval": false, "messageTemplate": "Update signage for promotion {promoId} at {storeId}." },
-  { "taskTemplateId": "TASK-T06", "taskType": "cashier_move", "defaultOwnerRole": "role:duty-manager", "defaultDueMinutes": 15, "requiresApproval": true, "messageTemplate": "Open additional cashier lane at {storeId} due to high queue pressure." },
-  { "taskTemplateId": "TASK-T07", "taskType": "supplier_call", "defaultOwnerRole": "role:procurement-manager", "defaultDueMinutes": 120, "requiresApproval": false, "messageTemplate": "Call supplier {supplierId} regarding {issue}." },
-  { "taskTemplateId": "TASK-T08", "taskType": "manager_review", "defaultOwnerRole": "role:general-manager", "defaultDueMinutes": 240, "requiresApproval": false, "messageTemplate": "Review recovery plan for case {caseId}." },
-  { "taskTemplateId": "TASK-T09", "taskType": "customer_notice", "defaultOwnerRole": "role:customer-service", "defaultDueMinutes": 60, "requiresApproval": true, "messageTemplate": "Send apology and voucher to customer {customerId} for {issue}." },
-  { "taskTemplateId": "TASK-T10", "taskType": "restock_urgent", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 30, "requiresApproval": false, "messageTemplate": "URGENT restock for {productId} at {storeId}." },
-  { "taskTemplateId": "TASK-T11", "taskType": "batch_audit", "defaultOwnerRole": "role:quality-officer", "defaultDueMinutes": 120, "requiresApproval": false, "messageTemplate": "Perform full audit of batch {batchId} at {storeId}." },
-  { "taskTemplateId": "TASK-T12", "taskType": "fridge_temp_check", "defaultOwnerRole": "role:duty-manager", "defaultDueMinutes": 15, "requiresApproval": false, "messageTemplate": "Check temperature of fridge {fridgeId} at {storeId} immediately." },
-  { "taskTemplateId": "TASK-T13", "taskType": "promo_verify", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 120, "requiresApproval": false, "messageTemplate": "Verify price of {productId} against promotion {promoId} at {storeId}." },
-  { "taskTemplateId": "TASK-T14", "taskType": "transfer_init", "defaultOwnerRole": "role:procurement-manager", "defaultDueMinutes": 180, "requiresApproval": true, "messageTemplate": "Initiate stock transfer for {productId} from {sourceStore} to {targetStore}." },
-  { "taskTemplateId": "TASK-T15", "taskType": "credit_note_request", "defaultOwnerRole": "role:procurement-manager", "defaultDueMinutes": 480, "requiresApproval": false, "messageTemplate": "Request credit note from {supplierId} for waste of batch {batchId}." },
-  { "taskTemplateId": "TASK-T16", "taskType": "supplier_audit", "defaultOwnerRole": "role:quality-officer", "defaultDueMinutes": 1440, "requiresApproval": true, "messageTemplate": "Schedule on-site quality audit for supplier {supplierId}." },
-  { "taskTemplateId": "TASK-T17", "taskType": "voucher_issue", "defaultOwnerRole": "role:customer-service", "defaultDueMinutes": 60, "requiresApproval": true, "messageTemplate": "Issue voucher for {amount} Rs to customer {customerId}." },
-  { "taskTemplateId": "TASK-T18", "taskType": "stock_count_verify", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 120, "requiresApproval": false, "messageTemplate": "Verify actual shelf stock for {productId} at {storeId}." },
-  { "taskTemplateId": "TASK-T19", "taskType": "damaged_goods_log", "defaultOwnerRole": "role:floor-staff", "defaultDueMinutes": 60, "requiresApproval": false, "messageTemplate": "Log damaged goods for product {productId} from batch {batchId}." },
-  { "taskTemplateId": "TASK-T20", "taskType": "emergency_reorder", "defaultOwnerRole": "role:procurement-manager", "defaultDueMinutes": 60, "requiresApproval": true, "messageTemplate": "Place emergency reorder for {productId} from {supplierId}." }
+  {
+    "taskTemplateId": "TASK-HOS-001",
+    "globalPrimitive": "Action",
+    "taskType": "patient_service",
+    "defaultOwnerRole": "role:operations-manager",
+    "defaultDueMinutes": 10,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate patient service for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-002",
+    "globalPrimitive": "Action",
+    "taskType": "bed_cleaning",
+    "defaultOwnerRole": "role:bed-manager",
+    "defaultDueMinutes": 15,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate bed cleaning for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-003",
+    "globalPrimitive": "Action",
+    "taskType": "porter_dispatch",
+    "defaultOwnerRole": "role:pharmacy-lead",
+    "defaultDueMinutes": 20,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate porter dispatch for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-004",
+    "globalPrimitive": "Action",
+    "taskType": "pharmacy_restock",
+    "defaultOwnerRole": "role:billing-supervisor",
+    "defaultDueMinutes": 30,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate pharmacy restock for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-005",
+    "globalPrimitive": "Action",
+    "taskType": "billing_review",
+    "defaultOwnerRole": "role:patient-experience-lead",
+    "defaultDueMinutes": 45,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate billing review for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-006",
+    "globalPrimitive": "Action",
+    "taskType": "insurance_followup",
+    "defaultOwnerRole": "role:lab-coordination-lead",
+    "defaultDueMinutes": 60,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate insurance followup for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-007",
+    "globalPrimitive": "Action",
+    "taskType": "vendor_escalation",
+    "defaultOwnerRole": "role:housekeeping-coordinator",
+    "defaultDueMinutes": 90,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate vendor escalation for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-008",
+    "globalPrimitive": "Action",
+    "taskType": "maintenance_check",
+    "defaultOwnerRole": "role:porter-dispatch",
+    "defaultDueMinutes": 120,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate maintenance check for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-009",
+    "globalPrimitive": "Action",
+    "taskType": "food_service_review",
+    "defaultOwnerRole": "role:facilities-duty-manager",
+    "defaultDueMinutes": 10,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate food service review for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-010",
+    "globalPrimitive": "Action",
+    "taskType": "manager_review",
+    "defaultOwnerRole": "role:food-service-lead",
+    "defaultDueMinutes": 15,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate manager review for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-011",
+    "globalPrimitive": "Action",
+    "taskType": "clinical_route",
+    "defaultOwnerRole": "role:insurance-followup-lead",
+    "defaultDueMinutes": 20,
+    "requiresApproval": false,
+    "messageTemplate": "Coordinate clinical route for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-012",
+    "globalPrimitive": "Action",
+    "taskType": "privacy_review",
+    "defaultOwnerRole": "role:front-desk-lead",
+    "defaultDueMinutes": 30,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate privacy review for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-013",
+    "globalPrimitive": "Action",
+    "taskType": "queue_support",
+    "defaultOwnerRole": "role:outpatient-flow-lead",
+    "defaultDueMinutes": 45,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate queue support for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-014",
+    "globalPrimitive": "Action",
+    "taskType": "room_readiness_check",
+    "defaultOwnerRole": "role:emergency-intake-coordinator",
+    "defaultDueMinutes": 60,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate room readiness check for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-015",
+    "globalPrimitive": "Action",
+    "taskType": "linen_fallback",
+    "defaultOwnerRole": "role:privacy-duty-manager",
+    "defaultDueMinutes": 90,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate linen fallback for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-016",
+    "globalPrimitive": "Action",
+    "taskType": "payment_review",
+    "defaultOwnerRole": "role:safety-duty-manager",
+    "defaultDueMinutes": 120,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate payment review for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-017",
+    "globalPrimitive": "Action",
+    "taskType": "wheelchair_support",
+    "defaultOwnerRole": "role:stock-control-lead",
+    "defaultDueMinutes": 10,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate wheelchair support for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-018",
+    "globalPrimitive": "Action",
+    "taskType": "lab_status_followup",
+    "defaultOwnerRole": "role:maintenance-dispatch",
+    "defaultDueMinutes": 15,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate lab status followup for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-019",
+    "globalPrimitive": "Action",
+    "taskType": "staff_reallocation",
+    "defaultOwnerRole": "role:laundry-coordinator",
+    "defaultDueMinutes": 20,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate staff reallocation for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-020",
+    "globalPrimitive": "Action",
+    "taskType": "outcome_capture",
+    "defaultOwnerRole": "role:payment-review-lead",
+    "defaultDueMinutes": 30,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate outcome capture for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-021",
+    "globalPrimitive": "Action",
+    "taskType": "service_recovery_message",
+    "defaultOwnerRole": "role:clinical-route-coordinator",
+    "defaultDueMinutes": 45,
+    "requiresApproval": true,
+    "messageTemplate": "Coordinate service recovery message for {departmentId} using evidence {evidenceId}."
+  },
+  {
+    "taskTemplateId": "TASK-HOS-022",
+    "globalPrimitive": "Action",
+    "taskType": "audit_review",
+    "defaultOwnerRole": "role:service-recovery-lead",
+    "defaultDueMinutes": 60,
+    "requiresApproval": false,
+    "messageTemplate": "Coordinate audit review for {departmentId} using evidence {evidenceId}."
+  }
 ]

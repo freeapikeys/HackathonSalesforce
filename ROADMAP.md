@@ -202,7 +202,7 @@ North Star should produce one recovery plan:
 Each teammate has a detailed assignment file. AI agents should read the relevant
 file before editing.
 
-- [ ] Aarav: create realistic synthetic hospital operations data, complaints,
+- [x] Aarav: create realistic synthetic hospital operations data, complaints,
       partner responses, capacity pressure, task templates, channel recipient
       aliases, and expected recommendation cases.
 - [x] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved

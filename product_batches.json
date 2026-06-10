@@ -1,842 +1,319 @@
-[
-  {
-    "batchId": "BATCH-001",
-    "productId": "PROD-021",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-01T00:00:00Z",
-    "expiryDate": "2026-07-12T00:00:00Z",
-    "quantityReceived": 109,
-    "quantityRemaining": 33,
-    "storeId": "STORE-003",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-001"
-    ]
-  },
-  {
-    "batchId": "BATCH-002",
-    "productId": "PROD-024",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-10T00:00:00Z",
-    "expiryDate": "2026-06-22T00:00:00Z",
-    "quantityReceived": 160,
-    "quantityRemaining": 8,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-002"
-    ]
-  },
-  {
-    "batchId": "BATCH-003",
-    "productId": "PROD-024",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-05T00:00:00Z",
-    "expiryDate": "2026-07-23T00:00:00Z",
-    "quantityReceived": 108,
-    "quantityRemaining": 71,
-    "storeId": "STORE-003",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-003"
-    ]
-  },
-  {
-    "batchId": "BATCH-004",
-    "productId": "PROD-007",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-08T00:00:00Z",
-    "expiryDate": "2026-07-15T00:00:00Z",
-    "quantityReceived": 153,
-    "quantityRemaining": 30,
-    "storeId": "STORE-003",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-004"
-    ]
-  },
-  {
-    "batchId": "BATCH-005",
-    "productId": "PROD-018",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-06-12T00:00:00Z",
-    "expiryDate": "2026-07-30T00:00:00Z",
-    "quantityReceived": 198,
-    "quantityRemaining": 0,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-005"
-    ]
-  },
-  {
-    "batchId": "BATCH-006",
-    "productId": "PROD-022",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-07T00:00:00Z",
-    "expiryDate": "2026-07-07T00:00:00Z",
-    "quantityReceived": 181,
-    "quantityRemaining": 58,
-    "storeId": "STORE-002",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-006"
-    ]
-  },
-  {
-    "batchId": "BATCH-007",
-    "productId": "PROD-008",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-02T00:00:00Z",
-    "expiryDate": "2026-07-01T00:00:00Z",
-    "quantityReceived": 108,
-    "quantityRemaining": 46,
-    "storeId": "STORE-002",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-007"
-    ]
-  },
-  {
-    "batchId": "BATCH-008",
-    "productId": "PROD-024",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-03T00:00:00Z",
-    "expiryDate": "2026-07-22T00:00:00Z",
-    "quantityReceived": 106,
-    "quantityRemaining": 90,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-008"
-    ]
-  },
-  {
-    "batchId": "BATCH-009",
-    "productId": "PROD-014",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-05-30T00:00:00Z",
-    "expiryDate": "2026-06-14T00:00:00Z",
-    "quantityReceived": 172,
-    "quantityRemaining": 43,
-    "storeId": "STORE-002",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-009"
-    ]
-  },
-  {
-    "batchId": "BATCH-010",
-    "productId": "PROD-020",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-06-03T00:00:00Z",
-    "expiryDate": "2026-07-03T00:00:00Z",
-    "quantityReceived": 55,
-    "quantityRemaining": 71,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-010"
-    ]
-  },
-  {
-    "batchId": "BATCH-011",
-    "productId": "PROD-009",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-04T00:00:00Z",
-    "expiryDate": "2026-07-10T00:00:00Z",
-    "quantityReceived": 114,
-    "quantityRemaining": 32,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-011"
-    ]
-  },
-  {
-    "batchId": "BATCH-012",
-    "productId": "PROD-003",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-10T00:00:00Z",
-    "expiryDate": "2026-07-03T00:00:00Z",
-    "quantityReceived": 37,
-    "quantityRemaining": 25,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-012"
-    ]
-  },
-  {
-    "batchId": "BATCH-013",
-    "productId": "PROD-026",
-    "supplierId": "SUPP-006",
-    "receivedAt": "2026-06-03T00:00:00Z",
-    "expiryDate": "2026-06-25T00:00:00Z",
-    "quantityReceived": 82,
-    "quantityRemaining": 52,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-013"
-    ]
-  },
-  {
-    "batchId": "BATCH-014",
-    "productId": "PROD-024",
-    "supplierId": "SUPP-006",
-    "receivedAt": "2026-06-11T00:00:00Z",
-    "expiryDate": "2026-07-04T00:00:00Z",
-    "quantityReceived": 29,
-    "quantityRemaining": 10,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-014"
-    ]
-  },
-  {
-    "batchId": "BATCH-015",
-    "productId": "PROD-025",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-02T00:00:00Z",
-    "expiryDate": "2026-06-20T00:00:00Z",
-    "quantityReceived": 87,
-    "quantityRemaining": 3,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-015"
-    ]
-  },
-  {
-    "batchId": "BATCH-016",
-    "productId": "PROD-001",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-06-12T00:00:00Z",
-    "expiryDate": "2026-06-12T00:00:00Z",
-    "quantityReceived": 41,
-    "quantityRemaining": 22,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-016"
-    ]
-  },
-  {
-    "batchId": "BATCH-017",
-    "productId": "PROD-010",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-06-01T00:00:00Z",
-    "expiryDate": "2026-07-27T00:00:00Z",
-    "quantityReceived": 118,
-    "quantityRemaining": 34,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-017"
-    ]
-  },
-  {
-    "batchId": "BATCH-018",
-    "productId": "PROD-009",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-05-31T00:00:00Z",
-    "expiryDate": "2026-06-20T00:00:00Z",
-    "quantityReceived": 192,
-    "quantityRemaining": 29,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-018"
-    ]
-  },
-  {
-    "batchId": "BATCH-019",
-    "productId": "PROD-020",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-11T00:00:00Z",
-    "expiryDate": "2026-06-18T00:00:00Z",
-    "quantityReceived": 142,
-    "quantityRemaining": 59,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-019"
-    ]
-  },
-  {
-    "batchId": "BATCH-020",
-    "productId": "PROD-017",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-05-29T00:00:00Z",
-    "expiryDate": "2026-08-06T00:00:00Z",
-    "quantityReceived": 155,
-    "quantityRemaining": 74,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-020"
-    ]
-  },
-  {
-    "batchId": "BATCH-021",
-    "productId": "PROD-027",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-05-31T00:00:00Z",
-    "expiryDate": "2026-07-10T00:00:00Z",
-    "quantityReceived": 24,
-    "quantityRemaining": 76,
-    "storeId": "STORE-001",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-021"
-    ]
-  },
-  {
-    "batchId": "BATCH-022",
-    "productId": "PROD-021",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-05-29T00:00:00Z",
-    "expiryDate": "2026-07-09T00:00:00Z",
-    "quantityReceived": 101,
-    "quantityRemaining": 59,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-022"
-    ]
-  },
-  {
-    "batchId": "BATCH-023",
-    "productId": "PROD-026",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-05-31T00:00:00Z",
-    "expiryDate": "2026-06-25T00:00:00Z",
-    "quantityReceived": 185,
-    "quantityRemaining": 45,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-023"
-    ]
-  },
-  {
-    "batchId": "BATCH-024",
-    "productId": "PROD-013",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-03T00:00:00Z",
-    "expiryDate": "2026-07-24T00:00:00Z",
-    "quantityReceived": 149,
-    "quantityRemaining": 6,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-024"
-    ]
-  },
-  {
-    "batchId": "BATCH-025",
-    "productId": "PROD-018",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-06-07T00:00:00Z",
-    "expiryDate": "2026-07-08T00:00:00Z",
-    "quantityReceived": 82,
-    "quantityRemaining": 23,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-025"
-    ]
-  },
-  {
-    "batchId": "BATCH-026",
-    "productId": "PROD-029",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-05T00:00:00Z",
-    "expiryDate": "2026-06-18T00:00:00Z",
-    "quantityReceived": 161,
-    "quantityRemaining": 65,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-026"
-    ]
-  },
-  {
-    "batchId": "BATCH-027",
-    "productId": "PROD-010",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-01T00:00:00Z",
-    "expiryDate": "2026-06-17T00:00:00Z",
-    "quantityReceived": 153,
-    "quantityRemaining": 38,
-    "storeId": "STORE-002",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-027"
-    ]
-  },
-  {
-    "batchId": "BATCH-028",
-    "productId": "PROD-024",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-11T00:00:00Z",
-    "expiryDate": "2026-07-18T00:00:00Z",
-    "quantityReceived": 76,
-    "quantityRemaining": 27,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-028"
-    ]
-  },
-  {
-    "batchId": "BATCH-029",
-    "productId": "PROD-006",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-09T00:00:00Z",
-    "expiryDate": "2026-06-28T00:00:00Z",
-    "quantityReceived": 178,
-    "quantityRemaining": 89,
-    "storeId": "STORE-002",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-029"
-    ]
-  },
-  {
-    "batchId": "BATCH-030",
-    "productId": "PROD-018",
-    "supplierId": "SUPP-006",
-    "receivedAt": "2026-06-11T00:00:00Z",
-    "expiryDate": "2026-07-01T00:00:00Z",
-    "quantityReceived": 87,
-    "quantityRemaining": 46,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-030"
-    ]
-  },
-  {
-    "batchId": "BATCH-031",
-    "productId": "PROD-009",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-05-28T00:00:00Z",
-    "expiryDate": "2026-07-05T00:00:00Z",
-    "quantityReceived": 55,
-    "quantityRemaining": 35,
-    "storeId": "STORE-003",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-031"
-    ]
-  },
-  {
-    "batchId": "BATCH-032",
-    "productId": "PROD-020",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-10T00:00:00Z",
-    "expiryDate": "2026-07-15T00:00:00Z",
-    "quantityReceived": 134,
-    "quantityRemaining": 76,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-032"
-    ]
-  },
-  {
-    "batchId": "BATCH-033",
-    "productId": "PROD-024",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-06-02T00:00:00Z",
-    "expiryDate": "2026-07-19T00:00:00Z",
-    "quantityReceived": 187,
-    "quantityRemaining": 94,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-033"
-    ]
-  },
-  {
-    "batchId": "BATCH-034",
-    "productId": "PROD-005",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-05-30T00:00:00Z",
-    "expiryDate": "2026-07-25T00:00:00Z",
-    "quantityReceived": 196,
-    "quantityRemaining": 75,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-034"
-    ]
-  },
-  {
-    "batchId": "BATCH-035",
-    "productId": "PROD-011",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-06-12T00:00:00Z",
-    "expiryDate": "2026-07-20T00:00:00Z",
-    "quantityReceived": 110,
-    "quantityRemaining": 1,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-035"
-    ]
-  },
-  {
-    "batchId": "BATCH-036",
-    "productId": "PROD-019",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-11T00:00:00Z",
-    "expiryDate": "2026-06-27T00:00:00Z",
-    "quantityReceived": 68,
-    "quantityRemaining": 64,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-036"
-    ]
-  },
-  {
-    "batchId": "BATCH-037",
-    "productId": "PROD-006",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-02T00:00:00Z",
-    "expiryDate": "2026-06-18T00:00:00Z",
-    "quantityReceived": 145,
-    "quantityRemaining": 51,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-037"
-    ]
-  },
-  {
-    "batchId": "BATCH-038",
-    "productId": "PROD-020",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-05-31T00:00:00Z",
-    "expiryDate": "2026-06-18T00:00:00Z",
-    "quantityReceived": 132,
-    "quantityRemaining": 69,
-    "storeId": "STORE-003",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-038"
-    ]
-  },
-  {
-    "batchId": "BATCH-039",
-    "productId": "PROD-005",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-05-29T00:00:00Z",
-    "expiryDate": "2026-06-13T00:00:00Z",
-    "quantityReceived": 147,
-    "quantityRemaining": 55,
-    "storeId": "STORE-002",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-039"
-    ]
-  },
-  {
-    "batchId": "BATCH-040",
-    "productId": "PROD-017",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-04T00:00:00Z",
-    "expiryDate": "2026-07-08T00:00:00Z",
-    "quantityReceived": 160,
-    "quantityRemaining": 73,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-040"
-    ]
-  },
-  {
-    "batchId": "BATCH-041",
-    "productId": "PROD-030",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-03T00:00:00Z",
-    "expiryDate": "2026-06-29T00:00:00Z",
-    "quantityReceived": 55,
-    "quantityRemaining": 76,
-    "storeId": "STORE-001",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-041"
-    ]
-  },
-  {
-    "batchId": "BATCH-042",
-    "productId": "PROD-014",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-03T00:00:00Z",
-    "expiryDate": "2026-06-25T00:00:00Z",
-    "quantityReceived": 78,
-    "quantityRemaining": 20,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-042"
-    ]
-  },
-  {
-    "batchId": "BATCH-043",
-    "productId": "PROD-006",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-05-31T00:00:00Z",
-    "expiryDate": "2026-06-29T00:00:00Z",
-    "quantityReceived": 35,
-    "quantityRemaining": 17,
-    "storeId": "STORE-001",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-043"
-    ]
-  },
-  {
-    "batchId": "BATCH-044",
-    "productId": "PROD-005",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-05-29T00:00:00Z",
-    "expiryDate": "2026-07-11T00:00:00Z",
-    "quantityReceived": 82,
-    "quantityRemaining": 43,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-044"
-    ]
-  },
-  {
-    "batchId": "BATCH-045",
-    "productId": "PROD-028",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-05-30T00:00:00Z",
-    "expiryDate": "2026-07-11T00:00:00Z",
-    "quantityReceived": 83,
-    "quantityRemaining": 5,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-045"
-    ]
-  },
-  {
-    "batchId": "BATCH-046",
-    "productId": "PROD-028",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-05T00:00:00Z",
-    "expiryDate": "2026-08-05T00:00:00Z",
-    "quantityReceived": 195,
-    "quantityRemaining": 69,
-    "storeId": "STORE-003",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-046"
-    ]
-  },
-  {
-    "batchId": "BATCH-047",
-    "productId": "PROD-013",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-11T00:00:00Z",
-    "expiryDate": "2026-06-26T00:00:00Z",
-    "quantityReceived": 44,
-    "quantityRemaining": 60,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-047"
-    ]
-  },
-  {
-    "batchId": "BATCH-048",
-    "productId": "PROD-011",
-    "supplierId": "SUPP-006",
-    "receivedAt": "2026-06-01T00:00:00Z",
-    "expiryDate": "2026-06-16T00:00:00Z",
-    "quantityReceived": 184,
-    "quantityRemaining": 81,
-    "storeId": "STORE-001",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-048"
-    ]
-  },
-  {
-    "batchId": "BATCH-049",
-    "productId": "PROD-005",
-    "supplierId": "SUPP-004",
-    "receivedAt": "2026-06-01T00:00:00Z",
-    "expiryDate": "2026-06-26T00:00:00Z",
-    "quantityReceived": 140,
-    "quantityRemaining": 14,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-049"
-    ]
-  },
-  {
-    "batchId": "BATCH-050",
-    "productId": "PROD-021",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-05-30T00:00:00Z",
-    "expiryDate": "2026-07-17T00:00:00Z",
-    "quantityReceived": 66,
-    "quantityRemaining": 94,
-    "storeId": "STORE-001",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-050"
-    ]
-  },
-  {
-    "batchId": "BATCH-051",
-    "productId": "PROD-027",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-08T00:00:00Z",
-    "expiryDate": "2026-07-17T00:00:00Z",
-    "quantityReceived": 105,
-    "quantityRemaining": 100,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-051"
-    ]
-  },
-  {
-    "batchId": "BATCH-052",
-    "productId": "PROD-005",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-03T00:00:00Z",
-    "expiryDate": "2026-07-08T00:00:00Z",
-    "quantityReceived": 167,
-    "quantityRemaining": 77,
-    "storeId": "STORE-003",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-052"
-    ]
-  },
-  {
-    "batchId": "BATCH-053",
-    "productId": "PROD-002",
-    "supplierId": "SUPP-003",
-    "receivedAt": "2026-06-04T00:00:00Z",
-    "expiryDate": "2026-07-04T00:00:00Z",
-    "quantityReceived": 68,
-    "quantityRemaining": 69,
-    "storeId": "STORE-003",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-053"
-    ]
-  },
-  {
-    "batchId": "BATCH-054",
-    "productId": "PROD-022",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-05-31T00:00:00Z",
-    "expiryDate": "2026-07-10T00:00:00Z",
-    "quantityReceived": 115,
-    "quantityRemaining": 20,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-054"
-    ]
-  },
-  {
-    "batchId": "BATCH-055",
-    "productId": "PROD-009",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-05-28T00:00:00Z",
-    "expiryDate": "2026-06-20T00:00:00Z",
-    "quantityReceived": 60,
-    "quantityRemaining": 39,
-    "storeId": "STORE-001",
-    "qualityStatus": "watch",
-    "evidenceIds": [
-      "EVID-BATCH-055"
-    ]
-  },
-  {
-    "batchId": "BATCH-056",
-    "productId": "PROD-012",
-    "supplierId": "SUPP-002",
-    "receivedAt": "2026-06-06T00:00:00Z",
-    "expiryDate": "2026-06-27T00:00:00Z",
-    "quantityReceived": 172,
-    "quantityRemaining": 3,
-    "storeId": "STORE-001",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-056"
-    ]
-  },
-  {
-    "batchId": "BATCH-057",
-    "productId": "PROD-014",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-06-02T00:00:00Z",
-    "expiryDate": "2026-06-15T00:00:00Z",
-    "quantityReceived": 194,
-    "quantityRemaining": 31,
-    "storeId": "STORE-001",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-057"
-    ]
-  },
-  {
-    "batchId": "BATCH-058",
-    "productId": "PROD-011",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-06-05T00:00:00Z",
-    "expiryDate": "2026-06-21T00:00:00Z",
-    "quantityReceived": 42,
-    "quantityRemaining": 97,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-058"
-    ]
-  },
-  {
-    "batchId": "BATCH-059",
-    "productId": "PROD-006",
-    "supplierId": "SUPP-005",
-    "receivedAt": "2026-05-30T00:00:00Z",
-    "expiryDate": "2026-07-29T00:00:00Z",
-    "quantityReceived": 200,
-    "quantityRemaining": 41,
-    "storeId": "STORE-002",
-    "qualityStatus": "clear",
-    "evidenceIds": [
-      "EVID-BATCH-059"
-    ]
-  },
-  {
-    "batchId": "BATCH-060",
-    "productId": "PROD-007",
-    "supplierId": "SUPP-001",
-    "receivedAt": "2026-05-31T00:00:00Z",
-    "expiryDate": "2026-07-11T00:00:00Z",
-    "quantityReceived": 89,
-    "quantityRemaining": 32,
-    "storeId": "STORE-003",
-    "qualityStatus": "suspect",
-    "evidenceIds": [
-      "EVID-BATCH-060"
-    ]
-  }
-]
+{
+  "profile": "north-star-private-hospital-operations",
+  "businessDate": "2026-06-13",
+  "legacyFileName": "product_batches.json",
+  "supplyBatches": [
+    {
+      "batchId": "BATCH-HOS-SUPPLY-001",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-004",
+      "itemAlias": "IV kit",
+      "partnerId": "PARTNER-LABLINK-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-A",
+      "status": "available",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-001"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-002",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-005",
+      "itemAlias": "linen set",
+      "partnerId": "PARTNER-LAUNDRYCARE-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "reserved",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-002"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-003",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-009",
+      "itemAlias": "wheelchair kit",
+      "partnerId": "PARTNER-INSUREPLUS-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "low_stock",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-003"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-004",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-014",
+      "itemAlias": "cleaning kit",
+      "partnerId": "PARTNER-PAYFLOW-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-B",
+      "status": "delayed",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-004"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-005",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-015",
+      "itemAlias": "meal tray",
+      "partnerId": "PARTNER-MEDSTOCK-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "quality_hold",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-005"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-006",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-019",
+      "itemAlias": "billing form pack",
+      "partnerId": "PARTNER-FOODSERVICE-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "available",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-006"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-007",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-024",
+      "itemAlias": "specimen transport pouch",
+      "partnerId": "PARTNER-MAINTENANCE-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-C",
+      "status": "reserved",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-007"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-008",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-025",
+      "itemAlias": "visitor badge",
+      "partnerId": "PARTNER-TRANSPORT-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "low_stock",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-008"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-009",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-029",
+      "itemAlias": "porter radio",
+      "partnerId": "PARTNER-EQUIPMENTCARE-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "delayed",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-009"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-010",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-034",
+      "itemAlias": "PPE station kit",
+      "partnerId": "PARTNER-HOUSEKEEPING-RELIEF-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-A",
+      "status": "quality_hold",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-010"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-011",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-035",
+      "itemAlias": "printer toner",
+      "partnerId": "PARTNER-LABLINK-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "available",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-011"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-012",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-039",
+      "itemAlias": "bedside call unit",
+      "partnerId": "PARTNER-LAUNDRYCARE-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "reserved",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-012"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-013",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-044",
+      "itemAlias": "IV kit",
+      "partnerId": "PARTNER-INSUREPLUS-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-B",
+      "status": "low_stock",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-013"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-014",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-045",
+      "itemAlias": "linen set",
+      "partnerId": "PARTNER-PAYFLOW-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "delayed",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-014"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-015",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-049",
+      "itemAlias": "wheelchair kit",
+      "partnerId": "PARTNER-MEDSTOCK-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "quality_hold",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-015"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-016",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-054",
+      "itemAlias": "cleaning kit",
+      "partnerId": "PARTNER-FOODSERVICE-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-C",
+      "status": "available",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-016"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-017",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-055",
+      "itemAlias": "meal tray",
+      "partnerId": "PARTNER-MAINTENANCE-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "reserved",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-017"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-018",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-059",
+      "itemAlias": "billing form pack",
+      "partnerId": "PARTNER-TRANSPORT-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "low_stock",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-018"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-019",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-064",
+      "itemAlias": "specimen transport pouch",
+      "partnerId": "PARTNER-EQUIPMENTCARE-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-A",
+      "status": "delayed",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-019"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-020",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-065",
+      "itemAlias": "visitor badge",
+      "partnerId": "PARTNER-HOUSEKEEPING-RELIEF-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "quality_hold",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-020"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-021",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-069",
+      "itemAlias": "porter radio",
+      "partnerId": "PARTNER-LABLINK-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "available",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-021"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-022",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-074",
+      "itemAlias": "PPE station kit",
+      "partnerId": "PARTNER-LAUNDRYCARE-001",
+      "departmentId": "DEPT-HOUSEKEEPING-004",
+      "locationId": "LOC-004-B",
+      "status": "reserved",
+      "expiryRisk": "none",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-022"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-023",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-075",
+      "itemAlias": "printer toner",
+      "partnerId": "PARTNER-INSUREPLUS-001",
+      "departmentId": "DEPT-PHARMACY-005",
+      "locationId": "LOC-005-A",
+      "status": "low_stock",
+      "expiryRisk": "watch",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-023"
+    },
+    {
+      "batchId": "BATCH-HOS-SUPPLY-024",
+      "globalPrimitive": "Resource",
+      "resourceId": "RESOURCE-HOS-079",
+      "itemAlias": "bedside call unit",
+      "partnerId": "PARTNER-PAYFLOW-001",
+      "departmentId": "DEPT-FACILITIES-009",
+      "locationId": "LOC-009-A",
+      "status": "delayed",
+      "expiryRisk": "near_expiry",
+      "clinicalSubstitutionAllowed": false,
+      "evidenceId": "evidence-batch-024"
+    }
+  ]
+}

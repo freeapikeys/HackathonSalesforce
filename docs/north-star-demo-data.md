@@ -23,6 +23,42 @@ make diagnosis, treatment, dosage, triage, or clinical priority decisions.
 | Food and hospitality       | Meal complaint and service recovery                     |
 | Facilities and maintenance | Equipment, lift, HVAC, or wheelchair delay              |
 
+## Committed Synthetic Data Files
+
+The full fake-data inventory is committed in the root JSON files and mirrored
+under `synthetic_data/` for teammates who still use that folder. The files are
+hospital/global-primitive data even when a legacy filename remains from the
+older retail prototype.
+
+Run:
+
+```bash
+npm run check:demo-data
+```
+
+The validator proves:
+
+| Data surface                  | Current count | File                                               |
+| ----------------------------- | ------------- | -------------------------------------------------- |
+| Departments/service areas     | 10            | `master_data.json`                                 |
+| Locations                     | 24            | `master_data.json`                                 |
+| Resource records              | 90            | `warehouse_inventory.json`                         |
+| Synthetic customer aliases    | 50            | `master_data.json`                                 |
+| Staff role aliases            | 24            | `master_data.json`                                 |
+| Partner/vendor aliases        | 10            | `master_data.json`                                 |
+| Complaint records             | 60            | `complaints.json`                                  |
+| Complaint clusters            | 9             | `complaint_clusters.json`                          |
+| Queue/capacity records        | 72            | `queue_pressure.json`                              |
+| Pharmacy/supply positions     | 36            | `inventory_positions.json`                         |
+| Billing/insurance cases       | 24            | `sales_data.json`                                  |
+| Partner responses             | 14            | `supplier_responses.json`                          |
+| Staff task templates          | 22            | `task_templates.json`                              |
+| Channel recipient aliases     | 14            | `channel_aliases.json`                             |
+| Expected recommendation cases | 15            | `recommendation_cases.json`                        |
+| Hospital event summaries      | 20            | `event_stream.json`                                |
+| Supply batches                | 24            | `product_batches.json`                             |
+| Service recovery options      | 12            | `promotions.json` legacy filename, hospital values |
+
 ## Fixture IDs
 
 | Concept           | Fixture ID                           |

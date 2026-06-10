@@ -1,14 +1,128 @@
 [
-  { "recipientAliasId": "ALIAS-001", "role": "role:grand-baie-duty-manager", "storeId": "STORE-003", "slackTarget": "S-GB-DM", "whatsappTargetAlias": "WA-GB-DM", "canReceiveUrgentAlerts": true },
-  { "recipientAliasId": "ALIAS-002", "role": "role:grand-baie-floor-staff", "storeId": "STORE-003", "slackTarget": "S-GB-FS", "whatsappTargetAlias": "WA-GB-FS", "canReceiveUrgentAlerts": false },
-  { "recipientAliasId": "ALIAS-003", "role": "role:curepipe-duty-manager", "storeId": "STORE-002", "slackTarget": "S-CP-DM", "whatsappTargetAlias": "WA-CP-DM", "canReceiveUrgentAlerts": true },
-  { "recipientAliasId": "ALIAS-004", "role": "role:curepipe-floor-staff", "storeId": "STORE-002", "slackTarget": "S-CP-FS", "whatsappTargetAlias": "WA-CP-FS", "canReceiveUrgentAlerts": false },
-  { "recipientAliasId": "ALIAS-005", "role": "role:port-louis-duty-manager", "storeId": "STORE-001", "slackTarget": "S-PL-DM", "whatsappTargetAlias": "WA-PL-DM", "canReceiveUrgentAlerts": true },
-  { "recipientAliasId": "ALIAS-006", "role": "role:port-louis-floor-staff", "storeId": "STORE-001", "slackTarget": "S-PL-FS", "whatsappTargetAlias": "WA-PL-FS", "canReceiveUrgentAlerts": false },
-  { "recipientAliasId": "ALIAS-007", "role": "role:procurement-manager", "storeId": "WAREHOUSE-001", "slackTarget": "S-PROC-MGR", "whatsappTargetAlias": "WA-PROC-MGR", "canReceiveUrgentAlerts": true },
-  { "recipientAliasId": "ALIAS-008", "role": "role:quality-officer", "storeId": "WAREHOUSE-001", "slackTarget": "S-QUAL-OFF", "whatsappTargetAlias": "WA-QUAL-OFF", "canReceiveUrgentAlerts": true },
-  { "recipientAliasId": "ALIAS-009", "role": "role:general-manager", "storeId": "S-HQ", "slackTarget": "S-GM", "whatsappTargetAlias": "WA-GM", "canReceiveUrgentAlerts": true },
-  { "recipientAliasId": "ALIAS-010", "role": "role:customer-service", "storeId": "S-HQ", "slackTarget": "S-CS", "whatsappTargetAlias": "WA-CS", "canReceiveUrgentAlerts": false },
-  { "recipientAliasId": "ALIAS-011", "role": "role:store-exec-lead", "storeId": "S-HQ", "slackTarget": "S-EXEC-LEAD", "whatsappTargetAlias": "WA-EXEC-LEAD", "canReceiveUrgentAlerts": true },
-  { "recipientAliasId": "ALIAS-012", "role": "role:backup-manager", "storeId": "S-HQ", "slackTarget": "S-BKMGR", "whatsappTargetAlias": "WA-BKMGR", "canReceiveUrgentAlerts": false }
+  {
+    "recipientAliasId": "ALIAS-HOS-001",
+    "globalPrimitive": "Actor",
+    "role": "role:operations-manager",
+    "departmentId": "DEPT-OUTPATIENT-RECEPTION-001",
+    "slackTarget": "SLACK-ROLE-OPERATIONS-MANAGER",
+    "whatsappTargetAlias": "WA-ROLE-OPERATIONS-MANAGER",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-002",
+    "globalPrimitive": "Actor",
+    "role": "role:bed-manager",
+    "departmentId": "DEPT-EMERGENCY-INTAKE-002",
+    "slackTarget": "SLACK-ROLE-BED-MANAGER",
+    "whatsappTargetAlias": "WA-ROLE-BED-MANAGER",
+    "canReceiveUrgentAlerts": false
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-003",
+    "globalPrimitive": "Actor",
+    "role": "role:pharmacy-lead",
+    "departmentId": "WARD-DISCHARGE-003",
+    "slackTarget": "SLACK-ROLE-PHARMACY-LEAD",
+    "whatsappTargetAlias": "WA-ROLE-PHARMACY-LEAD",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-004",
+    "globalPrimitive": "Actor",
+    "role": "role:billing-supervisor",
+    "departmentId": "DEPT-HOUSEKEEPING-004",
+    "slackTarget": "SLACK-ROLE-BILLING-SUPERVISOR",
+    "whatsappTargetAlias": "WA-ROLE-BILLING-SUPERVISOR",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-005",
+    "globalPrimitive": "Actor",
+    "role": "role:patient-experience-lead",
+    "departmentId": "DEPT-PHARMACY-005",
+    "slackTarget": "SLACK-ROLE-PATIENT-EXPERIENCE-LEAD",
+    "whatsappTargetAlias": "WA-ROLE-PATIENT-EXPERIENCE-LEAD",
+    "canReceiveUrgentAlerts": false
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-006",
+    "globalPrimitive": "Actor",
+    "role": "role:lab-coordination-lead",
+    "departmentId": "DEPT-LAB-COORDINATION-006",
+    "slackTarget": "SLACK-ROLE-LAB-COORDINATION-LEAD",
+    "whatsappTargetAlias": "WA-ROLE-LAB-COORDINATION-LEAD",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-007",
+    "globalPrimitive": "Actor",
+    "role": "role:housekeeping-coordinator",
+    "departmentId": "DEPT-BILLING-INSURANCE-007",
+    "slackTarget": "SLACK-ROLE-HOUSEKEEPING-COORDINATOR",
+    "whatsappTargetAlias": "WA-ROLE-HOUSEKEEPING-COORDINATOR",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-008",
+    "globalPrimitive": "Actor",
+    "role": "role:porter-dispatch",
+    "departmentId": "DEPT-FOOD-HOSPITALITY-008",
+    "slackTarget": "SLACK-ROLE-PORTER-DISPATCH",
+    "whatsappTargetAlias": "WA-ROLE-PORTER-DISPATCH",
+    "canReceiveUrgentAlerts": false
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-009",
+    "globalPrimitive": "Actor",
+    "role": "role:facilities-duty-manager",
+    "departmentId": "DEPT-FACILITIES-009",
+    "slackTarget": "SLACK-ROLE-FACILITIES-DUTY-MANAGER",
+    "whatsappTargetAlias": "WA-ROLE-FACILITIES-DUTY-MANAGER",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-010",
+    "globalPrimitive": "Actor",
+    "role": "role:food-service-lead",
+    "departmentId": "DEPT-PATIENT-EXPERIENCE-010",
+    "slackTarget": "SLACK-ROLE-FOOD-SERVICE-LEAD",
+    "whatsappTargetAlias": "WA-ROLE-FOOD-SERVICE-LEAD",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-011",
+    "globalPrimitive": "Actor",
+    "role": "role:insurance-followup-lead",
+    "departmentId": "DEPT-OUTPATIENT-RECEPTION-001",
+    "slackTarget": "SLACK-ROLE-INSURANCE-FOLLOWUP-LEAD",
+    "whatsappTargetAlias": "WA-ROLE-INSURANCE-FOLLOWUP-LEAD",
+    "canReceiveUrgentAlerts": false
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-012",
+    "globalPrimitive": "Actor",
+    "role": "role:front-desk-lead",
+    "departmentId": "DEPT-EMERGENCY-INTAKE-002",
+    "slackTarget": "SLACK-ROLE-FRONT-DESK-LEAD",
+    "whatsappTargetAlias": "WA-ROLE-FRONT-DESK-LEAD",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-013",
+    "globalPrimitive": "Actor",
+    "role": "role:outpatient-flow-lead",
+    "departmentId": "WARD-DISCHARGE-003",
+    "slackTarget": "SLACK-ROLE-OUTPATIENT-FLOW-LEAD",
+    "whatsappTargetAlias": "WA-ROLE-OUTPATIENT-FLOW-LEAD",
+    "canReceiveUrgentAlerts": true
+  },
+  {
+    "recipientAliasId": "ALIAS-HOS-014",
+    "globalPrimitive": "Actor",
+    "role": "role:emergency-intake-coordinator",
+    "departmentId": "DEPT-HOUSEKEEPING-004",
+    "slackTarget": "SLACK-ROLE-EMERGENCY-INTAKE-COORDINATOR",
+    "whatsappTargetAlias": "WA-ROLE-EMERGENCY-INTAKE-COORDINATOR",
+    "canReceiveUrgentAlerts": false
+  }
 ]

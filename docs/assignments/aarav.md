@@ -99,6 +99,34 @@ hospital ticket demo.
 Do not create huge transaction-level data unless the repo needs it. Time-band
 summaries are enough for the hackathon.
 
+## Current Completion Evidence
+
+The committed hospital data inventory now satisfies the target ranges above
+through the root JSON files and matching `synthetic_data/` copies:
+
+- `master_data.json`: hospital campus, 10 departments, 24 locations, 50
+  customer aliases, 24 staff role aliases, and 10 partners.
+- `warehouse_inventory.json`: 90 hospital resources across bed, room, queue,
+  supply, equipment, service counter, staff pool, partner slot, support asset,
+  and approval queue resource types.
+- `complaints.json`: 60 complaint records with synthetic aliases, departments,
+  locations, resources or missing-resource reasons, and evidence IDs.
+- `complaint_clusters.json`: 9 complaint clusters with source complaint IDs.
+- `queue_pressure.json`: 72 capacity and queue pressure records.
+- `inventory_positions.json`: 36 pharmacy/supply positions.
+- `sales_data.json`: 24 billing and insurance cases.
+- `supplier_responses.json`: 14 partner response records.
+- `task_templates.json`: 22 task templates.
+- `channel_aliases.json`: 14 Slack/WhatsApp role aliases.
+- `recommendation_cases.json`: 15 expected recommendation cases.
+- `event_stream.json`: 20 hospital event summaries, including duplicate,
+  malformed, late, out-of-order, idempotency-conflict, invalid-hash, and
+  clinical-refusal cases.
+
+Run `npm run check:demo-data` to verify counts, root/synthetic copy parity,
+evidence links, role aliases, approval flags, and absence of personal contact
+or clinical decision data.
+
 ## Required Departments And Risks
 
 | Department/service area    | Required risks                                                  |
@@ -466,39 +494,39 @@ Produces one final plan:
 
 ## Implementation Checklist
 
-- [ ] Pull latest `main`.
-- [ ] Read this file and the required docs.
-- [ ] Create the hospital data inventory table before writing large JSON files.
-- [ ] Draft hospital campus, departments, locations, and resource types.
-- [ ] Draft synthetic customer aliases and staff role aliases.
-- [ ] Draft partner/vendor aliases and response examples.
-- [ ] Draft hospital resources across beds, rooms, queues, supplies, equipment,
+- [x] Pull latest demo branch before editing.
+- [x] Read this file and the required docs.
+- [x] Create the hospital data inventory table before writing large JSON files.
+- [x] Draft hospital campus, departments, locations, and resource types.
+- [x] Draft synthetic customer aliases and staff role aliases.
+- [x] Draft partner/vendor aliases and response examples.
+- [x] Draft hospital resources across beds, rooms, queues, supplies, equipment,
       counters, and staff pools.
-- [ ] Draft complaint records and complaint clusters.
-- [ ] Draft capacity and queue pressure records.
-- [ ] Draft pharmacy/supply positions.
-- [ ] Draft billing and insurance cases.
-- [ ] Draft staff task templates and channel recipient aliases.
-- [ ] Draft expected recommendation notes.
-- [ ] Draft hospital event fixtures.
-- [ ] Include duplicate, malformed, late, out-of-order, idempotency-conflict,
+- [x] Draft complaint records and complaint clusters.
+- [x] Draft capacity and queue pressure records.
+- [x] Draft pharmacy/supply positions.
+- [x] Draft billing and insurance cases.
+- [x] Draft staff task templates and channel recipient aliases.
+- [x] Draft expected recommendation notes.
+- [x] Draft hospital event fixtures.
+- [x] Include duplicate, malformed, late, out-of-order, idempotency-conflict,
       invalid-hash, and clinical-refusal cases.
-- [ ] Check that every scenario has evidence IDs.
-- [ ] Check that no scenario contains real patient/staff/vendor data.
-- [ ] Check that clinical decision requests are refusal-only.
+- [x] Check that every scenario has evidence IDs.
+- [x] Check that no scenario contains real patient/staff/vendor data.
+- [x] Check that clinical decision requests are refusal-only.
 
 ## Validation Checklist
 
-- [ ] Every resource has a type, department, location, status, and evidence ID.
-- [ ] Every complaint links to customer alias, department, location, and
+- [x] Every resource has a type, department, location, status, and evidence ID.
+- [x] Every complaint links to customer alias, department, location, and
       evidence.
-- [ ] Every complaint cluster has source complaint IDs.
-- [ ] Every partner response links to a related issue.
-- [ ] Every expected recommendation names evidence IDs.
-- [ ] Every protected action says whether approval is needed.
-- [ ] Every channel recipient is an alias, not personal contact data.
-- [ ] Every messy event has a clear expected intake result.
-- [ ] The final demo story has a trigger, conflict, partner/capacity response,
+- [x] Every complaint cluster has source complaint IDs.
+- [x] Every partner response links to a related issue.
+- [x] Every expected recommendation names evidence IDs.
+- [x] Every protected action says whether approval is needed.
+- [x] Every channel recipient is an alias, not personal contact data.
+- [x] Every messy event has a clear expected intake result.
+- [x] The final demo story has a trigger, conflict, partner/capacity response,
       approval, action, alert, and outcome.
 
 ## Demo Acceptance

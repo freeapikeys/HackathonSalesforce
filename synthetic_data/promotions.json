@@ -1,10 +1,127 @@
-[
-  { "promotionId": "PROMO-001", "name": "Weekend Fresh Fruit Blowout", "storeIds": ["STORE-001", "STORE-002", "STORE-003"], "productIds": ["PROD-001", "PROD-003", "PROD-005"], "startsAt": "2026-06-12T00:00:00Z", "endsAt": "2026-06-14T23:59:59Z", "expectedUpliftMultiplier": 2.5, "signageRequired": true, "priceOverride": 35.00, "evidenceId": "EVID-PROMO-001" },
-  { "promotionId": "PROMO-002", "name": "Dairy Days Discount", "storeIds": ["STORE-002"], "productIds": ["PROD-006", "PROD-008"], "startsAt": "2026-06-05T00:00:00Z", "endsAt": "2026-06-12T23:59:59Z", "expectedUpliftMultiplier": 1.8, "signageRequired": true, "priceOverride": 30.00, "evidenceId": "EVID-PROMO-002" },
-  { "promotionId": "PROMO-003", "name": "Bakery Morning Special", "storeIds": ["STORE-001", "STORE-003"], "productIds": ["PROD-016", "PROD-017"], "startsAt": "2026-06-01T00:00:00Z", "endsAt": "2026-06-13T12:00:00Z", "expectedUpliftMultiplier": 1.5, "signageRequired": true, "priceOverride": 12.00, "evidenceId": "EVID-PROMO-003" },
-  { "promotionId": "PROMO-004", "name": "Healthy Living Month", "storeIds": ["STORE-001", "STORE-002", "STORE-003"], "productIds": ["PROD-002", "PROD-021", "PROD-027"], "startsAt": "2026-06-01T00:00:00Z", "endsAt": "2026-06-30T23:59:59Z", "expectedUpliftMultiplier": 1.2, "signageRequired": false, "priceOverride": null, "evidenceId": "EVID-PROMO-004" },
-  { "promotionId": "PROMO-005", "name": "Summer Seafood Feast", "storeIds": ["STORE-003"], "productIds": ["PROD-011", "PROD-014"], "startsAt": "2026-06-10T00:00:00Z", "endsAt": "2026-06-16T23:59:59Z", "expectedUpliftMultiplier": 2.0, "signageRequired": true, "priceOverride": 500.00, "evidenceId": "EVID-PROMO-005" },
-  { "promotionId": "PROMO-006", "name": "Pantry Stock-up Sale", "storeIds": ["STORE-001", "STORE-002"], "productIds": ["PROD-026", "PROD-029", "PROD-030"], "startsAt": "2026-06-01T00:00:00Z", "endsAt": "2026-06-13T23:59:59Z", "expectedUpliftMultiplier": 1.4, "signageRequired": true, "priceOverride": 25.00, "evidenceId": "EVID-PROMO-006" },
-  { "promotionId": "PROMO-007", "name": "Frozen Treats Week", "storeIds": ["STORE-001", "STORE-002", "STORE-003"], "productIds": ["PROD-022", "PROD-024"], "startsAt": "2026-06-08T00:00:00Z", "endsAt": "2026-06-15T23:59:59Z", "expectedUpliftMultiplier": 1.7, "signageRequired": true, "priceOverride": 130.00, "evidenceId": "EVID-PROMO-007" },
-  { "promotionId": "PROMO-008", "name": "Electronics Flash Deal", "storeIds": ["STORE-003"], "productIds": ["PROD-030"], "startsAt": "2026-06-13T00:00:00Z", "endsAt": "2026-06-13T23:59:59Z", "expectedUpliftMultiplier": 3.0, "signageRequired": true, "priceOverride": 20.00, "evidenceId": "EVID-PROMO-008" }
-]
+{
+  "profile": "north-star-private-hospital-operations",
+  "legacyFileName": "promotions.json",
+  "note": "Hospital service-recovery options. The file name is legacy; these are governed actions, not marketing promotions.",
+  "serviceRecoveryOptions": [
+    {
+      "recoveryOptionId": "RECOVERY-HOS-001",
+      "globalPrimitive": "Action",
+      "complaintType": "wait_time",
+      "actionType": "patient_service_task",
+      "requiresApproval": true,
+      "maxExposureBand": "low",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-001"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-002",
+      "globalPrimitive": "Action",
+      "complaintType": "room_readiness",
+      "actionType": "billing_review",
+      "requiresApproval": true,
+      "maxExposureBand": "medium",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-002"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-003",
+      "globalPrimitive": "Action",
+      "complaintType": "cleanliness",
+      "actionType": "food_service_review",
+      "requiresApproval": true,
+      "maxExposureBand": "high",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-003"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-004",
+      "globalPrimitive": "Action",
+      "complaintType": "food",
+      "actionType": "accessibility_support",
+      "requiresApproval": true,
+      "maxExposureBand": "low",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-004"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-005",
+      "globalPrimitive": "Action",
+      "complaintType": "billing",
+      "actionType": "manager_callback",
+      "requiresApproval": true,
+      "maxExposureBand": "medium",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-005"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-006",
+      "globalPrimitive": "Action",
+      "complaintType": "discharge_delay",
+      "actionType": "privacy_review",
+      "requiresApproval": true,
+      "maxExposureBand": "high",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-006"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-007",
+      "globalPrimitive": "Action",
+      "complaintType": "pharmacy_delay",
+      "actionType": "patient_service_task",
+      "requiresApproval": true,
+      "maxExposureBand": "low",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-007"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-008",
+      "globalPrimitive": "Action",
+      "complaintType": "lost_item",
+      "actionType": "billing_review",
+      "requiresApproval": true,
+      "maxExposureBand": "medium",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-008"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-009",
+      "globalPrimitive": "Action",
+      "complaintType": "accessibility",
+      "actionType": "food_service_review",
+      "requiresApproval": true,
+      "maxExposureBand": "high",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-009"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-010",
+      "globalPrimitive": "Action",
+      "complaintType": "privacy",
+      "actionType": "accessibility_support",
+      "requiresApproval": true,
+      "maxExposureBand": "low",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-010"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-011",
+      "globalPrimitive": "Action",
+      "complaintType": "safety",
+      "actionType": "manager_callback",
+      "requiresApproval": true,
+      "maxExposureBand": "medium",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-011"
+    },
+    {
+      "recoveryOptionId": "RECOVERY-HOS-012",
+      "globalPrimitive": "Action",
+      "complaintType": "staff_interaction",
+      "actionType": "privacy_review",
+      "requiresApproval": true,
+      "maxExposureBand": "high",
+      "messageScope": "internal_or_manager_approved_only",
+      "evidenceId": "evidence-recovery-option-012"
+    }
+  ]
+}

@@ -1,128 +1,295 @@
-[
-  {
-    "date": "2026-05-31",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 20, "total": 900.00 },
-      { "prod_id": "PROD-006", "qty": 15, "total": 525.00 },
-      { "prod_id": "PROD-016", "qty": 50, "total": 750.00 }
-    ]
-  },
-  {
-    "date": "2026-06-01",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 22, "total": 990.00 },
-      { "prod_id": "PROD-006", "qty": 12, "total": 420.00 },
-      { "prod_id": "PROD-016", "qty": 45, "total": 675.00 }
-    ]
-  },
-  {
-    "date": "2026-06-02",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 18, "total": 810.00 },
-      { "prod_id": "PROD-006", "qty": 16, "total": 560.00 },
-      { "prod_id": "PROD-016", "qty": 55, "total": 825.00 }
-    ]
-  },
-  {
-    "date": "2026-06-03",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 25, "total": 1125.00 },
-      { "prod_id": "PROD-006", "qty": 10, "total": 350.00 },
-      { "prod_id": "PROD-016", "qty": 40, "total": 600.00 }
-    ]
-  },
-  {
-    "date": "2026-06-04",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 30, "total": 1350.00 },
-      { "prod_id": "PROD-006", "qty": 14, "total": 490.00 },
-      { "prod_id": "PROD-016", "qty": 60, "total": 900.00 }
-    ]
-  },
-  {
-    "date": "2026-06-05",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 21, "total": 945.00 },
-      { "prod_id": "PROD-006", "qty": 18, "total": 630.00 },
-      { "prod_id": "PROD-016", "qty": 48, "total": 720.00 }
-    ]
-  },
-  {
-    "date": "2026-06-06",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 15, "total": 675.00 },
-      { "prod_id": "PROD-006", "qty": 20, "total": 700.00 },
-      { "prod_id": "PROD-016", "qty": 35, "total": 525.00 }
-    ]
-  },
-  {
-    "date": "2026-06-07",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 40, "total": 1800.00 },
-      { "prod_id": "PROD-006", "qty": 25, "total": 875.00 },
-      { "prod_id": "PROD-016", "qty": 80, "total": 1200.00 }
-    ]
-  },
-  {
-    "date": "2026-06-08",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 35, "total": 1575.00 },
-      { "prod_id": "PROD-006", "qty": 22, "total": 770.00 },
-      { "prod_id": "PROD-016", "qty": 70, "total": 1050.00 }
-    ]
-  },
-  {
-    "date": "2026-06-09",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 20, "total": 900.00 },
-      { "prod_id": "PROD-006", "qty": 15, "total": 525.00 },
-      { "prod_id": "PROD-016", "qty": 45, "total": 675.00 }
-    ]
-  },
-  {
-    "date": "2026-06-10",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 22, "total": 990.00 },
-      { "prod_id": "PROD-006", "qty": 12, "total": 420.00 },
-      { "prod_id": "PROD-016", "qty": 50, "total": 750.00 }
-    ]
-  },
-  {
-    "date": "2026-06-11",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 18, "total": 810.00 },
-      { "prod_id": "PROD-006", "qty": 16, "total": 560.00 },
-      { "prod_id": "PROD-016", "qty": 55, "total": 825.00 }
-    ]
-  },
-  {
-    "date": "2026-06-12",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 25, "total": 1125.00 },
-      { "prod_id": "PROD-006", "qty": 10, "total": 350.00 },
-      { "prod_id": "PROD-016", "qty": 40, "total": 600.00 }
-    ]
-  },
-  {
-    "date": "2026-06-13",
-    "store_id": "STORE-001",
-    "sales": [
-      { "prod_id": "PROD-001", "qty": 30, "total": 1350.00 },
-      { "prod_id": "PROD-006", "qty": 14, "total": 490.00 },
-      { "prod_id": "PROD-016", "qty": 60, "total": 900.00 }
-    ]
-  }
-]
+{
+  "profile": "north-star-private-hospital-operations",
+  "businessDate": "2026-06-13",
+  "legacyFileName": "sales_data.json",
+  "financialCases": [
+    {
+      "caseId": "BILL-HOS-001",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-006",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "duplicate_invoice",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "open",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-001"
+    },
+    {
+      "caseId": "BILL-HOS-002",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-007",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "claim_pending",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "pending_partner",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-002"
+    },
+    {
+      "caseId": "BILL-HOS-003",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-008",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "refund_request",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "approved",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-003"
+    },
+    {
+      "caseId": "BILL-HOS-004",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-009",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "deposit_issue",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "denied",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-004"
+    },
+    {
+      "caseId": "BILL-HOS-005",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-010",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "payment_failure",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "resolved",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-005"
+    },
+    {
+      "caseId": "BILL-HOS-006",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-011",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "compensation_review",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "open",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-006"
+    },
+    {
+      "caseId": "BILL-HOS-007",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-012",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "duplicate_invoice",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "pending_partner",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-007"
+    },
+    {
+      "caseId": "BILL-HOS-008",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-013",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "claim_pending",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "approved",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-008"
+    },
+    {
+      "caseId": "BILL-HOS-009",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-014",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "refund_request",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "denied",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-009"
+    },
+    {
+      "caseId": "BILL-HOS-010",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-015",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "deposit_issue",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "resolved",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-010"
+    },
+    {
+      "caseId": "BILL-HOS-011",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-016",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "payment_failure",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "open",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-011"
+    },
+    {
+      "caseId": "BILL-HOS-012",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-017",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "compensation_review",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "pending_partner",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-012"
+    },
+    {
+      "caseId": "BILL-HOS-013",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-018",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "duplicate_invoice",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "approved",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-013"
+    },
+    {
+      "caseId": "BILL-HOS-014",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-019",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "claim_pending",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "denied",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-014"
+    },
+    {
+      "caseId": "BILL-HOS-015",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-020",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "refund_request",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "resolved",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-015"
+    },
+    {
+      "caseId": "BILL-HOS-016",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-021",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "deposit_issue",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "open",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-016"
+    },
+    {
+      "caseId": "BILL-HOS-017",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-022",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "payment_failure",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "pending_partner",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-017"
+    },
+    {
+      "caseId": "BILL-HOS-018",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-023",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "compensation_review",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "approved",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-018"
+    },
+    {
+      "caseId": "BILL-HOS-019",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-024",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "duplicate_invoice",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "denied",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-019"
+    },
+    {
+      "caseId": "BILL-HOS-020",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-025",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "claim_pending",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "resolved",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-020"
+    },
+    {
+      "caseId": "BILL-HOS-021",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-026",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "refund_request",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "open",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-021"
+    },
+    {
+      "caseId": "BILL-HOS-022",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-027",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "deposit_issue",
+      "amountBand": "low",
+      "approvalRequired": true,
+      "status": "pending_partner",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-022"
+    },
+    {
+      "caseId": "BILL-HOS-023",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-028",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "payment_failure",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "approved",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-023"
+    },
+    {
+      "caseId": "BILL-HOS-024",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-029",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "compensation_review",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "denied",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-024"
+    }
+  ]
+}

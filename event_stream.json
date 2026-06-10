@@ -1,349 +1,242 @@
 [
   {
-    "specversion": "1.0",
-    "id": "EVT-001",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.waste.log",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T08:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-005",
-      "qty_waste": 5,
-      "reason": "Quality Decay",
-      "category": "Produce"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-001"
+    "eventId": "EVT-HOS-001",
+    "globalPrimitive": "Signal",
+    "eventType": "PATIENT_COMPLAINT_CLUSTER_DETECTED",
+    "occurredAt": "2026-06-13T07:00:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-001",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Create complaint cluster context with evidence links.",
+    "evidenceIds": ["evidence-complaint-001", "evidence-capacity-001"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-002",
-    "source": "io.github.freeapikeys.hfs.retail.customer.mobile",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.quality",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T09:30:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-005",
-      "complaint": "Strawberries were bruised and moldy upon arrival.",
-      "customer_id": "CUST-101"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-002"
+    "eventId": "EVT-HOS-002",
+    "globalPrimitive": "Signal",
+    "eventType": "BED_CAPACITY_PRESSURE_DETECTED",
+    "occurredAt": "2026-06-13T08:09:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-002",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Update capacity pressure and wait-risk context.",
+    "evidenceIds": ["evidence-complaint-002", "evidence-capacity-002"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-003",
-    "source": "io.github.freeapikeys.hfs.retail.store.002",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.expiry",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T10:15:00Z",
-    "data": {
-      "store_id": "STORE-002",
-      "product_id": "PROD-006",
-      "complaint": "Milk expires tomorrow, too many on shelf.",
-      "customer_id": "CUST-102"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-003"
+    "eventId": "EVT-HOS-003",
+    "globalPrimitive": "Signal",
+    "eventType": "DISCHARGE_ROOM_BLOCKED",
+    "occurredAt": "2026-06-13T09:18:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-003",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Link blocked room to cleaning and porter task options.",
+    "evidenceIds": ["evidence-complaint-003", "evidence-capacity-003"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-004",
-    "source": "io.github.freeapikeys.hfs.retail.store.003",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.packaging",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T11:00:00Z",
-    "data": {
-      "store_id": "STORE-003",
-      "product_id": "PROD-026",
-      "complaint": "Canned tomatoes leaking from the seam.",
-      "customer_id": "CUST-103"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-004"
+    "eventId": "EVT-HOS-004",
+    "globalPrimitive": "Signal",
+    "eventType": "PHARMACY_STOCK_RISK_DETECTED",
+    "occurredAt": "2026-06-13T10:27:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-004",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Open restock or transfer recommendation after approval.",
+    "evidenceIds": ["evidence-complaint-004", "evidence-capacity-004"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-005",
-    "source": "io.github.freeapikeys.hfs.retail.supplier.003",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.missing",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T12:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-011",
-      "complaint": "Salmon shipment missing 2kg of ordered amount.",
-      "customer_id": "STORE-MANAGER-001"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-005"
+    "eventId": "EVT-HOS-005",
+    "globalPrimitive": "Signal",
+    "eventType": "LAB_VENDOR_RESPONSE_DELAYED",
+    "occurredAt": "2026-06-13T11:36:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-005",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Preserve vendor SLA delay and escalation candidate.",
+    "evidenceIds": ["evidence-complaint-005", "evidence-capacity-005"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-006",
-    "source": "io.github.freeapikeys.hfs.retail.store.003",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.price",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T13:00:00Z",
-    "data": {
-      "store_id": "STORE-003",
-      "product_id": "PROD-030",
-      "complaint": "Shelf says 20 Rs, POS says 25 Rs.",
-      "customer_id": "CUST-104"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-006"
+    "eventId": "EVT-HOS-006",
+    "globalPrimitive": "Signal",
+    "eventType": "BILLING_APPROVAL_STALLED",
+    "occurredAt": "2026-06-13T12:45:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-006",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Open billing and insurance review candidate.",
+    "evidenceIds": ["evidence-complaint-006", "evidence-capacity-006"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-007",
-    "source": "io.github.freeapikeys.hfs.retail.supplier.006",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.delay",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T14:00:00Z",
-    "data": {
-      "store_id": "STORE-002",
-      "product_id": "PROD-027",
-      "complaint": "Rice delivery 4 hours late, affecting shelf filling.",
-      "customer_id": "STORE-MANAGER-002"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-007"
+    "eventId": "EVT-HOS-007",
+    "globalPrimitive": "Signal",
+    "eventType": "STAFF_QUEUE_RISK_DETECTED",
+    "occurredAt": "2026-06-13T13:54:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-007",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Update staff coverage and queue risk.",
+    "evidenceIds": ["evidence-complaint-007", "evidence-capacity-007"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-008",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.health",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T15:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-013",
-      "complaint": "Chicken fridge temperature rose to 8C.",
-      "customer_id": "STORE-STAFF-001"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-008"
+    "eventId": "EVT-HOS-008",
+    "globalPrimitive": "Signal",
+    "eventType": "CLINICAL_DECISION_REQUEST_REFUSED",
+    "occurredAt": "2026-06-13T14:03:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-008",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Store refusal evidence without executing clinical decision.",
+    "evidenceIds": ["evidence-complaint-008", "evidence-capacity-008"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-009",
-    "source": "io.github.freeapikeys.hfs.retail.supplier.001",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.incorrect",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T16:00:00Z",
-    "data": {
-      "store_id": "STORE-003",
-      "product_id": "PROD-003",
-      "complaint": "Received Green Mangoes instead of Yellow Mangoes.",
-      "customer_id": "STORE-MANAGER-003"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-009"
+    "eventId": "EVT-HOS-009",
+    "globalPrimitive": "Signal",
+    "eventType": "APPROVED_ACTION_EXECUTED",
+    "occurredAt": "2026-06-13T15:12:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-009",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Preserve approved action result and provider evidence.",
+    "evidenceIds": ["evidence-complaint-009", "evidence-capacity-009"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-010",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.stock.update",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T17:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-001",
-      "current_stock": 100
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-010"
+    "eventId": "EVT-HOS-010",
+    "globalPrimitive": "Signal",
+    "eventType": "HOSPITAL_OUTCOME_CAPTURED",
+    "occurredAt": "2026-06-13T07:21:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-010",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Capture outcome and evaluation evidence.",
+    "evidenceIds": ["evidence-complaint-010", "evidence-capacity-010"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-011",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.stock.update",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T17:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-001",
-      "current_stock": 100
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-010"
+    "eventId": "EVT-HOS-011",
+    "globalPrimitive": "Signal",
+    "eventType": "PATIENT_COMPLAINT_CLUSTER_DETECTED",
+    "occurredAt": "2026-06-13T08:30:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-011",
+    "intakeResult": "DUPLICATE",
+    "expectedIntakeResult": "Replay is ignored without duplicate action.",
+    "evidenceIds": ["evidence-complaint-011", "evidence-capacity-011"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-012",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T18:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-001",
-      "current_stock": 90
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-012"
+    "eventId": "EVT-HOS-012",
+    "globalPrimitive": "Signal",
+    "eventType": "HOSPITAL_EVENT_MALFORMED",
+    "occurredAt": "2026-06-13T09:39:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-012",
+    "intakeResult": "REJECTED_SCHEMA",
+    "expectedIntakeResult": "Malformed event is rejected.",
+    "evidenceIds": ["evidence-complaint-012", "evidence-capacity-012"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-013",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.stock.update",
-    "datacontenttype": "application/json",
-    "time": "2026-06-10T10:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-001",
-      "current_stock": 110
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-013"
+    "eventId": "EVT-HOS-013",
+    "globalPrimitive": "Signal",
+    "eventType": "LAB_VENDOR_RESPONSE_DELAYED",
+    "occurredAt": "2026-06-13T10:48:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-013",
+    "intakeResult": "ACCEPTED_LATE",
+    "expectedIntakeResult": "Late partner evidence updates history.",
+    "evidenceIds": ["evidence-complaint-013", "evidence-capacity-013"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-015",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.stock.update",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T19:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-001",
-      "current_stock": 80
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-015"
+    "eventId": "EVT-HOS-014",
+    "globalPrimitive": "Signal",
+    "eventType": "BED_CAPACITY_PRESSURE_DETECTED",
+    "occurredAt": "2026-06-13T11:57:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-014",
+    "intakeResult": "ACCEPTED_OUT_OF_ORDER",
+    "expectedIntakeResult": "Out-of-order capacity evidence is preserved.",
+    "evidenceIds": ["evidence-complaint-014", "evidence-capacity-014"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-014",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.stock.update",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T18:30:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-001",
-      "current_stock": 90
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-014"
+    "eventId": "EVT-HOS-015",
+    "globalPrimitive": "Signal",
+    "eventType": "APPROVED_ACTION_EXECUTED",
+    "occurredAt": "2026-06-13T12:06:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-015",
+    "intakeResult": "REJECTED_IDEMPOTENCY_CONFLICT",
+    "expectedIntakeResult": "Conflicting idempotency key is rejected.",
+    "evidenceIds": ["evidence-complaint-015", "evidence-capacity-015"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-016",
-    "source": "io.github.freeapikeys.hfs.retail.store.002",
-    "type": "io.github.freeapikeys.hfs.retail.waste.log",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T20:00:00Z",
-    "data": {
-      "store_id": "STORE-002",
-      "product_id": "PROD-006",
-      "qty_waste": 12,
-      "reason": "Expired",
-      "category": "Dairy & Eggs"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-016"
+    "eventId": "EVT-HOS-016",
+    "globalPrimitive": "Signal",
+    "eventType": "HOSPITAL_OUTCOME_CAPTURED",
+    "occurredAt": "2026-06-13T13:15:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-016",
+    "intakeResult": "REJECTED_HASH",
+    "expectedIntakeResult": "Invalid content hash is rejected.",
+    "evidenceIds": ["evidence-complaint-016", "evidence-capacity-016"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-017",
-    "source": "io.github.freeapikeys.hfs.retail.store.003",
-    "type": "io.github.freeapikeys.hfs.retail.waste.log",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T21:00:00Z",
-    "data": {
-      "store_id": "STORE-003",
-      "product_id": "PROD-026",
-      "qty_waste": 8,
-      "reason": "Packaging Failure",
-      "category": "Canned & Dry Goods"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-017"
+    "eventId": "EVT-HOS-017",
+    "globalPrimitive": "Signal",
+    "eventType": "PRIVACY_SENSITIVE_COMPLAINT",
+    "occurredAt": "2026-06-13T14:24:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-017",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Escalate and redact unsafe outbound detail.",
+    "evidenceIds": ["evidence-complaint-017", "evidence-capacity-017"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-018",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.stock.update",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T22:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-005",
-      "current_stock": 10
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-018"
+    "eventId": "EVT-HOS-018",
+    "globalPrimitive": "Signal",
+    "eventType": "INSURANCE_APPROVAL_RECEIVED",
+    "occurredAt": "2026-06-13T15:33:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-018",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Change billing recommendation without deleting previous state.",
+    "evidenceIds": ["evidence-complaint-018", "evidence-capacity-018"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-019",
-    "source": "io.github.freeapikeys.hfs.retail.customer.mobile",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.price",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T22:30:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-001",
-      "complaint": "Price of bananas is inconsistent across aisles.",
-      "customer_id": "CUST-105"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-019"
+    "eventId": "EVT-HOS-019",
+    "globalPrimitive": "Signal",
+    "eventType": "LAUNDRY_PARTNER_DELAYED",
+    "occurredAt": "2026-06-13T07:42:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "COMP-HOS-019",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Create fallback housekeeping task candidate.",
+    "evidenceIds": ["evidence-complaint-019", "evidence-capacity-019"],
+    "clinicalDecisionExecutable": false
   },
   {
-    "specversion": "1.0",
-    "id": "EVT-020",
-    "source": "io.github.freeapikeys.hfs.retail.supplier.001",
-    "type": "io.github.freeapikeys.hfs.retail.complaint.incorrect",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T23:00:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-003",
-      "complaint": "Wrong variety of mangoes delivered again.",
-      "customer_id": "STORE-MANAGER-001"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-020"
-  },
-  {
-    "specversion": "1.0",
-    "id": "EVT-021",
-    "source": "io.github.freeapikeys.hfs.retail.store.002",
-    "type": "io.github.freeapikeys.hfs.retail.stock.update",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T23:30:00Z",
-    "data": {
-      "store_id": "STORE-002",
-      "product_id": "PROD-006",
-      "current_stock": 40
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-021"
-  },
-  {
-    "specversion": "1.0",
-    "id": "EVT-022",
-    "source": "io.github.freeapikeys.hfs.retail.store.001",
-    "type": "io.github.freeapikeys.hfs.retail.waste.log",
-    "datacontenttype": "application/json",
-    "time": "2026-06-13T23:59:00Z",
-    "data": {
-      "store_id": "STORE-001",
-      "product_id": "PROD-005",
-      "qty_waste": 3,
-      "reason": "Quality Decay",
-      "category": "Produce"
-    },
-    "hfstenantid": "demo-mauritius",
-    "hfscontenthash": "hash-022"
+    "eventId": "EVT-HOS-020",
+    "globalPrimitive": "Signal",
+    "eventType": "VOICE_TRANSCRIPT_REQUESTED",
+    "occurredAt": "2026-06-13T08:51:00+04:00",
+    "correlationId": "CORR-NORTH-STAR-HOSPITAL-SURGE-001",
+    "sourceRecordId": "CAP-HOS-020",
+    "intakeResult": "ACCEPTED",
+    "expectedIntakeResult": "Convert voice transcript to governed recommendation request only.",
+    "evidenceIds": ["evidence-complaint-020", "evidence-capacity-020"],
+    "clinicalDecisionExecutable": false
   }
 ]
