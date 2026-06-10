@@ -69,6 +69,9 @@ not by adding a new endpoint.
 - Action and channel responses must preserve tenant, correlation, approval ID,
   action ID, evidence IDs, provider/status if applicable, fallback reason if
   applicable, and callback/outcome reference when available.
+- Slack can use `SLACK_WEBHOOK_URL`. WhatsApp can use Twilio Sandbox or a
+  WhatsApp-enabled Twilio sender through `TWILIO_ACCOUNT_SID`,
+  `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, and `TWILIO_WHATSAPP_TO`.
 - Clinical diagnosis, treatment, dosage, triage, and clinical priority actions
   are not valid MuleSoft actions for the demo.
 
@@ -86,7 +89,8 @@ npm run check:mulesoft
 npm run demo:run
 ```
 
-The connected demo registers only the Salesforce-approved action with the mock
+The connected demo registers only Salesforce-approved actions with the mock
 write-back adapter. It first submits an unregistered approval and requires a
-`403 PERMISSION_DENIED` with no outcome, then executes the approved action,
-captures the callback, and writes the correlated outcome back to Salesforce.
+`403 PERMISSION_DENIED` with no outcome, then executes approved Slack and
+WhatsApp-style actions, captures the callbacks, and writes correlated outcomes
+back to Salesforce.

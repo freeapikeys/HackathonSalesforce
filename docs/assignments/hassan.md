@@ -138,7 +138,7 @@ Expected behavior:
 - [x] Read this file and the required docs.
 - [x] Inspect the MuleSoft approved action path before editing.
 - [x] Add or finish `SEND_WHATSAPP_ALERT` examples and mock runtime handling.
-- [ ] Add credential-driven provider selection for Twilio or Meta only if
+- [x] Add credential-driven provider selection for Twilio or Meta only if
       practical.
 - [x] Add honest `MOCK_SENT` fallback when credentials are missing.
 - [x] Add denial behavior when approval is missing or not approved.

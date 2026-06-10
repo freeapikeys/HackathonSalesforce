@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
 import urllib.error
+import urllib.parse
 import urllib.request
 from copy import deepcopy
 from dataclasses import dataclass
@@ -15,6 +17,7 @@ from .intake import EventIntakeClassifier, IntakeDecision
 
 CONTRACT_VERSION = "1.0.0"
 USE_ENV_SLACK_WEBHOOK = object()
+USE_ENV_WHATSAPP_PROVIDER = object()
 
 
 def canonical_hash(value: dict[str, Any]) -> str:
@@ -36,6 +39,15 @@ class MockHttpResponse:
     status: int
     body: dict[str, Any]
     headers: dict[str, str]
+
+
+@dataclass(frozen=True)
+class WhatsAppProviderConfig:
+    provider: str
+    account_sid: str
+    auth_token: str
+    from_number: str
+    to_number: str
 
 
 @dataclass(frozen=True)
@@ -93,6 +105,71 @@ class SlackWebhookTransport:
                 f"Slack webhook returned HTTP {status_code}."
             )
         return {"statusCode": status_code, "body": response_body}
+
+
+class TwilioWhatsAppTransport:
+    """Posts approved WhatsApp alerts through Twilio sandbox credentials."""
+
+    def post(
+        self,
+        config: WhatsAppProviderConfig,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        endpoint = (
+            "https://api.twilio.com/2010-04-01/Accounts/"
+            f"{urllib.parse.quote(config.account_sid, safe='')}/Messages.json"
+        )
+        message = "\n".join(
+            [
+                payload["messageTitle"].strip(),
+                payload["messageBody"].strip(),
+            ]
+        )
+        form = urllib.parse.urlencode(
+            {
+                "From": self._whatsapp_address(config.from_number),
+                "To": self._whatsapp_address(config.to_number),
+                "Body": message,
+            }
+        ).encode("utf-8")
+        token = base64.b64encode(
+            f"{config.account_sid}:{config.auth_token}".encode("utf-8")
+        ).decode("ascii")
+        request = urllib.request.Request(
+            endpoint,
+            data=form,
+            headers={
+                "Authorization": f"Basic {token}",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                response_body = response.read().decode("utf-8", errors="replace")
+                status_code = getattr(response, "status", response.getcode())
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            raise RetryableDependencyFailure(
+                "Twilio WhatsApp request failed."
+            ) from error
+
+        if status_code < 200 or status_code >= 300:
+            raise RetryableDependencyFailure(
+                f"Twilio WhatsApp returned HTTP {status_code}."
+            )
+        try:
+            parsed = json.loads(response_body)
+        except json.JSONDecodeError:
+            parsed = {}
+        return {
+            "statusCode": status_code,
+            "messageId": parsed.get("sid"),
+            "body": response_body,
+        }
+
+    @staticmethod
+    def _whatsapp_address(value: str) -> str:
+        return value if value.startswith("whatsapp:") else f"whatsapp:{value}"
 
 
 class MockCallbackTransport:
@@ -261,6 +338,8 @@ class MockWriteBackAdapter:
         *,
         slack_webhook_url: str | None = None,
         slack_transport: SlackWebhookTransport | None = None,
+        whatsapp_provider_config: WhatsAppProviderConfig | None = None,
+        whatsapp_transport: TwilioWhatsAppTransport | None = None,
     ) -> None:
         self.approvals: dict[str, dict[str, str]] = {}
         self.source_records: dict[str, dict[str, Any]] = {}
@@ -269,6 +348,10 @@ class MockWriteBackAdapter:
         ] = {}
         self.slack_webhook_url = slack_webhook_url
         self.slack_transport = slack_transport or SlackWebhookTransport()
+        self.whatsapp_provider_config = whatsapp_provider_config
+        self.whatsapp_transport = (
+            whatsapp_transport or TwilioWhatsAppTransport()
+        )
 
     def register_approval(
         self,
@@ -436,27 +519,30 @@ class MockWriteBackAdapter:
             payload,
             channel_label="WhatsApp",
         )
-        sent_at = timestamp()
-        provider = (
-            "whatsapp-provider"
-            if whatsapp_payload.get("providerConfigured")
-            else "mock-whatsapp"
-        )
-        status = (
-            "SENT"
-            if whatsapp_payload.get("providerConfigured")
-            else "MOCK_SENT"
-        )
-        fallback_reason = (
-            None
-            if status == "SENT"
-            else "WhatsApp provider credentials are not configured."
-        )
-        provider_message_id = (
-            "provider-whatsapp-" + canonical_hash(action)[:12]
-            if status == "SENT"
-            else "mock-whatsapp-" + canonical_hash(action)[:12]
-        )
+        sent_at: str | None = None
+        fallback_reason: str | None = None
+        provider_message_id: str | None = None
+        if self.whatsapp_provider_config:
+            provider = self.whatsapp_provider_config.provider
+            try:
+                result = self.whatsapp_transport.post(
+                    self.whatsapp_provider_config,
+                    whatsapp_payload,
+                )
+                status = "SENT"
+                sent_at = timestamp()
+                provider_message_id = result.get("messageId")
+            except RetryableDependencyFailure as error:
+                status = "FAILED"
+                fallback_reason = str(error)
+        else:
+            provider = "mock-whatsapp"
+            status = "MOCK_SENT"
+            sent_at = timestamp()
+            fallback_reason = "WhatsApp provider credentials are not configured."
+            provider_message_id = (
+                "mock-whatsapp-" + canonical_hash(action)[:12]
+            )
 
         delivery = {
             "status": status,
@@ -483,6 +569,7 @@ class MockWriteBackAdapter:
             "payload": deepcopy(payload),
             "delivery": delivery,
         }
+        outcome_status = "SUCCESS" if status in {"SENT", "MOCK_SENT"} else "FAILED"
         outcome = {
             "contractVersion": CONTRACT_VERSION,
             "tenantKey": action["tenantKey"],
@@ -495,14 +582,14 @@ class MockWriteBackAdapter:
             "sourceSystem": action["sourceSystem"],
             "sourceRecordId": source_record_id,
             "outcomeType": "WHATSAPP_ALERT_DELIVERY",
-            "status": "SUCCESS",
+            "status": outcome_status,
             "observedAt": timestamp(),
             "summary": (
                 f"WhatsApp alert {status} for "
                 f"{whatsapp_payload['targetRole']} via {provider}."
             ),
             "metricKey": "whatsapp_alert_delivery_success",
-            "metricValue": 1,
+            "metricValue": 1 if outcome_status == "SUCCESS" else 0,
         }
         return source_record, outcome
 
@@ -1447,6 +1534,24 @@ class MockIntegrationApi:
         return len(self.pending_callbacks)
 
 
+def whatsapp_provider_config_from_env() -> WhatsAppProviderConfig | None:
+    values = {
+        "account_sid": os.getenv("TWILIO_ACCOUNT_SID"),
+        "auth_token": os.getenv("TWILIO_AUTH_TOKEN"),
+        "from_number": os.getenv("TWILIO_WHATSAPP_FROM"),
+        "to_number": os.getenv("TWILIO_WHATSAPP_TO"),
+    }
+    if not all(values.values()):
+        return None
+    return WhatsAppProviderConfig(
+        provider="twilio-whatsapp",
+        account_sid=str(values["account_sid"]),
+        auth_token=str(values["auth_token"]),
+        from_number=str(values["from_number"]),
+        to_number=str(values["to_number"]),
+    )
+
+
 def build_default_api(
     *,
     failures_by_operation: dict[str, int] | None = None,
@@ -1457,6 +1562,10 @@ def build_default_api(
     replay_purposes: set[str] | None = None,
     slack_webhook_url: str | None | object = USE_ENV_SLACK_WEBHOOK,
     slack_transport: SlackWebhookTransport | None = None,
+    whatsapp_provider_config: (
+        WhatsAppProviderConfig | None | object
+    ) = USE_ENV_WHATSAPP_PROVIDER,
+    whatsapp_transport: TwilioWhatsAppTransport | None = None,
 ) -> MockIntegrationApi:
     contract = IntegrationContract()
     source_adapter = MockSourceAdapter(source_failures)
@@ -1465,9 +1574,16 @@ def build_default_api(
         if slack_webhook_url is USE_ENV_SLACK_WEBHOOK
         else slack_webhook_url
     )
+    resolved_whatsapp_provider_config = (
+        whatsapp_provider_config_from_env()
+        if whatsapp_provider_config is USE_ENV_WHATSAPP_PROVIDER
+        else whatsapp_provider_config
+    )
     write_back_adapter = MockWriteBackAdapter(
         slack_webhook_url=resolved_slack_webhook_url,
         slack_transport=slack_transport,
+        whatsapp_provider_config=resolved_whatsapp_provider_config,
+        whatsapp_transport=whatsapp_transport,
     )
     outcome_adapter = MockOutcomeAdapter(outcome_failures)
     callback_transport = MockCallbackTransport(

@@ -89,6 +89,32 @@ Slack write-back as a Mule flow or connector-backed adapter behind
 `POST /v1/actions/executions`. Store the webhook URL in Anypoint secure
 configuration, never in Git.
 
+## WhatsApp Alert Path
+
+WhatsApp is modeled as the protected action type `SEND_WHATSAPP_ALERT` behind
+`EXECUTE_APPROVED_ACTION`. In the local reference runtime, an approved WhatsApp
+action validates the role alias, target alias, message, evidence IDs, and
+source recommendation before producing a channel delivery record.
+
+The runtime can send through Twilio Sandbox or a WhatsApp-enabled Twilio sender
+when all of these environment variables are configured:
+
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_WHATSAPP_FROM`
+- `TWILIO_WHATSAPP_TO`
+
+Use the Twilio WhatsApp address format, for example
+`whatsapp:+14155238886`. If any variable is missing, the runtime records
+`MOCK_SENT` with `provider = mock-whatsapp` and a fallback reason. If Twilio is
+configured but rejects or times out, the runtime records `FAILED`; it never
+claims `SENT` unless Twilio accepts the message.
+
+For an Anypoint build, keep the same Process API boundary and implement the
+WhatsApp write-back as a Mule flow or connector-backed adapter behind
+`POST /v1/actions/executions`. Store Twilio or Meta credentials in Anypoint
+secure configuration, never in Git.
+
 ## Clinical Boundary
 
 The MuleSoft boundary must not expose actions for diagnosis, treatment, dosage,

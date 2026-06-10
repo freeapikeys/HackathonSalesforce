@@ -149,11 +149,11 @@ airport, banking, supermarket, cruise, and other profiles.
 
 - [x] Support approved `SEND_SLACK_ALERT` with real webhook or honest
       `MOCK_SENT` fallback.
-- [ ] Support approved `SEND_WHATSAPP_ALERT` with real provider only when
+- [x] Support approved `SEND_WHATSAPP_ALERT` with real provider only when
       configured or honest `MOCK_SENT` fallback.
-- [ ] Route alerts to role aliases, not personal contact data.
-- [ ] Keep messages privacy-safe and operational.
-- [ ] Preserve provider, status, fallback reason, evidence IDs, action ID,
+- [x] Route alerts to role aliases, not personal contact data.
+- [x] Keep messages privacy-safe and operational.
+- [x] Preserve provider, status, fallback reason, evidence IDs, action ID,
       approval ID, and correlation ID.
 
 ### Outcome Learning Agent

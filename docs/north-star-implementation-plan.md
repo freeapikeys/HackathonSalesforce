@@ -274,7 +274,7 @@ Focused checks:
 - [x] Ensure `EXECUTE_APPROVED_ACTION` supports `SEND_WHATSAPP_ALERT` with the
       same approval, correlation, target role, message, delivery status, and
       fallback fields as Slack.
-- [ ] Add a WhatsApp configuration path that can use Twilio Sandbox or Meta
+- [x] Add a WhatsApp configuration path that can use Twilio Sandbox or Meta
       Cloud API only when credentials are configured, otherwise returns
       `MOCK_SENT` honestly.
 - [x] Update the command center to show hospital risk pulse, evidence timeline,

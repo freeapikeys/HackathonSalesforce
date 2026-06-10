@@ -3,7 +3,11 @@ from __future__ import annotations
 import unittest
 from copy import deepcopy
 
-from mock_runtime import RetryPolicy, build_default_api
+from mock_runtime import (
+    RetryPolicy,
+    WhatsAppProviderConfig,
+    build_default_api,
+)
 
 
 class FakeSlackTransport:
@@ -13,6 +17,15 @@ class FakeSlackTransport:
     def post(self, webhook_url, payload):
         self.posts.append({"webhookUrl": webhook_url, "payload": payload})
         return {"messageId": "slack-message-001"}
+
+
+class FakeWhatsAppTransport:
+    def __init__(self) -> None:
+        self.posts = []
+
+    def post(self, config, payload):
+        self.posts.append({"config": config, "payload": payload})
+        return {"messageId": "whatsapp-message-001"}
 
 
 class MockAdapterTest(unittest.TestCase):
@@ -286,6 +299,63 @@ class MockAdapterTest(unittest.TestCase):
         )
         self.assertEqual(0, len(self.api.write_back_adapter.source_records))
         self.assertEqual(0, len(self.api.outcomes))
+
+    def test_whatsapp_twilio_provider_is_used_when_configured(self) -> None:
+        transport = FakeWhatsAppTransport()
+        api = build_default_api(
+            slack_webhook_url="",
+            whatsapp_provider_config=WhatsAppProviderConfig(
+                provider="twilio-whatsapp",
+                account_sid="AC00000000000000000000000000000000",
+                auth_token="test-token",
+                from_number="whatsapp:+14155238886",
+                to_number="whatsapp:+23055550123",
+            ),
+            whatsapp_transport=transport,
+        )
+        example = api.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        body = deepcopy(example["value"])
+        body["actionType"] = "SEND_WHATSAPP_ALERT"
+        body["sourceSystem"] = "whatsapp"
+        body["externalKey"] = "action-whatsapp-alert-real-capable"
+        body["idempotencyKey"] = "action-whatsapp-alert-real-capable-v1"
+        body["approvalId"] = "approval-whatsapp-alert-real-capable"
+        body["actionId"] = "action-whatsapp-alert-real-capable"
+        body["payload"] = {
+            "targetRole": "Patient Experience Lead",
+            "targetChannel": "wa-role-patient-experience-lead",
+            "messageTitle": "North Star hospital action",
+            "messageBody": "Coordinate approved internal hospital update.",
+            "evidenceIds": ["evidence-hospital-001"],
+            "sourceRecommendationId": body["recommendationId"],
+        }
+        headers = deepcopy(example["x-hfs-headers"])
+        headers["X-Idempotency-Key"] = body["idempotencyKey"]
+        api.write_back_adapter.register_approval(
+            approval_id=body["approvalId"],
+            tenant_key=body["tenantKey"],
+            recommendation_id=body["recommendationId"],
+            action_id=body["actionId"],
+        )
+
+        response = api.request(
+            "POST",
+            "/v1/actions/executions",
+            headers,
+            body,
+        )
+
+        self.assertEqual(202, response.status)
+        self.assertEqual(1, len(transport.posts))
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        self.assertEqual("SENT", record["delivery"]["status"])
+        self.assertEqual("twilio-whatsapp", record["delivery"]["provider"])
+        self.assertEqual(
+            "whatsapp-message-001",
+            record["delivery"]["providerMessageId"],
+        )
 
     def test_hospital_action_types_record_delivery_evidence(self) -> None:
         example = self.contract.examples["operations"][

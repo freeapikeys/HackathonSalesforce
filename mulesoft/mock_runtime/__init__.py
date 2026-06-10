@@ -10,6 +10,7 @@ from .api import (
     MockWriteBackAdapter,
     RetryPolicy,
     SlackWebhookTransport,
+    WhatsAppProviderConfig,
     build_default_api,
 )
 from .intake import EventIntakeClassifier, IntakeDecision
@@ -26,5 +27,6 @@ __all__ = [
     "IntakeDecision",
     "RetryPolicy",
     "SlackWebhookTransport",
+    "WhatsAppProviderConfig",
     "build_default_api",
 ]
