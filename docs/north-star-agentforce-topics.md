@@ -73,8 +73,9 @@ recommendation.
 ## Contract Evidence
 
 The executable Agentforce fixture in
-`intelligence/agentforce/fixtures/agentforce-scenarios-v1.json` must move from
-retail-only examples toward the global/hospital profile. It should separate
-facts from inferences, cite evidence, refuse restricted or missing evidence,
-refuse protected external execution, refuse clinical decisions, and include a
-changed-recommendation scenario after partner or capacity evidence arrives.
+`intelligence/agentforce/fixtures/agentforce-scenarios-v1.json` now preserves
+the completed inventory/waste scenarios as compatibility coverage and adds the
+global/hospital profile. The hospital scenarios separate facts from inferences
+and assumptions, cite evidence, name missing evidence, define expected outcomes,
+refuse protected external execution, block clinical decisions, and include
+partner/capacity evidence that changes or qualifies the recommendation.

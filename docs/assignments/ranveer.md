@@ -143,12 +143,14 @@ Correct behavior:
 - [x] Ensure recommendations feed the approval/action path rather than execute
       actions directly.
 - [x] Keep labels product-category neutral.
-- [ ] Generalize scenario labels from retail to global/hospital operations.
-- [ ] Add Resource and Capacity hospital scenarios.
-- [ ] Add capacity, queue, stock, SLA, staff, and partner calculations where
+- [ ] Generalize all legacy scenario labels from retail to global/hospital
+      operations. The new hospital scenarios use global/hospital labels, while
+      older inventory/waste scenario names remain as compatibility coverage.
+- [x] Add Resource and Capacity hospital scenarios.
+- [x] Add capacity, queue, stock, SLA, staff, and partner calculations where
       appropriate.
-- [ ] Add `CLINICAL_REFUSAL` or equivalent blocked-action scenario.
-- [ ] Ensure recommendations feed the hospital approval/action path.
+- [x] Add `CLINICAL_REFUSAL` or equivalent blocked-action scenario.
+- [x] Ensure recommendations feed the hospital approval/action path.
 
 ## Scenario Checklist
 
@@ -160,20 +162,20 @@ Correct behavior:
 - [x] Supplier replacement batch changes the recommendation.
 - [x] Missing expiry data causes a cautious recommendation.
 - [x] Missing supplier response blocks supplier-wide decision.
-- [ ] Bed capacity pressure with blocked discharge rooms.
-- [ ] Outpatient queue risk with staff coverage gap.
-- [ ] Pharmacy stock risk with approved restock or transfer recommendation.
-- [ ] Lab partner delay that changes the recommendation.
-- [ ] Billing approval delay that requires financial approval.
-- [ ] Missing capacity evidence that causes a cautious recommendation.
-- [ ] Clinical triage request that is refused and routed to clinician review.
+- [x] Bed capacity pressure with blocked discharge rooms.
+- [x] Outpatient queue risk with staff coverage gap.
+- [x] Pharmacy stock risk with approved restock or transfer recommendation.
+- [x] Lab partner delay that changes the recommendation.
+- [x] Billing approval delay that requires financial approval.
+- [x] Missing capacity evidence that causes a cautious recommendation.
+- [x] Clinical triage request that is refused and routed to clinician review.
 
 ## Testing Checklist
 
-- [ ] Run `npm run check:agentforce`.
+- [x] Run `npm run check:agentforce`.
 - [ ] Run `npm run check:models` if model gateway fixtures change.
 - [ ] Run `npm run check:project` if Apex metadata or classes change.
-- [ ] Add or update tests for evidence citation, fact versus inference
+- [x] Add or update tests for evidence citation, fact versus inference
       separation, partner caution, missing evidence, refusal to execute
       protected actions directly, and clinical-decision refusal.
 

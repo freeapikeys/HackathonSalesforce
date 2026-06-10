@@ -211,7 +211,7 @@ file before editing.
 - [ ] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add voice
       transcript flow that creates a governed recommendation request without
       bypassing approval or making clinical decisions.
-- [ ] Ranveer: preserve completed Agentforce reasoning work and generalize
+- [x] Ranveer: preserve completed Agentforce reasoning work and generalize
       inventory/waste logic into resource, capacity, stock, queue, and SLA
       reasoning for hospital operations.
 - [ ] Merge owner: keep branches aligned, review conflicts, protect `main`, and
@@ -272,22 +272,22 @@ file before editing.
 
 ### 6. Agentforce And Intelligence
 
-- [ ] Define/update North Star Orchestrator topic for global primitives.
-- [ ] Define/update Evidence and Context topic.
-- [ ] Define/update Patient Trust topic.
-- [ ] Define/update Resource and Capacity topic.
-- [ ] Define/update Operations Execution topic.
-- [ ] Define/update Partner and Vendor topic.
-- [ ] Define/update Risk and Approval topic.
-- [ ] Define/update Financial Impact topic.
-- [ ] Define/update Communication topic.
-- [ ] Define/update Outcome Learning topic.
+- [x] Define/update North Star Orchestrator topic for global primitives.
+- [x] Define/update Evidence and Context topic.
+- [x] Define/update Patient Trust topic.
+- [x] Define/update Resource and Capacity topic.
+- [x] Define/update Operations Execution topic.
+- [x] Define/update Partner and Vendor topic.
+- [x] Define/update Risk and Approval topic.
+- [x] Define/update Financial Impact topic.
+- [x] Define/update Communication topic.
+- [x] Define/update Outcome Learning topic.
 - [ ] Recommendation request includes complaint, resource, capacity, partner,
       billing, stock, staffing, approval, and outcome evidence.
-- [ ] Recommendation response separates facts, inferences, assumptions, missing
+- [x] Recommendation response separates facts, inferences, assumptions, missing
       evidence, recommended actions, blocked actions, approval requirements,
       and expected outcomes.
-- [ ] Agentforce refuses diagnosis, treatment, dosage, triage, and clinical
+- [x] Agentforce refuses diagnosis, treatment, dosage, triage, and clinical
       priority decisions.
 - [x] Agentforce fixtures include evidence-backed reasoning from latest
       inventory/waste work.

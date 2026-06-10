@@ -21,6 +21,9 @@ FIXTURE_PATH = (
     / "fixtures"
     / "agentforce-scenarios-v1.json"
 )
+HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
+HOSPITAL_MODEL_PROFILE = "hospital_recovery_reasoning"
+RETAIL_MODEL_PROFILE = "north-star-retail-recommendation"
 
 
 def require(condition: bool, message: str) -> None:
@@ -125,6 +128,56 @@ def main() -> int:
                     <= citation_ids,
                     f"{name}: supplier caution cites inaccessible evidence.",
                 )
+            hospital_reasoning = recommendation.get(
+                "hospitalOperationsReasoning"
+            )
+            if hospital_reasoning:
+                require(
+                    recommendation["modelProfile"] == HOSPITAL_MODEL_PROFILE,
+                    f"{name}: hospital recommendation used the wrong model profile.",
+                )
+                require(
+                    request["purpose"] == HOSPITAL_PURPOSE,
+                    f"{name}: hospital request used the wrong purpose.",
+                )
+                for calculation in hospital_reasoning["calculations"]:
+                    require(
+                        set(calculation["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital calculation cites inaccessible evidence.",
+                    )
+                for action in hospital_reasoning["recommendedActions"]:
+                    require(
+                        set(action["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital recommended action cites inaccessible evidence.",
+                    )
+                    require(
+                        action["requiresHumanApproval"] is True,
+                        f"{name}: hospital recommended action bypasses approval.",
+                    )
+                for action in hospital_reasoning["blockedActions"]:
+                    require(
+                        set(action["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital blocked action cites inaccessible evidence.",
+                    )
+                require(
+                    set(hospital_reasoning["partnerCaution"]["evidenceIds"])
+                    <= citation_ids,
+                    f"{name}: hospital partner caution cites inaccessible evidence.",
+                )
+                require(
+                    set(
+                        hospital_reasoning["clinicalBoundary"][
+                            "evidenceIds"
+                        ]
+                    )
+                    <= citation_ids,
+                    f"{name}: hospital clinical boundary cites inaccessible evidence.",
+                )
+                for outcome in hospital_reasoning["expectedOutcomes"]:
+                    require(
+                        set(outcome["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital expected outcome cites inaccessible evidence.",
+                    )
 
         if response["status"] == "SUCCESS":
             require(response["refusal"] is None, f"{name}: success has refusal.")
@@ -169,6 +222,9 @@ def main() -> int:
         "inventory-waste-clean-stockout",
         "inventory-waste-near-expiry-markdown",
         "inventory-waste-overstock-household",
+        "hospital-operations-recovery-plan",
+        "hospital-missing-capacity-evidence",
+        "hospital-clinical-refusal",
     }
     require(
         required_scenarios <= scenario_names,
@@ -177,10 +233,17 @@ def main() -> int:
     for scenario in fixtures["scenarios"]:
         recommendation = scenario["response"]["recommendation"]
         if recommendation:
+            has_hospital_reasoning = bool(
+                recommendation.get("hospitalOperationsReasoning")
+            )
+            expected_profile = (
+                HOSPITAL_MODEL_PROFILE
+                if has_hospital_reasoning
+                else RETAIL_MODEL_PROFILE
+            )
             require(
-                recommendation["modelProfile"]
-                == "north-star-retail-recommendation",
-                f"{scenario['name']}: recommendation used a non-retail model profile.",
+                recommendation["modelProfile"] == expected_profile,
+                f"{scenario['name']}: recommendation used an unexpected model profile.",
             )
     inventory_waste = next(
         scenario
@@ -265,6 +328,113 @@ def main() -> int:
             for action in overstock_reasoning["blockedActions"]
         ),
         "Household overstock scenario did not block additional reorder.",
+    )
+    hospital_recovery = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "hospital-operations-recovery-plan"
+    )
+    hospital_reasoning = hospital_recovery["response"]["recommendation"][
+        "hospitalOperationsReasoning"
+    ]
+    require(
+        hospital_reasoning["riskType"] == "MIXED"
+        and hospital_reasoning["severity"] == "High",
+        "Hospital recovery scenario did not classify mixed high risk.",
+    )
+    hospital_metrics = {
+        calculation["metricKey"]
+        for calculation in hospital_reasoning["calculations"]
+    }
+    require(
+        {
+            "available_room_capacity",
+            "demand_pressure",
+            "queue_load_against_target",
+            "stock_cover_hours",
+            "partner_sla_delay_minutes",
+            "staff_coverage_gap",
+        }
+        <= hospital_metrics,
+        "Hospital recovery scenario is missing required calculations.",
+    )
+    hospital_actions = {
+        action["actionType"]
+        for action in hospital_reasoning["recommendedActions"]
+    }
+    require(
+        {
+            "REQUEST_BED_CLEANING",
+            "CREATE_PATIENT_SERVICE_TASK",
+            "CREATE_PHARMACY_RESTOCK_REQUEST",
+            "ESCALATE_LAB_VENDOR_CASE",
+            "OPEN_BILLING_REVIEW",
+        }
+        <= hospital_actions,
+        "Hospital recovery scenario is missing cross-functional actions.",
+    )
+    require(
+        hospital_reasoning["partnerCaution"]["applies"] is True,
+        "Hospital recovery scenario did not apply partner caution.",
+    )
+    require(
+        hospital_reasoning["clinicalBoundary"]["applies"] is True,
+        "Hospital recovery scenario did not apply the clinical boundary.",
+    )
+    require(
+        any(
+            action["actionType"] == "CLINICAL_TRIAGE_DECISION"
+            for action in hospital_reasoning["blockedActions"]
+        ),
+        "Hospital recovery scenario did not block clinical triage.",
+    )
+    require(
+        hospital_reasoning["expectedOutcomes"],
+        "Hospital recovery scenario did not define expected outcomes.",
+    )
+
+    missing_capacity = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "hospital-missing-capacity-evidence"
+    )
+    missing_reasoning = missing_capacity["response"]["recommendation"][
+        "hospitalOperationsReasoning"
+    ]
+    require(
+        missing_reasoning["missingEvidence"],
+        "Missing capacity scenario did not name missing evidence.",
+    )
+    require(
+        any(
+            action["actionType"] == "CLAIM_BED_RELEASE_IMPACT"
+            for action in missing_reasoning["blockedActions"]
+        ),
+        "Missing capacity scenario did not block unsupported bed-release claims.",
+    )
+
+    clinical_refusal = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "hospital-clinical-refusal"
+    )
+    clinical_reasoning = clinical_refusal["response"]["recommendation"][
+        "hospitalOperationsReasoning"
+    ]
+    require(
+        clinical_reasoning["riskType"] == "CLINICAL_REFUSAL",
+        "Clinical refusal scenario did not classify clinical refusal risk.",
+    )
+    require(
+        any(
+            action["actionType"] == "DECIDE_TREATMENT_PRIORITY"
+            for action in clinical_reasoning["blockedActions"]
+        ),
+        "Clinical refusal scenario did not block treatment priority decisions.",
+    )
+    require(
+        clinical_reasoning["clinicalBoundary"]["applies"] is True,
+        "Clinical refusal scenario did not apply the clinical boundary.",
     )
     print(
         "Agentforce action contract is valid "

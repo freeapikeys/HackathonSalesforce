@@ -26,6 +26,9 @@ CONTRACT_VERSION = "1.0.0"
 TENANT = "demo-mauritius"
 CORRELATION = "30000000-0000-4000-8000-000000000001"
 WORK_ITEM = "a0E000000000001AAA"
+HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
+HOSPITAL_MODEL_PROFILE = "hospital_recovery_reasoning"
+HOSPITAL_APPROVAL_POLICY = "north-star-hospital-manager-approval-v1"
 
 
 def string(max_length: int = 200, pattern: str | None = None) -> dict[str, Any]:
@@ -251,6 +254,169 @@ def schema() -> dict[str, Any]:
                     "inventoryWasteReasoning": nullable(
                         "#/$defs/inventoryWasteReasoning"
                     ),
+                    "hospitalOperationsReasoning": nullable(
+                        "#/$defs/hospitalOperationsReasoning"
+                    ),
+                },
+            },
+            "calculation": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "metricKey",
+                    "formula",
+                    "value",
+                    "unit",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "metricKey": key,
+                    "formula": string(500),
+                    "value": {"type": "number"},
+                    "unit": string(100),
+                    "evidenceIds": evidence_id_list(),
+                },
+            },
+            "recommendedHospitalAction": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "actionId",
+                    "actionType",
+                    "statement",
+                    "evidenceIds",
+                    "requiresHumanApproval",
+                ],
+                "properties": {
+                    "actionId": key,
+                    "actionType": string(),
+                    "statement": string(1000),
+                    "evidenceIds": evidence_id_list(),
+                    "requiresHumanApproval": {"const": True},
+                },
+            },
+            "blockedHospitalAction": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "actionType",
+                    "reason",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "actionType": string(),
+                    "reason": string(1000),
+                    "evidenceIds": evidence_id_list(),
+                },
+            },
+            "clinicalBoundary": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["applies", "statement", "evidenceIds"],
+                "properties": {
+                    "applies": {"type": "boolean"},
+                    "statement": string(1000),
+                    "evidenceIds": evidence_id_list(min_items=0),
+                },
+            },
+            "partnerCaution": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "applies",
+                    "statement",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "applies": {"type": "boolean"},
+                    "statement": string(1000),
+                    "evidenceIds": evidence_id_list(min_items=0),
+                },
+            },
+            "expectedHospitalOutcome": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "metricKey",
+                    "target",
+                    "timeWindow",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "metricKey": key,
+                    "target": string(500),
+                    "timeWindow": string(200),
+                    "evidenceIds": evidence_id_list(min_items=0),
+                },
+            },
+            "hospitalOperationsReasoning": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "riskType",
+                    "severity",
+                    "calculations",
+                    "assumptions",
+                    "missingEvidence",
+                    "recommendedActions",
+                    "blockedActions",
+                    "partnerCaution",
+                    "clinicalBoundary",
+                    "expectedOutcomes",
+                    "explanation",
+                ],
+                "properties": {
+                    "riskType": {
+                        "enum": [
+                            "CAPACITY",
+                            "QUEUE",
+                            "STOCK",
+                            "SLA",
+                            "VENDOR",
+                            "BILLING",
+                            "COMPLAINT",
+                            "CLINICAL_REFUSAL",
+                            "MIXED",
+                        ]
+                    },
+                    "severity": {
+                        "enum": ["Low", "Medium", "High", "Critical"]
+                    },
+                    "calculations": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/calculation"},
+                    },
+                    "assumptions": {
+                        "type": "array",
+                        "items": string(500),
+                        "uniqueItems": True,
+                    },
+                    "missingEvidence": {
+                        "type": "array",
+                        "items": string(500),
+                        "uniqueItems": True,
+                    },
+                    "recommendedActions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/$defs/recommendedHospitalAction"
+                        },
+                    },
+                    "blockedActions": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/blockedHospitalAction"},
+                    },
+                    "partnerCaution": {"$ref": "#/$defs/partnerCaution"},
+                    "clinicalBoundary": {
+                        "$ref": "#/$defs/clinicalBoundary"
+                    },
+                    "expectedOutcomes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/$defs/expectedHospitalOutcome"
+                        },
+                    },
+                    "explanation": string(2000),
                 },
             },
             "recommendedInventoryAction": {
@@ -507,7 +673,7 @@ def base_request(action: str) -> dict[str, Any]:
         "action": action,
         "tenantKey": TENANT,
         "correlationId": CORRELATION,
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": HOSPITAL_PURPOSE,
         "workItemId": WORK_ITEM,
         "recommendationId": None,
         "approvalPolicyKey": None,
@@ -523,7 +689,7 @@ def audit(
     return {
         "actorUserId": "005000000000001AAA",
         "agentKey": "north-star-orchestrator",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": HOSPITAL_PURPOSE,
         "permissionEvaluated": True,
         "modelInvocationId": model_invocation_id,
         "humanApprovalRequired": human_approval_required,
@@ -1312,6 +1478,479 @@ def fixtures() -> dict[str, Any]:
         "model-invocation-agentforce-005", True
     )
 
+    hospital_complaint = citation(
+        "a06000000000021AAA",
+        "Eleven synthetic patient and visitor complaints mention wait time, room readiness, billing delay, and pharmacy delay in the morning surge window.",
+        "hospital:complaints",
+        "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
+    )
+    hospital_capacity = citation(
+        "a06000000000022AAA",
+        "Ward A3 has eighteen discharge rooms, six ready rooms, seven blocked rooms, a seventy-four minute outpatient queue wait against a thirty-five minute target, and four of six front-desk support staff available.",
+        "hospital:capacity",
+        "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
+    )
+    hospital_pharmacy = citation(
+        "a06000000000023AAA",
+        "Pharmacy IV kit cover is 2.4 hours against a four-hour operational threshold before the afternoon demand window.",
+        "hospital:pharmacy",
+        "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+    )
+    hospital_partner = citation(
+        "a06000000000024AAA",
+        "Island Diagnostics is forty-two minutes over the routine acknowledgement SLA; a second courier route is available after approval.",
+        "hospital:partner",
+        "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
+    )
+    hospital_billing = citation(
+        "a06000000000025AAA",
+        "Three duplicate invoice reviews and two insurer follow-ups are open; refunds or compensation need manager approval.",
+        "hospital:billing",
+        "sha256:1b7c5f38159d8e86f0a1e9e00f27acfc4f9657cdcfb30fc4a7c383563e826355",
+    )
+    hospital_clinical = citation(
+        "a06000000000026AAA",
+        "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+        "hospital:clinical-boundary",
+        "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
+    )
+
+    hospital_request = base_request("DRAFT_RELATIONSHIP_RECOMMENDATION")
+    hospital_request["desiredOutcome"] = (
+        "Coordinate a non-clinical hospital operations recovery plan for the "
+        "morning surge without bypassing manager approval."
+    )
+    hospital_request["modelProfile"] = HOSPITAL_MODEL_PROFILE
+    hospital_response = response("DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS")
+    hospital_response["citations"] = [
+        hospital_complaint,
+        hospital_capacity,
+        hospital_pharmacy,
+        hospital_partner,
+        hospital_billing,
+        hospital_clinical,
+    ]
+    hospital_response["facts"] = [
+        {
+            "factId": "fact-hospital-complaints",
+            "statement": hospital_complaint["summary"],
+            "evidenceIds": [hospital_complaint["evidenceId"]],
+        },
+        {
+            "factId": "fact-hospital-capacity",
+            "statement": hospital_capacity["summary"],
+            "evidenceIds": [hospital_capacity["evidenceId"]],
+        },
+        {
+            "factId": "fact-hospital-pharmacy",
+            "statement": hospital_pharmacy["summary"],
+            "evidenceIds": [hospital_pharmacy["evidenceId"]],
+        },
+        {
+            "factId": "fact-hospital-partner",
+            "statement": hospital_partner["summary"],
+            "evidenceIds": [hospital_partner["evidenceId"]],
+        },
+        {
+            "factId": "fact-hospital-billing",
+            "statement": hospital_billing["summary"],
+            "evidenceIds": [hospital_billing["evidenceId"]],
+        },
+        {
+            "factId": "fact-hospital-clinical-refusal",
+            "statement": hospital_clinical["summary"],
+            "evidenceIds": [hospital_clinical["evidenceId"]],
+        },
+    ]
+    hospital_response["inferences"] = [
+        {
+            "inferenceId": "inference-hospital-capacity-pressure",
+            "statement": "Available discharge-room capacity is six rooms, demand pressure is 3.0, queue load is 2.11 against target, and the lab partner delay creates SLA risk.",
+            "basisFactIds": [
+                "fact-hospital-capacity",
+                "fact-hospital-partner",
+            ],
+            "confidence": 0.89,
+        },
+        {
+            "inferenceId": "inference-hospital-cross-functional-plan",
+            "statement": "The complaint cluster affects patient trust, bed release, pharmacy stock, partner escalation, billing, communications, and outcome tracking; it should become one approved operations plan.",
+            "basisFactIds": [
+                "fact-hospital-complaints",
+                "fact-hospital-capacity",
+                "fact-hospital-pharmacy",
+                "fact-hospital-partner",
+                "fact-hospital-billing",
+            ],
+            "confidence": 0.88,
+        },
+    ]
+    hospital_response["recommendation"] = {
+        "recommendationType": "NORTH_STAR_HOSPITAL_RECOVERY_PLAN",
+        "proposedActionType": "APPROVE_HOSPITAL_RECOVERY_ACTIONS",
+        "rationale": (
+            "Approve room-cleaning and porter tasks, pharmacy restock or "
+            "transfer, lab vendor escalation, billing and insurance review, "
+            "privacy-safe Slack/WhatsApp internal alerts, and outcome capture. "
+            "Refuse diagnosis, treatment, dosage, triage, and clinical "
+            "priority decisions."
+        ),
+        "confidence": 0.88,
+        "evidenceIds": [
+            hospital_complaint["evidenceId"],
+            hospital_capacity["evidenceId"],
+            hospital_pharmacy["evidenceId"],
+            hospital_partner["evidenceId"],
+            hospital_billing["evidenceId"],
+            hospital_clinical["evidenceId"],
+        ],
+        "modelProfile": HOSPITAL_MODEL_PROFILE,
+        "modelInvocationId": "model-invocation-agentforce-hospital-001",
+        "requiresHumanApproval": True,
+        "hospitalOperationsReasoning": {
+            "riskType": "MIXED",
+            "severity": "High",
+            "calculations": [
+                {
+                    "metricKey": "available_room_capacity",
+                    "formula": "totalRooms - blockedRooms - reservedRooms",
+                    "value": 6,
+                    "unit": "rooms",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                },
+                {
+                    "metricKey": "demand_pressure",
+                    "formula": "expectedDemand / max(1, availableCapacity)",
+                    "value": 3.0,
+                    "unit": "ratio",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                },
+                {
+                    "metricKey": "queue_load_against_target",
+                    "formula": "currentWaitMinutes / max(1, targetWaitMinutes)",
+                    "value": 2.11,
+                    "unit": "ratio",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                },
+                {
+                    "metricKey": "stock_cover_hours",
+                    "formula": "availableStock / max(1, averageHourlyUsage)",
+                    "value": 2.4,
+                    "unit": "hours",
+                    "evidenceIds": [hospital_pharmacy["evidenceId"]],
+                },
+                {
+                    "metricKey": "partner_sla_delay_minutes",
+                    "formula": "observedDelayMinutes - allowedDelayMinutes",
+                    "value": 42,
+                    "unit": "minutes",
+                    "evidenceIds": [hospital_partner["evidenceId"]],
+                },
+                {
+                    "metricKey": "staff_coverage_gap",
+                    "formula": "requiredStaff - availableStaff",
+                    "value": 2,
+                    "unit": "staff",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                },
+            ],
+            "assumptions": [
+                "Manager approval is required before external alerts, vendor escalation, pharmacy restock, billing review, or staff tasks execute.",
+                "The plan coordinates only non-clinical operations and does not prioritize treatment.",
+                "Synthetic hospital fixtures contain no patient personal data.",
+            ],
+            "missingEvidence": [],
+            "recommendedActions": [
+                {
+                    "actionId": "action-room-cleaning",
+                    "actionType": "REQUEST_BED_CLEANING",
+                    "statement": "Request manager approval to release blocked discharge rooms through housekeeping and porter tasks.",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                    "requiresHumanApproval": True,
+                },
+                {
+                    "actionId": "action-staff-support",
+                    "actionType": "CREATE_PATIENT_SERVICE_TASK",
+                    "statement": "Create an approved front-desk support task to reduce the outpatient queue without making clinical triage decisions.",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                    "requiresHumanApproval": True,
+                },
+                {
+                    "actionId": "action-pharmacy-restock",
+                    "actionType": "CREATE_PHARMACY_RESTOCK_REQUEST",
+                    "statement": "Request approved restock or transfer for IV kit cover before the afternoon demand window.",
+                    "evidenceIds": [hospital_pharmacy["evidenceId"]],
+                    "requiresHumanApproval": True,
+                },
+                {
+                    "actionId": "action-lab-escalation",
+                    "actionType": "ESCALATE_LAB_VENDOR_CASE",
+                    "statement": "Escalate Island Diagnostics response delay and request the available second courier route.",
+                    "evidenceIds": [hospital_partner["evidenceId"]],
+                    "requiresHumanApproval": True,
+                },
+                {
+                    "actionId": "action-billing-review",
+                    "actionType": "OPEN_BILLING_REVIEW",
+                    "statement": "Open duplicate invoice and insurer follow-up review before refund or compensation decisions.",
+                    "evidenceIds": [hospital_billing["evidenceId"]],
+                    "requiresHumanApproval": True,
+                },
+            ],
+            "blockedActions": [
+                {
+                    "actionType": "CLINICAL_TRIAGE_DECISION",
+                    "reason": "North Star cannot decide diagnosis, treatment, dosage, triage, or clinical priority.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                }
+            ],
+            "partnerCaution": {
+                "applies": True,
+                "statement": "The lab partner delay changes the plan: North Star should escalate the SLA and request the second courier route only after approval.",
+                "evidenceIds": [hospital_partner["evidenceId"]],
+            },
+            "clinicalBoundary": {
+                "applies": True,
+                "statement": "Clinical decisions are refused and routed to clinician review; only operations coordination is recommended.",
+                "evidenceIds": [hospital_clinical["evidenceId"]],
+            },
+            "expectedOutcomes": [
+                {
+                    "metricKey": "outpatient_wait_time_minutes",
+                    "target": "Reduce queue wait from 74 minutes toward the 35 minute target.",
+                    "timeWindow": "Within the current morning surge window",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                },
+                {
+                    "metricKey": "rooms_released",
+                    "target": "Release at least three blocked discharge rooms.",
+                    "timeWindow": "Within 90 minutes after manager approval",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                },
+                {
+                    "metricKey": "pharmacy_stock_cover_hours",
+                    "target": "Restore IV kit cover to at least four operational hours.",
+                    "timeWindow": "Before the afternoon demand window",
+                    "evidenceIds": [hospital_pharmacy["evidenceId"]],
+                },
+                {
+                    "metricKey": "lab_partner_acknowledgement",
+                    "target": "Receive lab partner acknowledgement or approved alternate courier response.",
+                    "timeWindow": "Within 20 minutes of escalation",
+                    "evidenceIds": [hospital_partner["evidenceId"]],
+                },
+            ],
+            "explanation": "The hospital surge is cross-functional: complaints are rising, rooms are blocked, stock cover is low, a partner SLA is late, and billing approvals are stuck. The safe next step is one manager-approved operations recovery plan with clinical decisions refused.",
+        },
+    }
+    hospital_response["audit"] = audit(
+        "model-invocation-agentforce-hospital-001", True
+    )
+
+    missing_capacity_request = base_request(
+        "DRAFT_RELATIONSHIP_RECOMMENDATION"
+    )
+    missing_capacity_request["desiredOutcome"] = (
+        "Assess outpatient queue recovery when capacity evidence is missing."
+    )
+    missing_capacity_request["modelProfile"] = HOSPITAL_MODEL_PROFILE
+    missing_capacity_response = response(
+        "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
+    )
+    missing_capacity_response["citations"] = [
+        hospital_complaint,
+        hospital_pharmacy,
+    ]
+    missing_capacity_response["facts"] = [
+        {
+            "factId": "fact-missing-capacity-complaints",
+            "statement": hospital_complaint["summary"],
+            "evidenceIds": [hospital_complaint["evidenceId"]],
+        },
+        {
+            "factId": "fact-missing-capacity-pharmacy",
+            "statement": hospital_pharmacy["summary"],
+            "evidenceIds": [hospital_pharmacy["evidenceId"]],
+        },
+    ]
+    missing_capacity_response["inferences"] = [
+        {
+            "inferenceId": "inference-missing-capacity-caution",
+            "statement": "North Star can identify patient trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
+            "basisFactIds": [
+                "fact-missing-capacity-complaints",
+                "fact-missing-capacity-pharmacy",
+            ],
+            "confidence": 0.68,
+        }
+    ]
+    missing_capacity_response["recommendation"] = {
+        "recommendationType": "NORTH_STAR_HOSPITAL_CAUTIONED_PLAN",
+        "proposedActionType": "REQUEST_MISSING_CAPACITY_EVIDENCE",
+        "rationale": (
+            "Ask for current bed, room, queue, and staffing evidence before "
+            "claiming a capacity recovery plan. Continue pharmacy restock "
+            "review and patient trust monitoring behind approval."
+        ),
+        "confidence": 0.68,
+        "evidenceIds": [
+            hospital_complaint["evidenceId"],
+            hospital_pharmacy["evidenceId"],
+        ],
+        "modelProfile": HOSPITAL_MODEL_PROFILE,
+        "modelInvocationId": "model-invocation-agentforce-hospital-002",
+        "requiresHumanApproval": True,
+        "hospitalOperationsReasoning": {
+            "riskType": "MIXED",
+            "severity": "Medium",
+            "calculations": [
+                {
+                    "metricKey": "stock_cover_hours",
+                    "formula": "availableStock / max(1, averageHourlyUsage)",
+                    "value": 2.4,
+                    "unit": "hours",
+                    "evidenceIds": [hospital_pharmacy["evidenceId"]],
+                }
+            ],
+            "assumptions": [
+                "Pharmacy usage evidence is current enough for a cautious stock-risk statement.",
+                "Capacity impact cannot be quantified until current room, queue, and staffing evidence arrives.",
+            ],
+            "missingEvidence": [
+                "Current ready rooms",
+                "Blocked discharge rooms",
+                "Outpatient waiting count",
+                "Available staff by role",
+            ],
+            "recommendedActions": [
+                {
+                    "actionId": "action-request-capacity-evidence",
+                    "actionType": "REQUEST_CAPACITY_EVIDENCE",
+                    "statement": "Ask bed management and outpatient reception for current capacity and staffing evidence.",
+                    "evidenceIds": [hospital_complaint["evidenceId"]],
+                    "requiresHumanApproval": True,
+                }
+            ],
+            "blockedActions": [
+                {
+                    "actionType": "CLAIM_BED_RELEASE_IMPACT",
+                    "reason": "Current capacity evidence is missing, so North Star cannot quantify bed-release impact.",
+                    "evidenceIds": [hospital_complaint["evidenceId"]],
+                }
+            ],
+            "partnerCaution": {
+                "applies": False,
+                "statement": "No partner SLA evidence was provided for this cautious scenario.",
+                "evidenceIds": [],
+            },
+            "clinicalBoundary": {
+                "applies": False,
+                "statement": "No clinical decision was requested in this missing-evidence scenario.",
+                "evidenceIds": [],
+            },
+            "expectedOutcomes": [
+                {
+                    "metricKey": "capacity_evidence_received",
+                    "target": "Receive current room, queue, and staffing evidence before claiming bed-release impact.",
+                    "timeWindow": "Within 15 minutes",
+                    "evidenceIds": [hospital_complaint["evidenceId"]],
+                }
+            ],
+            "explanation": "The cautious path names missing capacity evidence instead of inventing it, while still preserving complaint and pharmacy facts.",
+        },
+    }
+    missing_capacity_response["audit"] = audit(
+        "model-invocation-agentforce-hospital-002", True
+    )
+
+    clinical_refusal_request = base_request(
+        "DRAFT_RELATIONSHIP_RECOMMENDATION"
+    )
+    clinical_refusal_request["desiredOutcome"] = (
+        "Answer which patient should receive treatment first."
+    )
+    clinical_refusal_request["modelProfile"] = HOSPITAL_MODEL_PROFILE
+    clinical_refusal_response = response(
+        "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
+    )
+    clinical_refusal_response["citations"] = [hospital_clinical]
+    clinical_refusal_response["facts"] = [
+        {
+            "factId": "fact-clinical-refusal",
+            "statement": hospital_clinical["summary"],
+            "evidenceIds": [hospital_clinical["evidenceId"]],
+        }
+    ]
+    clinical_refusal_response["inferences"] = [
+        {
+            "inferenceId": "inference-clinical-refusal",
+            "statement": "The request asks for clinical priority, so North Star must refuse the decision and route to clinician review.",
+            "basisFactIds": ["fact-clinical-refusal"],
+            "confidence": 0.99,
+        }
+    ]
+    clinical_refusal_response["recommendation"] = {
+        "recommendationType": "NORTH_STAR_CLINICAL_DECISION_REFUSAL",
+        "proposedActionType": "ROUTE_TO_CLINICIAN_REVIEW",
+        "rationale": (
+            "Refuse the clinical priority decision. North Star may coordinate "
+            "non-clinical queue, room, staff, and communication tasks, but "
+            "must route treatment priority to a clinician."
+        ),
+        "confidence": 0.99,
+        "evidenceIds": [hospital_clinical["evidenceId"]],
+        "modelProfile": HOSPITAL_MODEL_PROFILE,
+        "modelInvocationId": "model-invocation-agentforce-hospital-003",
+        "requiresHumanApproval": True,
+        "hospitalOperationsReasoning": {
+            "riskType": "CLINICAL_REFUSAL",
+            "severity": "Critical",
+            "calculations": [],
+            "assumptions": [
+                "The user request asks for clinical treatment priority, which is outside North Star's authority.",
+            ],
+            "missingEvidence": [],
+            "recommendedActions": [
+                {
+                    "actionId": "action-route-clinician-review",
+                    "actionType": "ROUTE_TO_CLINICIAN_REVIEW",
+                    "statement": "Route the clinical-priority request to a clinician or clinical manager.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                    "requiresHumanApproval": True,
+                }
+            ],
+            "blockedActions": [
+                {
+                    "actionType": "DECIDE_TREATMENT_PRIORITY",
+                    "reason": "Automated diagnosis, treatment, dosage, triage, or clinical-priority decisions are out of scope.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                }
+            ],
+            "partnerCaution": {
+                "applies": False,
+                "statement": "Partner evidence is not relevant because the requested decision is clinical.",
+                "evidenceIds": [],
+            },
+            "clinicalBoundary": {
+                "applies": True,
+                "statement": "North Star refuses clinical priority decisions and routes to human clinical review.",
+                "evidenceIds": [hospital_clinical["evidenceId"]],
+            },
+            "expectedOutcomes": [
+                {
+                    "metricKey": "clinical_review_routed",
+                    "target": "Route the clinical-priority request to a clinician without automated treatment prioritization.",
+                    "timeWindow": "Immediately",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                }
+            ],
+            "explanation": "This scenario proves the boundary: the agent can coordinate operations but cannot decide who receives treatment first.",
+        },
+    }
+    clinical_refusal_response["audit"] = audit(
+        "model-invocation-agentforce-hospital-003", True
+    )
+
     return {
         "contractVersion": CONTRACT_VERSION,
         "actionCatalog": [
@@ -1320,8 +1959,9 @@ def fixtures() -> dict[str, Any]:
                 "action": "EXPLAIN_RELATIONSHIP_CASE",
                 "target": "apex://HFS_AgentExplainAction",
                 "description": (
-                    "Read permission-aware relationship context, separate "
-                    "facts from inference, and return accessible citations."
+                    "Read permission-aware North Star operations context, "
+                    "separate facts from inference, and return accessible "
+                    "citations."
                 ),
                 "requireUserConfirmation": False,
                 "inputContract": "#/$defs/actionRequest",
@@ -1332,8 +1972,9 @@ def fixtures() -> dict[str, Any]:
                 "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
                 "target": "apex://HFS_AgentRecommendationAction",
                 "description": (
-                    "Draft an evidence-backed recommendation through the "
-                    "qualified model gateway without executing an action."
+                    "Draft an evidence-backed operations recommendation "
+                    "through the qualified model gateway without executing an "
+                    "action."
                 ),
                 "requireUserConfirmation": False,
                 "inputContract": "#/$defs/actionRequest",
@@ -1345,7 +1986,8 @@ def fixtures() -> dict[str, Any]:
                 "target": "apex://HFS_AgentApprovalRequestAction",
                 "description": (
                     "Create a pending human approval request for an existing "
-                    "recommendation. Never execute the protected action."
+                    "North Star recommendation. Never execute the protected "
+                    "action."
                 ),
                 "requireUserConfirmation": True,
                 "inputContract": "#/$defs/actionRequest",
@@ -1412,6 +2054,21 @@ def fixtures() -> dict[str, Any]:
                 "name": "inventory-waste-overstock-household",
                 "request": overstock_request,
                 "response": overstock_response,
+            },
+            {
+                "name": "hospital-operations-recovery-plan",
+                "request": hospital_request,
+                "response": hospital_response,
+            },
+            {
+                "name": "hospital-missing-capacity-evidence",
+                "request": missing_capacity_request,
+                "response": missing_capacity_response,
+            },
+            {
+                "name": "hospital-clinical-refusal",
+                "request": clinical_refusal_request,
+                "response": clinical_refusal_response,
             },
         ],
     }

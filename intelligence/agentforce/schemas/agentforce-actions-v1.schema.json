@@ -325,6 +325,320 @@
               "type": "null"
             }
           ]
+        },
+        "hospitalOperationsReasoning": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/hospitalOperationsReasoning"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "calculation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metricKey",
+        "formula",
+        "value",
+        "unit",
+        "evidenceIds"
+      ],
+      "properties": {
+        "metricKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "formula": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "value": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "recommendedHospitalAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actionId",
+        "actionType",
+        "statement",
+        "evidenceIds",
+        "requiresHumanApproval"
+      ],
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "actionType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "requiresHumanApproval": {
+          "const": true
+        }
+      }
+    },
+    "blockedHospitalAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actionType",
+        "reason",
+        "evidenceIds"
+      ],
+      "properties": {
+        "actionType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "clinicalBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applies",
+        "statement",
+        "evidenceIds"
+      ],
+      "properties": {
+        "applies": {
+          "type": "boolean"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 0
+        }
+      }
+    },
+    "partnerCaution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applies",
+        "statement",
+        "evidenceIds"
+      ],
+      "properties": {
+        "applies": {
+          "type": "boolean"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 0
+        }
+      }
+    },
+    "expectedHospitalOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metricKey",
+        "target",
+        "timeWindow",
+        "evidenceIds"
+      ],
+      "properties": {
+        "metricKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "timeWindow": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 0
+        }
+      }
+    },
+    "hospitalOperationsReasoning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "riskType",
+        "severity",
+        "calculations",
+        "assumptions",
+        "missingEvidence",
+        "recommendedActions",
+        "blockedActions",
+        "partnerCaution",
+        "clinicalBoundary",
+        "expectedOutcomes",
+        "explanation"
+      ],
+      "properties": {
+        "riskType": {
+          "enum": [
+            "CAPACITY",
+            "QUEUE",
+            "STOCK",
+            "SLA",
+            "VENDOR",
+            "BILLING",
+            "COMPLAINT",
+            "CLINICAL_REFUSAL",
+            "MIXED"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "Low",
+            "Medium",
+            "High",
+            "Critical"
+          ]
+        },
+        "calculations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/calculation"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "uniqueItems": true
+        },
+        "missingEvidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "uniqueItems": true
+        },
+        "recommendedActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recommendedHospitalAction"
+          }
+        },
+        "blockedActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockedHospitalAction"
+          }
+        },
+        "partnerCaution": {
+          "$ref": "#/$defs/partnerCaution"
+        },
+        "clinicalBoundary": {
+          "$ref": "#/$defs/clinicalBoundary"
+        },
+        "expectedOutcomes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/expectedHospitalOutcome"
+          }
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
         }
       }
     },

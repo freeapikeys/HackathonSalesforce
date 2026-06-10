@@ -5,7 +5,7 @@
       "developerName": "explain_relationship_case",
       "action": "EXPLAIN_RELATIONSHIP_CASE",
       "target": "apex://HFS_AgentExplainAction",
-      "description": "Read permission-aware relationship context, separate facts from inference, and return accessible citations.",
+      "description": "Read permission-aware North Star operations context, separate facts from inference, and return accessible citations.",
       "requireUserConfirmation": false,
       "inputContract": "#/$defs/actionRequest",
       "outputContract": "#/$defs/actionResponse"
@@ -14,7 +14,7 @@
       "developerName": "draft_relationship_recommendation",
       "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
       "target": "apex://HFS_AgentRecommendationAction",
-      "description": "Draft an evidence-backed recommendation through the qualified model gateway without executing an action.",
+      "description": "Draft an evidence-backed operations recommendation through the qualified model gateway without executing an action.",
       "requireUserConfirmation": false,
       "inputContract": "#/$defs/actionRequest",
       "outputContract": "#/$defs/actionResponse"
@@ -23,7 +23,7 @@
       "developerName": "request_human_approval",
       "action": "REQUEST_HUMAN_APPROVAL",
       "target": "apex://HFS_AgentApprovalRequestAction",
-      "description": "Create a pending human approval request for an existing recommendation. Never execute the protected action.",
+      "description": "Create a pending human approval request for an existing North Star recommendation. Never execute the protected action.",
       "requireUserConfirmation": true,
       "inputContract": "#/$defs/actionRequest",
       "outputContract": "#/$defs/actionResponse"
@@ -37,7 +37,7 @@
         "action": "EXPLAIN_RELATIONSHIP_CASE",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -166,7 +166,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
@@ -181,7 +181,7 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -326,7 +326,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-001",
           "humanApprovalRequired": true,
@@ -341,7 +341,7 @@
         "action": "REQUEST_HUMAN_APPROVAL",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": "a07000000000001AAA",
         "approvalPolicyKey": "north-star-manager-approval-v1",
@@ -370,7 +370,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": true,
@@ -385,7 +385,7 @@
         "action": "EXPLAIN_RELATIONSHIP_CASE",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -413,7 +413,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
@@ -428,7 +428,7 @@
         "action": "EXECUTE_EXTERNAL_ACTION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": "a07000000000001AAA",
         "approvalPolicyKey": null,
@@ -456,7 +456,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": true,
@@ -471,7 +471,7 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -499,7 +499,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
@@ -514,7 +514,7 @@
         "action": "REQUEST_HUMAN_APPROVAL",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -543,7 +543,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
           "humanApprovalRequired": false,
@@ -558,7 +558,7 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -702,7 +702,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-002",
           "humanApprovalRequired": true,
@@ -717,7 +717,7 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -891,7 +891,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-003",
           "humanApprovalRequired": true,
@@ -906,7 +906,7 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -1035,7 +1035,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-004",
           "humanApprovalRequired": true,
@@ -1050,7 +1050,7 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -1187,7 +1187,7 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-006",
           "humanApprovalRequired": true,
@@ -1202,7 +1202,7 @@
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
         "tenantKey": "demo-mauritius",
         "correlationId": "30000000-0000-4000-8000-000000000001",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
@@ -1338,9 +1338,633 @@
         "audit": {
           "actorUserId": "005000000000001AAA",
           "agentKey": "north-star-orchestrator",
-          "purpose": "RESOLVE_RETAIL_RISK",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-005",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "hospital-operations-recovery-plan",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Coordinate a non-clinical hospital operations recovery plan for the morning surge without bypassing manager approval.",
+        "modelProfile": "hospital_recovery_reasoning"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-hospital-complaints",
+            "statement": "Eleven synthetic patient and visitor complaints mention wait time, room readiness, billing delay, and pharmacy delay in the morning surge window.",
+            "evidenceIds": [
+              "a06000000000021AAA"
+            ]
+          },
+          {
+            "factId": "fact-hospital-capacity",
+            "statement": "Ward A3 has eighteen discharge rooms, six ready rooms, seven blocked rooms, a seventy-four minute outpatient queue wait against a thirty-five minute target, and four of six front-desk support staff available.",
+            "evidenceIds": [
+              "a06000000000022AAA"
+            ]
+          },
+          {
+            "factId": "fact-hospital-pharmacy",
+            "statement": "Pharmacy IV kit cover is 2.4 hours against a four-hour operational threshold before the afternoon demand window.",
+            "evidenceIds": [
+              "a06000000000023AAA"
+            ]
+          },
+          {
+            "factId": "fact-hospital-partner",
+            "statement": "Island Diagnostics is forty-two minutes over the routine acknowledgement SLA; a second courier route is available after approval.",
+            "evidenceIds": [
+              "a06000000000024AAA"
+            ]
+          },
+          {
+            "factId": "fact-hospital-billing",
+            "statement": "Three duplicate invoice reviews and two insurer follow-ups are open; refunds or compensation need manager approval.",
+            "evidenceIds": [
+              "a06000000000025AAA"
+            ]
+          },
+          {
+            "factId": "fact-hospital-clinical-refusal",
+            "statement": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "evidenceIds": [
+              "a06000000000026AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-hospital-capacity-pressure",
+            "statement": "Available discharge-room capacity is six rooms, demand pressure is 3.0, queue load is 2.11 against target, and the lab partner delay creates SLA risk.",
+            "basisFactIds": [
+              "fact-hospital-capacity",
+              "fact-hospital-partner"
+            ],
+            "confidence": 0.89
+          },
+          {
+            "inferenceId": "inference-hospital-cross-functional-plan",
+            "statement": "The complaint cluster affects patient trust, bed release, pharmacy stock, partner escalation, billing, communications, and outcome tracking; it should become one approved operations plan.",
+            "basisFactIds": [
+              "fact-hospital-complaints",
+              "fact-hospital-capacity",
+              "fact-hospital-pharmacy",
+              "fact-hospital-partner",
+              "fact-hospital-billing"
+            ],
+            "confidence": 0.88
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000021AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:complaints",
+            "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
+            "summary": "Eleven synthetic patient and visitor complaints mention wait time, room readiness, billing delay, and pharmacy delay in the morning surge window.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000022AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:capacity",
+            "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
+            "summary": "Ward A3 has eighteen discharge rooms, six ready rooms, seven blocked rooms, a seventy-four minute outpatient queue wait against a thirty-five minute target, and four of six front-desk support staff available.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000023AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:pharmacy",
+            "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+            "summary": "Pharmacy IV kit cover is 2.4 hours against a four-hour operational threshold before the afternoon demand window.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000024AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:partner",
+            "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
+            "summary": "Island Diagnostics is forty-two minutes over the routine acknowledgement SLA; a second courier route is available after approval.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000025AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:billing",
+            "contentHash": "sha256:1b7c5f38159d8e86f0a1e9e00f27acfc4f9657cdcfb30fc4a7c383563e826355",
+            "summary": "Three duplicate invoice reviews and two insurer follow-ups are open; refunds or compensation need manager approval.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000026AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:clinical-boundary",
+            "contentHash": "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
+            "summary": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_HOSPITAL_RECOVERY_PLAN",
+          "proposedActionType": "APPROVE_HOSPITAL_RECOVERY_ACTIONS",
+          "rationale": "Approve room-cleaning and porter tasks, pharmacy restock or transfer, lab vendor escalation, billing and insurance review, privacy-safe Slack/WhatsApp internal alerts, and outcome capture. Refuse diagnosis, treatment, dosage, triage, and clinical priority decisions.",
+          "confidence": 0.88,
+          "evidenceIds": [
+            "a06000000000021AAA",
+            "a06000000000022AAA",
+            "a06000000000023AAA",
+            "a06000000000024AAA",
+            "a06000000000025AAA",
+            "a06000000000026AAA"
+          ],
+          "modelProfile": "hospital_recovery_reasoning",
+          "modelInvocationId": "model-invocation-agentforce-hospital-001",
+          "requiresHumanApproval": true,
+          "hospitalOperationsReasoning": {
+            "riskType": "MIXED",
+            "severity": "High",
+            "calculations": [
+              {
+                "metricKey": "available_room_capacity",
+                "formula": "totalRooms - blockedRooms - reservedRooms",
+                "value": 6,
+                "unit": "rooms",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "metricKey": "demand_pressure",
+                "formula": "expectedDemand / max(1, availableCapacity)",
+                "value": 3.0,
+                "unit": "ratio",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "metricKey": "queue_load_against_target",
+                "formula": "currentWaitMinutes / max(1, targetWaitMinutes)",
+                "value": 2.11,
+                "unit": "ratio",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "metricKey": "stock_cover_hours",
+                "formula": "availableStock / max(1, averageHourlyUsage)",
+                "value": 2.4,
+                "unit": "hours",
+                "evidenceIds": [
+                  "a06000000000023AAA"
+                ]
+              },
+              {
+                "metricKey": "partner_sla_delay_minutes",
+                "formula": "observedDelayMinutes - allowedDelayMinutes",
+                "value": 42,
+                "unit": "minutes",
+                "evidenceIds": [
+                  "a06000000000024AAA"
+                ]
+              },
+              {
+                "metricKey": "staff_coverage_gap",
+                "formula": "requiredStaff - availableStaff",
+                "value": 2,
+                "unit": "staff",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ]
+              }
+            ],
+            "assumptions": [
+              "Manager approval is required before external alerts, vendor escalation, pharmacy restock, billing review, or staff tasks execute.",
+              "The plan coordinates only non-clinical operations and does not prioritize treatment.",
+              "Synthetic hospital fixtures contain no patient personal data."
+            ],
+            "missingEvidence": [],
+            "recommendedActions": [
+              {
+                "actionId": "action-room-cleaning",
+                "actionType": "REQUEST_BED_CLEANING",
+                "statement": "Request manager approval to release blocked discharge rooms through housekeeping and porter tasks.",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-staff-support",
+                "actionType": "CREATE_PATIENT_SERVICE_TASK",
+                "statement": "Create an approved front-desk support task to reduce the outpatient queue without making clinical triage decisions.",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-pharmacy-restock",
+                "actionType": "CREATE_PHARMACY_RESTOCK_REQUEST",
+                "statement": "Request approved restock or transfer for IV kit cover before the afternoon demand window.",
+                "evidenceIds": [
+                  "a06000000000023AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-lab-escalation",
+                "actionType": "ESCALATE_LAB_VENDOR_CASE",
+                "statement": "Escalate Island Diagnostics response delay and request the available second courier route.",
+                "evidenceIds": [
+                  "a06000000000024AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-billing-review",
+                "actionType": "OPEN_BILLING_REVIEW",
+                "statement": "Open duplicate invoice and insurer follow-up review before refund or compensation decisions.",
+                "evidenceIds": [
+                  "a06000000000025AAA"
+                ],
+                "requiresHumanApproval": true
+              }
+            ],
+            "blockedActions": [
+              {
+                "actionType": "CLINICAL_TRIAGE_DECISION",
+                "reason": "North Star cannot decide diagnosis, treatment, dosage, triage, or clinical priority.",
+                "evidenceIds": [
+                  "a06000000000026AAA"
+                ]
+              }
+            ],
+            "partnerCaution": {
+              "applies": true,
+              "statement": "The lab partner delay changes the plan: North Star should escalate the SLA and request the second courier route only after approval.",
+              "evidenceIds": [
+                "a06000000000024AAA"
+              ]
+            },
+            "clinicalBoundary": {
+              "applies": true,
+              "statement": "Clinical decisions are refused and routed to clinician review; only operations coordination is recommended.",
+              "evidenceIds": [
+                "a06000000000026AAA"
+              ]
+            },
+            "expectedOutcomes": [
+              {
+                "metricKey": "outpatient_wait_time_minutes",
+                "target": "Reduce queue wait from 74 minutes toward the 35 minute target.",
+                "timeWindow": "Within the current morning surge window",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "metricKey": "rooms_released",
+                "target": "Release at least three blocked discharge rooms.",
+                "timeWindow": "Within 90 minutes after manager approval",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "metricKey": "pharmacy_stock_cover_hours",
+                "target": "Restore IV kit cover to at least four operational hours.",
+                "timeWindow": "Before the afternoon demand window",
+                "evidenceIds": [
+                  "a06000000000023AAA"
+                ]
+              },
+              {
+                "metricKey": "lab_partner_acknowledgement",
+                "target": "Receive lab partner acknowledgement or approved alternate courier response.",
+                "timeWindow": "Within 20 minutes of escalation",
+                "evidenceIds": [
+                  "a06000000000024AAA"
+                ]
+              }
+            ],
+            "explanation": "The hospital surge is cross-functional: complaints are rising, rooms are blocked, stock cover is low, a partner SLA is late, and billing approvals are stuck. The safe next step is one manager-approved operations recovery plan with clinical decisions refused."
+          }
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-hospital-001",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "hospital-missing-capacity-evidence",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Assess outpatient queue recovery when capacity evidence is missing.",
+        "modelProfile": "hospital_recovery_reasoning"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-missing-capacity-complaints",
+            "statement": "Eleven synthetic patient and visitor complaints mention wait time, room readiness, billing delay, and pharmacy delay in the morning surge window.",
+            "evidenceIds": [
+              "a06000000000021AAA"
+            ]
+          },
+          {
+            "factId": "fact-missing-capacity-pharmacy",
+            "statement": "Pharmacy IV kit cover is 2.4 hours against a four-hour operational threshold before the afternoon demand window.",
+            "evidenceIds": [
+              "a06000000000023AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-missing-capacity-caution",
+            "statement": "North Star can identify patient trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
+            "basisFactIds": [
+              "fact-missing-capacity-complaints",
+              "fact-missing-capacity-pharmacy"
+            ],
+            "confidence": 0.68
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000021AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:complaints",
+            "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
+            "summary": "Eleven synthetic patient and visitor complaints mention wait time, room readiness, billing delay, and pharmacy delay in the morning surge window.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000023AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:pharmacy",
+            "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+            "summary": "Pharmacy IV kit cover is 2.4 hours against a four-hour operational threshold before the afternoon demand window.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_HOSPITAL_CAUTIONED_PLAN",
+          "proposedActionType": "REQUEST_MISSING_CAPACITY_EVIDENCE",
+          "rationale": "Ask for current bed, room, queue, and staffing evidence before claiming a capacity recovery plan. Continue pharmacy restock review and patient trust monitoring behind approval.",
+          "confidence": 0.68,
+          "evidenceIds": [
+            "a06000000000021AAA",
+            "a06000000000023AAA"
+          ],
+          "modelProfile": "hospital_recovery_reasoning",
+          "modelInvocationId": "model-invocation-agentforce-hospital-002",
+          "requiresHumanApproval": true,
+          "hospitalOperationsReasoning": {
+            "riskType": "MIXED",
+            "severity": "Medium",
+            "calculations": [
+              {
+                "metricKey": "stock_cover_hours",
+                "formula": "availableStock / max(1, averageHourlyUsage)",
+                "value": 2.4,
+                "unit": "hours",
+                "evidenceIds": [
+                  "a06000000000023AAA"
+                ]
+              }
+            ],
+            "assumptions": [
+              "Pharmacy usage evidence is current enough for a cautious stock-risk statement.",
+              "Capacity impact cannot be quantified until current room, queue, and staffing evidence arrives."
+            ],
+            "missingEvidence": [
+              "Current ready rooms",
+              "Blocked discharge rooms",
+              "Outpatient waiting count",
+              "Available staff by role"
+            ],
+            "recommendedActions": [
+              {
+                "actionId": "action-request-capacity-evidence",
+                "actionType": "REQUEST_CAPACITY_EVIDENCE",
+                "statement": "Ask bed management and outpatient reception for current capacity and staffing evidence.",
+                "evidenceIds": [
+                  "a06000000000021AAA"
+                ],
+                "requiresHumanApproval": true
+              }
+            ],
+            "blockedActions": [
+              {
+                "actionType": "CLAIM_BED_RELEASE_IMPACT",
+                "reason": "Current capacity evidence is missing, so North Star cannot quantify bed-release impact.",
+                "evidenceIds": [
+                  "a06000000000021AAA"
+                ]
+              }
+            ],
+            "partnerCaution": {
+              "applies": false,
+              "statement": "No partner SLA evidence was provided for this cautious scenario.",
+              "evidenceIds": []
+            },
+            "clinicalBoundary": {
+              "applies": false,
+              "statement": "No clinical decision was requested in this missing-evidence scenario.",
+              "evidenceIds": []
+            },
+            "expectedOutcomes": [
+              {
+                "metricKey": "capacity_evidence_received",
+                "target": "Receive current room, queue, and staffing evidence before claiming bed-release impact.",
+                "timeWindow": "Within 15 minutes",
+                "evidenceIds": [
+                  "a06000000000021AAA"
+                ]
+              }
+            ],
+            "explanation": "The cautious path names missing capacity evidence instead of inventing it, while still preserving complaint and pharmacy facts."
+          }
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-hospital-002",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "hospital-clinical-refusal",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Answer which patient should receive treatment first.",
+        "modelProfile": "hospital_recovery_reasoning"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-clinical-refusal",
+            "statement": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "evidenceIds": [
+              "a06000000000026AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-clinical-refusal",
+            "statement": "The request asks for clinical priority, so North Star must refuse the decision and route to clinician review.",
+            "basisFactIds": [
+              "fact-clinical-refusal"
+            ],
+            "confidence": 0.99
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000026AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:clinical-boundary",
+            "contentHash": "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
+            "summary": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_CLINICAL_DECISION_REFUSAL",
+          "proposedActionType": "ROUTE_TO_CLINICIAN_REVIEW",
+          "rationale": "Refuse the clinical priority decision. North Star may coordinate non-clinical queue, room, staff, and communication tasks, but must route treatment priority to a clinician.",
+          "confidence": 0.99,
+          "evidenceIds": [
+            "a06000000000026AAA"
+          ],
+          "modelProfile": "hospital_recovery_reasoning",
+          "modelInvocationId": "model-invocation-agentforce-hospital-003",
+          "requiresHumanApproval": true,
+          "hospitalOperationsReasoning": {
+            "riskType": "CLINICAL_REFUSAL",
+            "severity": "Critical",
+            "calculations": [],
+            "assumptions": [
+              "The user request asks for clinical treatment priority, which is outside North Star's authority."
+            ],
+            "missingEvidence": [],
+            "recommendedActions": [
+              {
+                "actionId": "action-route-clinician-review",
+                "actionType": "ROUTE_TO_CLINICIAN_REVIEW",
+                "statement": "Route the clinical-priority request to a clinician or clinical manager.",
+                "evidenceIds": [
+                  "a06000000000026AAA"
+                ],
+                "requiresHumanApproval": true
+              }
+            ],
+            "blockedActions": [
+              {
+                "actionType": "DECIDE_TREATMENT_PRIORITY",
+                "reason": "Automated diagnosis, treatment, dosage, triage, or clinical-priority decisions are out of scope.",
+                "evidenceIds": [
+                  "a06000000000026AAA"
+                ]
+              }
+            ],
+            "partnerCaution": {
+              "applies": false,
+              "statement": "Partner evidence is not relevant because the requested decision is clinical.",
+              "evidenceIds": []
+            },
+            "clinicalBoundary": {
+              "applies": true,
+              "statement": "North Star refuses clinical priority decisions and routes to human clinical review.",
+              "evidenceIds": [
+                "a06000000000026AAA"
+              ]
+            },
+            "expectedOutcomes": [
+              {
+                "metricKey": "clinical_review_routed",
+                "target": "Route the clinical-priority request to a clinician without automated treatment prioritization.",
+                "timeWindow": "Immediately",
+                "evidenceIds": [
+                  "a06000000000026AAA"
+                ]
+              }
+            ],
+            "explanation": "This scenario proves the boundary: the agent can coordinate operations but cannot decide who receives treatment first."
+          }
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-hospital-003",
           "humanApprovalRequired": true,
           "externalActionExecuted": false
         }
