@@ -107,6 +107,8 @@ Run:
 ```bash
 npm run check:events
 npm run check:mulesoft
+npm run verify:source-intake
+npm run verify:source-intake -- --target-org dev-ed
 ```
 
 Contract basis:

@@ -72,6 +72,7 @@ npm run verify:clean-clone -- \
 | Clone               | `git clone --single-branch --branch main ...`                | Temporary clone resolves to one full commit SHA                                                                          |
 | Bootstrap           | `./scripts/bootstrap-runtime.sh`                             | Locked Python and npm dependencies install                                                                               |
 | Repository checks   | `npm run check`                                              | Contracts, ontology, events, MuleSoft, models, Agentforce, metadata, formatting, lint, harness tests, and LWC tests pass |
+| Source intake proof | `npm run verify:source-intake -- --target-org hfs-dev`       | Event fixtures, MuleSoft quarantine/replay, and Salesforce event-persistence tests pass with a JSON report               |
 | Salesforce deploy   | `sf project deploy start ... --test-level RunSpecifiedTests` | Metadata succeeds; all four Apex test classes run with zero failures                                                     |
 | Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes and emits a sanitized demo report                                                            |
 | Evidence validation | `scripts/verify_clean_clone_result.py`                       | Required success and refusal invariants pass                                                                             |

@@ -234,6 +234,9 @@ and UI must support any supermarket product category.
 - [x] Add `RETAIL_OUTCOME_CAPTURED` fixture.
 - [x] Keep duplicate, malformed, late, out-of-order, replay, hash, and
       idempotency-conflict cases passing.
+- [x] Source-intake verifier emits a machine-readable report for fixture
+      classification, MuleSoft replay/quarantine behavior, and Salesforce
+      check-only persistence tests.
 
 ### 4. Salesforce Core
 
