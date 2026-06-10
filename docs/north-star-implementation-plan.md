@@ -246,8 +246,9 @@ Focused checks:
       center to show `PENDING`, `SENT`, `FAILED`, or `MOCK_SENT`.
 - [x] Add or update fixtures for approved Slack success, missing-webhook mock
       mode, and unapproved denial.
-- [ ] Update Slack examples and labels from retail roles to hospital roles.
-- [ ] Run `npm run check:mulesoft` after hospital action changes.
+- [x] Update Slack examples and labels from retail roles to hospital roles.
+- [x] Run MuleSoft contract generation, contract validation, and mock runtime
+      tests after hospital action changes.
 
 ### Salesforce Core And Agentforce Recommendation
 
@@ -268,34 +269,36 @@ Focused checks:
 
 ### WhatsApp And Command Center Experience
 
-- [ ] Inspect `docs/ui-state-contract.md`, `docs/mulesoft-api-contract.md`, the
+- [x] Inspect `docs/ui-state-contract.md`, `docs/mulesoft-api-contract.md`, the
       LWC command center, and existing UI fixtures before editing.
-- [ ] Ensure `EXECUTE_APPROVED_ACTION` supports `SEND_WHATSAPP_ALERT` with the
+- [x] Ensure `EXECUTE_APPROVED_ACTION` supports `SEND_WHATSAPP_ALERT` with the
       same approval, correlation, target role, message, delivery status, and
       fallback fields as Slack.
 - [ ] Add a WhatsApp configuration path that can use Twilio Sandbox or Meta
       Cloud API only when credentials are configured, otherwise returns
       `MOCK_SENT` honestly.
-- [ ] Update the command center to show hospital risk pulse, evidence timeline,
+- [x] Update the command center to show hospital risk pulse, evidence timeline,
       vendor response, approval cockpit, Slack result, WhatsApp result, and task
       acknowledgement.
 - [ ] Add UI mock states for ready, restricted, denied, channel failed, channel
       mock sent, voice request, clinical refusal, and action approved.
-- [ ] Run LWC tests and `npm run check:mulesoft` when the WhatsApp contract
+- [x] Run LWC tests and direct MuleSoft checks when the WhatsApp contract
       changes.
 
 ### Data, Edge Cases, And Recommendation Validation
 
-- [ ] Build synthetic hospital data for departments, resources, partners,
+- [x] Build synthetic hospital data for departments, resources, partners,
       complaints, queues, stock, billing, insurance, tasks, channel aliases, and
       outcomes.
-- [ ] Create realistic complaint clusters that test isolated complaints, wait
-      time, room readiness, food, billing, pharmacy delay, accessibility,
-      privacy, and service recovery.
-- [ ] Create partner response examples: lab delayed, lab recovered, insurance
-      pending, insurance approved, laundry delayed, food supplier delayed,
-      maintenance unresolved.
-- [ ] Create late, malformed, duplicate, out-of-order, idempotency-conflict, and
+- [x] Create an initial realistic complaint cluster for wait time, room
+      readiness, billing, pharmacy delay, and service recovery.
+- [ ] Add complaint variants for isolated complaints, food, accessibility,
+      privacy, and staff interaction.
+- [x] Create initial partner response examples for lab delay and
+      billing/insurance follow-up.
+- [ ] Add partner recovery variants: lab recovered, insurance approved,
+      laundry delayed, food supplier delayed, and maintenance unresolved.
+- [x] Create late, malformed, duplicate, out-of-order, idempotency-conflict, and
       invalid-hash event examples.
 - [ ] Write expected recommendation notes for each scenario: what North Star
       should recommend, what it should refuse to do, what needs approval, and

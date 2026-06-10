@@ -1,0 +1,37 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000037",
+  "source": "urn:hfs:source:hospital-operations",
+  "type": "io.github.freeapikeys.hfs.hospital.approvedaction.executed.v1",
+  "subject": "action:bed-cleaning-and-alerts",
+  "time": "2026-06-06T09:45:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hospital-approved-action-executed-001-v1",
+  "hfssourcerecordid": "hospital-approved-action-001",
+  "hfssourcesequence": 37,
+  "hfsobservedat": "2026-06-06T09:45:06Z",
+  "hfscontenthash": "sha256:d6946f9148c710bf3b2a7ed4512c86e802c17c678e52adadf5df6406bfbf5687",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "hospital-approved-action-executed-001",
+    "effectiveat": "2026-06-06T09:45:00Z",
+    "attributes": {
+      "profile": "private-hospital",
+      "primitive": "Action",
+      "module": "Communication and escalation",
+      "approvalId": "approval-north-star-hospital-001",
+      "actionTypes": [
+        "REQUEST_BED_CLEANING",
+        "SEND_SLACK_ALERT",
+        "SEND_WHATSAPP_ALERT"
+      ],
+      "status": "EXECUTED",
+      "summary": "Approved hospital operations actions were executed through MuleSoft mocks."
+    }
+  }
+}

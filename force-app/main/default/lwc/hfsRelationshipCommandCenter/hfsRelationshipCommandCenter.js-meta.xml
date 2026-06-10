@@ -4,7 +4,7 @@
   <isExposed>true</isExposed>
   <masterLabel>North Star Command Center</masterLabel>
   <description
-  >Permission-aware retail context, recommendation, approval, action, and outcome command center.</description>
+  >Permission-aware global operations context, recommendation, approval, action, and outcome command center.</description>
   <targets>
     <target>lightning__AppPage</target>
     <target>lightning__HomePage</target>
@@ -24,7 +24,7 @@
         name="purpose"
         type="String"
         label="Purpose"
-        default="RESOLVE_RETAIL_RISK"
+        default="RESOLVE_HOSPITAL_OPERATION_RISK"
         description="Declared purpose used for governed context and decisions."
       />
       <property

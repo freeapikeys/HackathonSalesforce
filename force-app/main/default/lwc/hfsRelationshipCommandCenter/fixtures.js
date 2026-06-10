@@ -1,219 +1,232 @@
 export const UI_STATE_VERSION = "1.0.0";
 
 const caseState = {
-  id: "work-north-star-retail-risk-001",
-  externalKey: "CORR-NORTH-STAR-WEEKEND-GRILL-001",
-  title: "North Star weekend promotion recovery",
+  id: "work-north-star-hospital-surge-001",
+  externalKey: "CORR-NORTH-STAR-HOSPITAL-MORNING-001",
+  title: "North Star hospital operations surge",
   summary:
-    "Fresh beef patties need a manager-approved recovery plan before the weekend rush.",
+    "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab response, and stuck billing approvals need one manager-approved recovery plan.",
   severity: "High",
   status: "Awaiting approval",
   owner: {
-    name: "Duty Manager",
-    role: "Store manager approval",
+    name: "Operations Manager",
+    role: "Hospital operations approval",
     since: "2026-06-06T09:35:00Z"
   },
-  serviceDeadline: "2026-06-06T16:15:00Z",
+  serviceDeadline: "2026-06-06T11:15:00Z",
   nextUpdateDue: "2026-06-06T10:00:00Z",
   productContext: {
-    store: "Goodlands FreshMart",
-    product: "Island beef burger patties 400g",
-    category: "Fresh food",
-    batch: "BATCH-FRESH-BEEF-2026-06-07-A",
-    supplier: "Island Proteins Ltd",
-    promotion: "Weekend Grill",
-    shelfArea: "SHELF-MEAT-CHILLER-A3"
+    store: "North Star Private Hospital",
+    product: "Morning outpatient and discharge flow",
+    category: "Hospital operations",
+    batch: "BED-BLOCK-A3 / PHARM-IV-KIT-LOW",
+    supplier: "Island Diagnostics Lab",
+    promotion: "Morning surge recovery",
+    shelfArea: "Outpatient reception, Ward A3, Pharmacy"
   },
   stock: [
-    { id: "stock-shelf", label: "Shelf", value: "18 units" },
-    { id: "stock-backroom", label: "Backroom", value: "24 units" },
-    { id: "stock-warehouse", label: "Warehouse", value: "72 units" },
-    { id: "stock-supplier", label: "Supplier", value: "180 units" }
+    { id: "resource-beds", label: "Ready beds", value: "6 of 18" },
+    { id: "resource-rooms", label: "Blocked rooms", value: "7 rooms" },
+    { id: "resource-queue", label: "Queue wait", value: "74 min" },
+    { id: "resource-pharmacy", label: "IV kits", value: "2.4 hrs cover" }
   ],
   riskPulses: [
-    { id: "risk-stockout", label: "Stockout", status: "High" },
-    { id: "risk-expiry", label: "Expiry", status: "High" },
-    { id: "risk-overstock", label: "Overstock", status: "Low" },
-    { id: "risk-complaint", label: "Complaint", status: "Watch" },
-    { id: "risk-supplier", label: "Supplier", status: "Responded" },
-    { id: "risk-queue", label: "Queue", status: "16:30 risk" },
-    { id: "risk-shelf", label: "Shelf layout", status: "Mismatch" },
-    { id: "risk-price", label: "Price", status: "Mismatch" },
-    { id: "risk-promotion", label: "Promotion", status: "Active" },
-    { id: "risk-staff", label: "Staff readiness", status: "Needs lane" }
+    { id: "risk-complaint", label: "Complaints", status: "Clustered" },
+    { id: "risk-bed", label: "Bed capacity", status: "High" },
+    { id: "risk-queue", label: "Queue", status: "Rising" },
+    { id: "risk-pharmacy", label: "Pharmacy stock", status: "Low cover" },
+    { id: "risk-lab", label: "Lab partner", status: "Delayed" },
+    { id: "risk-billing", label: "Billing", status: "Stalled" },
+    { id: "risk-approval", label: "Approval", status: "Required" },
+    { id: "risk-clinical", label: "Clinical boundary", status: "Refuse" },
+    { id: "risk-communication", label: "Communication", status: "Drafted" },
+    { id: "risk-outcome", label: "Outcome", status: "Pending" }
   ],
   complaintCluster: {
-    type: "Smell, damaged packaging, refund, price mismatch",
-    count: 5,
-    product: "Island beef burger patties 400g",
-    batch: "BATCH-FRESH-BEEF-2026-06-07-A",
-    supplier: "Island Proteins Ltd",
-    window: "09:00-09:18"
+    type: "Wait time, room readiness, billing, pharmacy delay",
+    count: 11,
+    product: "Outpatient and discharge experience",
+    batch: "Morning surge window",
+    supplier: "Island Diagnostics Lab",
+    window: "08:45-09:18"
   },
   supplierResponse: {
-    status: "Replacement approved",
-    leadTime: "18 hours",
-    replacement: "BATCH-FRESH-BEEF-2026-06-08-B",
-    creditNote: "Offered",
-    qualityIssue: "Batch-specific review remains open"
+    status: "Lab escalation pending",
+    leadTime: "42 minutes over SLA",
+    replacement: "Second courier route available",
+    creditNote: "Not applicable",
+    qualityIssue: "Operational SLA delay, not clinical interpretation"
   },
   storeExecution: {
-    cashierRecommendation: "Open one extra lane by 16:15",
+    cashierRecommendation:
+      "Move one front-desk staff member to outpatient check-in, dispatch cleaning and porter tasks, and open billing review after manager approval.",
     tasks: [
       {
-        id: "task-restock",
-        label: "Transfer safe warehouse stock",
-        owner: "Stockroom",
-        status: "Acknowledged"
-      },
-      {
-        id: "task-rotate",
-        label: "Rotate near-expiry safe units",
-        owner: "Fresh Food Lead",
-        status: "In progress"
-      },
-      {
-        id: "task-shelf",
-        label: "Fix shelf price and promo signage",
-        owner: "Floor Supervisor",
+        id: "task-cleaning",
+        label: "Clean and release Ward A3 discharge rooms",
+        owner: "Housekeeping Lead",
         status: "Queued"
       },
       {
-        id: "task-cashier",
-        label: "Open extra cashier lane",
-        owner: "Cashier Lead",
+        id: "task-porter",
+        label: "Move discharged patients to lounge after nurse handoff",
+        owner: "Porter Coordinator",
+        status: "Pending approval"
+      },
+      {
+        id: "task-pharmacy",
+        label: "Request approved IV kit restock or transfer",
+        owner: "Pharmacy Lead",
+        status: "Awaiting approval"
+      },
+      {
+        id: "task-billing",
+        label: "Open duplicate invoice and insurer follow-up review",
+        owner: "Billing Supervisor",
         status: "Pending"
       }
     ]
   },
   affectedRelationship: {
-    label: "Retail context",
-    subject: "Goodlands FreshMart",
-    object: "Island beef burger patties 400g",
-    type: "STOCKS_PRODUCT",
+    label: "Hospital operations context",
+    subject: "North Star Private Hospital",
+    object: "Morning operations surge",
+    type: "HAS_OPERATIONAL_RISK",
     status: "Active"
   },
   connectedEntities: [
     {
-      id: "STORE-GOODLANDS-FRESHMART",
-      label: "Goodlands FreshMart",
-      type: "Store",
-      role: "Promotion store"
+      id: "HOSP-NORTH-STAR-PRIVATE",
+      label: "North Star Private Hospital",
+      type: "Organization",
+      role: "Demo hospital profile"
     },
     {
-      id: "PROD-FRESH-BEEF-PATTIES-400G",
-      label: "Island beef burger patties 400g",
-      type: "Product",
-      role: "Risk product"
+      id: "DEPT-OUTPATIENT-RECEPTION",
+      label: "Outpatient reception",
+      type: "Location",
+      role: "Queue and complaints focus"
     },
     {
-      id: "BATCH-FRESH-BEEF-2026-06-07-A",
-      label: "Batch A, use by 2026-06-08",
-      type: "Product batch",
-      role: "Complaint and expiry focus"
+      id: "RESOURCE-WARD-A3-BEDS",
+      label: "Ward A3 discharge beds",
+      type: "Resource",
+      role: "Blocked capacity"
     },
     {
-      id: "SUPPLIER-ISLAND-PROTEINS",
-      label: "Island Proteins Ltd",
-      type: "Supplier",
-      role: "Replacement supplier"
+      id: "PARTNER-ISLAND-DIAGNOSTICS",
+      label: "Island Diagnostics Lab",
+      type: "Partner",
+      role: "Delayed vendor response"
     }
   ],
   blockers: [
     {
       id: "blocker-approval-001",
-      label: "Manager approval for consequential actions",
-      owner: "Duty Manager",
+      label: "Manager approval for protected operations actions",
+      owner: "Operations Manager",
       status: "Ready for decision",
       dueAt: "2026-06-06T10:00:00Z"
+    },
+    {
+      id: "blocker-clinical-001",
+      label: "Clinical treatment and triage decisions are out of scope",
+      owner: "Risk and Approval Agent",
+      status: "Refused and routed to clinician",
+      dueAt: "2026-06-06T09:40:00Z"
     }
   ],
   timeline: [
     {
-      id: "timeline-stockout",
-      occurredAt: "2026-06-06T09:00:00Z",
-      type: "Stockout",
-      title: "Low cover detected",
-      detail: "Sales velocity exceeds shelf and backroom cover.",
-      source: "Retail inventory"
-    },
-    {
-      id: "timeline-complaint",
-      occurredAt: "2026-06-06T09:14:00Z",
-      type: "Complaint",
+      id: "timeline-complaints",
+      occurredAt: "2026-06-06T08:45:00Z",
+      type: "Patient trust",
       title: "Complaint cluster detected",
-      detail: "Smell, packaging, refund, and price mismatch reports linked.",
-      source: "Customer risk"
+      detail:
+        "Eleven patient and visitor complaints mention wait time, room readiness, billing, and pharmacy delay.",
+      source: "Synthetic hospital complaints"
     },
     {
-      id: "timeline-supplier",
+      id: "timeline-capacity",
+      occurredAt: "2026-06-06T09:02:00Z",
+      type: "Resource capacity",
+      title: "Discharge rooms blocked",
+      detail:
+        "Seven rooms are blocked by cleaning and porter handoff tasks, reducing ready beds to six.",
+      source: "Bed management fixture"
+    },
+    {
+      id: "timeline-pharmacy",
+      occurredAt: "2026-06-06T09:11:00Z",
+      type: "Pharmacy stock",
+      title: "Low operational stock cover",
+      detail:
+        "IV kit cover falls below the four-hour threshold before the afternoon rush.",
+      source: "Pharmacy stock fixture"
+    },
+    {
+      id: "timeline-partner",
       occurredAt: "2026-06-06T09:25:00Z",
-      type: "Supplier",
-      title: "Replacement batch approved",
-      detail: "Supplier response changes the recommendation.",
-      source: "Supplier mock"
-    },
-    {
-      id: "timeline-queue",
-      occurredAt: "2026-06-06T09:30:00Z",
-      type: "Queue",
-      title: "Peak queue risk forecast",
-      detail: "Extra cashier lane recommended for 16:30-18:30.",
-      source: "Roster forecast"
+      type: "Partner SLA",
+      title: "Lab vendor response delayed",
+      detail:
+        "Island Diagnostics is forty-two minutes over the agreed response window.",
+      source: "Lab partner mock"
     },
     {
       id: "timeline-approval",
       occurredAt: "2026-06-06T09:36:00Z",
       type: "Approval",
       title: "Manager decision requested",
-      detail: "No protected action has executed.",
+      detail:
+        "No Slack, WhatsApp, billing, pharmacy, vendor, room, or staff-task write-back has executed.",
       source: "North Star Orchestrator"
     }
   ],
   evidence: [
     {
-      id: "evidence-inventory-north-star-001",
-      label: "Inventory and demand",
+      id: "evidence-complaint-hospital-001",
+      label: "Patient complaint cluster",
       summary:
-        "Shelf 18, backroom 24, warehouse 72, supplier 180, sales velocity 28 units per hour.",
-      sourceUri: "urn:hfs:source:retail:inventory",
-      capturedAt: "2026-06-06T09:01:00Z",
+        "Eleven synthetic complaints map to patient trust, billing, pharmacy, and room readiness signals.",
+      sourceUri: "urn:hfs:source:hospital:complaints",
+      capturedAt: "2026-06-06T08:45:00Z",
       contentHash:
         "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f"
     },
     {
-      id: "evidence-complaint-north-star-001",
-      label: "Complaint cluster",
+      id: "evidence-capacity-hospital-001",
+      label: "Capacity and queue facts",
       summary:
-        "Five complaints mention smell, damaged packaging, refunds, and price mismatch.",
-      sourceUri: "urn:hfs:source:retail:complaints",
-      capturedAt: "2026-06-06T09:14:00Z",
+        "Ready beds are constrained, outpatient wait is seventy-four minutes, and discharge rooms are blocked.",
+      sourceUri: "urn:hfs:source:hospital:capacity",
+      capturedAt: "2026-06-06T09:02:00Z",
       contentHash:
         "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb"
     },
     {
-      id: "evidence-supplier-north-star-001",
-      label: "Supplier response",
+      id: "evidence-partner-hospital-001",
+      label: "Partner and pharmacy evidence",
       summary:
-        "Replacement batch approved with 18-hour lead time and credit note.",
-      sourceUri: "urn:hfs:source:retail:supplier",
+        "Lab response is late and pharmacy stock cover is below the demo threshold.",
+      sourceUri: "urn:hfs:source:hospital:partner-stock",
       capturedAt: "2026-06-06T09:25:00Z",
       contentHash:
         "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588"
     },
     {
-      id: "evidence-staffing-north-star-001",
-      label: "Staffing forecast",
+      id: "evidence-billing-hospital-001",
+      label: "Billing and approval evidence",
       summary:
-        "Queue risk forecast from 16:30 to 18:30 with one extra lane recommended.",
-      sourceUri: "urn:hfs:source:retail:roster",
+        "Three duplicate invoice reviews and two insurer follow-ups are stuck behind manager approval.",
+      sourceUri: "urn:hfs:source:hospital:billing",
       capturedAt: "2026-06-06T09:30:00Z",
       contentHash:
         "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea"
     }
   ],
   sop: {
-    name: "North Star retail recovery",
+    name: "North Star hospital operations recovery",
     version: "1.0.0",
     status: "In progress",
     currentStep: "Await manager approval",
@@ -223,38 +236,38 @@ const caseState = {
     requiredEvidence: "Approved action set and channel delivery results"
   },
   recommendation: {
-    id: "recommendation-north-star-retail-001",
+    id: "recommendation-north-star-hospital-001",
     status: "Pending approval",
-    title: "Approve retail recovery actions",
+    title: "Approve hospital operations recovery actions",
     recommendation:
-      "Transfer safe warehouse stock, request supplier replacement, quarantine suspect batch units, mark down only safe near-expiry stock, fix shelf price, open one extra cashier lane, and send internal alerts.",
+      "Approve room-cleaning and porter tasks, pharmacy restock or transfer, lab vendor escalation, billing review, insurance follow-up, and privacy-safe Slack and WhatsApp-style internal alerts. Refuse clinical diagnosis, treatment, dosage, and triage decisions.",
     facts: [
-      "Stock cover is low against promotion demand.",
-      "Batch A has near-expiry units and complaint evidence.",
-      "Supplier approved replacement batch B with credit note.",
-      "Queue risk is forecast from 16:30 to 18:30."
+      "Complaints are clustered across wait time, room readiness, billing, and pharmacy delay.",
+      "Seven discharge rooms are blocked and ready bed capacity is constrained.",
+      "IV kit stock cover is below the four-hour operational threshold.",
+      "Lab partner response is forty-two minutes over the demo SLA."
     ],
     inferences: [
-      "The complaint signal is batch-specific, not a reason to stop all supplier orders.",
-      "Warehouse transfer protects the rush before supplier replacement arrives."
+      "The complaint is not just a complaint; it affects capacity, partner recovery, billing, communications, and outcome tracking.",
+      "The safe recovery path is operational: task owners, manager approval, protected action execution, and outcome measurement."
     ],
-    confidence: 0.86,
-    confidencePercent: "86%",
-    modelProfile: "north-star-retail-recommendation",
+    confidence: 0.88,
+    confidencePercent: "88%",
+    modelProfile: "north-star-hospital-operations",
     modelProfileVersion: "1.0.0",
-    policyVersion: "north-star-retail-routing-mauritius 1.0.0",
+    policyVersion: "north-star-hospital-routing-mauritius 1.0.0",
     evidenceIds: [
-      "evidence-inventory-north-star-001",
-      "evidence-complaint-north-star-001",
-      "evidence-supplier-north-star-001",
-      "evidence-staffing-north-star-001"
+      "evidence-complaint-hospital-001",
+      "evidence-capacity-hospital-001",
+      "evidence-partner-hospital-001",
+      "evidence-billing-hospital-001"
     ],
     requiresHumanApproval: true
   },
   approval: {
-    id: "approval-north-star-retail-001",
+    id: "approval-north-star-hospital-001",
     status: "Pending",
-    policy: "North Star manager approval",
+    policy: "North Star operations manager approval",
     policyVersion: "1.0.0",
     requestedAt: "2026-06-06T09:36:00Z",
     requestedBy: "North Star Orchestrator",
@@ -262,8 +275,17 @@ const caseState = {
   },
   actions: [
     {
-      id: "action-transfer-001",
-      type: "CREATE_WAREHOUSE_TRANSFER",
+      id: "action-bed-cleaning-001",
+      type: "REQUEST_BED_CLEANING",
+      status: "Pending approval",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: null,
+      sourceSystem: "MuleSoft mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-lab-vendor-001",
+      type: "ESCALATE_LAB_VENDOR_CASE",
       status: "Pending approval",
       requestedAt: "2026-06-06T09:36:00Z",
       completedAt: null,
@@ -276,28 +298,25 @@ const caseState = {
       id: "channel-slack-001",
       channel: "Slack",
       status: "MOCK_SENT",
-      target: "Duty Manager",
-      detail: "Webhook missing; mock message recorded honestly."
+      target: "Operations Manager",
+      detail: "Webhook missing; privacy-safe mock message recorded honestly."
     },
     {
       id: "channel-whatsapp-001",
       channel: "WhatsApp-style",
       status: "MOCK_SENT",
-      target: "Fresh Food Lead",
-      detail: "Provider credentials missing; internal demo alert recorded."
+      target: "Pharmacy Lead",
+      detail:
+        "Provider credentials missing; internal demo alert recorded without personal contact data."
     }
   ],
   outcomeMetrics: [
-    { id: "outcome-stockout", label: "Stockout avoided", value: "54 units" },
-    { id: "outcome-waste", label: "Waste reduced", value: "18 units" },
-    { id: "outcome-complaint", label: "Complaint risk", value: "Contained" },
-    { id: "outcome-queue", label: "Queue readiness", value: "Extra lane" },
-    { id: "outcome-staff", label: "Staff tasks", value: "Critical complete" },
-    {
-      id: "outcome-supplier",
-      label: "Supplier SLA",
-      value: "Replacement approved"
-    }
+    { id: "outcome-wait", label: "Wait time reduced", value: "Projected 22%" },
+    { id: "outcome-bed", label: "Beds released", value: "4 rooms" },
+    { id: "outcome-stock", label: "Stockout avoided", value: "IV kits" },
+    { id: "outcome-complaint", label: "Complaint containment", value: "Open" },
+    { id: "outcome-billing", label: "Billing exposure", value: "Flagged" },
+    { id: "outcome-sla", label: "Partner SLA", value: "Escalated" }
   ],
   outcome: {
     status: "Awaiting approved action",
@@ -314,8 +333,8 @@ const readyState = {
   mode: "ready",
   generatedAt: "2026-06-06T09:39:00Z",
   correlationId: "20000000-0000-4000-8000-000000000001",
-  userRole: "Duty Manager",
-  purpose: "RESOLVE_RETAIL_RISK",
+  userRole: "Operations Manager",
+  purpose: "RESOLVE_HOSPITAL_OPERATION_RISK",
   permissions: {
     canApprove: true,
     canModify: true,
@@ -330,7 +349,7 @@ export const UI_STATES = {
   restricted: {
     ...readyState,
     stateName: "restricted",
-    userRole: "Retail Viewer",
+    userRole: "Hospital Viewer",
     permissions: {
       canApprove: false,
       canModify: false,
@@ -342,14 +361,14 @@ export const UI_STATES = {
     stateVersion: UI_STATE_VERSION,
     stateName: "loading",
     mode: "loading",
-    message: "Assembling North Star retail context."
+    message: "Assembling North Star hospital operations context."
   },
   empty: {
     stateVersion: UI_STATE_VERSION,
     stateName: "empty",
     mode: "empty",
     title: "No North Star work is assigned",
-    message: "New supermarket risk work will appear here when assigned."
+    message: "New hospital operations work will appear here when assigned."
   },
   denied: {
     stateVersion: UI_STATE_VERSION,
@@ -357,7 +376,7 @@ export const UI_STATES = {
     mode: "denied",
     title: "North Star context is not available",
     message:
-      "Your current permissions or declared purpose do not allow access to this retail context.",
+      "Your current permissions or declared purpose do not allow access to this hospital operations context.",
     correlationId: "20000000-0000-4000-8000-000000000002"
   },
   error: {
@@ -366,7 +385,7 @@ export const UI_STATES = {
     mode: "error",
     title: "North Star could not load",
     message:
-      "The retail command service is temporarily unavailable. Retry the request.",
+      "The hospital operations command service is temporarily unavailable. Retry the request.",
     errorCode: "RETRYABLE_DEPENDENCY_FAILURE",
     correlationId: "20000000-0000-4000-8000-000000000003",
     retryable: true

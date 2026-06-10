@@ -31,7 +31,8 @@ function serviceState(error, correlationId) {
     title: denied
       ? "North Star context is not available"
       : "North Star could not load",
-    message: error.message || "The retail command service returned an error.",
+    message:
+      error.message || "The operations command service returned an error.",
     errorCode: error.code,
     correlationId,
     retryable: Boolean(error.retryable)
@@ -49,7 +50,7 @@ function timelineItem(item, index) {
     type: humanize(item.objectApiName, "Context"),
     title: item.label || humanize(item.recordType),
     detail: item.summary || item.status || "No additional detail recorded.",
-    source: item.sourceUri || "Salesforce retail context"
+    source: item.sourceUri || "Salesforce operations context"
   };
 }
 
@@ -78,7 +79,7 @@ export function mapCommandCenterPayload(payload, purpose) {
       mode: "empty",
       title: "No North Star work is assigned",
       message:
-        "No accessible retail work item matched this command center request."
+        "No accessible operations work item matched this command center request."
     };
   }
 
@@ -129,35 +130,34 @@ export function mapCommandCenterPayload(payload, purpose) {
         store: entityLabel(
           entityById,
           relationship.subjectEntityId,
-          "Accessible store"
+          "Accessible organization"
         ),
         product: entityLabel(
           entityById,
           workItem.subjectEntityId,
-          "Accessible product"
+          "Accessible resource"
         ),
-        category: "Retail",
+        category: "Operations",
         batch: "Not recorded",
         supplier: entityLabel(
           entityById,
           relationship.objectEntityId,
-          "Accessible supplier"
+          "Accessible partner"
         ),
         promotion: "Not recorded",
         shelfArea: "Not recorded"
       },
       stock: [],
       riskPulses: [
-        { id: "risk-stockout", label: "Stockout", status: "Review" },
-        { id: "risk-expiry", label: "Expiry", status: "Review" },
-        { id: "risk-overstock", label: "Overstock", status: "Review" },
         { id: "risk-complaint", label: "Complaint", status: "Review" },
-        { id: "risk-supplier", label: "Supplier", status: "Review" },
+        { id: "risk-capacity", label: "Capacity", status: "Review" },
         { id: "risk-queue", label: "Queue", status: "Review" },
-        { id: "risk-shelf", label: "Shelf layout", status: "Review" },
-        { id: "risk-price", label: "Price", status: "Review" },
-        { id: "risk-promotion", label: "Promotion", status: "Review" },
-        { id: "risk-staff", label: "Staff readiness", status: "Review" }
+        { id: "risk-stock", label: "Stock", status: "Review" },
+        { id: "risk-partner", label: "Partner", status: "Review" },
+        { id: "risk-billing", label: "Billing", status: "Review" },
+        { id: "risk-approval", label: "Approval", status: "Review" },
+        { id: "risk-staff", label: "Staff readiness", status: "Review" },
+        { id: "risk-outcome", label: "Outcome", status: "Review" }
       ],
       complaintCluster: {
         type: "Not recorded",
@@ -165,7 +165,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         product: entityLabel(
           entityById,
           workItem.subjectEntityId,
-          "Accessible product"
+          "Accessible resource"
         ),
         batch: "Not recorded",
         supplier: "Not recorded",
@@ -179,7 +179,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         qualityIssue: "Not recorded"
       },
       storeExecution: {
-        cashierRecommendation: "No cashier recommendation recorded.",
+        cashierRecommendation: "No operations task recommendation recorded.",
         tasks: []
       },
       affectedRelationship: {

@@ -1,0 +1,41 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000029",
+  "source": "urn:hfs:source:hospital-operations",
+  "type": "io.github.freeapikeys.hfs.hospital.patientcomplaintcluster.detected.v1",
+  "subject": "hospital-case:morning-surge-001",
+  "time": "2026-06-06T08:45:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hospital-patient-complaint-cluster-001-v1",
+  "hfssourcerecordid": "hospital-complaint-cluster-001",
+  "hfssourcesequence": 29,
+  "hfsobservedat": "2026-06-06T08:45:05Z",
+  "hfscontenthash": "sha256:ffa8a1d34dbe345642117833c9fff71f71dcbcafdee9943afb5f343dde4f5134",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "hospital-patient-complaint-cluster-001",
+    "effectiveat": "2026-06-06T08:45:00Z",
+    "attributes": {
+      "profile": "private-hospital",
+      "primitive": "Signal",
+      "module": "Complaint and trust",
+      "customerAliasGroup": "patient-alias-group-001",
+      "department": "Outpatient reception",
+      "location": "Reception and waiting area",
+      "complaintTypes": [
+        "wait_time",
+        "room_readiness",
+        "billing",
+        "pharmacy_delay"
+      ],
+      "complaintCount": 11,
+      "severity": "HIGH",
+      "summary": "Patient and visitor complaints are clustered during the morning surge."
+    }
+  }
+}

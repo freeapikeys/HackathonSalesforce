@@ -247,45 +247,92 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(0, len(self.api.write_back_adapter.source_records))
         self.assertEqual(0, len(self.api.outcomes))
 
-    def test_retail_action_types_record_delivery_evidence(self) -> None:
+    def test_malformed_whatsapp_payload_is_rejected(self) -> None:
         example = self.contract.examples["operations"][
             "executeApprovedAction"
         ]["request"]
-        retail_action_types = [
-            "CREATE_SUPPLIER_QUALITY_CASE",
-            "REQUEST_REPLACEMENT_BATCH",
-            "CREATE_REORDER_REQUEST",
-            "CREATE_WAREHOUSE_TRANSFER",
-            "CREATE_MARKDOWN_PLAN",
-            "CREATE_QUARANTINE_TASK",
-            "CREATE_RESTOCK_TASK",
-            "CREATE_SHELF_LAYOUT_TASK",
-            "OPEN_EXTRA_CASHIER_TASK",
+        body = deepcopy(example["value"])
+        body["actionType"] = "SEND_WHATSAPP_ALERT"
+        body["sourceSystem"] = "whatsapp"
+        body["externalKey"] = "action-whatsapp-alert-malformed"
+        body["idempotencyKey"] = "action-whatsapp-alert-malformed-v1"
+        body["approvalId"] = "approval-whatsapp-alert-malformed"
+        body["actionId"] = "action-whatsapp-alert-malformed"
+        del body["payload"]["messageBody"]
+        headers = deepcopy(example["x-hfs-headers"])
+        headers["X-Idempotency-Key"] = body["idempotencyKey"]
+        self.api.write_back_adapter.register_approval(
+            approval_id=body["approvalId"],
+            tenant_key=body["tenantKey"],
+            recommendation_id=body["recommendationId"],
+            action_id=body["actionId"],
+        )
+
+        response = self.api.request(
+            "POST",
+            "/v1/actions/executions",
+            headers,
+            body,
+        )
+
+        self.assertEqual(422, response.status)
+        self.assertEqual(
+            "VALIDATION_FAILED",
+            response.body["errors"][0]["code"],
+        )
+        self.assertEqual(
+            "payload.messageBody",
+            response.body["errors"][0]["fieldName"],
+        )
+        self.assertEqual(0, len(self.api.write_back_adapter.source_records))
+        self.assertEqual(0, len(self.api.outcomes))
+
+    def test_hospital_action_types_record_delivery_evidence(self) -> None:
+        example = self.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        hospital_action_types = [
+            "CREATE_PATIENT_SERVICE_TASK",
+            "REQUEST_BED_CLEANING",
+            "ESCALATE_LAB_VENDOR_CASE",
+            "CREATE_PHARMACY_RESTOCK_REQUEST",
+            "OPEN_BILLING_REVIEW",
+            "REQUEST_INSURANCE_FOLLOWUP",
             "SEND_SLACK_ALERT",
-            "SEND_WHATSAPP_STYLE_ALERT",
-            "CAPTURE_RETAIL_OUTCOME",
+            "SEND_WHATSAPP_ALERT",
+            "CAPTURE_HOSPITAL_OUTCOME",
         ]
 
-        for index, action_type in enumerate(retail_action_types, start=1):
+        for index, action_type in enumerate(hospital_action_types, start=1):
             body = deepcopy(example["value"])
-            body["externalKey"] = f"retail-action-{index}"
-            body["idempotencyKey"] = f"retail-action-{index}-v1"
-            body["approvalId"] = f"retail-approval-{index}"
-            body["actionId"] = f"retail-action-{index}"
+            body["externalKey"] = f"hospital-action-{index}"
+            body["idempotencyKey"] = f"hospital-action-{index}-v1"
+            body["approvalId"] = f"hospital-approval-{index}"
+            body["actionId"] = f"hospital-action-{index}"
             body["actionType"] = action_type
             if action_type == "SEND_SLACK_ALERT":
                 body["payload"] = {
-                    "targetRole": "Duty Manager",
+                    "targetRole": "Operations Manager",
                     "targetChannel": "#north-star-demo",
-                    "messageTitle": "North Star retail action",
-                    "messageBody": f"North Star action {action_type}",
-                    "evidenceIds": ["evidence-retail-001"],
+                    "messageTitle": "North Star hospital action",
+                    "messageBody": f"North Star hospital action {action_type}",
+                    "evidenceIds": ["evidence-hospital-001"],
+                    "sourceRecommendationId": body["recommendationId"],
+                }
+            elif action_type == "SEND_WHATSAPP_ALERT":
+                body["sourceSystem"] = "whatsapp"
+                body["payload"] = {
+                    "targetRole": "Pharmacy Lead",
+                    "targetChannel": "wa-role-pharmacy-lead",
+                    "messageTitle": "North Star pharmacy restock",
+                    "messageBody": f"North Star hospital action {action_type}",
+                    "evidenceIds": ["evidence-hospital-001"],
                     "sourceRecommendationId": body["recommendationId"],
                 }
             else:
                 body["payload"] = {
-                    "targetRole": "Duty Manager",
-                    "messageBody": f"North Star action {action_type}",
+                    "targetRole": "Operations Manager",
+                    "messageBody": f"North Star hospital action {action_type}",
                 }
             headers = deepcopy(example["x-hfs-headers"])
             headers["X-Idempotency-Key"] = body["idempotencyKey"]
@@ -305,7 +352,7 @@ class MockAdapterTest(unittest.TestCase):
             self.assertEqual(202, response.status, action_type)
 
         records = list(self.api.write_back_adapter.source_records.values())
-        self.assertEqual(len(retail_action_types), len(records))
+        self.assertEqual(len(hospital_action_types), len(records))
         delivery_by_type = {
             record["actionType"]: record["delivery"] for record in records
         }
@@ -319,11 +366,19 @@ class MockAdapterTest(unittest.TestCase):
         )
         self.assertEqual(
             "MOCK_SENT",
-            delivery_by_type["SEND_WHATSAPP_STYLE_ALERT"]["status"],
+            delivery_by_type["SEND_WHATSAPP_ALERT"]["status"],
         )
         self.assertIn(
             "credentials",
-            delivery_by_type["SEND_WHATSAPP_STYLE_ALERT"]["fallbackReason"],
+            delivery_by_type["SEND_WHATSAPP_ALERT"]["fallbackReason"],
+        )
+        self.assertEqual(
+            "QUEUED",
+            delivery_by_type["REQUEST_BED_CLEANING"]["status"],
+        )
+        self.assertEqual(
+            "hospital_action_queued",
+            delivery_by_type["REQUEST_BED_CLEANING"]["metricKey"],
         )
 
 

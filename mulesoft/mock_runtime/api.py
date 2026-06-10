@@ -225,7 +225,20 @@ class MockOutcomeAdapter:
 class MockWriteBackAdapter:
     """Executes only registered approved actions and emits source outcomes."""
 
-    RETAIL_ACTION_TYPES = frozenset(
+    HOSPITAL_ACTION_TYPES = frozenset(
+        {
+            "CREATE_PATIENT_SERVICE_TASK",
+            "REQUEST_BED_CLEANING",
+            "ESCALATE_LAB_VENDOR_CASE",
+            "CREATE_PHARMACY_RESTOCK_REQUEST",
+            "OPEN_BILLING_REVIEW",
+            "REQUEST_INSURANCE_FOLLOWUP",
+            "SEND_SLACK_ALERT",
+            "SEND_WHATSAPP_ALERT",
+            "CAPTURE_HOSPITAL_OUTCOME",
+        }
+    )
+    LEGACY_RETAIL_ACTION_TYPES = frozenset(
         {
             "CREATE_SUPPLIER_QUALITY_CASE",
             "REQUEST_REPLACEMENT_BATCH",
@@ -241,6 +254,7 @@ class MockWriteBackAdapter:
             "CAPTURE_RETAIL_OUTCOME",
         }
     )
+    SUPPORTED_ACTION_TYPES = HOSPITAL_ACTION_TYPES | LEGACY_RETAIL_ACTION_TYPES
 
     def __init__(
         self,
@@ -302,6 +316,17 @@ class MockWriteBackAdapter:
             self.source_records[source_record_id] = source_record
             self._executions[scope] = (action_hash, deepcopy(outcome))
             return outcome
+        if action["actionType"] in {
+            "SEND_WHATSAPP_ALERT",
+            "SEND_WHATSAPP_STYLE_ALERT",
+        }:
+            source_record, outcome = self._execute_whatsapp_alert(
+                action,
+                source_record_id,
+            )
+            self.source_records[source_record_id] = source_record
+            self._executions[scope] = (action_hash, deepcopy(outcome))
+            return outcome
 
         delivery = self._delivery_evidence(action)
         self.source_records[source_record_id] = {
@@ -352,31 +377,42 @@ class MockWriteBackAdapter:
                 "metricKey": "slack_alert_recorded",
                 "metricValue": 1,
             }
-        if action_type == "SEND_WHATSAPP_STYLE_ALERT":
+        if action_type in {"SEND_WHATSAPP_ALERT", "SEND_WHATSAPP_STYLE_ALERT"}:
             provider = payload.get("providerConfigured")
             return {
-                "channel": "WHATSAPP_STYLE",
-                "targetRole": payload.get("targetRole", "Fresh Food Lead"),
+                "channel": "WHATSAPP",
+                "targetRole": payload.get("targetRole", "Pharmacy Lead"),
                 "messageBody": payload.get("messageBody", ""),
                 "status": "SENT" if provider else "MOCK_SENT",
                 "fallbackReason": None
                 if provider
                 else "WhatsApp provider credentials are not configured in the demo runtime.",
-                "summary": "Approved WhatsApp-style alert was recorded in mock mode."
+                "summary": "Approved WhatsApp alert was recorded in mock mode."
                 if not provider
                 else "Approved WhatsApp alert was sent.",
-                "metricKey": "whatsapp_style_alert_recorded",
+                "metricKey": "whatsapp_alert_recorded",
                 "metricValue": 1,
             }
-        if action_type in self.RETAIL_ACTION_TYPES:
+        if action_type in self.HOSPITAL_ACTION_TYPES:
+            return {
+                "channel": payload.get("channel", "MULESOFT_HOSPITAL_MOCK"),
+                "targetRole": payload.get("targetRole", "Operations Manager"),
+                "messageBody": payload.get("messageBody", ""),
+                "status": "QUEUED",
+                "fallbackReason": None,
+                "summary": f"Approved hospital mock action {action_type} was queued.",
+                "metricKey": "hospital_action_queued",
+                "metricValue": 1,
+            }
+        if action_type in self.LEGACY_RETAIL_ACTION_TYPES:
             return {
                 "channel": payload.get("channel", "MULESOFT_MOCK"),
                 "targetRole": payload.get("targetRole", "Store Manager"),
                 "messageBody": payload.get("messageBody", ""),
                 "status": "QUEUED",
                 "fallbackReason": None,
-                "summary": f"Approved retail mock action {action_type} was queued.",
-                "metricKey": "retail_action_queued",
+                "summary": f"Approved legacy mock action {action_type} was queued.",
+                "metricKey": "legacy_action_queued",
                 "metricValue": 1,
             }
         return {
@@ -390,13 +426,96 @@ class MockWriteBackAdapter:
             "metricValue": 1,
         }
 
+    def _execute_whatsapp_alert(
+        self,
+        action: dict[str, Any],
+        source_record_id: str,
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        payload = action["payload"]
+        whatsapp_payload = self._validated_channel_payload(
+            payload,
+            channel_label="WhatsApp",
+        )
+        sent_at = timestamp()
+        provider = (
+            "whatsapp-provider"
+            if whatsapp_payload.get("providerConfigured")
+            else "mock-whatsapp"
+        )
+        status = (
+            "SENT"
+            if whatsapp_payload.get("providerConfigured")
+            else "MOCK_SENT"
+        )
+        fallback_reason = (
+            None
+            if status == "SENT"
+            else "WhatsApp provider credentials are not configured."
+        )
+        provider_message_id = (
+            "provider-whatsapp-" + canonical_hash(action)[:12]
+            if status == "SENT"
+            else "mock-whatsapp-" + canonical_hash(action)[:12]
+        )
+
+        delivery = {
+            "status": status,
+            "provider": provider,
+            "providerMessageId": provider_message_id,
+            "sentAt": sent_at,
+            "fallbackReason": fallback_reason,
+            "targetRole": whatsapp_payload["targetRole"],
+            "targetChannel": whatsapp_payload["targetChannel"],
+            "messageTitle": whatsapp_payload["messageTitle"],
+            "messageBody": whatsapp_payload["messageBody"],
+            "evidenceIds": deepcopy(whatsapp_payload["evidenceIds"]),
+            "sourceRecommendationId": whatsapp_payload[
+                "sourceRecommendationId"
+            ],
+            "correlationId": action["correlationId"],
+            "actionId": action["actionId"],
+        }
+        source_record = {
+            "sourceRecordId": source_record_id,
+            "sourceSystem": action["sourceSystem"],
+            "actionId": action["actionId"],
+            "actionType": action["actionType"],
+            "payload": deepcopy(payload),
+            "delivery": delivery,
+        }
+        outcome = {
+            "contractVersion": CONTRACT_VERSION,
+            "tenantKey": action["tenantKey"],
+            "correlationId": action["correlationId"],
+            "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
+            "externalKey": f"outcome-{action['externalKey']}",
+            "idempotencyKey": f"outcome-{action['idempotencyKey']}",
+            "actionId": action["actionId"],
+            "sourceEventId": f"event-{source_record_id}",
+            "sourceSystem": action["sourceSystem"],
+            "sourceRecordId": source_record_id,
+            "outcomeType": "WHATSAPP_ALERT_DELIVERY",
+            "status": "SUCCESS",
+            "observedAt": timestamp(),
+            "summary": (
+                f"WhatsApp alert {status} for "
+                f"{whatsapp_payload['targetRole']} via {provider}."
+            ),
+            "metricKey": "whatsapp_alert_delivery_success",
+            "metricValue": 1,
+        }
+        return source_record, outcome
+
     def _execute_slack_alert(
         self,
         action: dict[str, Any],
         source_record_id: str,
     ) -> tuple[dict[str, Any], dict[str, Any]]:
         payload = action["payload"]
-        slack_payload = self._validated_slack_payload(payload)
+        slack_payload = self._validated_channel_payload(
+            payload,
+            channel_label="Slack",
+        )
         text = self._slack_message_text(slack_payload)
         sent_at: str | None = None
         fallback_reason: str | None = None
@@ -471,9 +590,11 @@ class MockWriteBackAdapter:
         }
         return source_record, outcome
 
-    def _validated_slack_payload(
+    def _validated_channel_payload(
         self,
         payload: dict[str, Any],
+        *,
+        channel_label: str,
     ) -> dict[str, Any]:
         required_text = [
             "targetRole",
@@ -487,7 +608,7 @@ class MockWriteBackAdapter:
             if not isinstance(value, str) or not value.strip():
                 raise ActionPayloadValidationError(
                     f"payload.{field}",
-                    f"Slack payload field {field} is required.",
+                    f"{channel_label} payload field {field} is required.",
                 )
 
         evidence_ids = payload.get("evidenceIds")
@@ -501,7 +622,7 @@ class MockWriteBackAdapter:
         ):
             raise ActionPayloadValidationError(
                 "payload.evidenceIds",
-                "Slack payload field evidenceIds must be a non-empty string array.",
+                f"{channel_label} payload field evidenceIds must be a non-empty string array.",
             )
         return deepcopy(payload)
 

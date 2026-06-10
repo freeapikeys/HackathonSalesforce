@@ -3,7 +3,7 @@
     <header class="hero">
       <div>
         <p class="eyebrow">North Star command center</p>
-        <h1 id="command-center-title">Supermarket recovery plan</h1>
+        <h1 id="command-center-title">Hospital operations recovery plan</h1>
       </div>
       <span class="version">{uiVersionLabel}</span>
     </header>
@@ -123,7 +123,7 @@
           <div class="panel-heading">
             <div>
               <p class="section-kicker">Risk pulse</p>
-              <h2 id="risk-pulse-heading">North Star retail signals</h2>
+              <h2 id="risk-pulse-heading">North Star operations signals</h2>
             </div>
           </div>
           <ul class="entity-grid" aria-label="Risk pulse cards">
@@ -168,8 +168,10 @@
             <section class="panel" aria-labelledby="relationship-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Product context</p>
-                  <h2 id="relationship-heading">Product, batch, and stock</h2>
+                  <p class="section-kicker">Operations context</p>
+                  <h2 id="relationship-heading">
+                    Resource, partner, and capacity
+                  </h2>
                 </div>
                 <span class="status-pill"
                   >{state.case.affectedRelationship.status}</span
@@ -194,23 +196,23 @@
               </ul>
               <dl class="case-metrics">
                 <div>
-                  <dt>Store</dt>
+                  <dt>Organization</dt>
                   <dd>{state.case.productContext.store}</dd>
                 </div>
                 <div>
-                  <dt>Product</dt>
+                  <dt>Resource</dt>
                   <dd>{state.case.productContext.product}</dd>
                 </div>
                 <div>
-                  <dt>Batch</dt>
+                  <dt>Operational focus</dt>
                   <dd>{state.case.productContext.batch}</dd>
                 </div>
                 <div>
-                  <dt>Promotion</dt>
+                  <dt>Recovery window</dt>
                   <dd>{state.case.productContext.promotion}</dd>
                 </div>
               </dl>
-              <ul class="entity-grid" aria-label="Stock positions">
+              <ul class="entity-grid" aria-label="Resource positions">
                 <template for:each={state.case.stock} for:item="stock">
                   <li key={stock.id}>
                     <span class="entity-type">{stock.label}</span>
@@ -223,7 +225,7 @@
             <section class="panel" aria-labelledby="complaint-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Customer risk</p>
+                  <p class="section-kicker">Patient trust</p>
                   <h2 id="complaint-heading">Complaint cluster</h2>
                 </div>
               </div>
@@ -237,7 +239,7 @@
                   <dd>{state.case.complaintCluster.count}</dd>
                 </div>
                 <div>
-                  <dt>Supplier</dt>
+                  <dt>Partner</dt>
                   <dd>{state.case.complaintCluster.supplier}</dd>
                 </div>
                 <div>
@@ -250,8 +252,8 @@
             <section class="panel" aria-labelledby="supplier-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Supplier</p>
-                  <h2 id="supplier-heading">Supplier response</h2>
+                  <p class="section-kicker">Partner</p>
+                  <h2 id="supplier-heading">Partner response</h2>
                 </div>
                 <span class="status-pill"
                   >{state.case.supplierResponse.status}</span
@@ -267,11 +269,11 @@
                   <dd>{state.case.supplierResponse.replacement}</dd>
                 </div>
                 <div>
-                  <dt>Credit note</dt>
+                  <dt>Financial impact</dt>
                   <dd>{state.case.supplierResponse.creditNote}</dd>
                 </div>
                 <div>
-                  <dt>Quality issue</dt>
+                  <dt>Boundary</dt>
                   <dd>{state.case.supplierResponse.qualityIssue}</dd>
                 </div>
               </dl>
@@ -347,7 +349,7 @@
               <div class="panel-heading">
                 <div>
                   <p class="section-kicker">Execution</p>
-                  <h2 id="actions-heading">Store tasks and channel log</h2>
+                  <h2 id="actions-heading">Operations tasks and channel log</h2>
                 </div>
               </div>
               <ul class="action-list">
@@ -363,7 +365,7 @@
               </ul>
               <div class="outcome">
                 <div>
-                  <span class="entity-type">Cashier plan</span>
+                  <span class="entity-type">Execution plan</span>
                   <h3>{state.case.storeExecution.cashierRecommendation}</h3>
                 </div>
               </div>
