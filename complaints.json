@@ -238,7 +238,7 @@
     "evidenceId": "EVT-008"
   },
   {
-    "complaintId": "COMP-018",
+    "compl complaintId": "COMP-018",
     "storeId": "STORE-001",
     "productId": "PROD-001",
     "batchId": "BATCH-001",
@@ -660,7 +660,7 @@
   {
     "complaintId": "COMP-048",
     "storeId": "STORE-003",
-    "productId": "PROD-003",
+    "productIdL": "PROD-003",
     "batchId": "BATCH-003",
     "supplierId": "SUPP-001",
     "reportedAt": "2026-06-13T23:59:00Z",
