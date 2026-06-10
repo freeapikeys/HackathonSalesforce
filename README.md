@@ -46,6 +46,8 @@ regulators, shareholders, and other business relationships.
 - `ROADMAP.md`: branch roadmap and completion gates.
 - `AGENTS.md`: rules for Codex and human contributors.
 - `docs/closed-loop-intelligence-rm.md`: branch product doctrine and loop.
+- `docs/research/jury-gift-dossiers-2026-06-10.md`: private OSINT-backed
+  jury/company gift dossiers.
 - `docs/north-star-mvp.md`: retail demo vertical brief.
 - `docs/north-star-implementation-plan.md`: retail demo build plan.
 - `docs/architecture.md`: system architecture and runtime flow.
