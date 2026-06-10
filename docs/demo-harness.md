@@ -22,13 +22,14 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 3. persist the normalized recommendation with its model invocation ID;
 4. read grounded citations and the recommendation through Agentforce actions;
 5. create a pending human approval through Agentforce;
-6. prove Salesforce refuses action logging before approval;
-7. record the human approval and log a pending action;
-8. prove MuleSoft refuses an unregistered approval;
-9. execute the approved mock write-back and preserve correlation;
-10. ingest the resulting source event and capture the outcome in Salesforce;
-11. evaluate the defined outcome;
-12. refresh the Lightning controller and verify completed state.
+6. prove a clinical treatment-priority request is refused before storage;
+7. prove Salesforce refuses action logging before approval;
+8. record the human approval and log a pending action;
+9. prove MuleSoft refuses an unregistered approval;
+10. execute the approved mock write-back and preserve correlation;
+11. ingest the resulting source event and capture the outcome in Salesforce;
+12. evaluate the defined outcome;
+13. refresh the Lightning controller and verify completed state.
 
 North Star hospital assertions:
 
@@ -99,7 +100,7 @@ The connected report must show:
 - `NO_QUALIFIED_DEPLOYMENT` and `FAILED_CLOSED` for restricted model data;
 - `INACCESSIBLE_EVIDENCE` for a transient work item with no evidence;
 - Agentforce citations and the same model invocation ID that was persisted;
-- a clinical decision request refused or blocked when included in the scenario;
+- `CLINICAL_DECISION_REFUSED` with zero stored clinical recommendations;
 - `externalActionExecuted = false` for Agentforce;
 - `INVALID_STATE` before human approval in Salesforce;
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;

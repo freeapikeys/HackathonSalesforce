@@ -53,6 +53,11 @@ def passing_demo():
                 "inaccessibleRefusalCode": "INACCESSIBLE_EVIDENCE",
                 "modelInvocationId": "runtime-invocation-0001",
             },
+            "clinicalRefusal": {
+                "status": "REFUSED",
+                "errorCode": "CLINICAL_DECISION_REFUSED",
+                "storedRecommendationCount": 0,
+            },
             "action": {"blockedErrorCode": "INVALID_STATE"},
             "mulesoft": {
                 "blockedStatus": 403,

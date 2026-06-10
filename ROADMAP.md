@@ -357,7 +357,7 @@ file before editing.
 - [x] Outcome panel shows wait time reduced, bed released, stockout avoided,
       complaint containment, vendor SLA, billing resolution, and task
       completion.
-- [ ] LWC tests cover ready, loading, empty, denied, error, restricted,
+- [x] LWC tests cover ready, loading, empty, denied, error, restricted,
       approval, action, outcome, voice, and clinical-refusal states.
 
 ### 10. End-To-End Demo
@@ -372,7 +372,7 @@ file before editing.
 - [ ] Demo shows partner or capacity response changing the recommendation.
 - [x] Demo shows manager approval before action execution.
 - [ ] Demo shows Slack and WhatsApp-style internal alerts.
-- [ ] Demo shows clinical-decision refusal.
+- [x] Demo shows clinical-decision refusal.
 - [x] Demo shows outcome metrics and audit trail.
 - [ ] Final rehearsal completed with the whole team.
 

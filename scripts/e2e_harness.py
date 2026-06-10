@@ -48,6 +48,7 @@ HOSPITAL_RECOMMENDATION_TYPE = "NORTH_STAR_HOSPITAL_RECOVERY_PLAN"
 HOSPITAL_PROPOSED_ACTION_TYPE = "APPROVE_HOSPITAL_RECOVERY_ACTIONS"
 HOSPITAL_ALERT_ACTION_TYPE = "SEND_SLACK_ALERT"
 HOSPITAL_APPROVAL_POLICY_KEY = "north-star-hospital-manager-approval-v1"
+CLINICAL_DECISION_REFUSED = "CLINICAL_DECISION_REFUSED"
 
 
 class HarnessFailure(RuntimeError):
@@ -538,6 +539,66 @@ System.debug(
             )
         return result
 
+    def verify_clinical_refusal(
+        self,
+        source: dict[str, Any],
+        model: dict[str, Any],
+    ) -> dict[str, Any]:
+        clinical_evidence_id = self.query_identifier(
+            "HFS_Evidence__c",
+            "evidence-clinical-refusal-hospital-001",
+        )
+        clinical_key = "recommendation-demo-clinical-refused"
+        script = f"""
+HFS_RecommendationCommand command = new HFS_RecommendationCommand();
+command.contractVersion = HFS_ServiceContract.VERSION;
+command.correlationId = '{apex_string(self.config["correlationId"])}';
+command.tenantKey = '{apex_string(self.config["tenantKey"])}';
+command.purpose = '{HOSPITAL_PURPOSE}';
+command.externalKey = '{clinical_key}';
+command.workItemId = '{apex_string(source["workItemId"])}';
+command.subjectEntityId = '{apex_string(source["subjectEntityId"])}';
+command.primaryEvidenceId = '{apex_string(clinical_evidence_id)}';
+command.recommendationType = 'CLINICAL_DECISION_REQUEST';
+command.proposedActionType = 'DECIDE_TREATMENT_PRIORITY';
+command.rationale = 'Decide which patient should receive treatment first.';
+command.confidence = 0.91;
+command.modelProfile = '{apex_string(model["profileKey"])}';
+command.modelInvocationId = '{apex_string(model["invocationId"])}';
+HFS_CommandResult refused = new HFS_RelationshipServiceImpl()
+  .storeRecommendation(command);
+System.assertEquals(false, refused.success);
+System.assertEquals(
+  HFS_ServiceContract.CLINICAL_DECISION_REFUSED,
+  refused.errors[0].code
+);
+Integer storedCount = [
+  SELECT COUNT()
+  FROM HFS_Recommendation__c
+  WHERE External_Key__c = '{clinical_key}'
+];
+System.assertEquals(0, storedCount);
+Map<String, Object> result = new Map<String, Object>{{
+  'status' => 'REFUSED',
+  'errorCode' => refused.errors[0].code,
+  'storedRecommendationCount' => storedCount,
+  'clinicalEvidenceId' => '{apex_string(clinical_evidence_id)}'
+}};
+System.debug(
+  'HFS_CP3_CLINICAL_REFUSAL:' +
+  EncodingUtil.base64Encode(Blob.valueOf(JSON.serialize(result)))
+);
+"""
+        result = self.run_apex_source(script, "HFS_CP3_CLINICAL_REFUSAL")
+        if (
+            result["errorCode"] != CLINICAL_DECISION_REFUSED
+            or result["storedRecommendationCount"] != 0
+        ):
+            raise HarnessFailure(
+                "Clinical-decision refusal did not fail closed."
+            )
+        return result
+
     def approve_and_log_action(
         self,
         source: dict[str, Any],
@@ -904,6 +965,10 @@ System.debug(
                     model,
                 ),
             )
+            clinical_refusal = self.step(
+                "clinical-refusal",
+                lambda: self.verify_clinical_refusal(source, model),
+            )
             action = self.step(
                 "human-approval-and-action-log",
                 lambda: self.approve_and_log_action(
@@ -936,6 +1001,7 @@ System.debug(
                     if key != "output"
                 },
                 "agentforce": agentforce,
+                "clinicalRefusal": clinical_refusal,
                 "action": action,
                 "mulesoft": {
                     key: value

@@ -25,6 +25,7 @@ REQUIRED_STEPS = [
     "model-gateway",
     "persist-recommendation",
     "agentforce",
+    "clinical-refusal",
     "human-approval-and-action-log",
     "mulesoft-writeback",
     "outcome-and-lightning-refresh",
@@ -156,6 +157,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
     require(isinstance(details, dict), "Demo details are missing")
     model = details.get("model") or {}
     agentforce = details.get("agentforce") or {}
+    clinical_refusal = details.get("clinicalRefusal") or {}
     action = details.get("action") or {}
     mulesoft = details.get("mulesoft") or {}
     outcome = details.get("outcome") or {}
@@ -187,6 +189,12 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         isinstance(agentforce.get("citationEvidenceIds"), list)
         and len(agentforce["citationEvidenceIds"]) > 0,
         "Agentforce explanation has no evidence citations",
+    )
+    require(
+        clinical_refusal.get("status") == "REFUSED"
+        and clinical_refusal.get("errorCode") == "CLINICAL_DECISION_REFUSED"
+        and clinical_refusal.get("storedRecommendationCount") == 0,
+        "Clinical decision request did not fail closed",
     )
     require(
         action.get("blockedErrorCode") == "INVALID_STATE",
@@ -232,6 +240,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             "restrictedModelDecision": model["restrictedDecision"],
             "restrictedModelAuditStatus": model["restrictedAuditStatus"],
             "inaccessibleEvidence": agentforce["inaccessibleRefusalCode"],
+            "clinicalDecisionRefusal": clinical_refusal["errorCode"],
             "agentforceExternalActionExecuted": agentforce[
                 "externalActionExecuted"
             ],
