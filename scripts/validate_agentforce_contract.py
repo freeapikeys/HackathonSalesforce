@@ -104,6 +104,27 @@ def main() -> int:
                 == recommendation["modelInvocationId"],
                 f"{name}: model invocation provenance was not preserved.",
             )
+            reasoning = recommendation.get("inventoryWasteReasoning")
+            if reasoning:
+                for action in reasoning["recommendedActions"]:
+                    require(
+                        set(action["evidenceIds"]) <= citation_ids,
+                        f"{name}: recommended action cites inaccessible evidence.",
+                    )
+                    require(
+                        action["requiresHumanApproval"] is True,
+                        f"{name}: recommended action bypasses approval.",
+                    )
+                for action in reasoning["blockedActions"]:
+                    require(
+                        set(action["evidenceIds"]) <= citation_ids,
+                        f"{name}: blocked action cites inaccessible evidence.",
+                    )
+                require(
+                    set(reasoning["supplierCaution"]["evidenceIds"])
+                    <= citation_ids,
+                    f"{name}: supplier caution cites inaccessible evidence.",
+                )
 
         if response["status"] == "SUCCESS":
             require(response["refusal"] is None, f"{name}: success has refusal.")
@@ -144,6 +165,10 @@ def main() -> int:
         "no-qualified-model-refusal",
         "invalid-approval-request-error",
         "changed-recommendation-after-supplier-response",
+        "inventory-waste-missing-expiry-caution",
+        "inventory-waste-clean-stockout",
+        "inventory-waste-near-expiry-markdown",
+        "inventory-waste-overstock-household",
     }
     require(
         required_scenarios <= scenario_names,
@@ -157,6 +182,90 @@ def main() -> int:
                 == "north-star-retail-recommendation",
                 f"{scenario['name']}: recommendation used a non-retail model profile.",
             )
+    inventory_waste = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "inventory-waste-missing-expiry-caution"
+    )
+    reasoning = inventory_waste["response"]["recommendation"][
+        "inventoryWasteReasoning"
+    ]
+    require(
+        reasoning["riskType"] == "MIXED"
+        and reasoning["severity"] == "High",
+        "Inventory/Waste scenario did not classify mixed high risk.",
+    )
+    require(
+        reasoning["missingEvidence"],
+        "Inventory/Waste scenario did not name missing evidence.",
+    )
+    require(
+        reasoning["supplierCaution"]["applies"] is True,
+        "Inventory/Waste scenario did not apply supplier caution.",
+    )
+    require(
+        any(
+            action["actionType"] == "BLIND_SUPPLIER_REORDER"
+            for action in reasoning["blockedActions"]
+        ),
+        "Inventory/Waste scenario did not block blind supplier reorder.",
+    )
+    clean_stockout = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "inventory-waste-clean-stockout"
+    )
+    clean_reasoning = clean_stockout["response"]["recommendation"][
+        "inventoryWasteReasoning"
+    ]
+    require(
+        clean_reasoning["riskType"] == "STOCKOUT"
+        and clean_reasoning["severity"] == "Critical",
+        "Clean supplier scenario did not classify critical stockout risk.",
+    )
+    require(
+        clean_reasoning["supplierCaution"]["applies"] is False,
+        "Clean supplier scenario incorrectly applied supplier caution.",
+    )
+    expiry_markdown = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "inventory-waste-near-expiry-markdown"
+    )
+    expiry_reasoning = expiry_markdown["response"]["recommendation"][
+        "inventoryWasteReasoning"
+    ]
+    require(
+        expiry_reasoning["riskType"] == "WASTE"
+        and expiry_reasoning["severity"] == "High",
+        "Near-expiry scenario did not classify high waste risk.",
+    )
+    require(
+        any(
+            action["actionType"] == "MARKDOWN_AND_ROTATION_REVIEW"
+            for action in expiry_reasoning["recommendedActions"]
+        ),
+        "Near-expiry scenario did not recommend markdown and rotation review.",
+    )
+    overstock = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "inventory-waste-overstock-household"
+    )
+    overstock_reasoning = overstock["response"]["recommendation"][
+        "inventoryWasteReasoning"
+    ]
+    require(
+        overstock_reasoning["riskType"] == "OVERSTOCK",
+        "Household scenario did not classify overstock risk.",
+    )
+    require(
+        any(
+            action["actionType"] == "ADDITIONAL_REORDER"
+            for action in overstock_reasoning["blockedActions"]
+        ),
+        "Household overstock scenario did not block additional reorder.",
+    )
     print(
         "Agentforce action contract is valid "
         f"({len(fixtures['actionCatalog'])} actions, "
