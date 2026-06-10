@@ -4,6 +4,11 @@ The harness validates prerequisites, resets only the `demo-mauritius` tenant,
 loads one deterministic operations case, verifies every object count and stable
 external key, and emits a versioned JSON result.
 
+For `demo:seed` and `demo:run`, the harness first assigns the current connected
+Salesforce user the `HFS_Approver` and `HFS_Integration_User` permission sets.
+That keeps execute-anonymous seeding aligned with object and field-level
+permissions before the seed script compiles.
+
 For North Star, the harness should evolve from the existing foundation case into
 one deterministic private hospital operations case. The seed should include
 patient/visitor complaints, resource/capacity evidence, pharmacy stock, partner
@@ -33,8 +38,9 @@ North Star hospital assertions:
   staffing evidence;
 - clinical decision requests are refused;
 - manager approval is required before protected write-back;
-- Slack and WhatsApp-style internal alerts are recorded after approved
-  execution;
+- a Slack-style internal alert is recorded after approved execution;
+- WhatsApp-style internal alert handling remains a protected channel pattern
+  unless a separate approved write-back is enabled;
 - outcome metrics include wait time reduced, bed released, stockout avoided,
   complaint contained, billing issue resolved, vendor SLA, and staff task
   completion.
@@ -52,13 +58,13 @@ npm run demo:run
 Pass another authenticated org alias with:
 
 ```bash
-python3 scripts/e2e_harness.py run --target-org hfs-dev
+npm run demo:run -- --target-org hfs-dev
 ```
 
 Write the same machine-readable result to an ignored artifact:
 
 ```bash
-python3 scripts/e2e_harness.py run \
+node scripts/run-python-task.mjs harness run \
   --target-org hfs-dev \
   --output artifacts/demo-harness-result.json
 ```

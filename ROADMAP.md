@@ -363,17 +363,17 @@ file before editing.
 ### 10. End-To-End Demo
 
 - [x] `npm run check` passes in the intended demo environment.
-- [ ] `npm run demo:reset` works.
-- [ ] `npm run demo:seed` creates the hospital operations case.
-- [ ] `npm run demo:run` completes trigger through outcome.
+- [x] `npm run demo:reset` works.
+- [x] `npm run demo:seed` creates the hospital operations case.
+- [x] `npm run demo:run` completes trigger through outcome.
 - [ ] Clean-clone runbook reflects the hospital/global flow.
-- [ ] Demo starts from one clear hospital operations surge event.
+- [x] Demo starts from one clear hospital operations surge event.
 - [ ] Demo shows conflicting recommendations before orchestration.
 - [ ] Demo shows partner or capacity response changing the recommendation.
-- [ ] Demo shows manager approval before action execution.
+- [x] Demo shows manager approval before action execution.
 - [ ] Demo shows Slack and WhatsApp-style internal alerts.
 - [ ] Demo shows clinical-decision refusal.
-- [ ] Demo shows outcome metrics and audit trail.
+- [x] Demo shows outcome metrics and audit trail.
 - [ ] Final rehearsal completed with the whole team.
 
 ### 11. Pitch And Presentation

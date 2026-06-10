@@ -69,6 +69,41 @@ class DemoHarnessTest(unittest.TestCase):
     def tearDown(self) -> None:
         e2e_harness.shutil.which = self.original_which
 
+    def test_command_runner_resolves_windows_cli_shims(self) -> None:
+        original_run = e2e_harness.subprocess.run
+        captured: dict[str, Any] = {}
+
+        class Completed:
+            returncode = 0
+            stdout = '{"status": 0, "result": {"ok": true}}'
+            stderr = ""
+
+        def fake_which(command: str) -> str | None:
+            if command == "sf":
+                return r"C:\Users\test\AppData\Roaming\npm\sf.CMD"
+            return None
+
+        def fake_run(command: list[str], **kwargs: Any) -> Completed:
+            captured["command"] = command
+            captured["kwargs"] = kwargs
+            return Completed()
+
+        e2e_harness.shutil.which = fake_which
+        e2e_harness.subprocess.run = fake_run
+        try:
+            result = e2e_harness.CommandRunner().run(
+                ["sf", "org", "display", "--json"]
+            )
+        finally:
+            e2e_harness.subprocess.run = original_run
+
+        self.assertEqual({"ok": True}, result["result"])
+        self.assertEqual(
+            r"C:\Users\test\AppData\Roaming\npm\sf.CMD",
+            captured["command"][0],
+        )
+        self.assertFalse(captured["kwargs"]["check"])
+
     def test_seed_reports_repeatable_records_and_identifiers(self) -> None:
         runner = FakeRunner()
         report, exit_code = e2e_harness.run_harness(
@@ -81,6 +116,7 @@ class DemoHarnessTest(unittest.TestCase):
             [
                 "tools",
                 "salesforce-org",
+                "ensure-permissions",
                 "reset",
                 "seed",
                 "verify-seed",
@@ -96,10 +132,13 @@ class DemoHarnessTest(unittest.TestCase):
             for command in runner.commands
             if command[:3] == ["sf", "apex", "run"]
         ]
-        self.assertTrue(apex_scripts[0].endswith("reset_demo.apex"))
-        self.assertTrue(apex_scripts[1].endswith("seed_demo.apex"))
-        self.assertTrue(apex_scripts[2].endswith("verify_demo_context.apex"))
-        self.assertNotIn("logs", report["steps"][2]["details"])
+        self.assertTrue(
+            apex_scripts[0].endswith("ensure_demo_permissions.apex")
+        )
+        self.assertTrue(apex_scripts[1].endswith("reset_demo.apex"))
+        self.assertTrue(apex_scripts[2].endswith("seed_demo.apex"))
+        self.assertTrue(apex_scripts[3].endswith("verify_demo_context.apex"))
+        self.assertNotIn("logs", report["steps"][3]["details"])
 
     def test_connected_model_and_mulesoft_paths_fail_closed_then_succeed(
         self,

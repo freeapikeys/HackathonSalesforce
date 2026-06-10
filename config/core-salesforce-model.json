@@ -144,7 +144,7 @@
       "label": "Entity",
       "pluralLabel": "Entities",
       "prefix": "ENT",
-      "description": "A person, organization, unit, supplier, partner, regulator, or other identified entity.",
+      "description": "A person, organization, unit, location, resource, process, product, supplier, partner, regulator, customer alias, or other identified entity.",
       "fieldSets": ["tenantRecord", "sourceEvent"],
       "fields": [
         {
@@ -156,8 +156,12 @@
             "PERSON",
             "ORGANIZATION",
             "ORGANIZATIONAL_UNIT",
+            "LOCATION",
+            "RESOURCE",
+            "PROCESS",
             "PRODUCT",
             "PRODUCT_BATCH",
+            "CUSTOMER_ALIAS",
             "SUPPLIER",
             "PARTNER",
             "REGULATOR",

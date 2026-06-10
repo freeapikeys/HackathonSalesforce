@@ -65,9 +65,15 @@ def apex_string(value: Any) -> str:
 
 
 class CommandRunner:
+    def resolve_command(self, command: list[str]) -> list[str]:
+        executable = shutil.which(command[0])
+        if executable is None:
+            return command
+        return [executable, *command[1:]]
+
     def run(self, command: list[str]) -> dict[str, Any]:
         completed = subprocess.run(
-            command,
+            self.resolve_command(command),
             cwd=ROOT,
             check=False,
             capture_output=True,
@@ -859,6 +865,11 @@ System.debug(
         self.step("salesforce-org", self.validate_org)
         if command in ("check", "run"):
             self.step("local-contracts", self.validate_local_contracts)
+        if command in ("seed", "run"):
+            self.step(
+                "ensure-permissions",
+                lambda: self.run_apex(ENSURE_PERMISSIONS_SCRIPT),
+            )
         if command in ("reset", "seed", "run"):
             self.step("reset", lambda: self.run_apex(RESET_SCRIPT))
         if command == "reset":
@@ -872,10 +883,6 @@ System.debug(
             )
             if command == "seed":
                 return seed_details
-            self.step(
-                "ensure-permissions",
-                lambda: self.run_apex(ENSURE_PERMISSIONS_SCRIPT),
-            )
             self.step(
                 "prepare-connected",
                 lambda: self.run_apex(PREPARE_CONNECTED_SCRIPT),

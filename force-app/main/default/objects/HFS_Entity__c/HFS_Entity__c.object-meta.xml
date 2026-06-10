@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <deploymentStatus>Deployed</deploymentStatus>
-    <description>A person, organization, unit, supplier, partner, regulator, or other identified entity.</description>
+    <description>A person, organization, unit, location, resource, process, product, supplier, partner, regulator, customer alias, or other identified entity.</description>
     <enableActivities>false</enableActivities>
     <enableHistory>true</enableHistory>
     <enableReports>true</enableReports>

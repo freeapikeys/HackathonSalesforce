@@ -24,6 +24,21 @@
                 <label>Organizational Unit</label>
             </value>
             <value>
+                <fullName>LOCATION</fullName>
+                <default>false</default>
+                <label>Location</label>
+            </value>
+            <value>
+                <fullName>RESOURCE</fullName>
+                <default>false</default>
+                <label>Resource</label>
+            </value>
+            <value>
+                <fullName>PROCESS</fullName>
+                <default>false</default>
+                <label>Process</label>
+            </value>
+            <value>
                 <fullName>PRODUCT</fullName>
                 <default>false</default>
                 <label>Product</label>
@@ -32,6 +47,11 @@
                 <fullName>PRODUCT_BATCH</fullName>
                 <default>false</default>
                 <label>Product Batch</label>
+            </value>
+            <value>
+                <fullName>CUSTOMER_ALIAS</fullName>
+                <default>false</default>
+                <label>Customer Alias</label>
             </value>
             <value>
                 <fullName>SUPPLIER</fullName>
