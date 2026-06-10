@@ -7,6 +7,7 @@ and integration adapters. It covers:
 
 - permission-aware relationship context retrieval;
 - source provenance and evidence citations;
+- accepted and review-required event intake persistence;
 - recommendation storage;
 - approval requests and human decisions;
 - pending action logging;
@@ -29,6 +30,10 @@ authorization, replay, and error behavior.
   approval, action, outcome, evaluation, and event graph.
 - Provenance reads use an explicit object allowlist and trace records back to
   citable evidence and immutable source events.
+- Event persistence stores accepted, late, out-of-order, and conflict-review
+  intake results as immutable `HFS_Event__c` records, preserves the normalized
+  payload JSON, and rejects changed content under the same tenant/source
+  idempotency or event identity scope.
 - Queries use user mode; command DML uses user mode and the service runs with
   sharing.
 - Every referenced record is checked against the request tenant.
@@ -63,6 +68,7 @@ users. It proves:
 | ---------------------- | ----------------------------- | ------------------------ |
 | `READ_CONTEXT`         | `HFS_ContextRequest`          | `HFS_ContextResponse`    |
 | `READ_PROVENANCE`      | `HFS_ProvenanceRequest`       | `HFS_ProvenanceResponse` |
+| `PERSIST_EVENT`        | `HFS_EventIntakeCommand`      | `HFS_CommandResult`      |
 | `STORE_RECOMMENDATION` | `HFS_RecommendationCommand`   | `HFS_CommandResult`      |
 | `REQUEST_APPROVAL`     | `HFS_ApprovalRequestCommand`  | `HFS_CommandResult`      |
 | `DECIDE_APPROVAL`      | `HFS_ApprovalDecisionCommand` | `HFS_CommandResult`      |
@@ -84,6 +90,7 @@ implementation may authorize from a role-name string alone.
 | -------------------- | ----------------- | -------- | ---------------- | ----------------------------------------------------- |
 | Read context         | Allow             | Allow    | Allow            | Accessible records and fields only                    |
 | Read provenance      | Allow             | Allow    | Allow            | Root record and cited evidence must remain accessible |
+| Persist event        | Deny              | Deny     | Allow            | Event create access                                   |
 | Store recommendation | Allow             | Deny     | Allow            | Recommendation create or update access                |
 | Request approval     | Deny              | Allow    | Allow            | Approval create access                                |
 | Decide approval      | Deny              | Allow    | Deny             | `HFS_Approve_Recommendation`                          |
@@ -116,6 +123,7 @@ transaction boundary for every operation.
 | Operation                    | Boundary                                           |
 | ---------------------------- | -------------------------------------------------- |
 | Context and provenance reads | Read-only user-mode transaction                    |
+| Event persistence            | All-or-nothing DML                                 |
 | Recommendation storage       | All-or-nothing DML                                 |
 | Approval request             | All-or-nothing DML                                 |
 | Approval decision            | All-or-nothing DML                                 |

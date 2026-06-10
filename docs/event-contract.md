@@ -67,6 +67,13 @@ source-event store. Preserved event identity is scoped by tenant, source, and
 CloudEvents ID; reusing that identity for different source data is rejected
 rather than overwritten.
 
+Salesforce persistence uses `PERSIST_EVENT` with `HFS_EventIntakeCommand` after
+deterministic intake classification. It writes only `ACCEPTED`,
+`ACCEPTED_LATE`, `ACCEPTED_OUT_OF_ORDER`, and `CONFLICT_REVIEW` results to
+`HFS_Event__c`, preserves the normalized payload JSON, replays exact content
+matches, and rejects changed content under the same tenant/source idempotency
+or event identity scope.
+
 Schema/hash failures and accepted events whose source-store retries are
 exhausted enter an immutable `QUARANTINED` intake attempt. An authorized replay
 submits a complete corrected envelope to `POST /v1/events/replays`, links the

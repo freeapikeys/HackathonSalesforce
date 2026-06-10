@@ -35,6 +35,7 @@ private class HFS_ServiceContractTest {
       HFS_AuthorizationMatrix.INTEGRATION_USER => new Set<String>{
         HFS_ServiceContract.READ_CONTEXT,
         HFS_ServiceContract.READ_PROVENANCE,
+        HFS_ServiceContract.PERSIST_EVENT,
         HFS_ServiceContract.STORE_RECOMMENDATION,
         HFS_ServiceContract.REQUEST_APPROVAL,
         HFS_ServiceContract.LOG_ACTION,
@@ -108,6 +109,25 @@ private class HFS_ServiceContractTest {
     provenanceRequest.correlationId = 'correlation-001';
     provenanceRequest.maxDepth = 4;
 
+    HFS_EventIntakeCommand eventIntake = new HFS_EventIntakeCommand();
+    eventIntake.contractVersion = HFS_ServiceContract.VERSION;
+    eventIntake.correlationId = 'correlation-001';
+    eventIntake.tenantKey = 'tenant-demo';
+    eventIntake.purpose = 'INGEST_SOURCE_EVENT';
+    eventIntake.eventId = '00000000-0000-4000-8000-000000000001';
+    eventIntake.sourceUri = 'urn:hfs:source:crm';
+    eventIntake.sourceRecordId = 'case-001';
+    eventIntake.eventType = 'io.github.freeapikeys.hfs.case.updated.v1';
+    eventIntake.subject = 'case:case-001';
+    eventIntake.schemaVersion = '1.0.0';
+    eventIntake.idempotencyKey = 'crm-case-001-v1';
+    eventIntake.sourceSequence = 1;
+    eventIntake.occurredAt = System.now().addMinutes(-1);
+    eventIntake.observedAt = System.now();
+    eventIntake.contentHash = 'sha256:fixture';
+    eventIntake.payloadJson = '{"businesskey":"case-001"}';
+    eventIntake.intakeResult = 'ACCEPTED';
+
     HFS_RecommendationCommand recommendation = new HFS_RecommendationCommand();
     recommendation.contractVersion = HFS_ServiceContract.VERSION;
     recommendation.correlationId = 'correlation-001';
@@ -171,6 +191,15 @@ private class HFS_ServiceContractTest {
 
     System.assertNotEquals(null, service.getContext(contextRequest));
     System.assertNotEquals(null, service.getProvenance(provenanceRequest));
+    System.assertNotEquals(
+      null,
+      service.persistEvent(
+        (HFS_EventIntakeCommand) roundTrip(
+          eventIntake,
+          HFS_EventIntakeCommand.class
+        )
+      )
+    );
     System.assertNotEquals(
       null,
       service.storeRecommendation(
@@ -265,6 +294,10 @@ private class HFS_ServiceContractTest {
       response.citations = new List<HFS_EvidenceCitation>{ citationFixture() };
       response.errors = new List<HFS_ServiceError>();
       return response;
+    }
+
+    public HFS_CommandResult persistEvent(HFS_EventIntakeCommand command) {
+      return result(HFS_ServiceContract.PERSIST_EVENT, command.correlationId);
     }
 
     public HFS_CommandResult storeRecommendation(

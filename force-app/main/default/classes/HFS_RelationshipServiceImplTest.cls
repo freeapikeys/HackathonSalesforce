@@ -119,6 +119,184 @@ private class HFS_RelationshipServiceImplTest {
   }
 
   @IsTest
+  static void persistsEventIntakeProvenanceAndReplaysSameContent() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+    HFS_EventIntakeCommand command = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100001',
+      'urn:hfs:source:intake-test',
+      'intake-test-001-v1',
+      hashFor('intake-test-001'),
+      'ACCEPTED'
+    );
+
+    HFS_CommandResult result = service.persistEvent(command);
+    System.assertEquals(true, result.success);
+    System.assertEquals(false, result.replayed);
+    System.assertEquals(HFS_ServiceContract.PERSIST_EVENT, result.operation);
+    System.assertEquals('ACCEPTED', result.status);
+
+    HFS_Event__c stored = [
+      SELECT
+        Event_Id__c,
+        Tenant_Key__c,
+        Source_URI__c,
+        Source_Record_Id__c,
+        Event_Type__c,
+        Subject__c,
+        Schema_Version__c,
+        Idempotency_Key__c,
+        Source_Sequence__c,
+        Content_Hash__c,
+        Payload_JSON__c,
+        Intake_Result__c
+      FROM HFS_Event__c
+      WHERE Id = :result.recordId
+      LIMIT 1
+    ];
+    System.assertEquals(command.eventId, stored.Event_Id__c);
+    System.assertEquals(command.tenantKey, stored.Tenant_Key__c);
+    System.assertEquals(command.sourceUri, stored.Source_URI__c);
+    System.assertEquals(command.sourceRecordId, stored.Source_Record_Id__c);
+    System.assertEquals(command.eventType, stored.Event_Type__c);
+    System.assertEquals(command.subject, stored.Subject__c);
+    System.assertEquals(command.schemaVersion, stored.Schema_Version__c);
+    System.assertEquals(command.idempotencyKey, stored.Idempotency_Key__c);
+    System.assertEquals(command.sourceSequence, stored.Source_Sequence__c);
+    System.assertEquals(command.contentHash, stored.Content_Hash__c);
+    System.assertEquals(command.payloadJson, stored.Payload_JSON__c);
+    System.assertEquals(command.intakeResult, stored.Intake_Result__c);
+
+    HFS_CommandResult replayedByKey = service.persistEvent(command);
+    System.assertEquals(true, replayedByKey.success);
+    System.assertEquals(true, replayedByKey.replayed);
+    System.assertEquals(result.recordId, replayedByKey.recordId);
+
+    HFS_EventIntakeCommand replayByIdentity = eventIntakeCommand(
+      command.eventId,
+      command.sourceUri,
+      'intake-test-001-retry-v2',
+      command.contentHash,
+      'ACCEPTED'
+    );
+    HFS_CommandResult identityReplay = service.persistEvent(replayByIdentity);
+    System.assertEquals(true, identityReplay.success);
+    System.assertEquals(true, identityReplay.replayed);
+    System.assertEquals(result.recordId, identityReplay.recordId);
+  }
+
+  @IsTest
+  static void recordsLateOutOfOrderAndConflictReviewDispositions() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+    List<String> statuses = new List<String>{
+      'ACCEPTED_LATE',
+      'ACCEPTED_OUT_OF_ORDER',
+      'CONFLICT_REVIEW'
+    };
+
+    for (Integer index = 0; index < statuses.size(); index++) {
+      HFS_EventIntakeCommand command = eventIntakeCommand(
+        '00000000-0000-4000-8000-00000010010' + String.valueOf(index),
+        'urn:hfs:source:intake-review',
+        'intake-review-' + String.valueOf(index) + '-v1',
+        hashFor('intake-review-' + String.valueOf(index)),
+        statuses[index]
+      );
+      HFS_CommandResult result = service.persistEvent(command);
+      System.assertEquals(true, result.success);
+      System.assertEquals(statuses[index], result.status);
+    }
+
+    System.assertEquals(
+      3,
+      [
+        SELECT COUNT()
+        FROM HFS_Event__c
+        WHERE Source_URI__c = 'urn:hfs:source:intake-review'
+      ]
+    );
+  }
+
+  @IsTest
+  static void scopesIdempotencyByTenantAndSource() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+    String sharedIdempotencyKey = 'shared-source-key-v1';
+
+    HFS_EventIntakeCommand first = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100201',
+      'urn:hfs:source:intake-source-a',
+      sharedIdempotencyKey,
+      hashFor('scoped-source-a'),
+      'ACCEPTED'
+    );
+    HFS_EventIntakeCommand second = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100202',
+      'urn:hfs:source:intake-source-b',
+      sharedIdempotencyKey,
+      hashFor('scoped-source-b'),
+      'ACCEPTED'
+    );
+
+    HFS_CommandResult firstResult = service.persistEvent(first);
+    HFS_CommandResult secondResult = service.persistEvent(second);
+
+    System.assertEquals(true, firstResult.success);
+    System.assertEquals(true, secondResult.success);
+    System.assertEquals(false, firstResult.replayed);
+    System.assertEquals(false, secondResult.replayed);
+    System.assertNotEquals(firstResult.recordId, secondResult.recordId);
+  }
+
+  @IsTest
+  static void rejectsRejectedResultsAndChangedContentUnderSameScope() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+
+    HFS_EventIntakeCommand rejected = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100301',
+      'urn:hfs:source:intake-conflict',
+      'intake-rejected-v1',
+      hashFor('rejected-source-data'),
+      'REJECTED_HASH'
+    );
+    assertError(
+      service.persistEvent(rejected),
+      HFS_ServiceContract.INVALID_STATE
+    );
+
+    HFS_EventIntakeCommand original = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100302',
+      'urn:hfs:source:intake-conflict',
+      'intake-conflict-v1',
+      hashFor('original-source-data'),
+      'ACCEPTED'
+    );
+    System.assertEquals(true, service.persistEvent(original).success);
+
+    HFS_EventIntakeCommand sameKeyChangedHash = eventIntakeCommand(
+      original.eventId,
+      original.sourceUri,
+      original.idempotencyKey,
+      hashFor('changed-source-data'),
+      'ACCEPTED'
+    );
+    assertError(
+      service.persistEvent(sameKeyChangedHash),
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
+    );
+
+    HFS_EventIntakeCommand sameEventChangedHash = eventIntakeCommand(
+      original.eventId,
+      original.sourceUri,
+      'intake-conflict-v2',
+      hashFor('changed-source-data-v2'),
+      'ACCEPTED'
+    );
+    assertError(
+      service.persistEvent(sameEventChangedHash),
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
+    );
+  }
+
+  @IsTest
   static void completesGovernedVerticalSliceAndReadsContext() {
     HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
     HFS_Work_Item__c workItem = workItem();
@@ -748,6 +926,52 @@ private class HFS_RelationshipServiceImplTest {
     command.metricKey = 'delivery_success';
     command.metricValue = 1;
     return command;
+  }
+
+  private static HFS_EventIntakeCommand eventIntakeCommand(
+    String eventId,
+    String sourceUri,
+    String idempotencyKey,
+    String contentHash,
+    String intakeResult
+  ) {
+    HFS_EventIntakeCommand command = new HFS_EventIntakeCommand();
+    command.contractVersion = HFS_ServiceContract.VERSION;
+    command.correlationId = CORRELATION;
+    command.tenantKey = TENANT;
+    command.purpose = 'INGEST_SOURCE_EVENT';
+    command.eventId = eventId;
+    command.sourceUri = sourceUri;
+    command.sourceRecordId = 'source-record-' + rightmost(eventId, 6);
+    command.eventType = 'io.github.freeapikeys.hfs.intake.test.v1';
+    command.subject = 'source-record:' + rightmost(eventId, 6);
+    command.schemaVersion = '1.0.0';
+    command.idempotencyKey = idempotencyKey;
+    command.sourceSequence = 1;
+    command.occurredAt = Datetime.newInstanceGmt(2026, 6, 10, 8, 0, 0);
+    command.observedAt = Datetime.newInstanceGmt(2026, 6, 10, 8, 0, 5);
+    command.contentHash = contentHash;
+    command.payloadJson = JSON.serialize(
+      new Map<String, Object>{
+        'recordtype' => 'Issue',
+        'operation' => 'UPSERT',
+        'businesskey' => command.sourceRecordId,
+        'effectiveat' => '2026-06-10T08:00:00Z'
+      }
+    );
+    command.intakeResult = intakeResult;
+    return command;
+  }
+
+  private static String hashFor(String seed) {
+    return 'sha256:' +
+      EncodingUtil.convertToHex(
+        Crypto.generateDigest('SHA-256', Blob.valueOf(seed))
+      );
+  }
+
+  private static String rightmost(String value, Integer length) {
+    return value.substring(value.length() - length);
   }
 
   private static void assertError(HFS_CommandResult result, String code) {

@@ -14,8 +14,7 @@
           "type": "Text",
           "length": 36,
           "required": true,
-          "externalId": true,
-          "unique": true
+          "externalId": true
         },
         {
           "api": "Tenant_Key__c",

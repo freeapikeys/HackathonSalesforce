@@ -244,6 +244,9 @@ and UI must support any supermarket product category.
 - [x] Map supplier to existing Salesforce entity record.
 - [x] Map promotion to event, agreement, or work context.
 - [x] Map complaints to evidence records.
+- [x] Persist accepted and review-required intake results to immutable
+      `HFS_Event__c` records with scoped idempotency and source payload
+      preservation.
 - [ ] Map store tasks to action records and/or Salesforce task records.
 - [x] Add optional metadata only when current records cannot express demo needs.
 - [ ] Apex context includes product, batch, store, supplier, promotion,

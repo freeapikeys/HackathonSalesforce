@@ -3,6 +3,8 @@ public interface HFS_RelationshipService {
 
   HFS_ProvenanceResponse getProvenance(HFS_ProvenanceRequest request);
 
+  HFS_CommandResult persistEvent(HFS_EventIntakeCommand command);
+
   HFS_CommandResult storeRecommendation(HFS_RecommendationCommand command);
 
   HFS_CommandResult requestApproval(HFS_ApprovalRequestCommand command);

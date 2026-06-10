@@ -18,6 +18,12 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
     'NO_EFFECT',
     'NEGATIVE'
   };
+  private static final Set<String> PRESERVED_EVENT_RESULTS = new Set<String>{
+    'ACCEPTED',
+    'ACCEPTED_LATE',
+    'ACCEPTED_OUT_OF_ORDER',
+    'CONFLICT_REVIEW'
+  };
 
   public HFS_ContextResponse getContext(HFS_ContextRequest request) {
     try {
@@ -60,6 +66,98 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         HFS_ServiceSupport.error(exceptionValue)
       };
       return response;
+    }
+  }
+
+  public HFS_CommandResult persistEvent(HFS_EventIntakeCommand command) {
+    try {
+      validateCommand(
+        command == null ? null : command.contractVersion,
+        command == null ? null : command.tenantKey,
+        command == null ? null : command.purpose,
+        command == null ? null : command.correlationId
+      );
+      HFS_ServiceSupport.requireCreate(
+        Schema.SObjectType.HFS_Event__c,
+        'HFS_Event__c'
+      );
+      HFS_ServiceSupport.requireText(command.eventId, 'eventId');
+      HFS_ServiceSupport.requireText(command.sourceUri, 'sourceUri');
+      HFS_ServiceSupport.requireText(command.sourceRecordId, 'sourceRecordId');
+      HFS_ServiceSupport.requireText(command.eventType, 'eventType');
+      HFS_ServiceSupport.requireText(command.subject, 'subject');
+      HFS_ServiceSupport.requireText(command.schemaVersion, 'schemaVersion');
+      HFS_ServiceSupport.requireText(command.idempotencyKey, 'idempotencyKey');
+      requirePresent(command.sourceSequence, 'sourceSequence');
+      requirePresent(command.occurredAt, 'occurredAt');
+      requirePresent(command.observedAt, 'observedAt');
+      HFS_ServiceSupport.requireText(command.contentHash, 'contentHash');
+      HFS_ServiceSupport.requireText(command.payloadJson, 'payloadJson');
+      HFS_ServiceSupport.requireText(command.intakeResult, 'intakeResult');
+      if (!PRESERVED_EVENT_RESULTS.contains(command.intakeResult)) {
+        HFS_ServiceSupport.fail(
+          HFS_ServiceContract.INVALID_STATE,
+          'Only accepted or review-required intake results are persisted as source events.',
+          'intakeResult'
+        );
+      }
+
+      HFS_Event__c replayedByIdempotency = replayableEventByIdempotency(
+        command
+      );
+      if (replayedByIdempotency != null) {
+        return HFS_ServiceSupport.success(
+          HFS_ServiceContract.PERSIST_EVENT,
+          command.correlationId,
+          replayedByIdempotency,
+          replayedByIdempotency.Intake_Result__c,
+          true
+        );
+      }
+
+      HFS_Event__c replayedByIdentity = replayableEventByIdentity(command);
+      if (replayedByIdentity != null) {
+        return HFS_ServiceSupport.success(
+          HFS_ServiceContract.PERSIST_EVENT,
+          command.correlationId,
+          replayedByIdentity,
+          replayedByIdentity.Intake_Result__c,
+          true
+        );
+      }
+
+      HFS_Event__c sourceEvent = new HFS_Event__c(
+        Event_Id__c = command.eventId,
+        Tenant_Key__c = command.tenantKey,
+        Event_Type__c = command.eventType,
+        Source_URI__c = command.sourceUri,
+        Subject__c = command.subject,
+        Source_Record_Id__c = command.sourceRecordId,
+        Schema_Version__c = command.schemaVersion,
+        Correlation_Id__c = command.correlationId,
+        Causation_Id__c = command.causationId,
+        Idempotency_Key__c = command.idempotencyKey,
+        Source_Sequence__c = command.sourceSequence,
+        Occurred_At__c = command.occurredAt,
+        Observed_At__c = command.observedAt,
+        Content_Hash__c = command.contentHash,
+        Payload_JSON__c = command.payloadJson,
+        Intake_Result__c = command.intakeResult
+      );
+      insert as user sourceEvent;
+      return HFS_ServiceSupport.success(
+        HFS_ServiceContract.PERSIST_EVENT,
+        command.correlationId,
+        sourceEvent,
+        sourceEvent.Intake_Result__c,
+        false
+      );
+    } catch (Exception exceptionValue) {
+      return HFS_ServiceSupport.failure(
+        HFS_ServiceContract.PERSIST_EVENT,
+        command == null ? null : command.correlationId,
+        exceptionValue
+      );
     }
   }
 
@@ -612,6 +710,72 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       purpose,
       correlationId
     );
+  }
+
+  private static void requirePresent(Object value, String fieldName) {
+    if (value == null) {
+      HFS_ServiceSupport.fail(
+        HFS_ServiceContract.INVALID_REQUEST,
+        'A required value is missing.',
+        fieldName
+      );
+    }
+  }
+
+  private static HFS_Event__c replayableEventByIdempotency(
+    HFS_EventIntakeCommand command
+  ) {
+    List<HFS_Event__c> records = [
+      SELECT Id, Tenant_Key__c, Content_Hash__c, Intake_Result__c
+      FROM HFS_Event__c
+      WHERE
+        Tenant_Key__c = :command.tenantKey
+        AND Source_URI__c = :command.sourceUri
+        AND Idempotency_Key__c = :command.idempotencyKey
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    if (records.isEmpty()) {
+      return null;
+    }
+    HFS_Event__c existing = records[0];
+    if (existing.Content_Hash__c == command.contentHash) {
+      return existing;
+    }
+    HFS_ServiceSupport.fail(
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT,
+      'The idempotency key was already used for different source data.',
+      'idempotencyKey'
+    );
+    return null;
+  }
+
+  private static HFS_Event__c replayableEventByIdentity(
+    HFS_EventIntakeCommand command
+  ) {
+    List<HFS_Event__c> records = [
+      SELECT Id, Tenant_Key__c, Content_Hash__c, Intake_Result__c
+      FROM HFS_Event__c
+      WHERE
+        Tenant_Key__c = :command.tenantKey
+        AND Source_URI__c = :command.sourceUri
+        AND Event_Id__c = :command.eventId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    if (records.isEmpty()) {
+      return null;
+    }
+    HFS_Event__c existing = records[0];
+    if (existing.Content_Hash__c == command.contentHash) {
+      return existing;
+    }
+    HFS_ServiceSupport.fail(
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT,
+      'The event identity was already used for different source data.',
+      'eventId'
+    );
+    return null;
   }
 
   private static HFS_Work_Item__c workItem(String recordId) {

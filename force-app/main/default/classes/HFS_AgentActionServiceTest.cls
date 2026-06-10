@@ -326,6 +326,10 @@ private class HFS_AgentActionServiceTest {
       return null;
     }
 
+    public HFS_CommandResult persistEvent(HFS_EventIntakeCommand command) {
+      return null;
+    }
+
     public HFS_CommandResult storeRecommendation(
       HFS_RecommendationCommand command
     ) {

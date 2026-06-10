@@ -43,6 +43,14 @@ public class HFS_AuthorizationMatrix {
         );
         policy.transactionBoundary = 'READ_ONLY';
       }
+      when 'PERSIST_EVENT' {
+        policy.allowedBaselineRoles = roles(INTEGRATION_USER);
+        policy.readableObjects = values('HFS_Event__c');
+        policy.creatableObjects = values('HFS_Event__c');
+        policy.readableFields = allFields(policy.readableObjects);
+        policy.writableFields = eventFields();
+        policy.transactionBoundary = 'ALL_OR_NOTHING_DML';
+      }
       when 'STORE_RECOMMENDATION' {
         policy.allowedBaselineRoles = roles(
           RELATIONSHIP_USER,
@@ -172,6 +180,27 @@ public class HFS_AuthorizationMatrix {
       'HFS_Recommendation__c.Model_Profile__c',
       'HFS_Recommendation__c.Model_Invocation_Id__c',
       'HFS_Recommendation__c.Generated_At__c'
+    };
+  }
+
+  private static List<String> eventFields() {
+    return new List<String>{
+      'HFS_Event__c.Event_Id__c',
+      'HFS_Event__c.Tenant_Key__c',
+      'HFS_Event__c.Event_Type__c',
+      'HFS_Event__c.Source_URI__c',
+      'HFS_Event__c.Subject__c',
+      'HFS_Event__c.Source_Record_Id__c',
+      'HFS_Event__c.Schema_Version__c',
+      'HFS_Event__c.Correlation_Id__c',
+      'HFS_Event__c.Causation_Id__c',
+      'HFS_Event__c.Idempotency_Key__c',
+      'HFS_Event__c.Source_Sequence__c',
+      'HFS_Event__c.Occurred_At__c',
+      'HFS_Event__c.Observed_At__c',
+      'HFS_Event__c.Content_Hash__c',
+      'HFS_Event__c.Payload_JSON__c',
+      'HFS_Event__c.Intake_Result__c'
     };
   }
 

@@ -6,5 +6,4 @@
     <length>36</length>
     <required>true</required>
     <type>Text</type>
-    <unique>true</unique>
 </CustomField>
