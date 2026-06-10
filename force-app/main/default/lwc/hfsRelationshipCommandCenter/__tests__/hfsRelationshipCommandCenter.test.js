@@ -15,12 +15,15 @@ jest.mock(
   { virtual: true }
 );
 
-function createComponent(stateName = "ready") {
+function createComponent(stateName = "ready", profileKey) {
   const element = createElement("c-hfs-relationship-command-center", {
     is: HfsRelationshipCommandCenter
   });
   element.mockMode = true;
   element.stateName = stateName;
+  if (profileKey) {
+    element.profileKey = profileKey;
+  }
   document.body.appendChild(element);
   return element;
 }
@@ -178,6 +181,22 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
     expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
+  });
+
+  it("renders the Nexavenu revenue gift profile without replacing North Star", () => {
+    const element = createComponent("ready", "nexavenu-revenue");
+    const root = element.shadowRoot;
+
+    expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
+    expect(root.textContent).toContain("Nexavenu champion nurture tower");
+    expect(root.textContent).toContain("Revenue and buyer-readiness signals");
+    expect(root.textContent).toContain("Prospect, champion, and opportunity");
+    expect(root.textContent).toContain("Contact-sourced assumptions");
+    expect(root.textContent).toContain("Approve champion nurture actions");
+    expect(root.textContent).toContain("Revenue approval decision");
+    expect(root.textContent).toContain("Nurture actions and handoff log");
+    expect(root.textContent).toContain("Readiness target");
+    expect(root.textContent).not.toContain("North Star retail signals");
   });
 
   it.each([

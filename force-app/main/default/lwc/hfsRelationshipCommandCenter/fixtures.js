@@ -1,5 +1,137 @@
 export const UI_STATE_VERSION = "1.0.0";
 
+export const DEFAULT_PROFILE_KEY = "north-star-retail";
+
+const PROFILE_CONFIGS = {
+  "north-star-retail": {
+    key: "north-star-retail",
+    shortName: "North Star",
+    eyebrow: "North Star command center",
+    pageTitle: "Supermarket recovery plan",
+    loadingTitle: "Loading North Star context",
+    loadingMessage: "Assembling North Star retail context.",
+    emptyTitle: "No North Star work is assigned",
+    emptyMessage: "New supermarket risk work will appear here when assigned.",
+    deniedTitle: "North Star context is not available",
+    deniedMessage:
+      "Your current permissions or declared purpose do not allow access to this retail context.",
+    errorTitle: "North Star could not load",
+    errorMessage:
+      "The retail command service is temporarily unavailable. Retry the request.",
+    ownerLabel: "Manager owner",
+    deadlineLabel: "Rush deadline",
+    updateLabel: "Next decision update",
+    riskKicker: "Risk pulse",
+    riskHeading: "North Star retail signals",
+    relationshipKicker: "Product context",
+    relationshipHeading: "Product, batch, and stock",
+    contextLabels: {
+      primary: "Store",
+      secondary: "Product",
+      tertiary: "Batch",
+      quaternary: "Promotion"
+    },
+    clusterKicker: "Customer risk",
+    clusterHeading: "Complaint cluster",
+    clusterLabels: {
+      type: "Type",
+      count: "Count",
+      supplier: "Supplier",
+      window: "Window"
+    },
+    responseKicker: "Supplier",
+    responseHeading: "Supplier response",
+    responseLabels: {
+      leadTime: "Lead time",
+      replacement: "Replacement",
+      creditNote: "Credit note",
+      qualityIssue: "Quality issue"
+    },
+    executionKicker: "Execution",
+    executionHeading: "Store tasks and channel log",
+    executionPlanLabel: "Cashier plan",
+    recommendationKicker: "Recommendation",
+    factsHeading: "Source facts",
+    assumptionsHeading: "Assumptions",
+    inferencesHeading: "Model inference",
+    approvalKicker: "Human control",
+    approvalHeading: "Approval decision",
+    approvalNote:
+      "Approval authorizes execution; it does not mark the external action as completed.",
+    blockersKicker: "Dependencies",
+    blockersHeading: "Current blockers",
+    restrictedNotice:
+      "You can inspect the accessible case facts. Approval controls are not available for your current role.",
+    outcomeMetricLabel: "Outcome metrics"
+  },
+  "nexavenu-revenue": {
+    key: "nexavenu-revenue",
+    shortName: "Nexavenu",
+    eyebrow: "Nexavenu revenue intelligence tower",
+    pageTitle: "Champion nurture and discovery readiness",
+    loadingTitle: "Loading Nexavenu revenue context",
+    loadingMessage: "Assembling Nexavenu revenue intelligence context.",
+    emptyTitle: "No Nexavenu revenue work is assigned",
+    emptyMessage:
+      "New prospect or retention work will appear here when assigned.",
+    deniedTitle: "Nexavenu revenue context is not available",
+    deniedMessage:
+      "Your current permissions or declared purpose do not allow access to this revenue context.",
+    errorTitle: "Nexavenu context could not load",
+    errorMessage:
+      "The revenue command service is temporarily unavailable. Retry the request.",
+    ownerLabel: "Revenue owner",
+    deadlineLabel: "Discovery gate",
+    updateLabel: "Next nurture touch",
+    riskKicker: "Pipeline pulse",
+    riskHeading: "Revenue and buyer-readiness signals",
+    relationshipKicker: "Relationship context",
+    relationshipHeading: "Prospect, champion, and opportunity",
+    contextLabels: {
+      primary: "Account",
+      secondary: "Opportunity",
+      tertiary: "Stage",
+      quaternary: "Campaign"
+    },
+    clusterKicker: "Buyer education",
+    clusterHeading: "Education gaps",
+    clusterLabels: {
+      type: "Gaps",
+      count: "Count",
+      supplier: "Missing owner",
+      window: "Window"
+    },
+    responseKicker: "Readiness gate",
+    responseHeading: "Discovery readiness",
+    responseLabels: {
+      leadTime: "Score",
+      replacement: "Next asset",
+      creditNote: "ROI proof",
+      qualityIssue: "Constraint"
+    },
+    executionKicker: "Revenue execution",
+    executionHeading: "Nurture actions and handoff log",
+    executionPlanLabel: "Handoff gate",
+    recommendationKicker: "Revenue recommendation",
+    factsHeading: "Source facts",
+    assumptionsHeading: "Contact-sourced assumptions",
+    inferencesHeading: "Revenue inference",
+    approvalKicker: "Human control",
+    approvalHeading: "Revenue approval decision",
+    approvalNote:
+      "Approval authorizes the governed write-back; it does not send outreach without the revenue owner.",
+    blockersKicker: "Deal dependencies",
+    blockersHeading: "Current blockers",
+    restrictedNotice:
+      "You can inspect the accessible revenue facts. Approval controls are not available for your current role.",
+    outcomeMetricLabel: "Revenue outcome metrics"
+  }
+};
+
+export function getProfile(profileKey = DEFAULT_PROFILE_KEY) {
+  return PROFILE_CONFIGS[profileKey] || PROFILE_CONFIGS[DEFAULT_PROFILE_KEY];
+}
+
 const caseState = {
   id: "work-north-star-retail-risk-001",
   externalKey: "CORR-NORTH-STAR-WEEKEND-GRILL-001",
@@ -234,6 +366,7 @@ const caseState = {
       "Supplier approved replacement batch B with credit note.",
       "Queue risk is forecast from 16:30 to 18:30."
     ],
+    assumptions: [],
     inferences: [
       "The complaint signal is batch-specific, not a reason to stop all supplier orders.",
       "Warehouse transfer protects the rush before supplier replacement arrives."
@@ -308,10 +441,342 @@ const caseState = {
   }
 };
 
+const nexavenuCaseState = {
+  ...caseState,
+  id: "work-nexavenu-revenue-001",
+  externalKey: "CORR-NEXAVENU-REVENUE-INTELLIGENCE-001",
+  title: "Nexavenu champion nurture tower",
+  summary:
+    "Synthetic B2B prospect needs buyer education, champion mapping, and discovery readiness before senior delivery handoff.",
+  severity: "High",
+  status: "Awaiting revenue approval",
+  owner: {
+    name: "Revenue Owner",
+    role: "Revenue approval",
+    since: "2026-06-10T08:40:00Z"
+  },
+  serviceDeadline: "2026-06-10T12:00:00Z",
+  nextUpdateDue: "2026-06-10T09:30:00Z",
+  productContext: {
+    store: "Synthetic LiftOps Manufacturing",
+    product: "Agentforce and MuleSoft transformation",
+    category: "B2B revenue pipeline",
+    batch: "Discovery readiness: 48/100",
+    supplier: "Operations champion",
+    promotion: "Agentforce acceleration campaign",
+    shelfArea: "Revenue workspace"
+  },
+  stock: [
+    { id: "stage-lead", label: "Pipeline", value: "Lead nurture" },
+    { id: "stage-buyer", label: "Buyer journey", value: "Education/test" },
+    { id: "stage-readiness", label: "Readiness", value: "48/100" },
+    { id: "stage-icp", label: "ICP score", value: "72/100" }
+  ],
+  riskPulses: [
+    { id: "risk-lead-quality", label: "Lead quality", status: "Needs work" },
+    { id: "risk-education", label: "Education gaps", status: "High" },
+    { id: "risk-champion", label: "Champion", status: "Emerging" },
+    { id: "risk-economic-buyer", label: "Economic buyer", status: "Missing" },
+    { id: "risk-cio", label: "Technical buyer", status: "Missing" },
+    { id: "risk-readiness", label: "Readiness gate", status: "Hold" },
+    { id: "risk-content", label: "Content", status: "Assign" },
+    { id: "risk-handoff", label: "Consultant handoff", status: "Blocked" },
+    { id: "risk-retention", label: "Retention", status: "Watch" },
+    { id: "risk-feedback", label: "Feedback loop", status: "Open" }
+  ],
+  complaintCluster: {
+    type: "System inventory, decision owner, budget, success metric",
+    count: 4,
+    product: "Agentforce and MuleSoft transformation",
+    batch: "Discovery readiness: 48/100",
+    supplier: "Executive sponsor and data owner",
+    window: "Pre-discovery nurture"
+  },
+  supplierResponse: {
+    status: "Hold before handoff",
+    leadTime: "48/100",
+    replacement: "AI readiness checklist + MuleSoft explainer",
+    creditNote: "CFO ROI proof needed",
+    qualityIssue: "Do not consume senior solution-consultant time yet"
+  },
+  storeExecution: {
+    cashierRecommendation:
+      "Hold solution-consultant handoff until readiness > 70",
+    tasks: [
+      {
+        id: "task-nurture",
+        label: "Create nurture task",
+        owner: "BDR",
+        status: "Queued"
+      },
+      {
+        id: "task-email",
+        label: "Draft champion email",
+        owner: "Revenue Owner",
+        status: "Needs approval"
+      },
+      {
+        id: "task-content",
+        label: "Assign buyer education assets",
+        owner: "Marketing",
+        status: "Queued"
+      },
+      {
+        id: "task-handoff",
+        label: "Create solution-consultant handoff",
+        owner: "Solutions Lead",
+        status: "Blocked by readiness"
+      }
+    ]
+  },
+  affectedRelationship: {
+    label: "Prospect relationship",
+    subject: "Nexavenu",
+    object: "Synthetic LiftOps Manufacturing",
+    type: "NURTURES_PROSPECT",
+    status: "Active"
+  },
+  connectedEntities: [
+    {
+      id: "ORG-NEXAVENU",
+      label: "Nexavenu",
+      type: "Partner business",
+      role: "Revenue team"
+    },
+    {
+      id: "PROSPECT-SYNTH-LIFTOPS",
+      label: "Synthetic LiftOps Manufacturing",
+      type: "Prospect",
+      role: "AI/MuleSoft opportunity"
+    },
+    {
+      id: "ROLE-OPS-CHAMPION",
+      label: "Operations manager",
+      type: "Champion",
+      role: "Likely internal champion"
+    },
+    {
+      id: "ROLE-CFO-CIO",
+      label: "CFO and CIO",
+      type: "Buying committee",
+      role: "Economic and technical buyers"
+    }
+  ],
+  blockers: [
+    {
+      id: "blocker-revenue-approval-001",
+      label: "Revenue owner approval for external champion actions",
+      owner: "Revenue Owner",
+      status: "Ready for decision",
+      dueAt: "2026-06-10T09:30:00Z"
+    },
+    {
+      id: "blocker-readiness-001",
+      label: "Readiness score must reach 70 before consultant handoff",
+      owner: "BDR",
+      status: "Blocked",
+      dueAt: "2026-06-10T12:00:00Z"
+    }
+  ],
+  timeline: [
+    {
+      id: "timeline-lead-source",
+      occurredAt: "2026-06-10T08:00:00Z",
+      type: "Lead source",
+      title: "Attribution captured",
+      detail:
+        "Webinar, LinkedIn outbound, and MuleSoft landing-page touches linked.",
+      source: "Revenue fixture"
+    },
+    {
+      id: "timeline-education",
+      occurredAt: "2026-06-10T08:10:00Z",
+      type: "Education",
+      title: "Buyer education gaps detected",
+      detail:
+        "System inventory, decision owner, budget, and success metric are missing.",
+      source: "Agentforce revenue agent"
+    },
+    {
+      id: "timeline-committee",
+      occurredAt: "2026-06-10T08:20:00Z",
+      type: "Champion map",
+      title: "Buying committee mapped",
+      detail:
+        "Operations champion exists; CFO, CIO, executive sponsor, and data owner need alignment.",
+      source: "Relationship intelligence"
+    },
+    {
+      id: "timeline-readiness",
+      occurredAt: "2026-06-10T08:30:00Z",
+      type: "Readiness",
+      title: "Discovery gate held",
+      detail: "Readiness score is 48/100, below handoff threshold.",
+      source: "SOP gate"
+    },
+    {
+      id: "timeline-approval",
+      occurredAt: "2026-06-10T08:40:00Z",
+      type: "Approval",
+      title: "Revenue actions proposed",
+      detail:
+        "Protected outreach and stage updates require revenue-owner approval.",
+      source: "Nexavenu revenue orchestrator"
+    }
+  ],
+  evidence: [
+    {
+      id: "evidence-nexavenu-lead-source-001",
+      label: "Lead source and ICP",
+      summary:
+        "ICP score 72/100 from industry fit, integration complexity, executive intent, data readiness, and budget signal.",
+      sourceUri: "urn:hfs:source:nexavenu:revenue:lead-source",
+      capturedAt: "2026-06-10T08:00:00Z",
+      contentHash:
+        "sha256:15ec846204c98c2dcd963a904d85633b5b0ad3bb7b8d44e4b0582ac3f592f4d9"
+    },
+    {
+      id: "evidence-nexavenu-education-gap-001",
+      label: "Buyer education gaps",
+      summary:
+        "Missing system inventory, decision owner, budget range, and AI-to-process translation.",
+      sourceUri: "urn:hfs:source:nexavenu:revenue:buyer-education",
+      capturedAt: "2026-06-10T08:10:00Z",
+      contentHash:
+        "sha256:a79d23357b2e5c0e5f11b9a5f4ea65cffd02971e8229b107896bc55d5672ed3d"
+    },
+    {
+      id: "evidence-nexavenu-buying-committee-001",
+      label: "Champion map",
+      summary:
+        "Operations manager is likely champion; CFO and CIO are high-influence buyers; executive sponsor and data owner are missing.",
+      sourceUri: "urn:hfs:source:nexavenu:revenue:buying-committee",
+      capturedAt: "2026-06-10T08:20:00Z",
+      contentHash:
+        "sha256:5c81292ae1d9a73de4219c06a230a31cd3a7d08e0477095edb1b49241dcd46a5"
+    },
+    {
+      id: "evidence-nexavenu-readiness-001",
+      label: "Discovery readiness",
+      summary:
+        "Readiness score is 48/100 and handoff gate is HOLD until buyer gaps are resolved.",
+      sourceUri: "urn:hfs:source:nexavenu:revenue:discovery-readiness",
+      capturedAt: "2026-06-10T08:30:00Z",
+      contentHash:
+        "sha256:45ffe60a85a761be8db5fae6ca1858ad7ae8786770b100ffb4ef9121ac3bcfe5"
+    }
+  ],
+  sop: {
+    name: "Nexavenu revenue qualification",
+    version: "1.0.0",
+    status: "In progress",
+    currentStep: "Await revenue-owner approval",
+    completedSteps: 2,
+    totalSteps: 5,
+    progress: 40,
+    requiredEvidence:
+      "Approved nurture actions, champion response, and readiness score"
+  },
+  recommendation: {
+    id: "recommendation-nexavenu-revenue-001",
+    status: "Pending approval",
+    title: "Approve champion nurture actions",
+    recommendation:
+      "Keep the lead in nurture until readiness crosses 70, send readiness and MuleSoft education content, equip the operations champion, request system inventory and success metrics, then schedule CFO/CIO alignment.",
+    facts: [
+      "ICP score is 72/100.",
+      "Buyer education gaps remain unresolved.",
+      "Operations manager is likely champion.",
+      "Discovery readiness is 48/100 with handoff gate HOLD."
+    ],
+    assumptions: [
+      "Contact-sourced signal suggests lead quality and buyer education need stronger system support.",
+      "Contact-sourced signal suggests discovery should be compressed through readiness gates."
+    ],
+    inferences: [
+      "The lead is promising but not solution-consultant-ready.",
+      "Champion enablement should precede CFO/CIO alignment."
+    ],
+    confidence: 0.83,
+    confidencePercent: "83%",
+    modelProfile: "nexavenu-revenue-recommendation",
+    modelProfileVersion: "1.0.0",
+    policyVersion: "nexavenu-revenue-routing-mauritius 1.0.0",
+    evidenceIds: [
+      "evidence-nexavenu-lead-source-001",
+      "evidence-nexavenu-education-gap-001",
+      "evidence-nexavenu-buying-committee-001",
+      "evidence-nexavenu-readiness-001"
+    ],
+    requiresHumanApproval: true
+  },
+  approval: {
+    id: "approval-nexavenu-revenue-001",
+    status: "Pending",
+    policy: "Revenue owner approval",
+    policyVersion: "1.0.0",
+    requestedAt: "2026-06-10T08:40:00Z",
+    requestedBy: "Nexavenu Revenue Orchestrator",
+    decisionDueAt: "2026-06-10T09:30:00Z"
+  },
+  actions: [
+    {
+      id: "action-nexavenu-nurture-001",
+      type: "CREATE_NURTURE_TASK",
+      status: "Pending approval",
+      requestedAt: "2026-06-10T08:40:00Z",
+      completedAt: null,
+      sourceSystem: "MuleSoft revenue mock",
+      correlationId: "30000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-nexavenu-email-001",
+      type: "DRAFT_CHAMPION_EMAIL",
+      status: "Pending approval",
+      requestedAt: "2026-06-10T08:40:00Z",
+      completedAt: null,
+      sourceSystem: "MuleSoft revenue mock",
+      correlationId: "30000000-0000-4000-8000-000000000001"
+    }
+  ],
+  channelLog: [
+    {
+      id: "channel-revenue-email-001",
+      channel: "Champion email",
+      status: "DRAFT_ONLY",
+      target: "Operations manager",
+      detail: "Draft requires revenue-owner approval before send."
+    },
+    {
+      id: "channel-content-001",
+      channel: "Content assignment",
+      status: "QUEUED",
+      target: "Prospect account",
+      detail: "AI readiness checklist and MuleSoft explainer queued."
+    }
+  ],
+  outcomeMetrics: [
+    { id: "outcome-readiness", label: "Readiness target", value: "70+" },
+    { id: "outcome-champion", label: "Champion equipped", value: "Pending" },
+    { id: "outcome-cfo-cio", label: "CFO/CIO alignment", value: "Pending" },
+    { id: "outcome-handoff", label: "Consultant handoff", value: "Held" },
+    { id: "outcome-retention", label: "Retention review", value: "Created" },
+    { id: "outcome-feedback", label: "Feedback loop", value: "Open" }
+  ],
+  outcome: {
+    status: "Awaiting approved nurture action",
+    summary:
+      "Outcome metrics are projected until revenue-owner approval and mock execution complete.",
+    observedAt: null,
+    effectiveness: "Pending"
+  }
+};
+
 const readyState = {
   stateVersion: UI_STATE_VERSION,
   stateName: "ready",
   mode: "ready",
+  profile: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY],
   generatedAt: "2026-06-06T09:39:00Z",
   correlationId: "20000000-0000-4000-8000-000000000001",
   userRole: "Duty Manager",
@@ -342,38 +807,64 @@ export const UI_STATES = {
     stateVersion: UI_STATE_VERSION,
     stateName: "loading",
     mode: "loading",
-    message: "Assembling North Star retail context."
+    profile: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY],
+    message: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY].loadingMessage
   },
   empty: {
     stateVersion: UI_STATE_VERSION,
     stateName: "empty",
     mode: "empty",
-    title: "No North Star work is assigned",
-    message: "New supermarket risk work will appear here when assigned."
+    profile: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY],
+    title: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY].emptyTitle,
+    message: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY].emptyMessage
   },
   denied: {
     stateVersion: UI_STATE_VERSION,
     stateName: "denied",
     mode: "denied",
-    title: "North Star context is not available",
-    message:
-      "Your current permissions or declared purpose do not allow access to this retail context.",
+    profile: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY],
+    title: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY].deniedTitle,
+    message: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY].deniedMessage,
     correlationId: "20000000-0000-4000-8000-000000000002"
   },
   error: {
     stateVersion: UI_STATE_VERSION,
     stateName: "error",
     mode: "error",
-    title: "North Star could not load",
-    message:
-      "The retail command service is temporarily unavailable. Retry the request.",
+    profile: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY],
+    title: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY].errorTitle,
+    message: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY].errorMessage,
     errorCode: "RETRYABLE_DEPENDENCY_FAILURE",
     correlationId: "20000000-0000-4000-8000-000000000003",
     retryable: true
   }
 };
 
-export function getUiState(stateName) {
+export function getUiState(stateName, profileKey = DEFAULT_PROFILE_KEY) {
+  const profile = getProfile(profileKey);
   const selected = UI_STATES[stateName] || UI_STATES.error;
-  return JSON.parse(JSON.stringify(selected));
+  const state = JSON.parse(JSON.stringify(selected));
+  state.profile = JSON.parse(JSON.stringify(profile));
+  if (state.mode === "ready" && profile.key === "nexavenu-revenue") {
+    state.case = JSON.parse(JSON.stringify(nexavenuCaseState));
+    state.correlationId = "30000000-0000-4000-8000-000000000001";
+    state.userRole = "Revenue Owner";
+    state.purpose = "QUALIFY_B2B_REVENUE_PIPELINE";
+  }
+  if (state.mode === "loading") {
+    state.message = profile.loadingMessage;
+  }
+  if (state.mode === "empty") {
+    state.title = profile.emptyTitle;
+    state.message = profile.emptyMessage;
+  }
+  if (state.mode === "denied") {
+    state.title = profile.deniedTitle;
+    state.message = profile.deniedMessage;
+  }
+  if (state.mode === "error") {
+    state.title = profile.errorTitle;
+    state.message = profile.errorMessage;
+  }
+  return state;
 }

@@ -2,8 +2,8 @@
   <article class="command-center" aria-labelledby="command-center-title">
     <header class="hero">
       <div>
-        <p class="eyebrow">North Star command center</p>
-        <h1 id="command-center-title">Supermarket recovery plan</h1>
+        <p class="eyebrow">{state.profile.eyebrow}</p>
+        <h1 id="command-center-title">{state.profile.pageTitle}</h1>
       </div>
       <span class="version">{uiVersionLabel}</span>
     </header>
@@ -16,10 +16,10 @@
         aria-live="polite"
       >
         <lightning-spinner
-          alternative-text="Loading North Star context"
+          alternative-text={state.profile.loadingTitle}
           size="medium"
         ></lightning-spinner>
-        <h2>Loading North Star context</h2>
+        <h2>{state.profile.loadingTitle}</h2>
         <p>{state.message}</p>
       </section>
     </template>
@@ -83,11 +83,11 @@
 
           <dl class="case-metrics">
             <div>
-              <dt>Manager owner</dt>
+              <dt>{state.profile.ownerLabel}</dt>
               <dd>{state.case.owner.name}</dd>
             </div>
             <div>
-              <dt>Rush deadline</dt>
+              <dt>{state.profile.deadlineLabel}</dt>
               <dd>
                 <lightning-formatted-date-time
                   value={state.case.serviceDeadline}
@@ -100,7 +100,7 @@
               </dd>
             </div>
             <div>
-              <dt>Next decision update</dt>
+              <dt>{state.profile.updateLabel}</dt>
               <dd>
                 <lightning-formatted-date-time
                   value={state.case.nextUpdateDue}
@@ -122,8 +122,8 @@
         <section class="panel" aria-labelledby="risk-pulse-heading">
           <div class="panel-heading">
             <div>
-              <p class="section-kicker">Risk pulse</p>
-              <h2 id="risk-pulse-heading">North Star retail signals</h2>
+              <p class="section-kicker">{state.profile.riskKicker}</p>
+              <h2 id="risk-pulse-heading">{state.profile.riskHeading}</h2>
             </div>
           </div>
           <ul class="entity-grid" aria-label="Risk pulse cards">
@@ -138,8 +138,7 @@
 
         <template lwc:if={showRestrictedNotice}>
           <div class="permission-notice" data-testid="restricted-notice">
-            You can inspect the accessible case facts. Approval controls are not
-            available for your current role.
+            {state.profile.restrictedNotice}
           </div>
         </template>
 
@@ -168,8 +167,12 @@
             <section class="panel" aria-labelledby="relationship-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Product context</p>
-                  <h2 id="relationship-heading">Product, batch, and stock</h2>
+                  <p class="section-kicker">
+                    {state.profile.relationshipKicker}
+                  </p>
+                  <h2 id="relationship-heading">
+                    {state.profile.relationshipHeading}
+                  </h2>
                 </div>
                 <span class="status-pill"
                   >{state.case.affectedRelationship.status}</span
@@ -194,19 +197,19 @@
               </ul>
               <dl class="case-metrics">
                 <div>
-                  <dt>Store</dt>
+                  <dt>{state.profile.contextLabels.primary}</dt>
                   <dd>{state.case.productContext.store}</dd>
                 </div>
                 <div>
-                  <dt>Product</dt>
+                  <dt>{state.profile.contextLabels.secondary}</dt>
                   <dd>{state.case.productContext.product}</dd>
                 </div>
                 <div>
-                  <dt>Batch</dt>
+                  <dt>{state.profile.contextLabels.tertiary}</dt>
                   <dd>{state.case.productContext.batch}</dd>
                 </div>
                 <div>
-                  <dt>Promotion</dt>
+                  <dt>{state.profile.contextLabels.quaternary}</dt>
                   <dd>{state.case.productContext.promotion}</dd>
                 </div>
               </dl>
@@ -223,25 +226,25 @@
             <section class="panel" aria-labelledby="complaint-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Customer risk</p>
-                  <h2 id="complaint-heading">Complaint cluster</h2>
+                  <p class="section-kicker">{state.profile.clusterKicker}</p>
+                  <h2 id="complaint-heading">{state.profile.clusterHeading}</h2>
                 </div>
               </div>
               <dl class="case-metrics">
                 <div>
-                  <dt>Type</dt>
+                  <dt>{state.profile.clusterLabels.type}</dt>
                   <dd>{state.case.complaintCluster.type}</dd>
                 </div>
                 <div>
-                  <dt>Count</dt>
+                  <dt>{state.profile.clusterLabels.count}</dt>
                   <dd>{state.case.complaintCluster.count}</dd>
                 </div>
                 <div>
-                  <dt>Supplier</dt>
+                  <dt>{state.profile.clusterLabels.supplier}</dt>
                   <dd>{state.case.complaintCluster.supplier}</dd>
                 </div>
                 <div>
-                  <dt>Window</dt>
+                  <dt>{state.profile.clusterLabels.window}</dt>
                   <dd>{state.case.complaintCluster.window}</dd>
                 </div>
               </dl>
@@ -250,8 +253,8 @@
             <section class="panel" aria-labelledby="supplier-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Supplier</p>
-                  <h2 id="supplier-heading">Supplier response</h2>
+                  <p class="section-kicker">{state.profile.responseKicker}</p>
+                  <h2 id="supplier-heading">{state.profile.responseHeading}</h2>
                 </div>
                 <span class="status-pill"
                   >{state.case.supplierResponse.status}</span
@@ -259,19 +262,19 @@
               </div>
               <dl class="case-metrics">
                 <div>
-                  <dt>Lead time</dt>
+                  <dt>{state.profile.responseLabels.leadTime}</dt>
                   <dd>{state.case.supplierResponse.leadTime}</dd>
                 </div>
                 <div>
-                  <dt>Replacement</dt>
+                  <dt>{state.profile.responseLabels.replacement}</dt>
                   <dd>{state.case.supplierResponse.replacement}</dd>
                 </div>
                 <div>
-                  <dt>Credit note</dt>
+                  <dt>{state.profile.responseLabels.creditNote}</dt>
                   <dd>{state.case.supplierResponse.creditNote}</dd>
                 </div>
                 <div>
-                  <dt>Quality issue</dt>
+                  <dt>{state.profile.responseLabels.qualityIssue}</dt>
                   <dd>{state.case.supplierResponse.qualityIssue}</dd>
                 </div>
               </dl>
@@ -346,8 +349,8 @@
             <section class="panel" aria-labelledby="actions-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Execution</p>
-                  <h2 id="actions-heading">Store tasks and channel log</h2>
+                  <p class="section-kicker">{state.profile.executionKicker}</p>
+                  <h2 id="actions-heading">{state.profile.executionHeading}</h2>
                 </div>
               </div>
               <ul class="action-list">
@@ -363,7 +366,9 @@
               </ul>
               <div class="outcome">
                 <div>
-                  <span class="entity-type">Cashier plan</span>
+                  <span class="entity-type"
+                    >{state.profile.executionPlanLabel}</span
+                  >
                   <h3>{state.case.storeExecution.cashierRecommendation}</h3>
                 </div>
               </div>
@@ -400,7 +405,10 @@
                 <p>{state.case.outcome.summary}</p>
                 <strong>{state.case.outcome.effectiveness}</strong>
               </div>
-              <ul class="entity-grid" aria-label="Outcome metrics">
+              <ul
+                class="entity-grid"
+                aria-label={state.profile.outcomeMetricLabel}
+              >
                 <template
                   for:each={state.case.outcomeMetrics}
                   for:item="metric"
@@ -445,7 +453,9 @@
             >
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Recommendation</p>
+                  <p class="section-kicker">
+                    {state.profile.recommendationKicker}
+                  </p>
                   <h2 id="recommendation-heading">
                     {state.case.recommendation.title}
                   </h2>
@@ -456,7 +466,7 @@
                 {state.case.recommendation.recommendation}
               </p>
 
-              <h3>Source facts</h3>
+              <h3>{state.profile.factsHeading}</h3>
               <ul class="fact-list">
                 <template
                   for:each={state.case.recommendation.facts}
@@ -466,7 +476,19 @@
                 </template>
               </ul>
 
-              <h3>Model inference</h3>
+              <template lwc:if={hasRecommendationAssumptions}>
+                <h3>{state.profile.assumptionsHeading}</h3>
+                <ul class="inference-list">
+                  <template
+                    for:each={state.case.recommendation.assumptions}
+                    for:item="assumption"
+                  >
+                    <li key={assumption}>{assumption}</li>
+                  </template>
+                </ul>
+              </template>
+
+              <h3>{state.profile.inferencesHeading}</h3>
               <ul class="inference-list">
                 <template
                   for:each={state.case.recommendation.inferences}
@@ -491,16 +513,13 @@
             <section class="panel approval" aria-labelledby="approval-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Human control</p>
-                  <h2 id="approval-heading">Approval decision</h2>
+                  <p class="section-kicker">{state.profile.approvalKicker}</p>
+                  <h2 id="approval-heading">{state.profile.approvalHeading}</h2>
                 </div>
                 <span class="status-pill">{state.case.approval.status}</span>
               </div>
               <p>{state.case.approval.policy}</p>
-              <p class="approval-note">
-                Approval authorizes execution; it does not mark the external
-                action as completed.
-              </p>
+              <p class="approval-note">{state.profile.approvalNote}</p>
               <template lwc:if={showApprovalControls}>
                 <div class="approval-controls" data-testid="approval-controls">
                   <template lwc:if={showRejectControl}>
@@ -533,8 +552,8 @@
             </section>
 
             <section class="panel blockers" aria-labelledby="blockers-heading">
-              <p class="section-kicker">Dependencies</p>
-              <h2 id="blockers-heading">Current blockers</h2>
+              <p class="section-kicker">{state.profile.blockersKicker}</p>
+              <h2 id="blockers-heading">{state.profile.blockersHeading}</h2>
               <ul>
                 <template for:each={state.case.blockers} for:item="blocker">
                   <li key={blocker.id}>

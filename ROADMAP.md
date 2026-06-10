@@ -299,6 +299,9 @@ and UI must support any supermarket product category.
 ### 7. Lightning Command Center
 
 - [x] UI title and labels use North Star.
+- [x] Profile key switches visible titles, domain labels, recommendation copy,
+      approval copy, and outcome labels between North Star retail and Nexavenu
+      gift profiles.
 - [x] Risk pulse cards show stockout, expiry, overstock, complaint, supplier,
       queue, shelf-layout, price, promotion, and staff readiness.
 - [x] Product and batch context is visible.

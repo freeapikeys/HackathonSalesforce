@@ -1,7 +1,12 @@
 import { api, LightningElement } from "lwc";
 import loadCommandCenter from "@salesforce/apex/HFS_RelationshipController.loadCommandCenter";
 import decideApproval from "@salesforce/apex/HFS_RelationshipController.decideApproval";
-import { getUiState, UI_STATE_VERSION } from "./fixtures";
+import {
+  DEFAULT_PROFILE_KEY,
+  getProfile,
+  getUiState,
+  UI_STATE_VERSION
+} from "./fixtures";
 import { mapCommandCenterPayload, mapTransportError } from "./stateAdapter";
 
 export default class HfsRelationshipCommandCenter extends LightningElement {
@@ -11,6 +16,7 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
   @api workItemId;
   @api tenantKey;
   @api purpose = "RESOLVE_RETAIL_RISK";
+  @api profileKey = DEFAULT_PROFILE_KEY;
   @api mockMode = false;
   state = getUiState("loading");
   decisionPending = false;
@@ -45,22 +51,22 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
       this.commandError = null;
     }
     if (this.mockMode) {
-      this.state = getUiState(this._stateName);
+      this.state = getUiState(this._stateName, this.profileKey);
       return;
     }
 
-    this.state = getUiState("loading");
+    this.state = getUiState("loading", this.profileKey);
     const effectiveWorkItemId = this.workItemId || this.recordId;
     const correlationId = this.createCorrelationId();
     if (!effectiveWorkItemId || !this.tenantKey) {
-      this.state = {
+      this.state = this.withProfile({
         ...getUiState("error"),
         errorCode: "INVALID_CONFIGURATION",
         message:
           "Configure a tenant key and provide an HFS work item record before loading live context.",
         correlationId,
         retryable: false
-      };
+      });
       return;
     }
 
@@ -77,9 +83,11 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
           timelineLimit: 100
         }
       });
-      this.state = mapCommandCenterPayload(payload, this.purpose);
+      this.state = this.withProfile(
+        mapCommandCenterPayload(payload, this.purpose)
+      );
     } catch (error) {
-      this.state = mapTransportError(error, correlationId);
+      this.state = this.withProfile(mapTransportError(error, correlationId));
     }
   }
 
@@ -134,6 +142,17 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
 
   get uiVersionLabel() {
     return `UI state ${UI_STATE_VERSION}`;
+  }
+
+  get hasRecommendationAssumptions() {
+    return Boolean(this.state.case?.recommendation?.assumptions?.length);
+  }
+
+  withProfile(state) {
+    return {
+      ...state,
+      profile: getProfile(this.profileKey)
+    };
   }
 
   async handleApprove() {
@@ -194,7 +213,7 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
           purpose: this.purpose,
           approvalId: this.state.case.approval.id,
           decisionStatus,
-          decisionNotes: `${decisionStatus} from the North Star command center.`
+          decisionNotes: `${decisionStatus} from the ${this.state.profile.shortName} command center.`
         }
       });
       if (!result?.success) {
