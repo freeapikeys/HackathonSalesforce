@@ -104,6 +104,27 @@ def main() -> int:
                 == recommendation["modelInvocationId"],
                 f"{name}: model invocation provenance was not preserved.",
             )
+            reasoning = recommendation.get("inventoryWasteReasoning")
+            if reasoning:
+                for action in reasoning["recommendedActions"]:
+                    require(
+                        set(action["evidenceIds"]) <= citation_ids,
+                        f"{name}: recommended action cites inaccessible evidence.",
+                    )
+                    require(
+                        action["requiresHumanApproval"] is True,
+                        f"{name}: recommended action bypasses approval.",
+                    )
+                for action in reasoning["blockedActions"]:
+                    require(
+                        set(action["evidenceIds"]) <= citation_ids,
+                        f"{name}: blocked action cites inaccessible evidence.",
+                    )
+                require(
+                    set(reasoning["supplierCaution"]["evidenceIds"])
+                    <= citation_ids,
+                    f"{name}: supplier caution cites inaccessible evidence.",
+                )
 
         if response["status"] == "SUCCESS":
             require(response["refusal"] is None, f"{name}: success has refusal.")
@@ -144,6 +165,7 @@ def main() -> int:
         "no-qualified-model-refusal",
         "invalid-approval-request-error",
         "changed-recommendation-after-supplier-response",
+        "inventory-waste-missing-expiry-caution",
     }
     require(
         required_scenarios <= scenario_names,
@@ -157,6 +179,34 @@ def main() -> int:
                 == "north-star-retail-recommendation",
                 f"{scenario['name']}: recommendation used a non-retail model profile.",
             )
+    inventory_waste = next(
+        scenario
+        for scenario in fixtures["scenarios"]
+        if scenario["name"] == "inventory-waste-missing-expiry-caution"
+    )
+    reasoning = inventory_waste["response"]["recommendation"][
+        "inventoryWasteReasoning"
+    ]
+    require(
+        reasoning["riskType"] == "MIXED"
+        and reasoning["severity"] == "High",
+        "Inventory/Waste scenario did not classify mixed high risk.",
+    )
+    require(
+        reasoning["missingEvidence"],
+        "Inventory/Waste scenario did not name missing evidence.",
+    )
+    require(
+        reasoning["supplierCaution"]["applies"] is True,
+        "Inventory/Waste scenario did not apply supplier caution.",
+    )
+    require(
+        any(
+            action["actionType"] == "BLIND_SUPPLIER_REORDER"
+            for action in reasoning["blockedActions"]
+        ),
+        "Inventory/Waste scenario did not block blind supplier reorder.",
+    )
     print(
         "Agentforce action contract is valid "
         f"({len(fixtures['actionCatalog'])} actions, "

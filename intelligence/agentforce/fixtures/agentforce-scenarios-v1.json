@@ -709,6 +709,195 @@
           "externalActionExecuted": false
         }
       }
+    },
+    {
+      "name": "inventory-waste-missing-expiry-caution",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_RETAIL_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Assess promotion readiness when stock pressure exists but expiry and supplier response evidence are incomplete.",
+        "modelProfile": "north-star-retail-recommendation"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-missing-expiry-inventory",
+            "statement": "Fresh yogurt 500 g at Flacq Hypermarket has 12 shelf units, 6 backroom units, no warehouse units, 24 incoming units reserved for tomorrow, supplier lead time of 3 days, daily sales velocity of 18 units, and a promotion uplift multiplier of 1.5.",
+            "evidenceIds": [
+              "a06000000000007AAA"
+            ]
+          },
+          {
+            "factId": "fact-missing-expiry-data",
+            "statement": "Expiry batch dates are missing for the current fresh dairy stock, so near-expiry units and expected sales before expiry cannot be calculated.",
+            "evidenceIds": [
+              "a06000000000008AAA"
+            ]
+          },
+          {
+            "factId": "fact-pending-complaints",
+            "statement": "Two freshness complaints mention sour smell for the same product this morning, but no confirmed batch identifier has been linked to the complaints.",
+            "evidenceIds": [
+              "a06000000000009AAA"
+            ]
+          },
+          {
+            "factId": "fact-pending-supplier-response",
+            "statement": "Supplier response is pending for the freshness complaints and no replacement batch has been confirmed.",
+            "evidenceIds": [
+              "a06000000000010AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-stockout-cover",
+            "statement": "Available stock is 42 units, adjusted demand is 27 units per day, days of cover is 1.56 days, and sales at risk over the 3-day lead time is 39 units.",
+            "basisFactIds": [
+              "fact-missing-expiry-inventory"
+            ],
+            "confidence": 0.9
+          },
+          {
+            "inferenceId": "inference-missing-expiry-caution",
+            "statement": "Waste and expiry pressure cannot be quantified until batch expiry evidence is supplied, so the plan should favor reversible replenishment and manager-approved quality checks.",
+            "basisFactIds": [
+              "fact-missing-expiry-data",
+              "fact-pending-complaints",
+              "fact-pending-supplier-response"
+            ],
+            "confidence": 0.74
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000007AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:inventory",
+            "contentHash": "sha256:e7001d9e919341eaba989a6c0a17a4e1f5db506cfe108a83dd22fe31adeb868a",
+            "summary": "Fresh yogurt 500 g at Flacq Hypermarket has 12 shelf units, 6 backroom units, no warehouse units, 24 incoming units reserved for tomorrow, supplier lead time of 3 days, daily sales velocity of 18 units, and a promotion uplift multiplier of 1.5.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000008AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:expiry",
+            "contentHash": "sha256:f1e55a20be4552200825805f52383889e7f469ff717965ca279b52c572564b84",
+            "summary": "Expiry batch dates are missing for the current fresh dairy stock, so near-expiry units and expected sales before expiry cannot be calculated.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000009AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:complaints",
+            "contentHash": "sha256:1d5ded791652aeb621acfc5b739a86ff74b40e00d65e5b8d5229dda54f0dd2ca",
+            "summary": "Two freshness complaints mention sour smell for the same product this morning, but no confirmed batch identifier has been linked to the complaints.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000010AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:supplier",
+            "contentHash": "sha256:8157415f9c79fbf265e414509a2d2cec7980c1eaab6e50368652a329e4c6b41b",
+            "summary": "Supplier response is pending for the freshness complaints and no replacement batch has been confirmed.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "proposedActionType": "APPROVE_CAUTIONED_INVENTORY_ACTIONS",
+          "rationale": "Treat this as high stockout risk because promotion-adjusted cover is 1.56 days and lead-time demand exceeds available stock by 39 units. Do not place a blind supplier reorder while freshness complaints and supplier response are unresolved; request expiry evidence, transfer safe available stock if approved, and hold supplier escalation decisions until the response arrives.",
+          "confidence": 0.78,
+          "evidenceIds": [
+            "a06000000000007AAA",
+            "a06000000000008AAA",
+            "a06000000000009AAA",
+            "a06000000000010AAA"
+          ],
+          "modelProfile": "north-star-retail-recommendation",
+          "modelInvocationId": "model-invocation-agentforce-003",
+          "requiresHumanApproval": true,
+          "inventoryWasteReasoning": {
+            "riskType": "MIXED",
+            "severity": "High",
+            "missingEvidence": [
+              "Current batch expiry dates and quantities",
+              "Supplier response or confirmed replacement batch",
+              "Complaint batch linkage"
+            ],
+            "recommendedActions": [
+              {
+                "actionId": "action-transfer-safe-stock",
+                "actionType": "WAREHOUSE_TRANSFER_REVIEW",
+                "statement": "Request manager approval to transfer safe stock from a trusted source before the promotion peak.",
+                "evidenceIds": [
+                  "a06000000000007AAA",
+                  "a06000000000009AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-request-expiry-evidence",
+                "actionType": "REQUEST_EXPIRY_BATCH_EVIDENCE",
+                "statement": "Ask store execution to capture batch expiry dates before markdown, removal, or waste calculations are approved.",
+                "evidenceIds": [
+                  "a06000000000008AAA"
+                ],
+                "requiresHumanApproval": true
+              }
+            ],
+            "blockedActions": [
+              {
+                "actionType": "BLIND_SUPPLIER_REORDER",
+                "reason": "Freshness complaints and a pending supplier response make an automatic reorder unsafe without manager approval and additional supplier evidence.",
+                "evidenceIds": [
+                  "a06000000000009AAA",
+                  "a06000000000010AAA"
+                ]
+              },
+              {
+                "actionType": "MARKDOWN_OR_REMOVE_STOCK",
+                "reason": "Expiry dates and batch quantities are missing, so waste risk units cannot be calculated yet.",
+                "evidenceIds": [
+                  "a06000000000008AAA"
+                ]
+              }
+            ],
+            "supplierCaution": {
+              "applies": true,
+              "statement": "Supplier caution applies to blind reorder and supplier-wide decisions because complaints exist and the supplier response is pending.",
+              "evidenceIds": [
+                "a06000000000009AAA",
+                "a06000000000010AAA"
+              ]
+            },
+            "explanation": "Promotion-adjusted demand leaves less than two days of cover, but expiry and supplier response evidence are incomplete. The safe path is to seek approval for reversible stock movement, collect expiry details, and block blind supplier reorder or markdown decisions until the missing evidence arrives."
+          }
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-003",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
     }
   ]
 }

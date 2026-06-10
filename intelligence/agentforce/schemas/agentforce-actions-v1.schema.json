@@ -315,6 +315,181 @@
         },
         "requiresHumanApproval": {
           "const": true
+        },
+        "inventoryWasteReasoning": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/inventoryWasteReasoning"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "recommendedInventoryAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actionId",
+        "actionType",
+        "statement",
+        "evidenceIds",
+        "requiresHumanApproval"
+      ],
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "actionType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "requiresHumanApproval": {
+          "const": true
+        }
+      }
+    },
+    "blockedInventoryAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actionType",
+        "reason",
+        "evidenceIds"
+      ],
+      "properties": {
+        "actionType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "supplierCaution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applies",
+        "statement",
+        "evidenceIds"
+      ],
+      "properties": {
+        "applies": {
+          "type": "boolean"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "inventoryWasteReasoning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "riskType",
+        "severity",
+        "missingEvidence",
+        "recommendedActions",
+        "blockedActions",
+        "supplierCaution",
+        "explanation"
+      ],
+      "properties": {
+        "riskType": {
+          "enum": [
+            "STOCKOUT",
+            "EXPIRY",
+            "WASTE",
+            "OVERSTOCK",
+            "PROMOTION_READINESS",
+            "MIXED"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "Low",
+            "Medium",
+            "High",
+            "Critical"
+          ]
+        },
+        "missingEvidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "uniqueItems": true
+        },
+        "recommendedActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recommendedInventoryAction"
+          },
+          "minItems": 1
+        },
+        "blockedActions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/blockedInventoryAction"
+          }
+        },
+        "supplierCaution": {
+          "$ref": "#/$defs/supplierCaution"
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
         }
       }
     },
