@@ -15,6 +15,12 @@ topics:
 - Store Execution and Outreach;
 - Manager Approval and Outreach.
 
+The same action boundary also supports private jury-gift scenarios. The
+Nexavenu revenue-intelligence fixture uses the recommendation action to return
+separate facts, contact-sourced assumptions, inferences, citations, a governed
+close plan, and audit state for the Revenue Intelligence and Champion Nurture
+Tower.
+
 The actions remain governed. Agentforce can explain a retail case, draft an
 evidence-backed recovery recommendation, and request approval. It cannot
 directly send Slack, WhatsApp, reorder, markdown, supplier, or store-task

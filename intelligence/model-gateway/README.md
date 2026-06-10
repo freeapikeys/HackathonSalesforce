@@ -21,8 +21,13 @@ fail-closed behavior when no deployment satisfies the data policy.
 For North Star, the same gateway should route retail recommendations and message
 drafts through logical profiles. A retail recommendation request should include
 only accessible product, store, supplier, batch, complaint, inventory,
-promotion, staff, and outcome evidence. It should never select a provider or
-model by name from Agentforce or UI code.
+promotion, staff, and outcome evidence.
+
+The private jury-gift path also defines a `nexavenu-revenue-recommendation`
+profile. Its fixture separates revenue facts, contact-sourced assumptions,
+inferences, champion-nurture recommendations, cited evidence, and human approval
+requirements. Neither Agentforce nor UI code should select a provider or model
+by name.
 
 Run:
 

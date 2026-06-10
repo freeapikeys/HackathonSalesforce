@@ -835,6 +835,7 @@
       "additionalProperties": false,
       "required": [
         "facts",
+        "assumptions",
         "inferences",
         "recommendation",
         "confidence",
@@ -850,6 +851,14 @@
             "maxLength": 1000
           },
           "minItems": 1
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
         },
         "inferences": {
           "type": "array",

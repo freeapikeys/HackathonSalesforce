@@ -262,15 +262,17 @@ and UI must support any supermarket product category.
 - [x] Define Customer and Risk Intelligence topic.
 - [x] Recommendation request includes inventory, expiry, supplier, complaint,
       promotion, and staffing evidence.
-- [ ] Recommendation response separates facts, inferences, assumptions,
+- [x] Recommendation response separates facts, inferences, assumptions,
       recommended actions, approval requirements, and expected outcomes.
 - [x] Supplier decision follows the rule: do not blindly stop all supplier
       orders because complaints exist.
 - [x] Agentforce updates recommendation after supplier response arrives.
 - [x] Agentforce refuses restricted or missing evidence.
-- [x] Model gateway uses retail profile names, not product-specific names.
+- [x] Model gateway uses logical profile names, not provider-specific or
+      product-specific names.
 - [x] Agentforce fixtures include a denied-action scenario.
 - [x] Agentforce fixtures include a changed-recommendation scenario.
+- [x] Agentforce fixtures include a Nexavenu revenue-intelligence scenario.
 
 ### 6. MuleSoft and Channel Mocks
 

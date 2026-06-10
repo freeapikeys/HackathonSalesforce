@@ -125,6 +125,10 @@ def main() -> None:
         fixture["generateRequest"],
     )
     validated += 1
+    extra_generate_requests = fixture.get("generateRequests", {})
+    for request in extra_generate_requests.values():
+        validate_value(schema, registry, "generateRequest", request)
+        validated += 1
 
     deployments = fixture["deployments"]
     assert len(deployments) == 2
@@ -138,7 +142,12 @@ def main() -> None:
         for item in deployments
     )
 
-    request_keys = walk_keys(fixture["generateRequest"])
+    request_keys: set[str] = set()
+    for request in [
+        fixture["generateRequest"],
+        *extra_generate_requests.values(),
+    ]:
+        request_keys.update(walk_keys(request))
     assert not (request_keys & FORBIDDEN_REQUEST_KEYS), (
         "Provider-specific keys leaked into generate request: "
         + ", ".join(sorted(request_keys & FORBIDDEN_REQUEST_KEYS))
@@ -187,7 +196,17 @@ def main() -> None:
             "correlationId"
         ]
 
-    expected_input_hash = content_hash(fixture["generateRequest"])
+    generate_requests = [
+        fixture["generateRequest"],
+        *extra_generate_requests.values(),
+    ]
+    requests_by_profile = {
+        request["profileKey"]: request for request in generate_requests
+    }
+    input_hashes_by_profile = {
+        profile: content_hash(request)
+        for profile, request in requests_by_profile.items()
+    }
     failed_closed_input_hash = content_hash(
         fixture["routingRequests"]["noQualifiedDeployment"]
     )
@@ -198,11 +217,15 @@ def main() -> None:
         expected_audit_input_hash = (
             failed_closed_input_hash
             if audit["status"] == "FAILED_CLOSED"
-            else expected_input_hash
+            else input_hashes_by_profile[audit["profileKey"]]
         )
         assert audit["inputHash"] == expected_audit_input_hash
         assert audit["policyVersion"] == policy["version"]
-        assert audit["evidenceIds"] == fixture["generateRequest"]["context"][
+        expected_request = requests_by_profile.get(
+            audit["profileKey"],
+            fixture["generateRequest"],
+        )
+        assert audit["evidenceIds"] == expected_request["context"][
             "evidenceIds"
         ]
         for attempt in audit["attempts"]:
@@ -225,9 +248,13 @@ def main() -> None:
             assert audit["selectedDeploymentVersion"] is None
             assert audit["outputHash"] is None
 
-    primary_audit, fallback_audit, failed_closed_audit = fixture[
-        "invocationAudits"
-    ]
+    primary_audit = fixture["invocationAudits"][0]
+    fallback_audit = fixture["invocationAudits"][1]
+    failed_closed_audit = next(
+        audit
+        for audit in fixture["invocationAudits"]
+        if audit["status"] == "FAILED_CLOSED"
+    )
     assert not primary_audit["fallbackUsed"]
     assert len(primary_audit["attempts"]) == 1
     assert fallback_audit["fallbackUsed"]
@@ -244,6 +271,13 @@ def main() -> None:
     assert not any(
         item["retryable"] for item in failed_closed_audit["attempts"]
     )
+    nexavenu_response = next(
+        response
+        for response in fixture["normalizedResponses"]
+        if response["profileKey"] == "nexavenu-revenue-recommendation"
+    )
+    assert nexavenu_response["output"]["assumptions"]
+    assert nexavenu_response["output"]["requiresHumanApproval"]
     assert fixture["contractVersion"] == "1.0.0"
     assert canonical_json(fixture)
 

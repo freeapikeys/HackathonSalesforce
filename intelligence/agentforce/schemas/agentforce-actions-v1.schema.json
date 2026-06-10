@@ -219,6 +219,38 @@
         }
       }
     },
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assumptionId",
+        "statement",
+        "evidenceIds"
+      ],
+      "properties": {
+        "assumptionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
     "inference": {
       "type": "object",
       "additionalProperties": false,
@@ -470,6 +502,7 @@
         "correlationId",
         "status",
         "facts",
+        "assumptions",
         "inferences",
         "citations",
         "recommendation",
@@ -511,6 +544,12 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/fact"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assumption"
           }
         },
         "inferences": {

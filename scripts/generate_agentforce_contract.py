@@ -185,6 +185,19 @@ def schema() -> dict[str, Any]:
                     },
                 },
             },
+            "assumption": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["assumptionId", "statement", "evidenceIds"],
+                "properties": {
+                    "assumptionId": key,
+                    "statement": string(2000),
+                    "evidenceIds": {
+                        **evidence_ids,
+                        "minItems": 1,
+                    },
+                },
+            },
             "inference": {
                 "type": "object",
                 "additionalProperties": False,
@@ -338,6 +351,7 @@ def schema() -> dict[str, Any]:
                     "correlationId",
                     "status",
                     "facts",
+                    "assumptions",
                     "inferences",
                     "citations",
                     "recommendation",
@@ -362,6 +376,10 @@ def schema() -> dict[str, Any]:
                     "facts": {
                         "type": "array",
                         "items": {"$ref": "#/$defs/fact"},
+                    },
+                    "assumptions": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/assumption"},
                     },
                     "inferences": {
                         "type": "array",
@@ -413,11 +431,14 @@ def base_request(action: str) -> dict[str, Any]:
 def audit(
     model_invocation_id: str | None = None,
     human_approval_required: bool = False,
+    *,
+    purpose: str = "RESOLVE_RETAIL_RISK",
+    agent_key: str = "north-star-orchestrator",
 ) -> dict[str, Any]:
     return {
         "actorUserId": "005000000000001AAA",
-        "agentKey": "north-star-orchestrator",
-        "purpose": "RESOLVE_RETAIL_RISK",
+        "agentKey": agent_key,
+        "purpose": purpose,
         "permissionEvaluated": True,
         "modelInvocationId": model_invocation_id,
         "humanApprovalRequired": human_approval_required,
@@ -433,6 +454,7 @@ def response(action: str, status: str) -> dict[str, Any]:
         "correlationId": CORRELATION,
         "status": status,
         "facts": [],
+        "assumptions": [],
         "inferences": [],
         "citations": [],
         "recommendation": None,
@@ -448,10 +470,12 @@ def citation(
     summary: str,
     suffix: str,
     content_hash: str,
+    *,
+    source_event_id: str = "a09000000000001AAA",
 ) -> dict[str, Any]:
     return {
         "evidenceId": evidence_id,
-        "sourceEventId": "a09000000000001AAA",
+        "sourceEventId": source_event_id,
         "sourceUri": f"urn:hfs:source:{suffix}",
         "contentHash": content_hash,
         "summary": summary,
@@ -695,6 +719,184 @@ def fixtures() -> dict[str, Any]:
         "model-invocation-agentforce-002", True
     )
 
+    nexavenu_lead = citation(
+        "a06000000000021AAA",
+        "Synthetic LiftOps Manufacturing entered through Agentforce webinar, LinkedIn outbound, and MuleSoft landing-page touches with ICP score 72/100.",
+        "nexavenu:revenue:lead-source",
+        "sha256:15ec846204c98c2dcd963a904d85633b5b0ad3bb7b8d44e4b0582ac3f592f4d9",
+        source_event_id="00000000-0000-4000-8000-000000000029",
+    )
+    nexavenu_education = citation(
+        "a06000000000022AAA",
+        "Buyer education gaps include missing system inventory, executive decision owner, budget range, and translation from AI ask to process, data, and integration requirements.",
+        "nexavenu:revenue:buyer-education",
+        "sha256:a79d23357b2e5c0e5f11b9a5f4ea65cffd02971e8229b107896bc55d5672ed3d",
+        source_event_id="00000000-0000-4000-8000-000000000030",
+    )
+    nexavenu_committee = citation(
+        "a06000000000023AAA",
+        "Champion map identifies operations manager as likely champion, CFO as economic buyer, CIO as technical approver, and executive sponsor plus data owner as missing stakeholders.",
+        "nexavenu:revenue:buying-committee",
+        "sha256:5c81292ae1d9a73de4219c06a230a31cd3a7d08e0477095edb1b49241dcd46a5",
+        source_event_id="00000000-0000-4000-8000-000000000031",
+    )
+    nexavenu_readiness = citation(
+        "a06000000000024AAA",
+        "Discovery readiness score is 48/100 and the handoff gate is HOLD until budget owner, current systems list, decision timeline, and success metric are resolved.",
+        "nexavenu:revenue:discovery-readiness",
+        "sha256:45ffe60a85a761be8db5fae6ca1858ad7ae8786770b100ffb4ef9121ac3bcfe5",
+        source_event_id="00000000-0000-4000-8000-000000000032",
+    )
+    nexavenu_close_plan = citation(
+        "a06000000000025AAA",
+        "Close plan recommends champion briefing pack, system inventory request, CFO/CIO alignment call after readiness reaches 70, and human approval for external champion email, opportunity stage update, and solution-consultant handoff.",
+        "nexavenu:revenue:close-plan",
+        "sha256:cc8225815cd95c3a2ddbf4b8571503137a96ca3449d35fe6cf41e1429f05016d",
+        source_event_id="00000000-0000-4000-8000-000000000033",
+    )
+    nexavenu_retention = citation(
+        "a06000000000026AAA",
+        "Existing synthetic customer risk shows previous-loyalty account with adoption friction, executive dissatisfaction, and missing expansion owner.",
+        "nexavenu:revenue:retention-risk",
+        "sha256:8733ad175aa9a44fdc16c22bf553e2fecfc2421145b1357e7f0a3132f83bbd67",
+        source_event_id="00000000-0000-4000-8000-000000000034",
+    )
+    nexavenu_outcome = citation(
+        "a06000000000027AAA",
+        "Outcome fixture shows readiness score increased from 48 to 76, champion replied with system inventory, CFO/CIO alignment call was accepted, handoff was scheduled, and retention review was created.",
+        "nexavenu:revenue:outcome",
+        "sha256:82a2d3f5e30cbdeb5a48be25c05a822d85101593452e443074a91441cde34644",
+        source_event_id="00000000-0000-4000-8000-000000000036",
+    )
+
+    nexavenu_request = base_request("DRAFT_RELATIONSHIP_RECOMMENDATION")
+    nexavenu_request["purpose"] = "QUALIFY_B2B_REVENUE_PIPELINE"
+    nexavenu_request["workItemId"] = "a0E00000000009AAA"
+    nexavenu_request["desiredOutcome"] = (
+        "Qualify and educate a B2B AI/MuleSoft prospect, build a champion map, protect senior discovery time, and capture retention feedback without executing external actions."
+    )
+    nexavenu_request["modelProfile"] = "nexavenu-revenue-recommendation"
+    nexavenu_response = response(
+        "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
+    )
+    nexavenu_response["citations"] = [
+        nexavenu_lead,
+        nexavenu_education,
+        nexavenu_committee,
+        nexavenu_readiness,
+        nexavenu_close_plan,
+        nexavenu_retention,
+        nexavenu_outcome,
+    ]
+    nexavenu_response["facts"] = [
+        {
+            "factId": "fact-nexavenu-icp-score",
+            "statement": "Synthetic prospect has ICP score 72/100 from industry fit, integration complexity, executive intent, data readiness, and budget signal.",
+            "evidenceIds": [nexavenu_lead["evidenceId"]],
+        },
+        {
+            "factId": "fact-nexavenu-education-gaps",
+            "statement": "Buyer education gaps remain around system inventory, decision owner, budget range, and translation from AI interest into process, data, and integration requirements.",
+            "evidenceIds": [nexavenu_education["evidenceId"]],
+        },
+        {
+            "factId": "fact-nexavenu-champion-map",
+            "statement": "Operations manager is the likely champion; CFO and CIO are high-influence buyers; executive sponsor and data owner are missing.",
+            "evidenceIds": [nexavenu_committee["evidenceId"]],
+        },
+        {
+            "factId": "fact-nexavenu-readiness-score",
+            "statement": "Discovery readiness score is 48/100 and the handoff gate is HOLD.",
+            "evidenceIds": [nexavenu_readiness["evidenceId"]],
+        },
+        {
+            "factId": "fact-nexavenu-retention-risk",
+            "statement": "A synthetic existing customer shows adoption friction, executive dissatisfaction, and no named expansion owner after previous loyalty.",
+            "evidenceIds": [nexavenu_retention["evidenceId"]],
+        },
+        {
+            "factId": "fact-nexavenu-feedback-loop",
+            "statement": "When nurture actions are approved, the synthetic outcome raises readiness to 76, gets champion inventory, accepts CFO/CIO alignment, schedules handoff, and creates retention review.",
+            "evidenceIds": [nexavenu_outcome["evidenceId"]],
+        },
+    ]
+    nexavenu_response["assumptions"] = [
+        {
+            "assumptionId": "assumption-contact-sourced-lead-quality",
+            "statement": "Contact-sourced signal suggests lead quality and buyer education are major constraints; treat this as a private diagnostic assumption, not a public claim.",
+            "evidenceIds": [
+                nexavenu_lead["evidenceId"],
+                nexavenu_education["evidenceId"],
+            ],
+        },
+        {
+            "assumptionId": "assumption-contact-sourced-discovery-compression",
+            "statement": "Contact-sourced signal suggests discovery should be compressed through readiness gates before senior solution-consultant handoff.",
+            "evidenceIds": [
+                nexavenu_readiness["evidenceId"],
+                nexavenu_close_plan["evidenceId"],
+            ],
+        },
+    ]
+    nexavenu_response["inferences"] = [
+        {
+            "inferenceId": "inference-nexavenu-keep-in-nurture",
+            "statement": "The prospect is promising but not ready for senior delivery discovery until stakeholder, budget, system inventory, and success metric gaps are resolved.",
+            "basisFactIds": [
+                "fact-nexavenu-icp-score",
+                "fact-nexavenu-education-gaps",
+                "fact-nexavenu-champion-map",
+                "fact-nexavenu-readiness-score",
+            ],
+            "confidence": 0.82,
+        },
+        {
+            "inferenceId": "inference-nexavenu-champion-first",
+            "statement": "Champion enablement and content sequencing should happen before a CFO/CIO alignment call, because the likely champion needs ROI and integration inventory support.",
+            "basisFactIds": [
+                "fact-nexavenu-education-gaps",
+                "fact-nexavenu-champion-map",
+                "fact-nexavenu-readiness-score",
+            ],
+            "confidence": 0.79,
+        },
+        {
+            "inferenceId": "inference-nexavenu-retention-loop",
+            "statement": "Revenue intelligence must cover post-sale first impressions as well as lead nurture because churn risk can appear even after loyal history.",
+            "basisFactIds": [
+                "fact-nexavenu-retention-risk",
+                "fact-nexavenu-feedback-loop",
+            ],
+            "confidence": 0.78,
+        },
+    ]
+    nexavenu_response["recommendation"] = {
+        "recommendationType": "NEXAVENU_REVENUE_INTELLIGENCE_PLAN",
+        "proposedActionType": "APPROVE_NEXAVENU_CHAMPION_NURTURE_ACTIONS",
+        "rationale": (
+            "Keep the lead in nurture until readiness crosses 70, send the AI readiness checklist, MuleSoft modernization explainer, field-service case story, and CFO ROI proof, equip the operations champion with a briefing pack, request system inventory and success metric worksheet, then schedule CFO/CIO alignment. Separately open a retention review for the existing customer signal. External champion email, opportunity stage movement, solution-consultant handoff, and retention outreach require human approval. Expected outcomes are qualified discovery, protected solution-consultant time, champion-equipped CFO/CIO alignment, and early retention recovery."
+        ),
+        "confidence": 0.83,
+        "evidenceIds": [
+            nexavenu_lead["evidenceId"],
+            nexavenu_education["evidenceId"],
+            nexavenu_committee["evidenceId"],
+            nexavenu_readiness["evidenceId"],
+            nexavenu_close_plan["evidenceId"],
+            nexavenu_retention["evidenceId"],
+            nexavenu_outcome["evidenceId"],
+        ],
+        "modelProfile": "nexavenu-revenue-recommendation",
+        "modelInvocationId": "model-invocation-agentforce-nexavenu-001",
+        "requiresHumanApproval": True,
+    }
+    nexavenu_response["audit"] = audit(
+        "model-invocation-agentforce-nexavenu-001",
+        True,
+        purpose="QUALIFY_B2B_REVENUE_PIPELINE",
+        agent_key="nexavenu-revenue-orchestrator",
+    )
+
     return {
         "contractVersion": CONTRACT_VERSION,
         "actionCatalog": [
@@ -775,6 +977,11 @@ def fixtures() -> dict[str, Any]:
                 "name": "changed-recommendation-after-supplier-response",
                 "request": changed_request,
                 "response": changed_response,
+            },
+            {
+                "name": "nexavenu-revenue-intelligence-recommendation",
+                "request": nexavenu_request,
+                "response": nexavenu_response,
             },
         ],
     }

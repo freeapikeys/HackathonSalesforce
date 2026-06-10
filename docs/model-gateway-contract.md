@@ -16,10 +16,11 @@ Provider and model identifiers are deployment configuration. They do not
 appear in recommendation requests, prompts, Agentforce workflow logic, or UI
 state.
 
-North Star callers should request logical capabilities such as
-`retail_recovery_reasoning` or the existing `recommendation_reasoning`
-profile. They must not request a provider, a model name, or a product-specific
-profile such as a burger-only model.
+North Star callers should request logical profiles such as
+`north-star-retail-recommendation`. Jury-gift callers can request similarly
+logical profiles such as `nexavenu-revenue-recommendation`. They must not
+request a provider, a model name, or a product-specific profile such as a
+burger-only model.
 
 ## Deterministic Routing
 
@@ -44,6 +45,11 @@ Every invocation records:
 - retention mode and completion status.
 
 Sensitive prompt or response content is not required in the audit record.
+
+Normalized recommendation outputs separate facts, assumptions, inferences,
+recommendation text, confidence, cited evidence, and human-approval
+requirements. This is required for private diagnostic signal: a contact-sourced
+assumption can inform a recommendation without being promoted into source truth.
 
 North Star invocation audit should also record the selected product external key,
 product category, store key, supplier key, source evidence identifiers,

@@ -83,6 +83,11 @@ def main() -> int:
                 set(fact["evidenceIds"]) <= citation_ids,
                 f"{name}: fact cites evidence not returned to the user.",
             )
+        for assumption in response["assumptions"]:
+            require(
+                set(assumption["evidenceIds"]) <= citation_ids,
+                f"{name}: assumption cites evidence not returned to the user.",
+            )
         for inference in response["inferences"]:
             require(
                 set(inference["basisFactIds"]) <= fact_ids,
@@ -112,6 +117,7 @@ def main() -> int:
             require(response["refusal"] is not None, f"{name}: refusal missing.")
             require(
                 not response["facts"]
+                and not response["assumptions"]
                 and not response["inferences"]
                 and not response["citations"]
                 and response["recommendation"] is None
@@ -144,6 +150,7 @@ def main() -> int:
         "no-qualified-model-refusal",
         "invalid-approval-request-error",
         "changed-recommendation-after-supplier-response",
+        "nexavenu-revenue-intelligence-recommendation",
     }
     require(
         required_scenarios <= scenario_names,
@@ -154,8 +161,33 @@ def main() -> int:
         if recommendation:
             require(
                 recommendation["modelProfile"]
-                == "north-star-retail-recommendation",
-                f"{scenario['name']}: recommendation used a non-retail model profile.",
+                in {
+                    "north-star-retail-recommendation",
+                    "nexavenu-revenue-recommendation",
+                },
+                f"{scenario['name']}: recommendation used an unsupported model profile.",
+            )
+        if scenario["name"] == "nexavenu-revenue-intelligence-recommendation":
+            response = scenario["response"]
+            fact_ids = {fact["factId"] for fact in response["facts"]}
+            require(
+                {
+                    "fact-nexavenu-icp-score",
+                    "fact-nexavenu-education-gaps",
+                    "fact-nexavenu-champion-map",
+                    "fact-nexavenu-readiness-score",
+                }
+                <= fact_ids,
+                "Nexavenu scenario is missing required revenue facts.",
+            )
+            require(
+                response["assumptions"],
+                "Nexavenu scenario must separate contact-sourced assumptions.",
+            )
+            require(
+                response["recommendation"]
+                and response["recommendation"]["requiresHumanApproval"],
+                "Nexavenu scenario must leave protected actions behind human approval.",
             )
     print(
         "Agentforce action contract is valid "
