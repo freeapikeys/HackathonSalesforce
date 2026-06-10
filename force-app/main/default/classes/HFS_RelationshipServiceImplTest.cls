@@ -82,16 +82,37 @@ private class HFS_RelationshipServiceImplTest {
       Effective_From__c = nowValue.date().addDays(-30)
     );
 
+    HFS_Work_Item__c dependencyWork = new HFS_Work_Item__c(
+      External_Key__c = 'work-supplier-handoff-test',
+      Tenant_Key__c = TENANT,
+      Primary_Entity__c = supplier.Id,
+      Trigger_Event__c = sourceEvent.Id,
+      Status__c = 'IN_PROGRESS',
+      Priority__c = 'MEDIUM',
+      Summary__c = 'Confirm supplier status before customer update.',
+      Due_At__c = nowValue.addHours(1),
+      Owner_Role__c = 'Supplier Desk',
+      Handoff_State__c = 'ACCEPTED',
+      Closure_Verification_Status__c = 'PENDING_EVIDENCE'
+    );
+    insert dependencyWork;
+
     HFS_Work_Item__c workItem = new HFS_Work_Item__c(
       External_Key__c = 'work-service-test',
       Tenant_Key__c = TENANT,
       Primary_Entity__c = customer.Id,
       Trigger_Event__c = sourceEvent.Id,
+      Depends_On_Work_Item__c = dependencyWork.Id,
       Status__c = 'IN_PROGRESS',
       Priority__c = 'HIGH',
       Summary__c = 'Prepare and approve a proactive customer update.',
       Due_At__c = nowValue.addHours(2),
-      Blocked_Reason__c = 'Human approval is required before outreach.'
+      Blocked_Reason__c = 'Human approval is required before outreach.',
+      Owner_Role__c = 'Customer Success Lead',
+      Escalation_Role__c = 'Duty Manager',
+      Handoff_Target_Role__c = 'Store Operations Lead',
+      Handoff_State__c = 'REQUESTED',
+      Closure_Verification_Status__c = 'PENDING_EVIDENCE'
     );
     insert workItem;
     insert new HFS_SOP_Execution__c(
@@ -101,6 +122,8 @@ private class HFS_RelationshipServiceImplTest {
       Definition_Key__c = 'proactive-update',
       Definition_Version__c = '1.0.0',
       Current_Step_Key__c = 'REVIEW_EVIDENCE',
+      Required_Evidence__c = 'Customer promise, source event, approved recommendation, and outcome proof.',
+      Escalation_Rule__c = 'Escalate to Duty Manager if approval or supplier status is missing before the due time.',
       Status__c = 'RUNNING',
       Started_At__c = nowValue.addMinutes(-8)
     );
@@ -388,6 +411,29 @@ private class HFS_RelationshipServiceImplTest {
       'Human approval is required before outreach.',
       context.workItem.blockedReason
     );
+    HFS_Work_Item__c dependency = [
+      SELECT Id
+      FROM HFS_Work_Item__c
+      WHERE External_Key__c = 'work-supplier-handoff-test'
+      LIMIT 1
+    ];
+    System.assertEquals(
+      String.valueOf(dependency.Id),
+      context.workItem.dependsOnWorkItemId
+    );
+    System.assertEquals('Customer Success Lead', context.workItem.ownerRole);
+    System.assertEquals('Duty Manager', context.workItem.escalationRole);
+    System.assertEquals(
+      'Store Operations Lead',
+      context.workItem.handoffTargetRole
+    );
+    System.assertEquals('COMPLETED', context.workItem.handoffState);
+    System.assertEquals('VERIFIED', context.workItem.closureVerificationStatus);
+    System.assertNotEquals(null, context.workItem.closureVerifiedAt);
+    System.assertEquals(
+      outcomeResult.recordId,
+      context.workItem.closureOutcomeId
+    );
     System.assert(context.entities.size() >= 3);
     System.assertEquals(1, context.relationships.size());
     System.assertEquals(1, context.eventParticipants.size());
@@ -400,6 +446,14 @@ private class HFS_RelationshipServiceImplTest {
     System.assertEquals(1, context.outcomes.size());
     System.assert(context.timeline.size() >= 5);
     System.assertEquals('1.0.0', context.sopExecutions[0].definitionVersion);
+    System.assertEquals(
+      'Customer promise, source event, approved recommendation, and outcome proof.',
+      context.sopExecutions[0].requiredEvidence
+    );
+    System.assertEquals(
+      'Escalate to Duty Manager if approval or supplier status is missing before the due time.',
+      context.sopExecutions[0].escalationRule
+    );
     System.assertEquals(
       'SEND_STATUS_UPDATE',
       context.recommendations[0].proposedActionType

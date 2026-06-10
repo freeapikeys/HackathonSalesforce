@@ -26,15 +26,17 @@ The ready state contains:
 
 - case identity, severity, status, owner, service deadline, and next update;
 - affected relationship and connected entities;
-- blockers and cross-functional ownership;
+- blockers, dependencies, handoff state, escalation role, and cross-functional
+  ownership;
 - chronological source-backed timeline;
 - evidence citations and content hashes;
-- SOP version, current step, progress, and required evidence;
+- SOP version, current step, progress, required evidence, and escalation rule;
 - recommendation facts, inferences, confidence, and model profile;
 - approval policy, current status, and permitted decisions;
 - relationship history, participant links, contradictory claims, correction
   state, supersession approval metadata, superseding reviewer, and
   correction-review controls;
+- verified closure state when an outcome completes the accountable work item;
 - action history and source-system correlation;
 - observed outcome and effectiveness state.
 

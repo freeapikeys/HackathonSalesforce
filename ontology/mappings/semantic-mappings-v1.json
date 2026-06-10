@@ -825,6 +825,17 @@
           { "object": "HFS_Work_Item__c", "field": "Primary_Entity__c" },
           { "object": "HFS_Work_Item__c", "field": "Trigger_Event__c" },
           { "object": "HFS_Work_Item__c", "field": "Target_Relationship__c" },
+          { "object": "HFS_Work_Item__c", "field": "Depends_On_Work_Item__c" },
+          { "object": "HFS_Work_Item__c", "field": "Owner_Role__c" },
+          { "object": "HFS_Work_Item__c", "field": "Escalation_Role__c" },
+          { "object": "HFS_Work_Item__c", "field": "Handoff_Target_Role__c" },
+          { "object": "HFS_Work_Item__c", "field": "Handoff_State__c" },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Closure_Verification_Status__c"
+          },
+          { "object": "HFS_Work_Item__c", "field": "Closure_Verified_At__c" },
+          { "object": "HFS_Work_Item__c", "field": "Closure_Outcome__c" },
           { "object": "HFS_Work_Item__c", "field": "Status__c" },
           { "object": "HFS_Work_Item__c", "field": "Priority__c" },
           { "object": "HFS_Work_Item__c", "field": "Summary__c" },
@@ -841,9 +852,9 @@
         "property": "prov:wasGeneratedBy"
       },
       "transformation": {
-        "rule": "Create accountable work from the triggering event, primary entity, optional target relationship, status, priority, summary, due time, and blocker state.",
+        "rule": "Create accountable work from the triggering event, primary entity, optional target relationship, dependency, owner role, handoff state, escalation role, closure verification, status, priority, summary, due time, and blocker state.",
         "loss": "none",
-        "ambiguity": "Priority is a policy output, not simply severity copied from source."
+        "ambiguity": "Priority is a policy output, not simply severity copied from source; handoff roles are business responsibilities until bound to concrete users or queues."
       }
     },
     {
@@ -869,6 +880,14 @@
           },
           { "object": "HFS_SOP_Execution__c", "field": "Status__c" },
           { "object": "HFS_SOP_Execution__c", "field": "Current_Step_Key__c" },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Required_Evidence__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Escalation_Rule__c"
+          },
           { "object": "HFS_SOP_Execution__c", "field": "Started_At__c" },
           { "object": "HFS_SOP_Execution__c", "field": "Completed_At__c" }
         ]
@@ -882,9 +901,9 @@
         "property": "prov:wasGeneratedBy"
       },
       "transformation": {
-        "rule": "Track SOP definition, version, current step, and lifecycle timestamps for coordinated work.",
+        "rule": "Track SOP definition, version, current step, required evidence, escalation rule, and lifecycle timestamps for coordinated work.",
         "loss": "none",
-        "ambiguity": "The SOP DAG definition remains separate from the execution record."
+        "ambiguity": "The SOP DAG definition remains separate from the execution record; evidence requirements are policy text until evaluated by service logic."
       }
     },
     {

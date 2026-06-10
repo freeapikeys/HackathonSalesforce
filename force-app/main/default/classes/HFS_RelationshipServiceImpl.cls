@@ -641,6 +641,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
           'externalKey'
         );
         if (outcomeMatches(existing, command)) {
+          markTerminalWorkClosure(command.tenantKey, existing);
           return HFS_ServiceSupport.success(
             HFS_ServiceContract.CAPTURE_OUTCOME,
             command.correlationId,
@@ -691,16 +692,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       update as user action;
 
       if (TERMINAL_OUTCOME_STATUSES.contains(command.status)) {
-        HFS_Recommendation__c recommendation = recommendation(
-          String.valueOf(action.Recommendation__c)
-        );
-        HFS_Work_Item__c workItem = workItem(
-          String.valueOf(recommendation.Work_Item__c)
-        );
-        requireTenant(command.tenantKey, recommendation, 'actionId');
-        requireTenant(command.tenantKey, workItem, 'actionId');
-        workItem.Status__c = 'COMPLETED';
-        update as user workItem;
+        markTerminalWorkClosure(command.tenantKey, outcome);
       }
       return HFS_ServiceSupport.success(
         HFS_ServiceContract.CAPTURE_OUTCOME,
@@ -810,7 +802,11 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         Status__c,
         Primary_Entity__c,
         Trigger_Event__c,
-        Target_Relationship__c
+        Target_Relationship__c,
+        Handoff_State__c,
+        Closure_Verification_Status__c,
+        Closure_Verified_At__c,
+        Closure_Outcome__c
       FROM HFS_Work_Item__c
       WHERE Id = :value
       WITH USER_MODE
@@ -925,6 +921,35 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       ? 'Approved relationship correction review.'
       : command.decisionNotes;
     update as user relationship;
+  }
+
+  private static void markTerminalWorkClosure(
+    String tenantKey,
+    HFS_Outcome__c outcome
+  ) {
+    if (!TERMINAL_OUTCOME_STATUSES.contains(outcome.Status__c)) {
+      return;
+    }
+
+    HFS_Action__c action = action(String.valueOf(outcome.Action__c));
+    HFS_Recommendation__c recommendation = recommendation(
+      String.valueOf(action.Recommendation__c)
+    );
+    HFS_Work_Item__c workItem = workItem(
+      String.valueOf(recommendation.Work_Item__c)
+    );
+    requireTenant(tenantKey, action, 'actionId');
+    requireTenant(tenantKey, recommendation, 'actionId');
+    requireTenant(tenantKey, workItem, 'actionId');
+
+    workItem.Status__c = 'COMPLETED';
+    workItem.Handoff_State__c = 'COMPLETED';
+    workItem.Closure_Verification_Status__c = 'VERIFIED';
+    workItem.Closure_Verified_At__c = outcome.Observed_At__c == null
+      ? System.now()
+      : outcome.Observed_At__c;
+    workItem.Closure_Outcome__c = outcome.Id;
+    update as user workItem;
   }
 
   private static void inaccessibleEvidence() {

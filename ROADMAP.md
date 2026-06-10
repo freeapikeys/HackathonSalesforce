@@ -290,6 +290,8 @@ and UI must support any supermarket product category.
       preservation.
 - [ ] Map store tasks to action records and/or Salesforce task records.
 - [x] Add optional metadata only when current records cannot express demo needs.
+- [x] Work items preserve owner role, dependency, handoff, escalation, and
+      outcome-verified closure state.
 - [ ] Apex context includes product, batch, store, supplier, promotion,
       complaint, stock, staffing, recommendation, approval, action, and outcome.
 - [ ] Manager approval is enforced before reorder, supplier case, markdown,

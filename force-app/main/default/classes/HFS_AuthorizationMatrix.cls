@@ -265,7 +265,11 @@ public class HFS_AuthorizationMatrix {
       'HFS_Action__c.Executed_At__c',
       'HFS_Action__c.External_Reference__c',
       'HFS_Action__c.Failure_Detail__c',
-      'HFS_Work_Item__c.Status__c'
+      'HFS_Work_Item__c.Status__c',
+      'HFS_Work_Item__c.Handoff_State__c',
+      'HFS_Work_Item__c.Closure_Verification_Status__c',
+      'HFS_Work_Item__c.Closure_Verified_At__c',
+      'HFS_Work_Item__c.Closure_Outcome__c'
     };
   }
 

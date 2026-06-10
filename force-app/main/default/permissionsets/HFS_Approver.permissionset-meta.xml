@@ -104,6 +104,46 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>HFS_Work_Item__c.Depends_On_Work_Item__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Work_Item__c.Owner_Role__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Work_Item__c.Escalation_Role__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Work_Item__c.Handoff_Target_Role__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Work_Item__c.Handoff_State__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Work_Item__c.Closure_Verification_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Work_Item__c.Closure_Verified_At__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Work_Item__c.Closure_Outcome__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>HFS_Work_Item__c.Due_At__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -115,6 +155,16 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>HFS_SOP_Execution__c.Current_Step_Key__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_SOP_Execution__c.Required_Evidence__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_SOP_Execution__c.Escalation_Rule__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

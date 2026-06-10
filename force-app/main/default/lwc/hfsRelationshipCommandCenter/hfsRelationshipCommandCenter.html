@@ -550,6 +550,11 @@
               <p class="required-evidence">
                 Required evidence: {state.case.sop.requiredEvidence}
               </p>
+              <template lwc:if={state.case.sop.escalationRule}>
+                <p class="required-evidence">
+                  Escalation: {state.case.sop.escalationRule}
+                </p>
+              </template>
             </section>
 
             <section

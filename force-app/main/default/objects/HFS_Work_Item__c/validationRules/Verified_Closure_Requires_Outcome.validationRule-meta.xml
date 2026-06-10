@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Verified_Closure_Requires_Outcome</fullName>
+    <active>true</active>
+    <description>Verified closure requires a closure timestamp and outcome.</description>
+    <errorConditionFormula>AND(ISPICKVAL(Closure_Verification_Status__c, "VERIFIED"), OR(ISBLANK(Closure_Verified_At__c), ISBLANK(Closure_Outcome__c)))</errorConditionFormula>
+    <errorMessage>Verified closure requires a closure timestamp and outcome.</errorMessage>
+</ValidationRule>

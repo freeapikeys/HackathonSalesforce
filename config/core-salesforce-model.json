@@ -423,6 +423,61 @@
           "referenceTo": "HFS_Relationship__c"
         },
         {
+          "api": "Depends_On_Work_Item__c",
+          "label": "Depends On Work Item",
+          "type": "Lookup",
+          "referenceTo": "HFS_Work_Item__c"
+        },
+        {
+          "api": "Owner_Role__c",
+          "label": "Owner Role",
+          "type": "Text",
+          "length": 120
+        },
+        {
+          "api": "Escalation_Role__c",
+          "label": "Escalation Role",
+          "type": "Text",
+          "length": 120
+        },
+        {
+          "api": "Handoff_Target_Role__c",
+          "label": "Handoff Target Role",
+          "type": "Text",
+          "length": 120
+        },
+        {
+          "api": "Handoff_State__c",
+          "label": "Handoff State",
+          "type": "Picklist",
+          "values": [
+            "NOT_REQUIRED",
+            "READY",
+            "BLOCKED",
+            "REQUESTED",
+            "ACCEPTED",
+            "RETURNED",
+            "COMPLETED"
+          ]
+        },
+        {
+          "api": "Closure_Verification_Status__c",
+          "label": "Closure Verification Status",
+          "type": "Picklist",
+          "values": ["NOT_REQUIRED", "PENDING_EVIDENCE", "VERIFIED", "REOPENED"]
+        },
+        {
+          "api": "Closure_Verified_At__c",
+          "label": "Closure Verified At",
+          "type": "DateTime"
+        },
+        {
+          "api": "Closure_Outcome__c",
+          "label": "Closure Outcome",
+          "type": "Lookup",
+          "referenceTo": "HFS_Outcome__c"
+        },
+        {
           "api": "Status__c",
           "label": "Status",
           "type": "Picklist",
@@ -457,6 +512,13 @@
           "type": "LongTextArea",
           "length": 32768,
           "visibleLines": 5
+        }
+      ],
+      "validationRules": [
+        {
+          "api": "Verified_Closure_Requires_Outcome",
+          "formula": "AND(ISPICKVAL(Closure_Verification_Status__c, \"VERIFIED\"), OR(ISBLANK(Closure_Verified_At__c), ISBLANK(Closure_Outcome__c)))",
+          "message": "Verified closure requires a closure timestamp and outcome."
         }
       ]
     },
@@ -508,6 +570,20 @@
           "label": "Current Step Key",
           "type": "Text",
           "length": 160
+        },
+        {
+          "api": "Required_Evidence__c",
+          "label": "Required Evidence",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 5
+        },
+        {
+          "api": "Escalation_Rule__c",
+          "label": "Escalation Rule",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 5
         },
         {
           "api": "Started_At__c",

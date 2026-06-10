@@ -160,6 +160,50 @@ function correctionActionForRelationship(relationship, index) {
   };
 }
 
+function workBlockers(workItem) {
+  const blockers = [];
+  if (workItem.blockedReason) {
+    blockers.push({
+      id: `${workItem.recordId}-blocker`,
+      label: workItem.blockedReason,
+      owner: workItem.ownerRole || workItem.ownerLabel || "Work owner",
+      status: "Blocked",
+      dueAt: workItem.dueAt
+    });
+  }
+  if (workItem.dependsOnWorkItemId) {
+    blockers.push({
+      id: `${workItem.recordId}-dependency`,
+      label: `Depends on ${workItem.dependsOnWorkItemId}`,
+      owner: workItem.handoffTargetRole || workItem.ownerRole || "Work owner",
+      status: "Dependency",
+      dueAt: workItem.dueAt
+    });
+  }
+  if (
+    workItem.handoffState &&
+    !["NOT_REQUIRED", "COMPLETED"].includes(workItem.handoffState)
+  ) {
+    blockers.push({
+      id: `${workItem.recordId}-handoff`,
+      label: `Handoff ${humanize(workItem.handoffState)}`,
+      owner: workItem.handoffTargetRole || "Handoff owner",
+      status: humanize(workItem.handoffState),
+      dueAt: workItem.dueAt
+    });
+  }
+  if (workItem.escalationRole) {
+    blockers.push({
+      id: `${workItem.recordId}-escalation`,
+      label: "Escalation path",
+      owner: workItem.escalationRole,
+      status: "Available",
+      dueAt: workItem.dueAt
+    });
+  }
+  return blockers;
+}
+
 export function mapCommandCenterPayload(payload, purpose) {
   const context = payload?.context;
   if (!context) {
@@ -231,7 +275,7 @@ export function mapCommandCenterPayload(payload, purpose) {
       status: humanize(workItem.status),
       owner: {
         name: workItem.ownerLabel || "Unassigned",
-        role: "Salesforce record owner",
+        role: workItem.ownerRole || "Salesforce record owner",
         since: workItem.occurredAt
       },
       serviceDeadline: workItem.dueAt,
@@ -330,17 +374,7 @@ export function mapCommandCenterPayload(payload, purpose) {
             ? "Primary relationship"
             : "Connected entity"
       })),
-      blockers: workItem.blockedReason
-        ? [
-            {
-              id: `${workItem.recordId}-blocker`,
-              label: workItem.blockedReason,
-              owner: workItem.ownerLabel || "Work owner",
-              status: "Blocked",
-              dueAt: workItem.dueAt
-            }
-          ]
-        : [],
+      blockers: workBlockers(workItem),
       timeline: (context.timeline || []).map(timelineItem),
       evidence: (context.evidence || []).map((evidence, index) => ({
         id: evidence.evidenceId,
@@ -358,7 +392,10 @@ export function mapCommandCenterPayload(payload, purpose) {
         completedSteps: sop.status === "COMPLETED" ? 1 : 0,
         totalSteps: 1,
         progress: sop.status === "COMPLETED" ? 100 : 0,
-        requiredEvidence: "Evidence requirements are defined by the active SOP."
+        requiredEvidence:
+          sop.requiredEvidence ||
+          "Evidence requirements are defined by the active SOP.",
+        escalationRule: sop.escalationRule
       },
       recommendation: {
         id: recommendation.recordId,

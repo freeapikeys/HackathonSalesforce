@@ -51,6 +51,8 @@ public with sharing class HFS_ContextAssembler {
         Definition_Key__c,
         Definition_Version__c,
         Current_Step_Key__c,
+        Required_Evidence__c,
+        Escalation_Rule__c,
         Status__c,
         Started_At__c,
         Completed_At__c
@@ -458,6 +460,14 @@ public with sharing class HFS_ContextAssembler {
           Due_At__c,
           Blocked_Reason__c,
           Target_Relationship__c,
+          Depends_On_Work_Item__c,
+          Owner_Role__c,
+          Escalation_Role__c,
+          Handoff_Target_Role__c,
+          Handoff_State__c,
+          Closure_Verification_Status__c,
+          Closure_Verified_At__c,
+          Closure_Outcome__c,
           Owner.Name,
           CreatedDate
         FROM HFS_Work_Item__c
@@ -484,6 +494,14 @@ public with sharing class HFS_ContextAssembler {
           Due_At__c,
           Blocked_Reason__c,
           Target_Relationship__c,
+          Depends_On_Work_Item__c,
+          Owner_Role__c,
+          Escalation_Role__c,
+          Handoff_Target_Role__c,
+          Handoff_State__c,
+          Closure_Verification_Status__c,
+          Closure_Verified_At__c,
+          Closure_Outcome__c,
           Owner.Name,
           CreatedDate
         FROM HFS_Work_Item__c
@@ -628,6 +646,14 @@ public with sharing class HFS_ContextAssembler {
             Due_At__c,
             Blocked_Reason__c,
             Target_Relationship__c,
+            Depends_On_Work_Item__c,
+            Owner_Role__c,
+            Escalation_Role__c,
+            Handoff_Target_Role__c,
+            Handoff_State__c,
+            Closure_Verification_Status__c,
+            Closure_Verified_At__c,
+            Closure_Outcome__c,
             CreatedDate
           FROM HFS_Work_Item__c
           WHERE Id = :recordId
@@ -659,6 +685,8 @@ public with sharing class HFS_ContextAssembler {
             Definition_Key__c,
             Definition_Version__c,
             Current_Step_Key__c,
+            Required_Evidence__c,
+            Escalation_Rule__c,
             Status__c,
             Started_At__c,
             Completed_At__c
@@ -1147,6 +1175,14 @@ public with sharing class HFS_ContextAssembler {
       result.dueAt = value.Due_At__c;
       result.blockedReason = value.Blocked_Reason__c;
       result.targetRelationshipId = stringId(value.Target_Relationship__c);
+      result.dependsOnWorkItemId = stringId(value.Depends_On_Work_Item__c);
+      result.ownerRole = value.Owner_Role__c;
+      result.escalationRole = value.Escalation_Role__c;
+      result.handoffTargetRole = value.Handoff_Target_Role__c;
+      result.handoffState = value.Handoff_State__c;
+      result.closureVerificationStatus = value.Closure_Verification_Status__c;
+      result.closureVerifiedAt = value.Closure_Verified_At__c;
+      result.closureOutcomeId = stringId(value.Closure_Outcome__c);
       return result;
     }
     if (recordValue instanceof HFS_SOP_Execution__c) {
@@ -1169,6 +1205,8 @@ public with sharing class HFS_ContextAssembler {
         null
       );
       result.definitionVersion = value.Definition_Version__c;
+      result.requiredEvidence = value.Required_Evidence__c;
+      result.escalationRule = value.Escalation_Rule__c;
       return result;
     }
     if (recordValue instanceof HFS_Evidence__c) {

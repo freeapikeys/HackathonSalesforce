@@ -13,7 +13,7 @@ and integration adapters. It covers:
 - recommendation storage;
 - approval requests and human decisions;
 - pending action logging;
-- outcome capture.
+- outcome capture and verified work closure.
 
 The service remains domain-neutral. North Star maps supermarket products,
 stores, suppliers, batches, complaints, promotions, tasks, and channel alerts
@@ -54,8 +54,10 @@ authorization, replay, and error behavior.
 - Approval decisions and action execution require their named custom
   permissions.
 - Human decisions derive the deciding user and timestamp on the server.
-- Outcome capture records the outcome, marks the action executed, and completes
-  terminal work in one rollback-protected transaction.
+- Outcome capture records the outcome, marks the action executed, and for
+  terminal outcomes completes the work item, marks the handoff completed, and
+  stamps verified closure with the outcome proof in one rollback-protected
+  transaction.
 
 ## Verified Failure Paths
 
@@ -114,7 +116,7 @@ implementation may authorize from a role-name string alone.
 | Request approval     | Deny              | Allow    | Allow            | Approval create access                                                                            |
 | Decide approval      | Deny              | Allow    | Deny             | `HFS_Approve_Recommendation`; relationship update access when approving a correction supersession |
 | Log action           | Deny              | Deny     | Allow            | `HFS_Execute_Action` and approved approval                                                        |
-| Capture outcome      | Deny              | Deny     | Allow            | `HFS_Execute_Action`                                                                              |
+| Capture outcome      | Deny              | Deny     | Allow            | `HFS_Execute_Action`; terminal outcomes verify work closure                                       |
 | Correction review    | CRUD/FLS          | CRUD/FLS | CRUD/FLS         | Work, evidence, recommendation, and approval create                                               |
 
 `HFS_AuthorizationMatrix` is the executable policy definition. It names the
@@ -136,6 +138,8 @@ transaction boundary for every operation.
   callout in the DML transaction.
 - External action execution requires an approved approval linked to the same
   recommendation.
+- Terminal outcome capture completes the linked work item and records closure
+  verification on the work item with the outcome as proof.
 - Correction review requests create pending review work only. Approved
   correction decisions persist explicit supersession state on the target
   relationship and keep the original assertion, source evidence, reviewer, and
@@ -152,7 +156,7 @@ transaction boundary for every operation.
 | Approval request             | All-or-nothing DML                                                                                                         |
 | Approval decision            | All-or-nothing approval DML; approved correction supersession also updates the target relationship in the same transaction |
 | Action logging               | All-or-nothing pending-action DML; no callout                                                                              |
-| Outcome capture              | All-or-nothing outcome, action, and work-state DML                                                                         |
+| Outcome capture              | All-or-nothing outcome, action, work-state, handoff, and closure-verification DML                                          |
 | Correction review request    | All-or-nothing review work, evidence, recommendation, and approval DML                                                     |
 
 The implementation may return `PARTIAL_FAILURE` only for an explicitly batched

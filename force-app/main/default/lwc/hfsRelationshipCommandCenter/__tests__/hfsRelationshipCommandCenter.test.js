@@ -75,7 +75,14 @@ const livePayload = {
       occurredAt: "2026-06-07T07:00:00.000Z",
       subjectEntityId: "a02000000000001AAA",
       ownerLabel: "Relationship Operations",
-      dueAt: "2026-06-07T10:00:00.000Z"
+      dueAt: "2026-06-07T10:00:00.000Z",
+      blockedReason: "Manager approval is required before outreach.",
+      dependsOnWorkItemId: "a01000000000002AAA",
+      ownerRole: "Relationship owner",
+      escalationRole: "Duty Manager",
+      handoffTargetRole: "Store Operations Lead",
+      handoffState: "REQUESTED",
+      closureVerificationStatus: "PENDING_EVIDENCE"
     },
     entities: [
       {
@@ -121,7 +128,10 @@ const livePayload = {
         recordType: "PROACTIVE_UPDATE",
         status: "RUNNING",
         summary: "REVIEW_AND_APPROVE",
-        definitionVersion: "1.0.0"
+        definitionVersion: "1.0.0",
+        requiredEvidence:
+          "Source event, recommendation, approval, and outcome.",
+        escalationRule: "Escalate to Duty Manager if approval is still pending."
       }
     ],
     timeline: [
@@ -353,6 +363,17 @@ describe("c-hfs-relationship-command-center", () => {
     expect(element.shadowRoot.textContent).toContain("Live North Star case");
     expect(element.shadowRoot.textContent).toContain("Live customer");
     expect(element.shadowRoot.textContent).toContain("93%");
+    expect(element.shadowRoot.textContent).toContain(
+      "Manager approval is required before outreach."
+    );
+    expect(element.shadowRoot.textContent).toContain(
+      "Depends on a01000000000002AAA"
+    );
+    expect(element.shadowRoot.textContent).toContain("Store Operations Lead");
+    expect(element.shadowRoot.textContent).toContain("Duty Manager");
+    expect(element.shadowRoot.textContent).toContain(
+      "Source event, recommendation, approval, and outcome."
+    );
     expect(element.shadowRoot.textContent).toContain(
       "Live customer participated in the source status event."
     );
