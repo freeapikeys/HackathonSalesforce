@@ -75,6 +75,119 @@ are configured. The audit trail keeps correlation IDs, approval IDs, action
 IDs, evidence IDs, and outcome IDs so the team can explain exactly what was
 executed and why.
 
+## Judge Pitch Deck Outline
+
+Use this outline as the source for the final slides. The pitch should stay
+close to the live demo instead of promising a broad platform that the prototype
+does not prove.
+
+### Slide 1: Problem
+
+Every sector has operational issues that begin as one signal but quickly touch
+complaints, capacity, partners, staff work, billing, approvals, communication,
+and outcomes. A hospital morning surge makes that visible in one story:
+patients are complaining, rooms are blocked, the queue is rising, pharmacy
+stock is low, a lab partner is late, and billing approvals are stuck.
+
+Judge bridge:
+
+| Judge sector | Same pattern they will recognize                                         |
+| ------------ | ------------------------------------------------------------------------ |
+| Hotel        | Guest complaint expands into room readiness, housekeeping, food, billing |
+| Airport      | Flight disruption expands into gates, baggage, vendors, staff, messages  |
+| Banking      | Dispute or claim expands into risk, compliance, approvals, communication |
+| Supermarket  | Product complaint expands into batch, stock, supplier, waste, customer   |
+
+### Slide 2: Agent System
+
+Do not pitch "lots of bots." Pitch one governed North Star command center:
+
+- the Orchestrator turns one messy signal into one recovery plan;
+- global primitives make the plan reusable across industries;
+- specialist agents contribute evidence, trust, capacity, vendor, financial,
+  execution, communication, risk, and outcome views;
+- the output separates facts, inferences, missing evidence, recommendations,
+  blocked actions, approvals, and expected outcomes.
+
+### Slide 3: Salesforce, Agentforce, And MuleSoft
+
+The system boundary is the strongest part of the story:
+
+- Salesforce stores the source-backed case, evidence, recommendation,
+  approval, action, outcome, and evaluation records;
+- Agentforce drafts and explains the recovery plan, but does not execute
+  protected actions;
+- MuleSoft executes only approved actions and returns delivery or mock
+  evidence;
+- the command center shows the approval boundary, channel results, outcome
+  metrics, and clinical refusal.
+
+### Slide 4: Live Demo Flow
+
+Show the exact flow the repo can run:
+
+1. start with one hospital operations surge event;
+2. show global primitive context and conflicting evidence;
+3. ask Agentforce for the recovery recommendation;
+4. show the clinical-decision request refused;
+5. approve protected operational actions as a business manager;
+6. execute approved Slack and WhatsApp-style MuleSoft alerts;
+7. capture outcomes and evaluations in Salesforce;
+8. refresh the command center with channel, audit, and outcome evidence.
+
+### Slide 5: Business Value
+
+Quantify the demo with operational metrics, not vague AI language:
+
+| Value area            | Demo proof point                                                      |
+| --------------------- | --------------------------------------------------------------------- |
+| Wait time             | Outpatient queue is 34 waiting, target below 18 by recovery window    |
+| Bed capacity          | 7 discharge rooms are blocked; recovery plan targets room release     |
+| Stockout prevention   | Pharmacy supply is below threshold before the afternoon rush          |
+| Complaint containment | 11 synthetic complaints are clustered and tied to recovery actions    |
+| Billing risk          | 5 stuck cases are routed through billing and insurance follow-up      |
+| Partner SLA           | Lab delay is preserved, escalated, then updated when response changes |
+| Staff execution       | Tasks have role owners, due windows, acknowledgement, and escalation  |
+
+### Slide 6: Plug-And-Play Mapping
+
+Do not claim zero-configuration. Say "global primitives plus a business
+profile." The same primitive map lets a judge see their world inside the
+hospital demo:
+
+| Primitive | Hospital demo              | Hotel equivalent      | Airport equivalent      | Banking equivalent       | Supermarket equivalent |
+| --------- | -------------------------- | --------------------- | ----------------------- | ------------------------ | ---------------------- |
+| Signal    | Complaint or surge         | Guest issue           | Delay or disruption     | Dispute or fraud signal  | Complaint or stockout  |
+| Resource  | Bed, room, queue, stock    | Room, kitchen, desk   | Gate, bag belt, crew    | Case, account, queue     | Batch, shelf, stock    |
+| Partner   | Lab, insurer, laundry      | Laundry, food, vendor | Airline, ground handler | Processor, KYC provider  | Supplier, courier      |
+| Policy    | Manager approval, clinical | Refund or safety rule | Safety and ops approval | Compliance approval      | Recall or reorder rule |
+| Action    | Task, restock, alert       | Housekeeping, voucher | Rebook, gate update     | Case review, callback    | Quarantine, reorder    |
+| Outcome   | Wait, bed, SLA, billing    | Guest recovery, room  | Delay recovery, baggage | Resolution, loss avoided | Waste, stock, trust    |
+
+### Slide 7: Honesty And Scope
+
+Be direct:
+
+- mocked in the hackathon: synthetic hospital data, local MuleSoft runtime,
+  provider channels when credentials are absent, and real hospital systems;
+- production-shaped architecture: evidence records, approval gate, protected
+  action execution, provider-neutral model gateway, Salesforce audit trail,
+  clean-clone runbook, and deterministic refusal checks;
+- out of scope: diagnosis, treatment, dosage, triage, clinical priority,
+  autonomous protected actions, real patient data, and zero-config onboarding.
+
+### Slide 8: Timing
+
+Target timing for the final rehearsal:
+
+| Time      | Beat                                         |
+| --------- | -------------------------------------------- |
+| 0:00-0:20 | Problem: one signal expands across functions |
+| 0:20-0:45 | Architecture: primitives, agents, approvals  |
+| 0:45-2:25 | Live demo flow                               |
+| 2:25-2:50 | Business value and judge-sector mapping      |
+| 2:50-3:00 | Honesty, clinical boundary, closing line     |
+
 ## Backup Recorded-Demo Path
 
 If live Salesforce, Agentforce, Slack, WhatsApp, or local tunnel setup fails,

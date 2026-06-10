@@ -378,17 +378,17 @@ file before editing.
 
 ### 11. Pitch And Presentation
 
-- [ ] Problem slide explains universal issue modules and the hospital demo.
-- [ ] Agent slide explains the orchestrator, global primitives, and specialist
+- [x] Problem slide explains universal issue modules and the hospital demo.
+- [x] Agent slide explains the orchestrator, global primitives, and specialist
       agents.
-- [ ] Salesforce slide explains Agentforce, Salesforce records, MuleSoft mocks,
+- [x] Salesforce slide explains Agentforce, Salesforce records, MuleSoft mocks,
       and approval boundary.
-- [ ] Demo slide shows the exact live flow.
-- [ ] Business value slide quantifies wait time reduced, bed released, stockout
+- [x] Demo slide shows the exact live flow.
+- [x] Business value slide quantifies wait time reduced, bed released, stockout
       avoided, billing risk contained, vendor SLA, and complaint containment.
-- [ ] Plug-and-play slide maps hospital resources to hotel, airport, banking,
+- [x] Plug-and-play slide maps hospital resources to hotel, airport, banking,
       and supermarket equivalents.
-- [ ] Honesty slide states what is mocked, what is production-ready
+- [x] Honesty slide states what is mocked, what is production-ready
       architecture, and what clinical decisions are out of scope.
 - [ ] Timing has been rehearsed.
 
