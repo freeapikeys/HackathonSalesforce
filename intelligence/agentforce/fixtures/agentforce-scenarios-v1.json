@@ -898,6 +898,453 @@
           "externalActionExecuted": false
         }
       }
+    },
+    {
+      "name": "inventory-waste-clean-stockout",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_RETAIL_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Assess stockout risk when supplier and complaint evidence are clean.",
+        "modelProfile": "north-star-retail-recommendation"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-clean-stockout-inventory",
+            "statement": "Rice 5 kg at Rose Hill Market has 4 shelf units, 4 backroom units, 8 warehouse units, no incoming reservations, supplier lead time of 2 days, daily sales velocity of 18 units, and a promotion uplift multiplier of 1.5.",
+            "evidenceIds": [
+              "a06000000000011AAA"
+            ]
+          },
+          {
+            "factId": "fact-clean-stockout-supplier",
+            "statement": "Supplier history is clean for the rice product with no active complaints, no open quality cases, and on-time replacement support in the last review window.",
+            "evidenceIds": [
+              "a06000000000012AAA"
+            ]
+          },
+          {
+            "factId": "fact-clean-stockout-complaints",
+            "statement": "No current complaint cluster is linked to the rice product, store, supplier, or promotion window.",
+            "evidenceIds": [
+              "a06000000000013AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-clean-stockout-cover",
+            "statement": "Available stock is 16 units, adjusted demand is 27 units per day, days of cover is 0.59 days, and sales at risk over the 2-day lead time is 38 units.",
+            "basisFactIds": [
+              "fact-clean-stockout-inventory"
+            ],
+            "confidence": 0.91
+          },
+          {
+            "inferenceId": "inference-clean-stockout-action",
+            "statement": "Because supplier and complaint evidence are clean, the safest recommendation is manager-approved reorder or transfer rather than quarantine.",
+            "basisFactIds": [
+              "fact-clean-stockout-inventory",
+              "fact-clean-stockout-supplier",
+              "fact-clean-stockout-complaints"
+            ],
+            "confidence": 0.86
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000011AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:inventory",
+            "contentHash": "sha256:23aadc88bcfab1ecb40f0fcee22877c6b64ddf88507d5062b26cd42cdd7b50f1",
+            "summary": "Rice 5 kg at Rose Hill Market has 4 shelf units, 4 backroom units, 8 warehouse units, no incoming reservations, supplier lead time of 2 days, daily sales velocity of 18 units, and a promotion uplift multiplier of 1.5.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000012AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:supplier",
+            "contentHash": "sha256:6f77a1e864a7ca662ac99665e3a455d86f60b1ed8aba0f2c25f9ccb157c0ea19",
+            "summary": "Supplier history is clean for the rice product with no active complaints, no open quality cases, and on-time replacement support in the last review window.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000013AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:complaints",
+            "contentHash": "sha256:b14d6c426e221865ce89856fb2a242118e66784260b451e1b64d3948ae3e063c",
+            "summary": "No current complaint cluster is linked to the rice product, store, supplier, or promotion window.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "proposedActionType": "APPROVE_STOCKOUT_RECOVERY_ACTIONS",
+          "rationale": "Treat this as critical stockout risk because promotion-adjusted cover is 0.59 days and lead-time demand exceeds available stock by 38 units. Clean supplier and complaint evidence support manager-approved reorder or transfer, with no supplier caution beyond normal approval.",
+          "confidence": 0.86,
+          "evidenceIds": [
+            "a06000000000011AAA",
+            "a06000000000012AAA",
+            "a06000000000013AAA"
+          ],
+          "modelProfile": "north-star-retail-recommendation",
+          "modelInvocationId": "model-invocation-agentforce-004",
+          "requiresHumanApproval": true,
+          "inventoryWasteReasoning": {
+            "riskType": "STOCKOUT",
+            "severity": "Critical",
+            "missingEvidence": [],
+            "recommendedActions": [
+              {
+                "actionId": "action-clean-reorder-review",
+                "actionType": "REORDER_OR_TRANSFER_REVIEW",
+                "statement": "Request manager approval for a reorder or warehouse transfer to cover the promotion gap.",
+                "evidenceIds": [
+                  "a06000000000011AAA",
+                  "a06000000000012AAA"
+                ],
+                "requiresHumanApproval": true
+              }
+            ],
+            "blockedActions": [],
+            "supplierCaution": {
+              "applies": false,
+              "statement": "No supplier caution applies because supplier history is clean and no complaint cluster is active.",
+              "evidenceIds": [
+                "a06000000000012AAA",
+                "a06000000000013AAA"
+              ]
+            },
+            "explanation": "Promotion demand creates less than one day of cover. Since supplier and complaint evidence are clean, the recommendation can focus on approved replenishment or transfer rather than quarantine or supplier escalation."
+          }
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-004",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "inventory-waste-near-expiry-markdown",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_RETAIL_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Assess near-expiry waste pressure and propose a safe markdown plan.",
+        "modelProfile": "north-star-retail-recommendation"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-expiry-markdown-inventory",
+            "statement": "Bakery rolls 6 pack at Port Louis Market has 30 shelf units, 10 backroom units, no warehouse units, no incoming reservations, supplier lead time of 1 day, daily sales velocity of 8 units, and no promotion uplift.",
+            "evidenceIds": [
+              "a06000000000017AAA"
+            ]
+          },
+          {
+            "factId": "fact-expiry-markdown-batch",
+            "statement": "Batch BR-0612 has 34 near-expiry units and expires on 2026-06-12, two days after the 2026-06-10 business date.",
+            "evidenceIds": [
+              "a06000000000018AAA"
+            ]
+          },
+          {
+            "factId": "fact-expiry-markdown-complaints",
+            "statement": "No active complaint cluster is linked to the bakery rolls batch, product, store, or supplier.",
+            "evidenceIds": [
+              "a06000000000019AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-expiry-markdown-waste",
+            "statement": "Available stock is 40 units, adjusted demand is 8 units per day, days of cover is 5 days, expiry days remaining is 2, expected sales before expiry is 16 units, and waste risk is 18 units.",
+            "basisFactIds": [
+              "fact-expiry-markdown-inventory",
+              "fact-expiry-markdown-batch"
+            ],
+            "confidence": 0.88
+          },
+          {
+            "inferenceId": "inference-expiry-markdown-action",
+            "statement": "High expiry pressure with no complaint cluster supports manager-approved rotation and markdown for safe units, not blind discard.",
+            "basisFactIds": [
+              "fact-expiry-markdown-batch",
+              "fact-expiry-markdown-complaints"
+            ],
+            "confidence": 0.83
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000017AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:inventory",
+            "contentHash": "sha256:04fd86dbfb57c682e85088792cf719069ac7e45c145ae321a4b077a826996377",
+            "summary": "Bakery rolls 6 pack at Port Louis Market has 30 shelf units, 10 backroom units, no warehouse units, no incoming reservations, supplier lead time of 1 day, daily sales velocity of 8 units, and no promotion uplift.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000018AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:expiry",
+            "contentHash": "sha256:5466d16857f7d66c57e643b788066d89a2895cd42a7c8f5d02ef0febfda3c26a",
+            "summary": "Batch BR-0612 has 34 near-expiry units and expires on 2026-06-12, two days after the 2026-06-10 business date.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000019AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:complaints",
+            "contentHash": "sha256:9456a7e0eac8b63f9abb1ed32c3f07a14f0b5b1b84f3ae72737305dcaf33e3cb",
+            "summary": "No active complaint cluster is linked to the bakery rolls batch, product, store, or supplier.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "proposedActionType": "APPROVE_MARKDOWN_AND_ROTATION_ACTIONS",
+          "rationale": "Treat this as high expiry and waste risk because the batch expires in 2 days and 18 units are unlikely to sell before expiry at current velocity. Recommend manager-approved rotation and markdown for safe units, while blocking unsupported disposal of all stock.",
+          "confidence": 0.83,
+          "evidenceIds": [
+            "a06000000000017AAA",
+            "a06000000000018AAA",
+            "a06000000000019AAA"
+          ],
+          "modelProfile": "north-star-retail-recommendation",
+          "modelInvocationId": "model-invocation-agentforce-006",
+          "requiresHumanApproval": true,
+          "inventoryWasteReasoning": {
+            "riskType": "WASTE",
+            "severity": "High",
+            "missingEvidence": [],
+            "recommendedActions": [
+              {
+                "actionId": "action-expiry-markdown",
+                "actionType": "MARKDOWN_AND_ROTATION_REVIEW",
+                "statement": "Request manager approval to rotate and mark down safe near-expiry units before the batch expires.",
+                "evidenceIds": [
+                  "a06000000000017AAA",
+                  "a06000000000018AAA"
+                ],
+                "requiresHumanApproval": true
+              }
+            ],
+            "blockedActions": [
+              {
+                "actionType": "DISCARD_ALL_STOCK",
+                "reason": "No complaint cluster or safety evidence supports discarding every unit; only expiry-driven markdown or removal at expiry is supported.",
+                "evidenceIds": [
+                  "a06000000000018AAA",
+                  "a06000000000019AAA"
+                ]
+              }
+            ],
+            "supplierCaution": {
+              "applies": false,
+              "statement": "Supplier caution does not change the plan because the evidence is expiry pressure without an active complaint cluster.",
+              "evidenceIds": [
+                "a06000000000019AAA"
+              ]
+            },
+            "explanation": "The batch has two days remaining and expected sales leave 18 units at waste risk. The safe recommendation is approved rotation and markdown for saleable units, while unsupported disposal of all stock is blocked."
+          }
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-006",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
+    },
+    {
+      "name": "inventory-waste-overstock-household",
+      "request": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "purpose": "RESOLVE_RETAIL_RISK",
+        "workItemId": "a0E000000000001AAA",
+        "recommendationId": null,
+        "approvalPolicyKey": null,
+        "desiredOutcome": "Assess overstock risk for a household product and avoid unnecessary replenishment.",
+        "modelProfile": "north-star-retail-recommendation"
+      },
+      "response": {
+        "contractVersion": "1.0.0",
+        "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        "tenantKey": "demo-mauritius",
+        "correlationId": "30000000-0000-4000-8000-000000000001",
+        "status": "SUCCESS",
+        "facts": [
+          {
+            "factId": "fact-overstock-inventory",
+            "statement": "Laundry detergent 2 L at Curepipe Market has 96 shelf units, 144 backroom units, 180 warehouse units, no incoming reservations, supplier lead time of 5 days, daily sales velocity of 6 units, and no promotion uplift.",
+            "evidenceIds": [
+              "a06000000000014AAA"
+            ]
+          },
+          {
+            "factId": "fact-overstock-space",
+            "statement": "The household shelf area is over capacity for laundry detergent, with endcap space requested by another promotion next week.",
+            "evidenceIds": [
+              "a06000000000015AAA"
+            ]
+          },
+          {
+            "factId": "fact-overstock-supplier",
+            "statement": "Supplier history is clean for the household item with no active complaint or quality-risk evidence.",
+            "evidenceIds": [
+              "a06000000000016AAA"
+            ]
+          }
+        ],
+        "inferences": [
+          {
+            "inferenceId": "inference-overstock-cover",
+            "statement": "Available stock is 420 units, adjusted demand is 6 units per day, days of cover is 70 days, and sales at risk over the 5-day lead time is 0 units.",
+            "basisFactIds": [
+              "fact-overstock-inventory"
+            ],
+            "confidence": 0.9
+          },
+          {
+            "inferenceId": "inference-overstock-action",
+            "statement": "The excess cover and shelf pressure support manager-approved transfer or promotion adjustment, not additional reorder.",
+            "basisFactIds": [
+              "fact-overstock-inventory",
+              "fact-overstock-space",
+              "fact-overstock-supplier"
+            ],
+            "confidence": 0.84
+          }
+        ],
+        "citations": [
+          {
+            "evidenceId": "a06000000000014AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:inventory",
+            "contentHash": "sha256:f4176a674dc5aaa8b4058f9f586e8041917b49e2aea6a4a30648db852efcc885",
+            "summary": "Laundry detergent 2 L at Curepipe Market has 96 shelf units, 144 backroom units, 180 warehouse units, no incoming reservations, supplier lead time of 5 days, daily sales velocity of 6 units, and no promotion uplift.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000015AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:shelf-space",
+            "contentHash": "sha256:a1c0efa24bb52b277547ec3644dd68c78d28a13460b41b264604c2be1a1de7af",
+            "summary": "The household shelf area is over capacity for laundry detergent, with endcap space requested by another promotion next week.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000016AAA",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:retail:supplier",
+            "contentHash": "sha256:9e0aa4519910c535a12fa1a193c33b6134f5643ca3fd33339c56e5aa053317c8",
+            "summary": "Supplier history is clean for the household item with no active complaint or quality-risk evidence.",
+            "accessible": true
+          }
+        ],
+        "recommendation": {
+          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "proposedActionType": "APPROVE_OVERSTOCK_REBALANCING_ACTIONS",
+          "rationale": "Treat this as overstock risk because days of cover is 70 days and shelf space is under pressure. Recommend manager-approved transfer to a lower-stock store or promotion adjustment, and block additional reorder until cover falls.",
+          "confidence": 0.84,
+          "evidenceIds": [
+            "a06000000000014AAA",
+            "a06000000000015AAA",
+            "a06000000000016AAA"
+          ],
+          "modelProfile": "north-star-retail-recommendation",
+          "modelInvocationId": "model-invocation-agentforce-005",
+          "requiresHumanApproval": true,
+          "inventoryWasteReasoning": {
+            "riskType": "OVERSTOCK",
+            "severity": "Medium",
+            "missingEvidence": [],
+            "recommendedActions": [
+              {
+                "actionId": "action-overstock-transfer",
+                "actionType": "TRANSFER_OR_PROMOTION_ADJUSTMENT_REVIEW",
+                "statement": "Request manager approval to transfer excess units or adjust promotion placement before the next endcap change.",
+                "evidenceIds": [
+                  "a06000000000014AAA",
+                  "a06000000000015AAA"
+                ],
+                "requiresHumanApproval": true
+              }
+            ],
+            "blockedActions": [
+              {
+                "actionType": "ADDITIONAL_REORDER",
+                "reason": "The product already has 70 days of cover, so additional replenishment is unsupported.",
+                "evidenceIds": [
+                  "a06000000000014AAA"
+                ]
+              }
+            ],
+            "supplierCaution": {
+              "applies": false,
+              "statement": "Supplier caution does not change the plan because no active complaint or quality-risk evidence is present.",
+              "evidenceIds": [
+                "a06000000000016AAA"
+              ]
+            },
+            "explanation": "The household item has far more cover than near-term demand requires and shelf space is needed for another promotion. The safe action is an approved transfer or promotion adjustment, while additional reorder is blocked."
+          }
+        },
+        "approval": null,
+        "refusal": null,
+        "errors": [],
+        "audit": {
+          "actorUserId": "005000000000001AAA",
+          "agentKey": "north-star-orchestrator",
+          "purpose": "RESOLVE_RETAIL_RISK",
+          "permissionEvaluated": true,
+          "modelInvocationId": "model-invocation-agentforce-005",
+          "humanApprovalRequired": true,
+          "externalActionExecuted": false
+        }
+      }
     }
   ]
 }
