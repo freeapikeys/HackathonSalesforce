@@ -770,7 +770,7 @@ def build_spec() -> dict[str, Any]:
             "/v1/context/queries": {
                 "post": operation(
                     operation_id="retrieveContext",
-                    summary="Retrieve permission-aware relationship context",
+                    summary="Retrieve permission-aware operations context",
                     description=(
                         "Reads context through the current client and user "
                         "permissions for the declared purpose."
@@ -1126,14 +1126,14 @@ def build_examples() -> dict[str, Any]:
         "correlationId": CORRELATION,
         "workItemId": "work-issue-001",
         "subjectEntityId": None,
-        "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+        "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "includeProvenance": True,
         "timelineLimit": 50,
     }
     work_item = context_item(
         "work-issue-001",
         "HFS_Work_Item__c",
-        "Repeated service interruption",
+        "Hospital operations surge",
         "OPEN",
     )
     context_success = {
@@ -1146,7 +1146,7 @@ def build_examples() -> dict[str, Any]:
             context_item(
                 "entity-person-001",
                 "HFS_Entity__c",
-                "Affected relationship",
+                "Patient alias group",
                 "ACTIVE",
             )
         ],
@@ -1160,7 +1160,7 @@ def build_examples() -> dict[str, Any]:
                 "sourceEventId": "event-issue-001",
                 "sourceUri": "urn:hfs:source:operations",
                 "contentHash": event_request["hfscontenthash"],
-                "summary": "The source system reported repeated interruption.",
+                "summary": "Synthetic hospital operations signals reported a morning surge.",
                 "capturedAt": "2026-06-05T08:30:03Z",
             }
         ],
@@ -1175,27 +1175,27 @@ def build_examples() -> dict[str, Any]:
         "contractVersion": CONTRACT_VERSION,
         "tenantKey": TENANT,
         "correlationId": CORRELATION,
-        "purpose": "EXECUTE_APPROVED_RETAIL_ACTION",
+        "purpose": "EXECUTE_APPROVED_HOSPITAL_ACTION",
         "externalKey": "action-slack-alert-001",
         "idempotencyKey": action_key,
         "recommendationId": "recommendation-north-star-001",
         "approvalId": "approval-north-star-slack-001",
         "actionId": "action-slack-alert-001",
-        "targetEntityId": "store-grand-baie-001",
+        "targetEntityId": "hospital-operations-command-001",
         "actionType": "SEND_SLACK_ALERT",
         "sourceSystem": "slack",
         "payload": {
-            "targetRole": "Stockroom Lead",
+            "targetRole": "Operations Manager",
             "targetChannel": "#north-star-demo",
-            "messageTitle": "Fresh Food stockout and quality risk",
+            "messageTitle": "Hospital operations surge recovery",
             "messageBody": (
-                "Check shelf stock, quarantine the suspect batch, and prepare "
-                "the approved transfer request before the weekend rush."
+                "Coordinate room cleaning, pharmacy restock, lab escalation, "
+                "billing review, and privacy-safe internal updates."
             ),
             "evidenceIds": [
-                "complaint-cluster-003",
-                "inventory-position-041",
-                "supplier-response-002",
+                "hospital-complaint-cluster-001",
+                "hospital-capacity-pressure-001",
+                "hospital-lab-delay-001",
             ],
             "sourceRecommendationId": "recommendation-north-star-001",
         },
@@ -1344,7 +1344,7 @@ def build_examples() -> dict[str, Any]:
                         "delivery": {
                             "status": "MOCK_SENT",
                             "provider": "mock-slack",
-                            "targetRole": "Stockroom Lead",
+                            "targetRole": "Operations Manager",
                             "targetChannel": "#north-star-demo",
                         },
                     },

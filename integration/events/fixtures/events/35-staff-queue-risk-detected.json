@@ -1,0 +1,34 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000035",
+  "source": "urn:hfs:source:hospital-operations",
+  "type": "io.github.freeapikeys.hfs.hospital.staffqueuerisk.detected.v1",
+  "subject": "process:outpatient-check-in",
+  "time": "2026-06-06T09:32:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hospital-staff-queue-risk-001-v1",
+  "hfssourcerecordid": "hospital-staff-queue-risk-001",
+  "hfssourcesequence": 35,
+  "hfsobservedat": "2026-06-06T09:32:07Z",
+  "hfscontenthash": "sha256:14a2f5cffacb7207229bb3500072c25a8c6476c4764c2ea9589aa4a5ade12095",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "hospital-staff-queue-risk-001",
+    "effectiveat": "2026-06-06T09:32:00Z",
+    "attributes": {
+      "profile": "private-hospital",
+      "primitive": "Process",
+      "module": "Staff coordination",
+      "queueWaitMinutes": 74,
+      "safeStaffMove": "front_desk_support",
+      "recommendedActionType": "CREATE_PATIENT_SERVICE_TASK",
+      "requiresApproval": true,
+      "summary": "Outpatient queue risk needs approved staff-task coordination."
+    }
+  }
+}

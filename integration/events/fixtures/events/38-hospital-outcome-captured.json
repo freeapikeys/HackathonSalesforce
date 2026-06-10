@@ -1,0 +1,34 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000038",
+  "source": "urn:hfs:source:hospital-operations",
+  "type": "io.github.freeapikeys.hfs.hospital.outcome.captured.v1",
+  "subject": "outcome:hospital-morning-surge-001",
+  "time": "2026-06-06T10:20:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hospital-outcome-captured-001-v1",
+  "hfssourcerecordid": "hospital-outcome-001",
+  "hfssourcesequence": 38,
+  "hfsobservedat": "2026-06-06T10:20:05Z",
+  "hfscontenthash": "sha256:bab744608c5b79584098ec476929231b0541ff122c6564d6851af64c309a1dba",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "CLOSE",
+    "businesskey": "hospital-outcome-captured-001",
+    "effectiveat": "2026-06-06T10:20:00Z",
+    "attributes": {
+      "profile": "private-hospital",
+      "primitive": "Outcome",
+      "module": "Outcome learning",
+      "waitTimeReducedPercent": 22,
+      "bedsReleased": 4,
+      "stockoutAvoided": true,
+      "complaintContainment": "in_progress",
+      "summary": "Hospital operations outcome metrics were captured for the morning surge."
+    }
+  }
+}

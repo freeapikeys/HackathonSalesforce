@@ -1,0 +1,34 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000033",
+  "source": "urn:hfs:source:hospital-operations",
+  "type": "io.github.freeapikeys.hfs.hospital.labvendorresponse.delayed.v1",
+  "subject": "partner:island-diagnostics-lab",
+  "time": "2026-06-06T09:25:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hospital-lab-vendor-response-delayed-001-v1",
+  "hfssourcerecordid": "hospital-lab-sla-001",
+  "hfssourcesequence": 33,
+  "hfsobservedat": "2026-06-06T09:25:05Z",
+  "hfscontenthash": "sha256:e00a8c667d343528be5c2fb010d965bc270d1f4d79e6e192cf48d0e762ef4d4d",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "hospital-lab-vendor-response-delayed-001",
+    "effectiveat": "2026-06-06T09:25:00Z",
+    "attributes": {
+      "profile": "private-hospital",
+      "primitive": "Partner",
+      "module": "Partner and vendor failure",
+      "partnerId": "PARTNER-ISLAND-DIAGNOSTICS",
+      "slaMinutesLate": 42,
+      "recommendedActionType": "ESCALATE_LAB_VENDOR_CASE",
+      "requiresApproval": true,
+      "summary": "Lab partner response is late and needs approved vendor escalation."
+    }
+  }
+}

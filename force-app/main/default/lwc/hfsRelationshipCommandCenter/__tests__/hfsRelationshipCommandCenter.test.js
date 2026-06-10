@@ -31,7 +31,7 @@ function createLiveComponent() {
   });
   element.recordId = "a01000000000001AAA";
   element.tenantKey = "tenant-live-test";
-  element.purpose = "RESOLVE_RETAIL_RISK";
+  element.purpose = "RESOLVE_HOSPITAL_OPERATION_RISK";
   document.body.appendChild(element);
   return element;
 }
@@ -129,7 +129,7 @@ const livePayload = {
         summary: "Send a grounded service update.",
         confidence: 0.91,
         proposedActionType: "SEND_STATUS_UPDATE",
-        modelProfile: "north-star-retail-recommendation",
+        modelProfile: "north-star-hospital-operations",
         modelInvocationId: "invocation-live-test"
       }
     ],
@@ -161,20 +161,24 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("North Star weekend promotion recovery");
-    expect(root.textContent).toContain("North Star retail signals");
-    expect(root.textContent).toContain("Product, batch, and stock");
+    expect(root.textContent).toContain("North Star hospital operations surge");
+    expect(root.textContent).toContain("North Star operations signals");
+    expect(root.textContent).toContain("Resource, partner, and capacity");
     expect(root.textContent).toContain("Complaint cluster");
-    expect(root.textContent).toContain("Supplier response");
+    expect(root.textContent).toContain("Partner response");
     expect(root.textContent).toContain("Source records");
     expect(root.textContent).toContain("Accessible source evidence");
-    expect(root.textContent).toContain("North Star retail recovery");
-    expect(root.textContent).toContain("Approve retail recovery actions");
+    expect(root.textContent).toContain(
+      "North Star hospital operations recovery"
+    );
+    expect(root.textContent).toContain(
+      "Approve hospital operations recovery actions"
+    );
     expect(root.textContent).toContain("Approval decision");
-    expect(root.textContent).toContain("Store tasks and channel log");
+    expect(root.textContent).toContain("Operations tasks and channel log");
     expect(root.textContent).toContain("Slack");
     expect(root.textContent).toContain("WhatsApp-style");
-    expect(root.textContent).toContain("Stockout avoided");
+    expect(root.textContent).toContain("Beds released");
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
     expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
@@ -199,7 +203,7 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("North Star weekend promotion recovery");
+    expect(root.textContent).toContain("North Star hospital operations surge");
     expect(
       root.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();
@@ -222,8 +226,8 @@ describe("c-hfs-relationship-command-center", () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toEqual({
       decision,
-      recommendationId: "recommendation-north-star-retail-001",
-      approvalId: "approval-north-star-retail-001",
+      recommendationId: "recommendation-north-star-hospital-001",
+      approvalId: "approval-north-star-hospital-001",
       correlationId: "20000000-0000-4000-8000-000000000001",
       stateVersion: UI_STATE_VERSION
     });
@@ -274,7 +278,7 @@ describe("c-hfs-relationship-command-center", () => {
         contractVersion: UI_STATE_VERSION,
         tenantKey: "tenant-live-test",
         workItemId: "a01000000000001AAA",
-        purpose: "RESOLVE_RETAIL_RISK",
+        purpose: "RESOLVE_HOSPITAL_OPERATION_RISK",
         includeProvenance: true
       })
     );

@@ -10,7 +10,7 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
   @api recordId;
   @api workItemId;
   @api tenantKey;
-  @api purpose = "RESOLVE_RETAIL_RISK";
+  @api purpose = "RESOLVE_HOSPITAL_OPERATION_RISK";
   @api mockMode = false;
   state = getUiState("loading");
   decisionPending = false;

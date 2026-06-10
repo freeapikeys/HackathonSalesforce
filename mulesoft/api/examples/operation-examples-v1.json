@@ -347,7 +347,7 @@
           "correlationId": "10000000-0000-4000-8000-000000000001",
           "workItemId": "work-issue-001",
           "subjectEntityId": null,
-          "purpose": "RESOLVE_SERVICE_INTERRUPTION",
+          "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "includeProvenance": true,
           "timelineLimit": 50
         },
@@ -370,7 +370,7 @@
             "objectApiName": "HFS_Work_Item__c",
             "externalKey": "work-issue-001",
             "recordType": "Work_Item",
-            "label": "Repeated service interruption",
+            "label": "Hospital operations surge",
             "status": "OPEN",
             "summary": null,
             "occurredAt": "2026-06-05T08:30:00Z",
@@ -389,7 +389,7 @@
               "objectApiName": "HFS_Entity__c",
               "externalKey": "entity-person-001",
               "recordType": "Entity",
-              "label": "Affected relationship",
+              "label": "Patient alias group",
               "status": "ACTIVE",
               "summary": null,
               "occurredAt": "2026-06-05T08:30:00Z",
@@ -412,7 +412,7 @@
               "objectApiName": "HFS_Work_Item__c",
               "externalKey": "work-issue-001",
               "recordType": "Work_Item",
-              "label": "Repeated service interruption",
+              "label": "Hospital operations surge",
               "status": "OPEN",
               "summary": null,
               "occurredAt": "2026-06-05T08:30:00Z",
@@ -432,7 +432,7 @@
               "sourceEventId": "event-issue-001",
               "sourceUri": "urn:hfs:source:operations",
               "contentHash": "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70fdb4feada11935c10",
-              "summary": "The source system reported repeated interruption.",
+              "summary": "Synthetic hospital operations signals reported a morning surge.",
               "capturedAt": "2026-06-05T08:30:03Z"
             }
           ],
@@ -556,24 +556,24 @@
           "contractVersion": "1.0.0",
           "tenantKey": "demo-mauritius",
           "correlationId": "10000000-0000-4000-8000-000000000001",
-          "purpose": "EXECUTE_APPROVED_RETAIL_ACTION",
+          "purpose": "EXECUTE_APPROVED_HOSPITAL_ACTION",
           "externalKey": "action-slack-alert-001",
           "idempotencyKey": "action-slack-alert-001-v1",
           "recommendationId": "recommendation-north-star-001",
           "approvalId": "approval-north-star-slack-001",
           "actionId": "action-slack-alert-001",
-          "targetEntityId": "store-grand-baie-001",
+          "targetEntityId": "hospital-operations-command-001",
           "actionType": "SEND_SLACK_ALERT",
           "sourceSystem": "slack",
           "payload": {
-            "targetRole": "Stockroom Lead",
+            "targetRole": "Operations Manager",
             "targetChannel": "#north-star-demo",
-            "messageTitle": "Fresh Food stockout and quality risk",
-            "messageBody": "Check shelf stock, quarantine the suspect batch, and prepare the approved transfer request before the weekend rush.",
+            "messageTitle": "Hospital operations surge recovery",
+            "messageBody": "Coordinate room cleaning, pharmacy restock, lab escalation, billing review, and privacy-safe internal updates.",
             "evidenceIds": [
-              "complaint-cluster-003",
-              "inventory-position-041",
-              "supplier-response-002"
+              "hospital-complaint-cluster-001",
+              "hospital-capacity-pressure-001",
+              "hospital-lab-delay-001"
             ],
             "sourceRecommendationId": "recommendation-north-star-001"
           }
@@ -622,7 +622,7 @@
             "delivery": {
               "status": "MOCK_SENT",
               "provider": "mock-slack",
-              "targetRole": "Stockroom Lead",
+              "targetRole": "Operations Manager",
               "targetChannel": "#north-star-demo"
             }
           },

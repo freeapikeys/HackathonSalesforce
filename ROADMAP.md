@@ -205,7 +205,7 @@ file before editing.
 - [ ] Aarav: create realistic synthetic hospital operations data, complaints,
       partner responses, capacity pressure, task templates, channel recipient
       aliases, and expected recommendation cases.
-- [ ] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved
+- [x] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved
       MuleSoft action execution, with real webhook support only through
       `SLACK_WEBHOOK_URL` and honest `MOCK_SENT` fallback.
 - [ ] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add voice
@@ -238,17 +238,17 @@ file before editing.
 
 ### 4. Hospital Event Fixtures
 
-- [ ] Add `PATIENT_COMPLAINT_CLUSTER_DETECTED` fixture.
-- [ ] Add `BED_CAPACITY_PRESSURE_DETECTED` fixture.
-- [ ] Add `DISCHARGE_ROOM_BLOCKED` fixture.
-- [ ] Add `PHARMACY_STOCK_RISK_DETECTED` fixture.
-- [ ] Add `LAB_VENDOR_RESPONSE_DELAYED` fixture.
-- [ ] Add `BILLING_APPROVAL_STALLED` fixture.
-- [ ] Add `STAFF_QUEUE_RISK_DETECTED` fixture.
-- [ ] Add `CLINICAL_DECISION_REQUEST_REFUSED` fixture.
-- [ ] Add `APPROVED_ACTION_EXECUTED` hospital fixture.
-- [ ] Add `HOSPITAL_OUTCOME_CAPTURED` fixture.
-- [ ] Keep duplicate, malformed, late, out-of-order, replay, hash, and
+- [x] Add `PATIENT_COMPLAINT_CLUSTER_DETECTED` fixture.
+- [x] Add `BED_CAPACITY_PRESSURE_DETECTED` fixture.
+- [x] Add `DISCHARGE_ROOM_BLOCKED` fixture.
+- [x] Add `PHARMACY_STOCK_RISK_DETECTED` fixture.
+- [x] Add `LAB_VENDOR_RESPONSE_DELAYED` fixture.
+- [x] Add `BILLING_APPROVAL_STALLED` fixture.
+- [x] Add `STAFF_QUEUE_RISK_DETECTED` fixture.
+- [x] Add `CLINICAL_DECISION_REQUEST_REFUSED` fixture.
+- [x] Add `APPROVED_ACTION_EXECUTED` hospital fixture.
+- [x] Add `HOSPITAL_OUTCOME_CAPTURED` fixture.
+- [x] Keep duplicate, malformed, late, out-of-order, replay, hash, and
       idempotency-conflict cases passing.
 
 ### 5. Salesforce Core
@@ -297,28 +297,28 @@ file before editing.
 
 ### 7. MuleSoft And Channel Mocks
 
-- [ ] Mock `CREATE_PATIENT_SERVICE_TASK`.
-- [ ] Mock `REQUEST_BED_CLEANING`.
-- [ ] Mock `ESCALATE_LAB_VENDOR_CASE`.
-- [ ] Mock `CREATE_PHARMACY_RESTOCK_REQUEST`.
-- [ ] Mock `OPEN_BILLING_REVIEW`.
-- [ ] Mock `REQUEST_INSURANCE_FOLLOWUP`.
+- [x] Mock `CREATE_PATIENT_SERVICE_TASK`.
+- [x] Mock `REQUEST_BED_CLEANING`.
+- [x] Mock `ESCALATE_LAB_VENDOR_CASE`.
+- [x] Mock `CREATE_PHARMACY_RESTOCK_REQUEST`.
+- [x] Mock `OPEN_BILLING_REVIEW`.
+- [x] Mock `REQUEST_INSURANCE_FOLLOWUP`.
 - [x] Mock `SEND_SLACK_ALERT`.
-- [ ] Mock `SEND_WHATSAPP_ALERT`.
-- [ ] Mock `CAPTURE_HOSPITAL_OUTCOME`.
+- [x] Mock `SEND_WHATSAPP_ALERT`.
+- [x] Mock `CAPTURE_HOSPITAL_OUTCOME`.
 - [x] Unapproved execution returns denial.
 - [x] Approved execution returns queued or success response with correlation.
 - [x] If `SLACK_WEBHOOK_URL` exists, send real Slack webhook message.
 - [x] If `SLACK_WEBHOOK_URL` is missing, return honest `MOCK_SENT`.
 - [x] Malformed Slack payloads return validation errors.
-- [ ] Malformed WhatsApp payloads return validation errors.
+- [x] Malformed WhatsApp payloads return validation errors.
 - [x] Slack channel responses preserve `tenantId`, `correlationId`,
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
-- [ ] WhatsApp channel responses preserve `tenantId`, `correlationId`,
+- [x] WhatsApp channel responses preserve `tenantId`, `correlationId`,
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
-- [ ] Mock channel results are visible in the hospital command center.
+- [x] Mock channel results are visible in the hospital command center.
 
 ### 8. Voice Mode
 
@@ -335,26 +335,26 @@ file before editing.
 
 ### 9. Lightning Command Center
 
-- [ ] UI title and labels use North Star global/hospital operations language.
-- [ ] Risk pulse cards show complaint, bed capacity, queue, pharmacy stock,
+- [x] UI title and labels use North Star global/hospital operations language.
+- [x] Risk pulse cards show complaint, bed capacity, queue, pharmacy stock,
       vendor delay, billing, approval, and outcome readiness.
-- [ ] Patient/visitor alias, department, location, and resource context are
+- [x] Patient/visitor alias, department, location, and resource context are
       visible.
-- [ ] Complaint cluster panel shows complaint type, count, department,
+- [x] Complaint cluster panel shows complaint type, count, department,
       location, resource, partner, and time window.
-- [ ] Partner response panel shows lab, laundry, insurer, payment, food,
+- [x] Partner response panel shows lab, laundry, insurer, payment, food,
       maintenance, or transport status.
-- [ ] Operations panel shows task queue, owner role, acknowledgement, and due
+- [x] Operations panel shows task queue, owner role, acknowledgement, and due
       time.
-- [ ] Evidence timeline cites source records.
-- [ ] Agent reasoning panel separates facts from inference.
-- [ ] Approval cockpit supports approve, reject, modify, defer, and executed
+- [x] Evidence timeline cites source records.
+- [x] Agent reasoning panel separates facts from inference.
+- [x] Approval cockpit supports approve, reject, modify, defer, and executed
       states.
-- [ ] Channel log shows Slack and WhatsApp-style alert results.
-- [ ] Clinical-refusal state is visible when relevant.
+- [x] Channel log shows Slack and WhatsApp-style alert results.
+- [x] Clinical-refusal state is visible when relevant.
 - [ ] Voice transcript or voice request panel is visible if voice mode is in
       the demo.
-- [ ] Outcome panel shows wait time reduced, bed released, stockout avoided,
+- [x] Outcome panel shows wait time reduced, bed released, stockout avoided,
       complaint containment, vendor SLA, billing resolution, and task
       completion.
 - [ ] LWC tests cover ready, loading, empty, denied, error, restricted,

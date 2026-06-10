@@ -1,0 +1,35 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000031",
+  "source": "urn:hfs:source:hospital-operations",
+  "type": "io.github.freeapikeys.hfs.hospital.dischargeroom.blocked.v1",
+  "subject": "resource:ward-a3-room-cleaning",
+  "time": "2026-06-06T09:05:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hospital-discharge-room-blocked-001-v1",
+  "hfssourcerecordid": "hospital-room-block-001",
+  "hfssourcesequence": 31,
+  "hfsobservedat": "2026-06-06T09:05:08Z",
+  "hfscontenthash": "sha256:faa5b811701320c0653ef717d83e345f588656d8bbfb3c480c58f89fadf05b40",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "hospital-discharge-room-blocked-001",
+    "effectiveat": "2026-06-06T09:05:00Z",
+    "attributes": {
+      "profile": "private-hospital",
+      "primitive": "Process",
+      "module": "Staff coordination",
+      "process": "discharge_room_turnover",
+      "blockedReason": "cleaning_and_porter_handoff_pending",
+      "ownerRole": "role:housekeeping-lead",
+      "recommendedActionType": "REQUEST_BED_CLEANING",
+      "requiresApproval": true,
+      "summary": "Room release is blocked by cleaning and porter handoff tasks."
+    }
+  }
+}

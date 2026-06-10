@@ -332,7 +332,7 @@
     "/v1/context/queries": {
       "post": {
         "operationId": "retrieveContext",
-        "summary": "Retrieve permission-aware relationship context",
+        "summary": "Retrieve permission-aware operations context",
         "description": "Reads context through the current client and user permissions for the declared purpose.",
         "tags": [
           "Context"

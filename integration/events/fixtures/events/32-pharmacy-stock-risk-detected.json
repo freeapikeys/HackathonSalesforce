@@ -1,0 +1,35 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000032",
+  "source": "urn:hfs:source:hospital-operations",
+  "type": "io.github.freeapikeys.hfs.hospital.pharmacystockrisk.detected.v1",
+  "subject": "resource:pharmacy-iv-kit",
+  "time": "2026-06-06T09:11:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
+  "hfsidempotencykey": "hospital-pharmacy-stock-risk-001-v1",
+  "hfssourcerecordid": "hospital-pharmacy-stock-001",
+  "hfssourcesequence": 32,
+  "hfsobservedat": "2026-06-06T09:11:05Z",
+  "hfscontenthash": "sha256:5e159480f35128c3177eecec57fafc4c82ca84e1f36eec33ebc77166e86fda80",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "hospital-pharmacy-stock-risk-001",
+    "effectiveat": "2026-06-06T09:11:00Z",
+    "attributes": {
+      "profile": "private-hospital",
+      "primitive": "Resource",
+      "module": "Inventory and supply",
+      "resourceId": "RESOURCE-PHARM-IV-KIT",
+      "stockHoursRemaining": 2.4,
+      "thresholdHours": 4,
+      "recommendedActionType": "CREATE_PHARMACY_RESTOCK_REQUEST",
+      "requiresApproval": true,
+      "summary": "Pharmacy operational stock cover is below the demo threshold."
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "north star supermarket retail case",
+  "name": "north star universal operations case with hospital demo profile",
   "maximumLatenessSeconds": 86400,
   "events": [
     {
@@ -84,6 +84,46 @@
     },
     {
       "file": "events/28-retail-outcome-captured.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/29-patient-complaint-cluster-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/30-bed-capacity-pressure-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/31-discharge-room-blocked.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/32-pharmacy-stock-risk-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/33-lab-vendor-response-delayed.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/34-billing-approval-stalled.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/35-staff-queue-risk-detected.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/36-clinical-decision-request-refused.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/37-approved-hospital-action-executed.json",
+      "expected": "ACCEPTED"
+    },
+    {
+      "file": "events/38-hospital-outcome-captured.json",
       "expected": "ACCEPTED"
     },
     {
