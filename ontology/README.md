@@ -11,6 +11,8 @@ portable meaning and validation rules used at integration boundaries.
 - `shapes.ttl`: SHACL requirements for provenance, relationships, assertions,
   events, recommendations, and actions.
 - `context.jsonld`: portable JSON-LD names and datatype coercions.
+- `mappings/semantic-mappings-v1.json`: versioned event, Salesforce, Data 360,
+  and ontology mapping registry.
 - `examples/valid.jsonld`: a conforming relationship and recommendation trace.
 - `examples/invalid.jsonld`: deliberate business-level contract violations.
 
@@ -21,6 +23,7 @@ From the repository root:
 ```bash
 ./scripts/bootstrap-runtime.sh
 npm run check:ontology
+npm run check:mappings
 ```
 
 The validator must prove both sides of the contract:
@@ -44,6 +47,13 @@ The base contract now covers:
 - source and derived assertions with valid time, recorded time, attribution, and
   generation provenance;
 - explicit assertion supersession for contradictory claims.
+- semantic mappings from event envelope paths, source-local fixture attributes,
+  event type families, and generated Salesforce fields to intended Data 360 and
+  ontology concepts.
+
+`npm run check:mappings` fails when a source event path, fixture attribute,
+event type pattern, or generated Salesforce field lacks a mapping, or when two
+mapping records claim the same concrete field.
 
 ## North Star Extension Plan
 

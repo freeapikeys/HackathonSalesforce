@@ -151,6 +151,18 @@ The initial executable contract lives in `ontology/`. It includes the core OWL
 vocabulary, controlled SKOS concepts, SHACL shapes, a JSON-LD context, and
 positive and negative validation fixtures.
 
+`ontology/mappings/semantic-mappings-v1.json` is the executable bridge between
+the contracts. It maps:
+
+- event envelope paths and source-local fixture attributes;
+- event type families;
+- generated Salesforce fields, including field-set fields;
+- intended Data 360 objects and fields;
+- ontology classes and properties.
+
+Run `npm run check:mappings` to fail on missing or duplicate source paths,
+fixture attributes, event type coverage, or generated Salesforce field targets.
+
 A separate graph database is not required for the initial vertical slice.
 Introduce one only when measured traversal, inference, or scale requirements
 cannot be satisfied by the platform architecture.

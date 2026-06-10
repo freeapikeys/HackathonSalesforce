@@ -249,7 +249,7 @@ and UI must support any supermarket product category.
 - [x] Invalid fixture proves missing provenance, missing terminology mapping,
       missing assertion kind, missing relationship validity, missing
       recommendation support, and unsuperseded contradictions are rejected.
-- [ ] Map event, Salesforce, and Data 360 semantics with versioned ownership,
+- [x] Map event, Salesforce, and Data 360 semantics with versioned ownership,
       transformation rules, and ambiguity notes.
 - [ ] Add deterministic current-state and historical-belief queries over
       versioned assertions.
