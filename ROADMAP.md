@@ -257,7 +257,21 @@ and UI must support any supermarket product category.
       mappings, temporal queries, source terminology, supersession, and source
       evidence together.
 
-### 5. Salesforce Core
+### 5. Identity Relationships and History
+
+- [x] Add an identity-history verifier over preserved source fixtures.
+- [x] Resolve source identities from subjects, business keys, and relationship
+      attributes without dropping source record IDs.
+- [x] Build relationship edges with visible confidence and source evidence.
+- [x] Preserve participant links for events and source-derived entities.
+- [x] Preserve late, out-of-order, update, and conflicting correction history.
+- [x] Keep contradictory agreement status assertions visible instead of
+      overwriting them.
+- [x] Prove a traversable person-to-organization-to-supplier path.
+- [ ] Connect identity history to Salesforce records and service responses.
+- [ ] Add user-facing relationship inspection and correction affordances.
+
+### 6. Salesforce Core
 
 - [x] Map store to existing Salesforce entity record.
 - [x] Map product to existing Salesforce entity record.
@@ -279,7 +293,7 @@ and UI must support any supermarket product category.
 - [ ] Apex tests cover success, denial, inaccessible evidence, approval
       mismatch, and invalid state.
 
-### 6. Agentforce and Intelligence
+### 7. Agentforce and Intelligence
 
 - [x] Define North Star Orchestrator topic.
 - [x] Define Inventory and Demand topic.
@@ -299,7 +313,7 @@ and UI must support any supermarket product category.
 - [x] Agentforce fixtures include a changed-recommendation scenario.
 - [x] Agentforce fixtures include a Nexavenu revenue-intelligence scenario.
 
-### 7. MuleSoft and Channel Mocks
+### 8. MuleSoft and Channel Mocks
 
 - [x] Mock `CREATE_SUPPLIER_QUALITY_CASE`.
 - [x] Mock `REQUEST_REPLACEMENT_BATCH`.
@@ -321,7 +335,7 @@ and UI must support any supermarket product category.
 - [x] Approved execution returns queued or success response with correlation.
 - [x] Mock channel results are visible in the command center.
 
-### 8. Lightning Command Center
+### 9. Lightning Command Center
 
 - [x] UI title and labels use North Star.
 - [x] Profile key switches visible titles, domain labels, recommendation copy,
@@ -346,7 +360,7 @@ and UI must support any supermarket product category.
 - [x] LWC tests cover ready, loading, empty, denied, error, restricted,
       approval, action, and outcome states.
 
-### 9. End-to-End Demo
+### 10. End-to-End Demo
 
 - [ ] `npm run check` passes in the intended demo environment.
 - [ ] `npm run demo:reset` works.
@@ -361,7 +375,7 @@ and UI must support any supermarket product category.
 - [ ] Demo shows outcome metrics and audit trail.
 - [ ] Final rehearsal completed with the whole team.
 
-### 10. Pitch and Presentation
+### 11. Pitch and Presentation
 
 - [ ] Problem slide explains the supermarket issues from this roadmap.
 - [ ] Agent slide explains the three specialist agents and orchestrator.
