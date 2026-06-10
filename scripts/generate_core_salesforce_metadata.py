@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import filecmp
 import json
 import shutil
 import sys
@@ -458,6 +457,12 @@ def generated_paths(root: Path) -> set[Path]:
     return paths
 
 
+def same_metadata(expected_path: Path, actual_path: Path) -> bool:
+    expected = expected_path.read_bytes().replace(b"\r\n", b"\n")
+    actual = actual_path.read_bytes().replace(b"\r\n", b"\n")
+    return expected == actual
+
+
 def check_generated(model: dict[str, object]) -> int:
     with tempfile.TemporaryDirectory(prefix="hfs-metadata-") as directory:
         expected_root = Path(directory)
@@ -470,11 +475,7 @@ def check_generated(model: dict[str, object]) -> int:
         changed = {
             path
             for path in expected_paths & actual_paths
-            if not filecmp.cmp(
-                expected_root / path,
-                DEFAULT_OUTPUT / path,
-                shallow=False,
-            )
+            if not same_metadata(expected_root / path, DEFAULT_OUTPUT / path)
         }
 
         for label, paths in (

@@ -362,7 +362,7 @@ file before editing.
 
 ### 10. End-To-End Demo
 
-- [ ] `npm run check` passes in the intended demo environment.
+- [x] `npm run check` passes in the intended demo environment.
 - [ ] `npm run demo:reset` works.
 - [ ] `npm run demo:seed` creates the hospital operations case.
 - [ ] `npm run demo:run` completes trigger through outcome.
