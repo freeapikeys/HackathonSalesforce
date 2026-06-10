@@ -176,12 +176,38 @@ describe("c-hfs-relationship-command-center", () => {
     );
     expect(root.textContent).toContain("Approval decision");
     expect(root.textContent).toContain("Operations tasks and channel log");
+    expect(root.textContent).toContain("Voice request");
     expect(root.textContent).toContain("Slack");
     expect(root.textContent).toContain("WhatsApp-style");
     expect(root.textContent).toContain("Beds released");
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
     expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
+  });
+
+  it("renders governed voice transcript requests without protected execution", () => {
+    const element = createComponent();
+    const root = element.shadowRoot;
+
+    expect(
+      root.querySelector('[data-testid="voice-mode-panel"]')
+    ).not.toBeNull();
+    expect(root.querySelectorAll(".voice-card")).toHaveLength(2);
+    expect(root.textContent).toContain("ASK_HOSPITAL_RECOVERY_PLAN");
+    expect(root.textContent).toContain("DRAFT_RELATIONSHIP_RECOMMENDATION");
+    expect(root.textContent).toContain("No protected action executed");
+    expect(root.textContent).toContain(
+      "Blocked discharge beds and outpatient queue risk"
+    );
+    expect(root.textContent).toContain("evidence-capacity-hospital-001");
+    expect(root.textContent).toContain(
+      "Which patient should receive treatment first?"
+    );
+    expect(root.textContent).toContain("CLINICAL_DECISION_REFUSAL");
+    expect(
+      root.querySelector('[data-testid="voice-clinical-refusal"]')
+    ).not.toBeNull();
+    expect(root.textContent).toContain("routed to a clinician");
   });
 
   it.each([

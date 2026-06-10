@@ -46,6 +46,9 @@ North Star hospital ready state should additionally expose:
 - partner response status;
 - clinical-decision refusal state when relevant;
 - Slack and WhatsApp-style channel delivery status;
+- voice/transcript request examples that show interpreted intent, structured
+  operations fields, Agentforce recommendation action, protected-action
+  blocking, and clinical-decision refusal;
 - outcome metrics for wait time, bed release, stockout avoidance, complaint
   containment, billing resolution, vendor SLA, and task completion.
 

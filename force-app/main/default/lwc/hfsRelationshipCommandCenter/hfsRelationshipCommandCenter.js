@@ -136,6 +136,14 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
     return `UI state ${UI_STATE_VERSION}`;
   }
 
+  get voiceMode() {
+    return this.state?.case?.voiceMode;
+  }
+
+  get showVoiceMode() {
+    return this.isReady && Boolean(this.voiceMode?.requests?.length);
+  }
+
   async handleApprove() {
     await this.submitDecision("APPROVE", "APPROVED");
   }

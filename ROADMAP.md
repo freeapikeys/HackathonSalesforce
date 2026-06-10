@@ -208,7 +208,7 @@ file before editing.
 - [x] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved
       MuleSoft action execution, with real webhook support only through
       `SLACK_WEBHOOK_URL` and honest `MOCK_SENT` fallback.
-- [ ] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add voice
+- [x] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add voice
       transcript flow that creates a governed recommendation request without
       bypassing approval or making clinical decisions.
 - [x] Ranveer: preserve completed Agentforce reasoning work and generalize
@@ -322,15 +322,15 @@ file before editing.
 
 ### 8. Voice Mode
 
-- [ ] Add voice transcript input or browser speech input path.
-- [ ] Convert transcript into structured hospital operations request fields:
+- [x] Add voice transcript request panel or fixture path.
+- [x] Convert transcript into structured hospital operations request fields:
       issue, department, location, resource, urgency, requester role, and
       evidence.
-- [ ] Voice mode can ask Agentforce for a recommendation.
-- [ ] Voice mode cannot execute Slack, WhatsApp, vendor, pharmacy, billing,
+- [x] Voice mode can ask Agentforce for a recommendation.
+- [x] Voice mode cannot execute Slack, WhatsApp, vendor, pharmacy, billing,
       room/bed, staff-task, or patient-message actions directly.
-- [ ] Voice mode refuses clinical decision requests.
-- [ ] LWC or fixture tests cover transcript-to-request, protected-action
+- [x] Voice mode refuses clinical decision requests.
+- [x] LWC or fixture tests cover transcript-to-request, protected-action
       refusal, and clinical-decision refusal.
 
 ### 9. Lightning Command Center
@@ -352,7 +352,7 @@ file before editing.
       states.
 - [x] Channel log shows Slack and WhatsApp-style alert results.
 - [x] Clinical-refusal state is visible when relevant.
-- [ ] Voice transcript or voice request panel is visible if voice mode is in
+- [x] Voice transcript or voice request panel is visible if voice mode is in
       the demo.
 - [x] Outcome panel shows wait time reduced, bed released, stockout avoided,
       complaint containment, vendor SLA, billing resolution, and task

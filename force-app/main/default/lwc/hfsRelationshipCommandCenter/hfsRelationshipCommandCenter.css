@@ -434,6 +434,72 @@ dd {
   border-top: 4px solid var(--hfs-brand);
 }
 
+.voice-mode {
+  border-top: 4px solid #4f7f70;
+}
+
+.voice-summary {
+  color: var(--hfs-muted);
+  margin: 0 0 0.85rem;
+}
+
+.voice-request-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.voice-card {
+  background: #f8fafc;
+  border: 1px solid var(--hfs-line);
+  border-radius: 0.65rem;
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.voice-transcript {
+  border-left: 3px solid #4f7f70;
+  font-weight: 700;
+  margin: 0;
+  padding-left: 0.65rem;
+}
+
+.voice-meta {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr 1fr;
+  margin: 0;
+}
+
+.voice-fields {
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.voice-fields li {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.voice-fields span {
+  color: var(--hfs-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.clinical-refusal {
+  background: #fff0ed;
+  border-left: 3px solid #a33a2b;
+  color: #8b3024;
+  font-weight: 700;
+  margin: 0;
+  padding: 0.65rem;
+}
+
 .approval-controls {
   gap: 0.5rem;
   margin-top: 1rem;
@@ -507,6 +573,7 @@ dd {
   .entity-grid,
   .evidence-list,
   .model-meta,
+  .voice-meta,
   .outcome {
     grid-template-columns: 1fr;
   }

@@ -147,15 +147,15 @@ Expected behavior:
 - [x] Add WhatsApp response preservation for `tenantId`, `correlationId`,
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
-- [ ] Add a voice transcript input surface or fixture path.
+- [x] Add a voice transcript input surface or fixture path.
 - [ ] Add optional browser speech recognition only if it does not destabilize
       the UI.
-- [ ] Map transcript to a structured hospital operations request.
-- [ ] Ensure voice mode can ask Agentforce for a recommendation but cannot
+- [x] Map transcript to a structured hospital operations request.
+- [x] Ensure voice mode can ask Agentforce for a recommendation but cannot
       execute protected actions directly.
-- [ ] Ensure voice mode refuses clinical diagnosis, treatment, dosage, triage,
+- [x] Ensure voice mode refuses clinical diagnosis, treatment, dosage, triage,
       and clinical priority requests.
-- [ ] Update fixtures for manual transcript, interpreted intent, clinical
+- [x] Update fixtures for manual transcript, interpreted intent, clinical
       refusal, and resulting recommendation.
 
 ## Testing Checklist
@@ -166,9 +166,9 @@ Expected behavior:
       change.
 - [x] Add or update tests for approved WhatsApp execution, mock WhatsApp
       fallback, missing approval denial, and malformed payload rejection.
-- [ ] Add or update tests for voice transcript to structured request, voice
+- [x] Add or update tests for voice transcript to structured request, voice
       protected-action refusal, and clinical-decision refusal.
-- [ ] Confirm no phone numbers, credentials, real patient data, medical records,
+- [x] Confirm no phone numbers, credentials, real patient data, medical records,
       emails, or local paths appear in `git diff`.
 
 ## Demo Acceptance

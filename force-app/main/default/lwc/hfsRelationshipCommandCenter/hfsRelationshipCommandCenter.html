@@ -490,6 +490,66 @@
               </dl>
             </section>
 
+            <template lwc:if={showVoiceMode}>
+              <section
+                class="panel voice-mode"
+                data-testid="voice-mode-panel"
+                aria-labelledby="voice-mode-heading"
+              >
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">Voice request</p>
+                    <h2 id="voice-mode-heading">{voiceMode.status}</h2>
+                  </div>
+                </div>
+                <p class="voice-summary">{voiceMode.summary}</p>
+                <div class="voice-request-list">
+                  <template for:each={voiceMode.requests} for:item="request">
+                    <article key={request.id} class="voice-card">
+                      <p class="voice-transcript">{request.transcript}</p>
+                      <dl class="voice-meta">
+                        <div>
+                          <dt>Intent</dt>
+                          <dd>{request.interpretedIntent}</dd>
+                        </div>
+                        <div>
+                          <dt>Agentforce action</dt>
+                          <dd>{request.agentforceAction}</dd>
+                        </div>
+                        <div>
+                          <dt>Status</dt>
+                          <dd>{request.status}</dd>
+                        </div>
+                        <div>
+                          <dt>Execution</dt>
+                          <dd>{request.protectedActionState}</dd>
+                        </div>
+                      </dl>
+                      <ul class="voice-fields">
+                        <template
+                          for:each={request.structuredFields}
+                          for:item="field"
+                        >
+                          <li key={field.id}>
+                            <span>{field.label}</span>
+                            <strong>{field.value}</strong>
+                          </li>
+                        </template>
+                      </ul>
+                      <template lwc:if={request.refusal}>
+                        <p
+                          class="clinical-refusal"
+                          data-testid="voice-clinical-refusal"
+                        >
+                          {request.refusal}
+                        </p>
+                      </template>
+                    </article>
+                  </template>
+                </div>
+              </section>
+            </template>
+
             <section class="panel approval" aria-labelledby="approval-heading">
               <div class="panel-heading">
                 <div>

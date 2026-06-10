@@ -310,6 +310,102 @@ const caseState = {
         "Provider credentials missing; internal demo alert recorded without personal contact data."
     }
   ],
+  voiceMode: {
+    status: "Manual transcript fixture",
+    summary:
+      "Voice mode is modeled as an operator transcript input. It can request an Agentforce recommendation, but it cannot execute protected actions.",
+    requests: [
+      {
+        id: "voice-request-recovery-plan",
+        transcriptSource: "manual",
+        transcript:
+          "Why are discharge beds blocked this morning and who needs to act before the outpatient queue gets worse?",
+        interpretedIntent: "ASK_HOSPITAL_RECOVERY_PLAN",
+        agentforceAction: "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        recommendationId: "recommendation-north-star-hospital-001",
+        status: "Ready for Agentforce",
+        protectedActionState: "No protected action executed",
+        refusal: null,
+        structuredFields: [
+          {
+            id: "voice-issue",
+            label: "Issue",
+            value: "Blocked discharge beds and outpatient queue risk"
+          },
+          {
+            id: "voice-department",
+            label: "Department",
+            value: "DEPT-OUTPATIENT-RECEPTION"
+          },
+          {
+            id: "voice-location",
+            label: "Location",
+            value: "WARD-A3-DISCHARGE"
+          },
+          {
+            id: "voice-resources",
+            label: "Resources",
+            value: "BED-BLOCK-A3, QUEUE-OUTPATIENT-009"
+          },
+          {
+            id: "voice-role",
+            label: "Requested by",
+            value: "Operations Manager"
+          },
+          {
+            id: "voice-urgency",
+            label: "Urgency",
+            value: "High"
+          },
+          {
+            id: "voice-evidence",
+            label: "Evidence",
+            value:
+              "evidence-capacity-hospital-001, evidence-complaint-hospital-001"
+          },
+          {
+            id: "voice-window",
+            label: "Time window",
+            value: "2026-06-06T08:00:00+04:00/2026-06-06T12:00:00+04:00"
+          }
+        ]
+      },
+      {
+        id: "voice-request-clinical-refusal",
+        transcriptSource: "manual",
+        transcript: "Which patient should receive treatment first?",
+        interpretedIntent: "CLINICAL_DECISION_REFUSAL",
+        agentforceAction: "DRAFT_RELATIONSHIP_RECOMMENDATION",
+        recommendationId: "recommendation-clinical-refusal-fixture",
+        status: "Refused and routed",
+        protectedActionState: "No clinical or protected action executed",
+        refusal:
+          "North Star handles hospital operations only. Treatment priority, diagnosis, dosage, and triage decisions are routed to a clinician or clinical manager.",
+        structuredFields: [
+          {
+            id: "voice-clinical-issue",
+            label: "Issue",
+            value: "Clinical treatment priority request"
+          },
+          {
+            id: "voice-clinical-route",
+            label: "Route",
+            value: "Clinician review"
+          },
+          {
+            id: "voice-clinical-boundary",
+            label: "Boundary",
+            value: "Clinical priority decision refused"
+          },
+          {
+            id: "voice-clinical-evidence",
+            label: "Evidence",
+            value: "evidence-clinical-refusal-hospital-001"
+          }
+        ]
+      }
+    ]
+  },
   outcomeMetrics: [
     { id: "outcome-wait", label: "Wait time reduced", value: "Projected 22%" },
     { id: "outcome-bed", label: "Beds released", value: "4 rooms" },
