@@ -76,10 +76,17 @@ function relationshipHistoryItem(entityById, relationship, index) {
     status: humanize(relationship.status, "Current"),
     confidencePercent: confidencePercent(relationship.confidence),
     sourceEventId: relationship.sourceEventId || "Source event not recorded",
+    supersessionApprovalId:
+      relationship.supersessionApprovalId || "Not superseded",
+    supersededByUserId: relationship.supersededByUserId || "Not superseded",
+    supersededAt: relationship.supersededAt,
+    supersessionReason:
+      relationship.supersessionReason || "No supersession recorded.",
     evidenceSummary:
+      relationship.supersessionReason ||
       relationship.summary ||
       "Relationship assertion preserved from accessible Salesforce context.",
-    correctionState: "Reviewable"
+    correctionState: relationship.supersededAt ? "Superseded" : "Reviewable"
   };
 }
 

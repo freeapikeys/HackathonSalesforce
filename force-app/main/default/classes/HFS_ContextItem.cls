@@ -57,6 +57,24 @@ public class HFS_ContextItem {
   public String blockedReason { get; set; }
 
   @AuraEnabled
+  public String targetRelationshipId { get; set; }
+
+  @AuraEnabled
+  public String supersededByRelationshipId { get; set; }
+
+  @AuraEnabled
+  public String supersessionApprovalId { get; set; }
+
+  @AuraEnabled
+  public String supersededByUserId { get; set; }
+
+  @AuraEnabled
+  public Datetime supersededAt { get; set; }
+
+  @AuraEnabled
+  public String supersessionReason { get; set; }
+
+  @AuraEnabled
   public String definitionVersion { get; set; }
 
   @AuraEnabled

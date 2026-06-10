@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Target_Relationship__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Target Relationship</label>
+    <referenceTo>HFS_Relationship__c</referenceTo>
+    <relationshipLabel>Work Items by Target Relationship</relationshipLabel>
+    <relationshipName>HFS_Work_Item_Target_Relationship</relationshipName>
+    <type>Lookup</type>
+</CustomField>

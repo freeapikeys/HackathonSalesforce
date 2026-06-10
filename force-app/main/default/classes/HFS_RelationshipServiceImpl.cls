@@ -389,6 +389,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   }
 
   public HFS_CommandResult decideApproval(HFS_ApprovalDecisionCommand command) {
+    Savepoint transactionStart;
     try {
       validateCommand(
         command == null ? null : command.contractVersion,
@@ -412,11 +413,17 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
 
       HFS_Approval__c approval = approval(command.approvalId);
       requireTenant(command.tenantKey, approval, 'approvalId');
+      Boolean correctionSupersession = isCorrectionSupersessionApproval(
+        approval
+      );
       if (approval.Status__c != 'PENDING') {
         if (
           approval.Status__c == command.decisionStatus &&
           approval.Decision_Notes__c == command.decisionNotes
         ) {
+          if (command.decisionStatus == 'APPROVED' && correctionSupersession) {
+            persistApprovedSupersession(command, approval);
+          }
           return HFS_ServiceSupport.success(
             HFS_ServiceContract.DECIDE_APPROVAL,
             command.correlationId,
@@ -432,11 +439,23 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         );
       }
 
+      if (command.decisionStatus == 'APPROVED' && correctionSupersession) {
+        HFS_ServiceSupport.requireUpdate(
+          Schema.SObjectType.HFS_Relationship__c,
+          'HFS_Relationship__c'
+        );
+      }
+
+      transactionStart = Database.setSavepoint();
       approval.Status__c = command.decisionStatus;
       approval.Decision_By__c = UserInfo.getUserId();
       approval.Decided_At__c = System.now();
       approval.Decision_Notes__c = command.decisionNotes;
       update as user approval;
+
+      if (command.decisionStatus == 'APPROVED' && correctionSupersession) {
+        persistApprovedSupersession(command, approval);
+      }
       return HFS_ServiceSupport.success(
         HFS_ServiceContract.DECIDE_APPROVAL,
         command.correlationId,
@@ -445,6 +464,9 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         false
       );
     } catch (Exception exceptionValue) {
+      if (transactionStart != null) {
+        Database.rollback(transactionStart);
+      }
       return HFS_ServiceSupport.failure(
         HFS_ServiceContract.DECIDE_APPROVAL,
         command == null ? null : command.correlationId,
@@ -782,7 +804,13 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   private static HFS_Work_Item__c workItem(String recordId) {
     Id value = HFS_ServiceSupport.requireId(recordId, 'workItemId');
     List<HFS_Work_Item__c> records = [
-      SELECT Id, Tenant_Key__c, Status__c, Primary_Entity__c, Trigger_Event__c
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Status__c,
+        Primary_Entity__c,
+        Trigger_Event__c,
+        Target_Relationship__c
       FROM HFS_Work_Item__c
       WHERE Id = :value
       WITH USER_MODE
@@ -826,6 +854,79 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
     return records[0];
   }
 
+  private static Boolean isCorrectionSupersessionApproval(
+    HFS_Approval__c approval
+  ) {
+    return approval.Recommendation__r != null &&
+      approval.Recommendation__r.Recommendation_Type__c ==
+      'RELATIONSHIP_CORRECTION_REVIEW' &&
+      approval.Recommendation__r.Proposed_Action_Type__c ==
+      'SUPERSEDE_RELATIONSHIP_ASSERTION';
+  }
+
+  private static void persistApprovedSupersession(
+    HFS_ApprovalDecisionCommand command,
+    HFS_Approval__c approval
+  ) {
+    Id relationshipId = approval
+      .Recommendation__r
+      .Work_Item__r
+      .Target_Relationship__c;
+    if (relationshipId == null) {
+      HFS_ServiceSupport.fail(
+        HFS_ServiceContract.INVALID_STATE,
+        'A correction review approval requires a target relationship.',
+        'approvalId'
+      );
+    }
+
+    List<HFS_Relationship__c> relationships = [
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Valid_From__c,
+        Valid_To__c,
+        Supersession_Approval__c,
+        Superseded_By_User__c,
+        Superseded_At__c,
+        Supersession_Reason__c
+      FROM HFS_Relationship__c
+      WHERE Id = :relationshipId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    requireRecord(relationships, 'approvalId');
+    HFS_Relationship__c relationship = relationships[0];
+    requireTenant(command.tenantKey, relationship, 'approvalId');
+    if (
+      relationship.Supersession_Approval__c != null &&
+      relationship.Supersession_Approval__c != approval.Id
+    ) {
+      HFS_ServiceSupport.fail(
+        HFS_ServiceContract.INVALID_STATE,
+        'The relationship has already been superseded by another approval.',
+        'approvalId'
+      );
+    }
+
+    Datetime supersededAt = approval.Decided_At__c == null
+      ? System.now()
+      : approval.Decided_At__c;
+    relationship.Valid_To__c = relationship.Valid_From__c != null &&
+      supersededAt < relationship.Valid_From__c
+      ? relationship.Valid_From__c
+      : supersededAt;
+    relationship.Supersession_Approval__c = approval.Id;
+    relationship.Superseded_By_User__c = approval.Decision_By__c == null
+      ? UserInfo.getUserId()
+      : approval.Decision_By__c;
+    relationship.Superseded_At__c = supersededAt;
+    relationship.Supersession_Reason__c = String.isBlank(command.decisionNotes)
+      ? 'Approved relationship correction review.'
+      : command.decisionNotes;
+    update as user relationship;
+  }
+
   private static void inaccessibleEvidence() {
     HFS_ServiceSupport.fail(
       HFS_ServiceContract.SOURCE_EVIDENCE_INACCESSIBLE,
@@ -837,7 +938,14 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   private static HFS_Recommendation__c recommendation(String recordId) {
     Id value = HFS_ServiceSupport.requireId(recordId, 'recommendationId');
     List<HFS_Recommendation__c> records = [
-      SELECT Id, Tenant_Key__c, Work_Item__c, Status__c
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Work_Item__c,
+        Work_Item__r.Target_Relationship__c,
+        Status__c,
+        Recommendation_Type__c,
+        Proposed_Action_Type__c
       FROM HFS_Recommendation__c
       WHERE Id = :value
       WITH USER_MODE
@@ -850,7 +958,18 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   private static HFS_Approval__c approval(String recordId) {
     Id value = HFS_ServiceSupport.requireId(recordId, 'approvalId');
     List<HFS_Approval__c> records = [
-      SELECT Id, Tenant_Key__c, Recommendation__c, Status__c, Decision_Notes__c
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Recommendation__c,
+        Recommendation__r.Work_Item__c,
+        Recommendation__r.Work_Item__r.Target_Relationship__c,
+        Recommendation__r.Recommendation_Type__c,
+        Recommendation__r.Proposed_Action_Type__c,
+        Status__c,
+        Decision_By__c,
+        Decided_At__c,
+        Decision_Notes__c
       FROM HFS_Approval__c
       WHERE Id = :value
       WITH USER_MODE

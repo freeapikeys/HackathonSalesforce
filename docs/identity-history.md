@@ -40,7 +40,10 @@ The command center now adds a human-facing inspection surface:
   execute external actions directly.
 - live correction-review requests persist a governed work item, source
   evidence, recommendation, and pending approval using existing HFS records.
+- approved correction-review decisions persist supersession state on the target
+  relationship, including the approval, reviewer, timestamp, and reason, while
+  rejected reviews leave the relationship unchanged.
 
-This is not yet the full C03 product surface. The next C03 slice should persist
-approved supersession decisions onto relationship/assertion history after human
-approval.
+C03 still has future depth available around richer replacement assertions and
+graph traversal, but the MVP now preserves source claims, review work, human
+decisions, and supersession state through the Salesforce service layer.

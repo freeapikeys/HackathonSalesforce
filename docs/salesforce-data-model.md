@@ -7,21 +7,21 @@ recommendation -> approval -> action -> outcome -> evaluation`
 
 ## Objects
 
-| Object                     | Responsibility                                                                 |
-| -------------------------- | ------------------------------------------------------------------------------ |
-| `HFS_Event__c`             | Preserved event envelope, source identity, ordering, hashes, and intake result |
-| `HFS_Entity__c`            | Person, organization, supplier, partner, regulator, unit, or other entity      |
-| `HFS_Relationship__c`      | Directed, typed, time-bounded relationship between two entities                |
-| `HFS_Event_Participant__c` | Entity participation and role in an event                                      |
-| `HFS_Agreement__c`         | Agreement, promise, obligation, status, and material terms                     |
-| `HFS_Work_Item__c`         | Accountable cross-functional work triggered by evidence                        |
-| `HFS_SOP_Execution__c`     | Versioned SOP execution and current step                                       |
-| `HFS_Evidence__c`          | Citable source evidence connected to work                                      |
-| `HFS_Recommendation__c`    | Grounded proposed intervention and model invocation trace                      |
-| `HFS_Approval__c`          | Human decision under an explicit policy                                        |
-| `HFS_Action__c`            | Approved outreach or operational action                                        |
-| `HFS_Outcome__c`           | Observed result of an action                                                   |
-| `HFS_Evaluation__c`        | Human, rule, model, or system assessment of an outcome                         |
+| Object                     | Responsibility                                                                                                                            |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `HFS_Event__c`             | Preserved event envelope, source identity, ordering, hashes, and intake result                                                            |
+| `HFS_Entity__c`            | Person, organization, supplier, partner, regulator, unit, or other entity                                                                 |
+| `HFS_Relationship__c`      | Directed, typed, time-bounded relationship between two entities, including explicit supersession state when a human approves a correction |
+| `HFS_Event_Participant__c` | Entity participation and role in an event                                                                                                 |
+| `HFS_Agreement__c`         | Agreement, promise, obligation, status, and material terms                                                                                |
+| `HFS_Work_Item__c`         | Accountable cross-functional work triggered by evidence, with optional target relationship for correction review                          |
+| `HFS_SOP_Execution__c`     | Versioned SOP execution and current step                                                                                                  |
+| `HFS_Evidence__c`          | Citable source evidence connected to work                                                                                                 |
+| `HFS_Recommendation__c`    | Grounded proposed intervention and model invocation trace                                                                                 |
+| `HFS_Approval__c`          | Human decision under an explicit policy                                                                                                   |
+| `HFS_Action__c`            | Approved outreach or operational action                                                                                                   |
+| `HFS_Outcome__c`           | Observed result of an action                                                                                                              |
+| `HFS_Evaluation__c`        | Human, rule, model, or system assessment of an outcome                                                                                    |
 
 Every mapped operational record has a tenant key and stable external key.
 Source-derived records link to the immutable event that produced them.
@@ -52,6 +52,8 @@ express the demo requirement.
 - relationships require distinct subject and object entities;
 - agreements require distinct parties;
 - work items require a primary entity and trigger event;
+- correction-review work items may point at the relationship assertion being
+  reviewed;
 - SOP executions require a work item;
 - evidence requires a work item and source event;
 - recommendations require work, subject, and primary evidence;
@@ -70,7 +72,8 @@ metadata.
 
 - `HFS_Relationship_User` reads all context and edits work, SOP execution,
   evidence, and recommendations.
-- `HFS_Approver` reads all context, edits approvals, and receives the
+- `HFS_Approver` reads all context, edits approvals, may update relationship
+  supersession fields when approving a correction, and receives the
   `HFS_Approve_Recommendation` custom permission.
 - `HFS_Integration_User` reconciles all records and receives the
   `HFS_Execute_Action` custom permission.

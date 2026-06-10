@@ -242,6 +242,36 @@
           "type": "Number",
           "precision": 3,
           "scale": 2
+        },
+        {
+          "api": "Superseded_By__c",
+          "label": "Superseded By",
+          "type": "Lookup",
+          "referenceTo": "HFS_Relationship__c"
+        },
+        {
+          "api": "Supersession_Approval__c",
+          "label": "Supersession Approval",
+          "type": "Lookup",
+          "referenceTo": "HFS_Approval__c"
+        },
+        {
+          "api": "Superseded_By_User__c",
+          "label": "Superseded By User",
+          "type": "Lookup",
+          "referenceTo": "User"
+        },
+        {
+          "api": "Superseded_At__c",
+          "label": "Superseded At",
+          "type": "DateTime"
+        },
+        {
+          "api": "Supersession_Reason__c",
+          "label": "Supersession Reason",
+          "type": "LongTextArea",
+          "length": 32768,
+          "visibleLines": 5
         }
       ],
       "validationRules": [
@@ -385,6 +415,12 @@
           "type": "Lookup",
           "referenceTo": "HFS_Event__c",
           "required": true
+        },
+        {
+          "api": "Target_Relationship__c",
+          "label": "Target Relationship",
+          "type": "Lookup",
+          "referenceTo": "HFS_Relationship__c"
         },
         {
           "api": "Status__c",
@@ -970,6 +1006,16 @@
         "HFS_AgentApprovalRequestAction"
       ],
       "editableObjects": ["HFS_Approval__c"],
+      "updateOnlyObjects": ["HFS_Relationship__c"],
+      "editableFields": {
+        "HFS_Relationship__c": [
+          "Valid_To__c",
+          "Supersession_Approval__c",
+          "Superseded_By_User__c",
+          "Superseded_At__c",
+          "Supersession_Reason__c"
+        ]
+      },
       "customPermissions": ["HFS_Approve_Recommendation"]
     },
     {

@@ -276,17 +276,45 @@ def object_access(
     object_api: str,
 ) -> dict[str, bool]:
     editable_objects = set(permission_set.get("editableObjects", []))
+    update_only_objects = set(permission_set.get("updateOnlyObjects", []))
     delete_objects = set(permission_set.get("deleteObjects", []))
-    editable = "*" in editable_objects or object_api in editable_objects
+    creatable = "*" in editable_objects or object_api in editable_objects
+    editable = (
+        creatable
+        or "*" in update_only_objects
+        or object_api in update_only_objects
+    )
     deletable = "*" in delete_objects or object_api in delete_objects
     return {
-        "allowCreate": editable,
+        "allowCreate": creatable,
         "allowDelete": deletable,
         "allowEdit": editable,
         "allowRead": True,
         "modifyAllRecords": bool(permission_set.get("modifyAllRecords")),
         "viewAllRecords": bool(permission_set.get("viewAllRecords")),
     }
+
+
+def field_editable(
+    permission_set: dict[str, object],
+    object_api: str,
+    field_api: str,
+) -> bool:
+    editable_objects = set(permission_set.get("editableObjects", []))
+    if "*" in editable_objects or object_api in editable_objects:
+        return True
+
+    editable_fields = permission_set.get("editableFields", {})
+    if not isinstance(editable_fields, dict):
+        return False
+
+    object_fields = set(editable_fields.get(object_api, []))
+    wildcard_fields = set(editable_fields.get("*", []))
+    return (
+        "*" in object_fields
+        or field_api in object_fields
+        or field_api in wildcard_fields
+    )
 
 
 def render_permission_set(
@@ -323,7 +351,15 @@ def render_permission_set(
                 root,
                 f"{{{METADATA_NAMESPACE}}}fieldPermissions",
             )
-            child(field_permission, "editable", access["allowEdit"])
+            child(
+                field_permission,
+                "editable",
+                field_editable(
+                    permission_set,
+                    str(object_definition["api"]),
+                    str(field["api"]),
+                ),
+            )
             child(
                 field_permission,
                 "field",

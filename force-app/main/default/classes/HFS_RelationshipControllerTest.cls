@@ -142,13 +142,18 @@ private class HFS_RelationshipControllerTest {
     System.assertEquals(result.recordId, replay.recordId);
 
     HFS_Work_Item__c workItem = [
-      SELECT Status__c, Primary_Entity__c, Trigger_Event__c
+      SELECT
+        Status__c,
+        Primary_Entity__c,
+        Trigger_Event__c,
+        Target_Relationship__c
       FROM HFS_Work_Item__c
       WHERE Id = :result.recordId
     ];
     System.assertEquals('AWAITING_APPROVAL', workItem.Status__c);
     System.assertEquals(subject.Id, workItem.Primary_Entity__c);
     System.assertEquals(eventRecord.Id, workItem.Trigger_Event__c);
+    System.assertEquals(relationship.Id, workItem.Target_Relationship__c);
 
     HFS_Recommendation__c recommendation = [
       SELECT
@@ -188,5 +193,109 @@ private class HFS_RelationshipControllerTest {
         WHERE Id = :relationship.Id
       ]
     );
+
+    HFS_ServiceSupport.setPermissionOverride(
+      'HFS_Approve_Recommendation',
+      true
+    );
+    HFS_ApprovalDecisionCommand decision = new HFS_ApprovalDecisionCommand();
+    decision.contractVersion = HFS_ServiceContract.VERSION;
+    decision.correlationId = 'correlation-controller-correction-decision';
+    decision.tenantKey = 'tenant-controller-correction';
+    decision.purpose = 'REVIEW_RELATIONSHIP_CORRECTION';
+    decision.approvalId = approval.Id;
+    decision.decisionStatus = 'APPROVED';
+    decision.decisionNotes = 'Approved supersession from reviewed evidence.';
+
+    HFS_CommandResult decisionResult = HFS_RelationshipController.decideApproval(
+      decision
+    );
+    HFS_ServiceSupport.clearPermissionOverrides();
+
+    System.assertEquals(true, decisionResult.success);
+    System.assertEquals('APPROVED', decisionResult.status);
+
+    HFS_Relationship__c supersededRelationship = [
+      SELECT
+        Valid_To__c,
+        Supersession_Approval__c,
+        Superseded_By_User__c,
+        Superseded_At__c,
+        Supersession_Reason__c
+      FROM HFS_Relationship__c
+      WHERE Id = :relationship.Id
+    ];
+    System.assertNotEquals(null, supersededRelationship.Valid_To__c);
+    System.assertEquals(
+      approval.Id,
+      supersededRelationship.Supersession_Approval__c
+    );
+    System.assertEquals(
+      UserInfo.getUserId(),
+      supersededRelationship.Superseded_By_User__c
+    );
+    System.assertNotEquals(null, supersededRelationship.Superseded_At__c);
+    System.assertEquals(
+      'Approved supersession from reviewed evidence.',
+      supersededRelationship.Supersession_Reason__c
+    );
+
+    HFS_Relationship__c rejectedTarget = new HFS_Relationship__c(
+      External_Key__c = 'relationship-controller-rejected-correction',
+      Tenant_Key__c = 'tenant-controller-correction',
+      Subject_Entity__c = subject.Id,
+      Object_Entity__c = objectValue.Id,
+      Relationship_Type__c = 'REVIEW_ONLY',
+      Source_Event__c = eventRecord.Id,
+      Valid_From__c = nowValue.addDays(-1),
+      Confidence__c = 0.88
+    );
+    insert rejectedTarget;
+
+    HFS_CorrectionReviewCommand rejectedCommand = new HFS_CorrectionReviewCommand();
+    rejectedCommand.contractVersion = HFS_ServiceContract.VERSION;
+    rejectedCommand.correlationId = 'correlation-controller-rejected-correction';
+    rejectedCommand.tenantKey = 'tenant-controller-correction';
+    rejectedCommand.purpose = 'REVIEW_RELATIONSHIP_CORRECTION';
+    rejectedCommand.externalKey = 'correction-controller-rejected-correction';
+    rejectedCommand.sourceRelationshipId = rejectedTarget.Id;
+    rejectedCommand.targetLabel = 'Rejected supplier relationship';
+    rejectedCommand.reason = 'Review but reject this proposed supersession.';
+    HFS_CommandResult rejectedReview = HFS_RelationshipController.requestCorrectionReview(
+      rejectedCommand
+    );
+    HFS_Approval__c rejectedApproval = [
+      SELECT Id
+      FROM HFS_Approval__c
+      WHERE Recommendation__r.Work_Item__c = :rejectedReview.recordId
+    ];
+    HFS_ApprovalDecisionCommand rejectedDecision = new HFS_ApprovalDecisionCommand();
+    rejectedDecision.contractVersion = HFS_ServiceContract.VERSION;
+    rejectedDecision.correlationId = 'correlation-controller-rejected-decision';
+    rejectedDecision.tenantKey = 'tenant-controller-correction';
+    rejectedDecision.purpose = 'REVIEW_RELATIONSHIP_CORRECTION';
+    rejectedDecision.approvalId = rejectedApproval.Id;
+    rejectedDecision.decisionStatus = 'REJECTED';
+    rejectedDecision.decisionNotes = 'Rejected correction review.';
+
+    HFS_ServiceSupport.setPermissionOverride(
+      'HFS_Approve_Recommendation',
+      true
+    );
+    HFS_CommandResult rejectedDecisionResult = HFS_RelationshipController.decideApproval(
+      rejectedDecision
+    );
+    HFS_ServiceSupport.clearPermissionOverrides();
+
+    System.assertEquals(true, rejectedDecisionResult.success);
+    System.assertEquals('REJECTED', rejectedDecisionResult.status);
+    HFS_Relationship__c unchangedRelationship = [
+      SELECT Valid_To__c, Supersession_Approval__c, Superseded_At__c
+      FROM HFS_Relationship__c
+      WHERE Id = :rejectedTarget.Id
+    ];
+    System.assertEquals(null, unchangedRelationship.Valid_To__c);
+    System.assertEquals(null, unchangedRelationship.Supersession_Approval__c);
+    System.assertEquals(null, unchangedRelationship.Superseded_At__c);
   }
 }

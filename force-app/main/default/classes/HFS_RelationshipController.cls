@@ -93,6 +93,7 @@ public with sharing class HFS_RelationshipController {
         Tenant_Key__c = command.tenantKey,
         Primary_Entity__c = source.primaryEntityId,
         Trigger_Event__c = source.sourceEventId,
+        Target_Relationship__c = source.relationshipId,
         Status__c = 'AWAITING_APPROVAL',
         Priority__c = 'MEDIUM',
         Summary__c = clipped(
@@ -218,6 +219,7 @@ public with sharing class HFS_RelationshipController {
       HFS_Relationship__c relationship = relationships[0];
       return new CorrectionSource(
         relationship.Tenant_Key__c,
+        relationship.Id,
         relationship.Subject_Entity__c,
         relationship.Source_Event__c,
         relationship.Source_Event__r.Source_URI__c
@@ -245,6 +247,7 @@ public with sharing class HFS_RelationshipController {
     HFS_Event_Participant__c participant = participants[0];
     return new CorrectionSource(
       participant.Tenant_Key__c,
+      null,
       participant.Entity__c,
       participant.Event__c,
       participant.Event__r.Source_URI__c
@@ -275,17 +278,20 @@ public with sharing class HFS_RelationshipController {
 
   private class CorrectionSource {
     String tenantKey;
+    Id relationshipId;
     Id primaryEntityId;
     Id sourceEventId;
     String sourceUri;
 
     CorrectionSource(
       String tenantKey,
+      Id relationshipId,
       Id primaryEntityId,
       Id sourceEventId,
       String sourceUri
     ) {
       this.tenantKey = tenantKey;
+      this.relationshipId = relationshipId;
       this.primaryEntityId = primaryEntityId;
       this.sourceEventId = sourceEventId;
       this.sourceUri = sourceUri;

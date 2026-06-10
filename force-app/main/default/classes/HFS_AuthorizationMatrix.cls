@@ -79,9 +79,14 @@ public class HFS_AuthorizationMatrix {
         policy.allowedBaselineRoles = roles(APPROVER);
         policy.readableObjects = values(
           'HFS_Approval__c',
-          'HFS_Recommendation__c'
+          'HFS_Recommendation__c',
+          'HFS_Work_Item__c',
+          'HFS_Relationship__c'
         );
-        policy.updatableObjects = values('HFS_Approval__c');
+        policy.updatableObjects = values(
+          'HFS_Approval__c',
+          'HFS_Relationship__c'
+        );
         policy.readableFields = allFields(policy.readableObjects);
         policy.writableFields = approvalDecisionFields();
         policy.customPermissions = values('HFS_Approve_Recommendation');
@@ -216,12 +221,17 @@ public class HFS_AuthorizationMatrix {
   }
 
   private static List<String> approvalDecisionFields() {
-    return values(
+    return new List<String>{
       'HFS_Approval__c.Status__c',
       'HFS_Approval__c.Decision_By__c',
       'HFS_Approval__c.Decided_At__c',
-      'HFS_Approval__c.Decision_Notes__c'
-    );
+      'HFS_Approval__c.Decision_Notes__c',
+      'HFS_Relationship__c.Valid_To__c',
+      'HFS_Relationship__c.Supersession_Approval__c',
+      'HFS_Relationship__c.Superseded_By_User__c',
+      'HFS_Relationship__c.Superseded_At__c',
+      'HFS_Relationship__c.Supersession_Reason__c'
+    };
   }
 
   private static List<String> actionFields() {

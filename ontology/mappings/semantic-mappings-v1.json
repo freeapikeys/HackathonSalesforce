@@ -707,7 +707,21 @@
           { "object": "HFS_Relationship__c", "field": "Relationship_Type__c" },
           { "object": "HFS_Relationship__c", "field": "Valid_From__c" },
           { "object": "HFS_Relationship__c", "field": "Valid_To__c" },
-          { "object": "HFS_Relationship__c", "field": "Confidence__c" }
+          { "object": "HFS_Relationship__c", "field": "Confidence__c" },
+          { "object": "HFS_Relationship__c", "field": "Superseded_By__c" },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Supersession_Approval__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Superseded_By_User__c"
+          },
+          { "object": "HFS_Relationship__c", "field": "Superseded_At__c" },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Supersession_Reason__c"
+          }
         ]
       },
       "data360": {
@@ -719,9 +733,9 @@
         "property": "hfs:relationshipType"
       },
       "transformation": {
-        "rule": "Resolve subject and object entities, assign relationship type, and preserve validity and confidence.",
+        "rule": "Resolve subject and object entities, assign relationship type, preserve validity and confidence, and retain any explicit human-approved supersession decision.",
         "loss": "none",
-        "ambiguity": "Relationship type values may be source-local until mapped to SKOS controlled concepts."
+        "ambiguity": "Relationship type values may be source-local until mapped to SKOS controlled concepts; a superseded relationship remains queryable as historical belief."
       }
     },
     {
@@ -810,6 +824,7 @@
           { "object": "HFS_Work_Item__c", "field": "Tenant_Key__c" },
           { "object": "HFS_Work_Item__c", "field": "Primary_Entity__c" },
           { "object": "HFS_Work_Item__c", "field": "Trigger_Event__c" },
+          { "object": "HFS_Work_Item__c", "field": "Target_Relationship__c" },
           { "object": "HFS_Work_Item__c", "field": "Status__c" },
           { "object": "HFS_Work_Item__c", "field": "Priority__c" },
           { "object": "HFS_Work_Item__c", "field": "Summary__c" },
@@ -826,7 +841,7 @@
         "property": "prov:wasGeneratedBy"
       },
       "transformation": {
-        "rule": "Create accountable work from the triggering event, primary entity, status, priority, summary, due time, and blocker state.",
+        "rule": "Create accountable work from the triggering event, primary entity, optional target relationship, status, priority, summary, due time, and blocker state.",
         "loss": "none",
         "ambiguity": "Priority is a policy output, not simply severity copied from source."
       }

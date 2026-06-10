@@ -273,7 +273,7 @@ and UI must support any supermarket product category.
 - [x] Add user-facing relationship inspection and correction affordances.
 - [x] Persist correction-review work items, source evidence, recommendations,
       and pending approvals.
-- [ ] Persist approved supersession decisions onto relationship/assertion
+- [x] Persist approved supersession decisions onto relationship/assertion
       history.
 
 ### 6. Salesforce Core

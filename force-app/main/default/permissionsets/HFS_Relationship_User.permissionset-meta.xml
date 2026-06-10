@@ -55,6 +55,31 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>HFS_Relationship__c.Superseded_By__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Supersession_Approval__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Superseded_By_User__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Superseded_At__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Supersession_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>HFS_Agreement__c.Effective_To__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -66,6 +91,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>HFS_Agreement__c.Material_Terms_JSON__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Target_Relationship__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
