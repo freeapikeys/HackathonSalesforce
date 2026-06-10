@@ -1,31 +1,34 @@
-# Fahan Assignment: Slack Integration
+# Fahan Assignment: Slack Integration And Approved Communication
 
 ## Goal
 
-Build the Slack alert path for North Star so approved retail actions can notify
-internal staff through Slack or an honest mock result. This is not a standalone
-chatbot. It is one protected channel action behind Salesforce approval,
-Agentforce recommendation, and MuleSoft execution.
+Own the Slack alert path for North Star's private hospital operations demo.
+Slack is a protected communication action behind Salesforce approval,
+Agentforce recommendation, and MuleSoft execution. It is not a standalone
+chatbot and it must not carry clinical decision-making.
 
 ## What The Project Already Has
 
 Start from the existing governed spine:
 
-- `docs/north-star-mvp.md` defines the supermarket MVP and three-agent system.
-- `docs/north-star-implementation-plan.md` defines the generic build checklist.
+- `docs/north-star-mvp.md` defines the global operating model and hospital demo.
+- `docs/north-star-implementation-plan.md` defines the practical build plan.
 - `docs/mulesoft-api-contract.md` defines the integration boundary.
 - `mulesoft/README.md` explains the mock runtime and North Star mock actions.
-- `mulesoft/mock_runtime/` contains the local Python reference runtime.
+- `mulesoft/mock_runtime/` contains the Python reference runtime.
 - `mulesoft/api/hfs-integration-v1.openapi.json` is the generated Process API
   contract.
 - `mulesoft/api/examples/operation-examples-v1.json` contains generated request
   and response examples.
-- `force-app/main/default/lwc/hfsRelationshipCommandCenter/fixtures.js`
-  currently holds UI fixture state that can later show Slack delivery status.
+- `force-app/main/default/lwc/hfsRelationshipCommandCenter/fixtures.js` holds
+  UI fixture state that can show channel delivery status.
 - Salesforce records already model actions and outcomes through the HFS spine.
 
-Do not build a separate Slack app UI. The Slack path should be an action result
-that the command center can display.
+The Slack branch already prepared `SEND_SLACK_ALERT` with real webhook support
+through `SLACK_WEBHOOK_URL`, honest `MOCK_SENT` fallback, denial before
+approval, malformed payload validation, and correlation/evidence preservation.
+Your next work is to keep that path working while updating examples, docs, and
+fixtures from retail roles to hospital operations roles.
 
 ## Files To Inspect First
 
@@ -43,11 +46,12 @@ that the command center can display.
 
 ## Required Behavior
 
-Slack must be modeled as the protected action type `SEND_SLACK_ALERT`.
+Slack remains the protected action type `SEND_SLACK_ALERT`.
 
-The action may execute only after a business approval exists. Approval means a
-Store Manager, Duty Manager, or Operations Manager approved the action in the
-demo flow. It does not mean a developer approves code work.
+The action may execute only after business approval exists. Approval means an
+Operations Manager, Bed Manager, Pharmacy Lead, Billing Supervisor, Patient
+Experience Manager, or Duty Manager approved the action in the demo flow. It
+does not mean a developer approves code work.
 
 The action request should preserve:
 
@@ -56,8 +60,9 @@ The action request should preserve:
 - `approvalId`
 - `actionId`
 - `actionType` equal to `SEND_SLACK_ALERT`
-- `targetRole`, such as `Duty Manager`, `Cashier Lead`, or `Stockroom Lead`
-- `targetChannel`, such as `#north-star-demo` or `retail-ops-alerts`
+- `targetRole`, such as `Operations Manager`, `Bed Manager`, `Pharmacy Lead`,
+  `Billing Supervisor`, or `Patient Experience Lead`
+- `targetChannel`, such as `#north-star-demo` or `hospital-ops-alerts`
 - `messageTitle`
 - `messageBody`
 - `evidenceIds`
@@ -72,6 +77,8 @@ The action response should preserve:
 - `fallbackReason` when using mock mode
 - `correlationId`
 - `actionId`
+- `approvalId`
+- `evidenceIds`
 - `outcomeEventId` or callback reference when available
 
 ## Real Slack Versus Mock Slack
@@ -88,37 +95,40 @@ The demo is allowed to use mock mode. It must be honest on screen.
 
 ## Message Content
 
-A Slack alert should be short and operational:
+A Slack alert should be short, operational, and privacy-safe:
 
 ```text
-North Star alert: Fresh Food stockout and quality risk
-Product: Frozen beef patties, batch BEEF-2026-06-A
-Store: Grand Baie
-Action: Check shelf stock, quarantine suspect batch, prepare transfer request
-Owner: Stockroom Lead
+North Star alert: Bed capacity and patient wait risk
+Department: Outpatient reception and discharge ward
+Action: Release cleaned rooms, move porter task forward, review billing hold
+Owner: Operations Manager
 Due: 2026-06-13 10:30 MUT
-Evidence: complaint-cluster-003, inventory-position-041, supplier-response-002
+Evidence: complaint-cluster-hos-003, bed-capacity-041, billing-approval-007
 ```
 
-Do not put raw secrets, full customer personal data, or unsupported model claims
-inside the Slack message.
+Do not include raw secrets, real patient names, medical records, diagnoses,
+treatment details, phone numbers, or unsupported model claims.
 
 ## Implementation Checklist
 
-- [ ] Pull latest `main`.
-- [ ] Read this file and the required docs.
-- [ ] Inspect the existing MuleSoft mock runtime before editing.
-- [ ] Confirm where approved action execution is represented today.
-- [ ] Add or finish `SEND_SLACK_ALERT` in the action examples.
-- [ ] Add or finish Slack handling in the mock runtime.
-- [ ] Add real webhook behavior only through `SLACK_WEBHOOK_URL`.
-- [ ] Add mock fallback behavior with `status: MOCK_SENT`.
-- [ ] Add denial behavior when `approvalId` is missing or not approved.
-- [ ] Add failure behavior for malformed Slack payloads.
-- [ ] Ensure every response preserves `correlationId` and `actionId`.
-- [ ] Add fixtures for approved real-capable Slack, mock Slack, and denied
+- [x] Pull latest `main` into the working branch.
+- [x] Read this file and the required docs.
+- [x] Inspect the existing MuleSoft mock runtime before editing.
+- [x] Confirm where approved action execution is represented today.
+- [x] Add or finish `SEND_SLACK_ALERT` in the action examples.
+- [x] Add or finish Slack handling in the mock runtime.
+- [x] Add real webhook behavior only through `SLACK_WEBHOOK_URL`.
+- [x] Add mock fallback behavior with `status: MOCK_SENT`.
+- [x] Add denial behavior when `approvalId` is missing or not approved.
+- [x] Add failure behavior for malformed Slack payloads.
+- [x] Ensure every response preserves `correlationId` and `actionId`.
+- [x] Add fixtures for approved real-capable Slack, mock Slack, and denied
       Slack.
-- [ ] Add enough result data for the LWC to display channel status.
+- [x] Add enough result data for the LWC to display channel status.
+- [ ] Replace retail Slack examples with hospital operations examples.
+- [ ] Add hospital role aliases for Slack targets.
+- [ ] Confirm Slack message body is privacy-safe.
+- [ ] Confirm clinical decision requests are never sent as Slack instructions.
 - [ ] Update docs only if the action contract or fallback behavior changes.
 
 ## Testing Checklist
@@ -126,19 +136,23 @@ inside the Slack message.
 - [ ] Run `npm run check:mulesoft`.
 - [ ] Run `npm run check:project` if Salesforce metadata or generated examples
       are touched.
-- [ ] Add or update MuleSoft tests for: - approved Slack execution; - missing webhook mock mode; - missing approval denial; - malformed payload rejection; - correlation ID preservation.
-- [ ] Confirm no credential values appear in `git diff`.
+- [ ] Add or update MuleSoft tests for hospital Slack examples if the contract
+      changes.
+- [ ] Confirm no credential values, real patient data, phone numbers, emails,
+      medical records, or local machine paths appear in `git diff`.
 
 ## Demo Acceptance
 
 The Slack work is demo-ready when:
 
-- a recommended action can request Slack alert execution;
+- a recommended hospital action can request Slack alert execution;
 - an unapproved Slack action is denied;
 - an approved Slack action returns `SENT` or `MOCK_SENT`;
 - the result can be shown in the command center;
-- the message names product, store, task, owner role, deadline, and evidence;
-- the demo remains honest if no real Slack webhook is configured.
+- the message names department, action, owner role, deadline, and evidence;
+- the demo remains honest if no real Slack webhook is configured;
+- the Slack path never sends clinical diagnosis, treatment, dosage, or triage
+  instructions.
 
 ## Codex Prompt Starter
 
@@ -146,8 +160,8 @@ Use this when starting a fresh Codex task:
 
 ```text
 Read docs/assignments/fahan.md, docs/mulesoft-api-contract.md, and
-mulesoft/README.md. Implement the next smallest Slack integration task for
-SEND_SLACK_ALERT behind approved MuleSoft action execution. Inspect existing
-mock runtime files before editing. Do not commit credentials. Add or update
-tests and run npm run check:mulesoft.
+mulesoft/README.md. Preserve the approved SEND_SLACK_ALERT path while updating
+Slack examples, fixtures, and role aliases for the private hospital operations
+demo. Do not commit credentials or patient data. Keep approval gating and honest
+MOCK_SENT fallback. Add or update tests and run npm run check:mulesoft.
 ```

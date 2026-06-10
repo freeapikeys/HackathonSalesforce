@@ -12,14 +12,13 @@ The routing layer selects a qualified deployment after evaluating tenant,
 purpose, data classification, residency, language, capabilities, context size,
 quality qualification, latency, cost, status, and availability.
 
-Provider and model identifiers are deployment configuration. They do not
-appear in recommendation requests, prompts, Agentforce workflow logic, or UI
-state.
+Provider and model identifiers are deployment configuration. They do not appear
+in recommendation requests, prompts, Agentforce workflow logic, or UI state.
 
 North Star callers should request logical capabilities such as
-`retail_recovery_reasoning` or the existing `recommendation_reasoning`
-profile. They must not request a provider, a model name, or a product-specific
-profile such as a burger-only model.
+`hospital_recovery_reasoning`, `resource_capacity_reasoning`,
+`clinical_boundary_refusal`, or the existing `recommendation_reasoning` profile.
+They must not request a provider, a model name, or a scenario-specific profile.
 
 ## Deterministic Routing
 
@@ -45,11 +44,14 @@ Every invocation records:
 
 Sensitive prompt or response content is not required in the audit record.
 
-North Star invocation audit should also record the selected product external key,
-product category, store key, supplier key, source evidence identifiers,
-recommendation type, and action type when these are present in accessible
+North Star invocation audit should also record stable keys or hashes for the
+department, location, resource, partner, complaint cluster, capacity record,
+billing case, recommendation type, and action type when present in accessible
 context. Record identifiers should be stable business keys or hashes where
 policy requires minimization.
+
+The audit must preserve clinical-boundary refusals when a request asks for
+diagnosis, treatment, dosage, triage, or clinical priority decisions.
 
 ## Compatibility
 

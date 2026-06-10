@@ -81,6 +81,9 @@ sf apex run test \
 git diff --check
 ```
 
+Skip `./scripts/sync-beads.sh` only when Beads is not installed and no Beads
+state changed.
+
 ## North Star Demo Workflow
 
 When the North Star seed and harness are implemented, use the same org alias and
@@ -92,6 +95,7 @@ npm run demo:seed -- --target-org hfs-dev
 npm run demo:run -- --target-org hfs-dev
 ```
 
-The expected demo should create retail context, manager approval, MuleSoft mock
-write-back, Slack and WhatsApp-style alert records, outcome, and evaluation
-without manual Salesforce record edits.
+The expected demo should create private hospital operations context, manager
+approval, MuleSoft mock write-back, Slack and WhatsApp-style alert records,
+clinical-decision refusal, outcome, and evaluation without manual Salesforce
+record edits.

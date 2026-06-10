@@ -1,10 +1,11 @@
 # MuleSoft Integration Boundary
 
 The version `1.0.0` Process API contract is generated at
-`api/hfs-integration-v1.openapi.json`. It freezes four operations:
+`api/hfs-integration-v1.openapi.json`. It freezes these operations:
 
 - source event ingestion;
-- permission-aware relationship context retrieval;
+- authorized event replay;
+- permission-aware context retrieval;
 - approved action execution;
 - outcome callback capture.
 
@@ -47,25 +48,27 @@ purpose, and links each replay attempt to its original audit record.
 
 ## North Star Mock Actions
 
-The North Star demo should use the same mock runtime to simulate retail source
-systems and channels:
+The active North Star demo uses the same mock runtime to simulate private
+hospital operations systems and channels:
 
-- POS and inventory reads;
-- expiry and batch records;
-- supplier quality case and replacement-batch response;
-- reorder, warehouse transfer, markdown, and store-task write-backs;
+- patient-service tasks;
+- bed cleaning and discharge-room release tasks;
+- lab, laundry, insurer, payment, food, maintenance, transport, and equipment
+  partner escalations;
+- pharmacy or supply restock requests;
+- billing review and insurance follow-up;
 - Slack staff alert;
 - WhatsApp-style urgent staff alert;
-- outcome callback.
+- hospital outcome callback.
 
 Use real Slack or WhatsApp credentials only when they are available and safe to
 configure. Otherwise the mock runtime should return deterministic channel
 delivery records that are clearly presented as demo channel results.
 
-It deliberately keeps adapters behind Python interfaces so the same contract
-tests can be applied to Mule flows and real connectors without embedding mock
-behavior in production configuration. The runtime is an integration test
-harness, not a substitute for an Anypoint deployment.
+The runtime deliberately keeps adapters behind Python interfaces so the same
+contract tests can be applied to Mule flows and real connectors without
+embedding mock behavior in production configuration. The runtime is an
+integration test harness, not a substitute for an Anypoint deployment.
 
 ## Slack Alert Path
 
@@ -85,3 +88,10 @@ For an Anypoint build, keep the same Process API boundary and implement the
 Slack write-back as a Mule flow or connector-backed adapter behind
 `POST /v1/actions/executions`. Store the webhook URL in Anypoint secure
 configuration, never in Git.
+
+## Clinical Boundary
+
+The MuleSoft boundary must not expose actions for diagnosis, treatment, dosage,
+triage, or clinical priority decisions. If a request attempts to execute one of
+those actions, the correct result is denial or validation failure with a safe
+manager/clinician routing message.

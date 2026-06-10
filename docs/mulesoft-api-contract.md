@@ -38,6 +38,40 @@ contract is executable at
 - Callback delivery is retried independently and cannot change the original
   operation result.
 
+## North Star Hospital Actions
+
+North Star should keep hospital actions behind the existing
+`EXECUTE_APPROVED_ACTION` operation unless a real integration requires a new
+contract version.
+
+Approved mock write-backs for the private hospital demo should include:
+
+- `CREATE_PATIENT_SERVICE_TASK`
+- `REQUEST_BED_CLEANING`
+- `ESCALATE_LAB_VENDOR_CASE`
+- `CREATE_PHARMACY_RESTOCK_REQUEST`
+- `OPEN_BILLING_REVIEW`
+- `REQUEST_INSURANCE_FOLLOWUP`
+- `SEND_SLACK_ALERT`
+- `SEND_WHATSAPP_ALERT`
+- `CAPTURE_HOSPITAL_OUTCOME`
+
+The same action boundary can later support hotel, airport, banking,
+supermarket, cruise, or other profiles by changing action types and payloads,
+not by adding a new endpoint.
+
+## Protected Action Rules
+
+- All external actions require business manager approval unless explicitly
+  scoped as local demo mocks.
+- Channel results must be honest: `SENT` only means the external provider
+  accepted the message; `MOCK_SENT` means no real provider was used.
+- Action and channel responses must preserve tenant, correlation, approval ID,
+  action ID, evidence IDs, provider/status if applicable, fallback reason if
+  applicable, and callback/outcome reference when available.
+- Clinical diagnosis, treatment, dosage, triage, and clinical priority actions
+  are not valid MuleSoft actions for the demo.
+
 ## Compatibility
 
 Additive optional fields are compatible within version `1.0.0`. Removing or
@@ -56,10 +90,3 @@ The connected demo registers only the Salesforce-approved action with the mock
 write-back adapter. It first submits an unregistered approval and requires a
 `403 PERMISSION_DENIED` with no outcome, then executes the approved action,
 captures the callback, and writes the correlated outcome back to Salesforce.
-
-For North Star, approved mock write-backs should include retail action types such
-as supplier quality case, replacement-batch request, reorder request, warehouse
-transfer, markdown plan, store tasks, Slack alert, WhatsApp-style alert, and
-retail outcome capture. These can remain action payloads behind the existing
-`EXECUTE_APPROVED_ACTION` operation unless a real integration requires a new
-contract version.

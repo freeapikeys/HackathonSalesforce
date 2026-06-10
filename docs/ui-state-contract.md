@@ -6,8 +6,9 @@ from transport so the same component can use fixtures now and governed Apex
 services later.
 
 The North Star command center may reuse this component contract while changing
-labels and fixtures. The state should describe retail operations work, not a
-generic service interruption, when the active demo is North Star.
+labels and fixtures. The state should describe universal private hospital
+operations work for the active demo, not a generic service interruption and not
+retail-only work.
 
 ## Material States
 
@@ -25,7 +26,8 @@ generic service interruption, when the active demo is North Star.
 The ready state contains:
 
 - case identity, severity, status, owner, service deadline, and next update;
-- affected relationship and connected entities;
+- affected customer alias, department, location, resources, partners, and
+  connected entities;
 - blockers and cross-functional ownership;
 - chronological source-backed timeline;
 - evidence citations and content hashes;
@@ -35,14 +37,17 @@ The ready state contains:
 - action history and source-system correlation;
 - observed outcome and effectiveness state.
 
-North Star ready state should additionally expose:
+North Star hospital ready state should additionally expose:
 
-- selected product and product category;
-- store and supplier context;
-- inventory, expiry, complaint, supplier, promotion, and queue risk summaries;
-- supplier response status;
+- patient or visitor alias, never real patient data;
+- department and location context;
+- bed, room, queue, pharmacy stock, staff, equipment, vendor, and billing risk
+  summaries;
+- partner response status;
+- clinical-decision refusal state when relevant;
 - Slack and WhatsApp-style channel delivery status;
-- outcome metrics for stockout, waste, customer trust, and staff readiness.
+- outcome metrics for wait time, bed release, stockout avoidance, complaint
+  containment, billing resolution, vendor SLA, and task completion.
 
 The UI distinguishes source facts from model inference. Consequential controls
 emit intent events only; the component never treats a click as completed

@@ -13,12 +13,13 @@ Define:
 - the user or role;
 - the measurable result;
 - constraints and permissions;
-- the roadmap capability and Beads issue.
+- the roadmap capability and Beads issue when Beads is available.
 
-For North Star, also define the selected product category, store role, business
-risk, and whether the action is informational, operational, or protected.
-Protected retail actions include reorder, supplier case, markdown, warehouse
-transfer, Slack alert, WhatsApp-style alert, and staff-task write-back.
+For North Star, also define the global primitives involved, the active business
+profile, the hospital operations risk, and whether the action is informational,
+operational, protected, or refused. Protected hospital actions include vendor
+case, pharmacy restock, billing review, insurance follow-up, bed/room task,
+Slack alert, WhatsApp-style alert, and staff-task write-back.
 
 ### Trace
 
@@ -30,14 +31,15 @@ Define:
 - ownership and dependencies;
 - expected failures and recovery.
 
-For North Star, trace the source of each retail signal:
+For North Star, trace the source of each hospital operations signal:
 
-- POS sales or promotion history;
-- inventory, shelf, backroom, warehouse, batch, and expiry record;
-- customer complaint or refund evidence;
-- supplier response or delivery record;
-- staff roster or task state;
-- channel delivery result.
+- complaint or service-recovery evidence;
+- bed, room, queue, staff, equipment, or capacity record;
+- pharmacy or supply position;
+- lab, laundry, insurer, payment, food, maintenance, or transport partner
+  response;
+- billing, refund, claim, or payment review evidence;
+- approval, action, channel delivery, and outcome state.
 
 ### Link
 
@@ -72,15 +74,16 @@ Test:
 
 For North Star, stress-test:
 
-- complaints without supplier response;
-- supplier response that resolves only one batch;
-- selected product category changes;
-- reorder recommendation blocked by quality evidence;
+- complaint clusters with missing capacity evidence;
+- partner response that resolves only one operational dependency;
+- pharmacy stock risk with incomplete stock evidence;
+- billing approval blocked by missing insurer response;
 - staff alert delivery failure;
 - manager rejection or modification;
+- clinical diagnosis, treatment, dosage, triage, or priority request;
 - outcome that does not improve the metric.
 
-## Reasoning and Determinism
+## Reasoning And Determinism
 
 Language models may interpret context, compare hypotheses, summarize evidence,
 and propose actions.
@@ -92,7 +95,8 @@ idempotency, and audit logging must execute deterministically.
 
 When a failure or better method is discovered:
 
-1. Create or update a Beads issue.
+1. Create or update a Beads issue when Beads is available, otherwise update
+   `ROADMAP.md`.
 2. Preserve the failing input or test fixture.
 3. Fix the deterministic component or clarify the decision rule.
 4. Add a regression test.

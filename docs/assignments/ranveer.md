@@ -1,29 +1,35 @@
-# Ranveer Assignment: Agentforce Inventory And Waste Reasoning
+# Ranveer Assignment: Agentforce Resource And Capacity Reasoning
 
 ## Goal
 
-Build the Inventory and Waste reasoning path for North Star. The agent should
-turn retail evidence into a grounded recommendation: stockout risk, expiry
-risk, waste risk, promotion pressure, and safe next actions. It must cite facts,
-separate inferences, and respect supplier/product trust evidence.
+Preserve the completed Agentforce inventory/waste reasoning work from latest
+`main`, then generalize it into Resource and Capacity reasoning for North Star's
+private hospital operations demo. The agent should turn hospital operations
+evidence into grounded recommendations: bed pressure, queue risk, stock risk,
+SLA risk, staff pressure, vendor dependency, and safe next actions. It must cite
+facts, separate inference, name missing evidence, respect approval boundaries,
+and refuse clinical decisions.
 
 ## What The Project Already Has
 
 Start from the existing governed spine:
 
-- `docs/north-star-mvp.md` defines the North Star three-agent system.
+- `docs/north-star-mvp.md` defines the global operating model and hospital demo.
 - `docs/agentforce-action-contract.md` defines Agentforce-facing actions.
 - `docs/apex-service-contract.md` defines the Apex service boundary.
 - `docs/model-gateway-contract.md` and `docs/model-architecture.md` define
   logical model routing and grounding expectations.
-- `docs/salesforce-data-model.md` maps retail concepts to HFS records.
+- `docs/salesforce-data-model.md` maps concepts to HFS records.
 - `intelligence/agentforce/fixtures/agentforce-scenarios-v1.json` contains
   current Agentforce fixtures.
 - `force-app/main/default/classes/` contains Apex service and invocable classes.
 - `integration/events/fixtures/` contains source event fixtures.
+- `scripts/generate_agentforce_contract.py` and
+  `scripts/validate_agentforce_contract.py` include the latest reasoning
+  contract work.
 
-Do not make a generic Q&A bot. The output must be an evidence-backed retail
-operations recommendation.
+Do not make a generic Q&A bot. The output must be an evidence-backed operations
+recommendation.
 
 ## Files To Inspect First
 
@@ -36,82 +42,89 @@ operations recommendation.
 - `docs/salesforce-data-model.md`
 - `intelligence/agentforce/README.md`
 - `intelligence/agentforce/fixtures/agentforce-scenarios-v1.json`
+- `intelligence/agentforce/schemas/agentforce-actions-v1.schema.json`
 - `force-app/main/default/classes/`
 - `scripts/generate_agentforce_contract.py`
+- `scripts/validate_agentforce_contract.py`
 
 ## Required Reasoning Inputs
 
-The Inventory and Waste Agent should expect these inputs from Salesforce,
+The Resource and Capacity Agent should expect these inputs from Salesforce,
 fixtures, or Data Cloud style mock data:
 
-- product ID, name, category, storage type, and unit size;
-- store ID, store name, and shelf area;
-- current shelf stock;
-- backroom stock;
-- warehouse stock;
-- reserved or incoming stock;
-- supplier lead time;
-- daily sales velocity;
-- promotion uplift estimate;
-- expiry batch quantities and expiry dates;
-- complaint or quality risk summary;
-- supplier response status;
-- staffing or queue pressure summary;
+- department ID, name, and service area;
+- location ID, such as ward, reception, pharmacy, lab counter, or billing desk;
+- resource IDs and types, such as bed, room, queue, supply item, equipment, or
+  service counter;
+- current capacity, available capacity, blocked capacity, reserved capacity, and
+  incoming capacity;
+- queue count, arrival rate, service rate, and wait-time target;
+- pharmacy or supply stock, average usage, incoming stock, and supplier lead
+  time;
+- staff scheduled, staff available, staff missing, and role coverage;
+- partner status, such as lab, laundry, insurer, payment, or maintenance;
+- complaint or patient trust summary;
+- billing or insurance approval status;
 - evidence IDs and source timestamps.
 
 ## Required Reasoning Outputs
 
 The agent should return:
 
-- `riskType`: `STOCKOUT`, `EXPIRY`, `WASTE`, `OVERSTOCK`,
-  `PROMOTION_READINESS`, or `MIXED`
+- `riskType`: `CAPACITY`, `QUEUE`, `STOCK`, `SLA`, `VENDOR`, `BILLING`,
+  `COMPLAINT`, `CLINICAL_REFUSAL`, or `MIXED`
 - `severity`: `Low`, `Medium`, `High`, or `Critical`
 - `facts`: source-backed statements with evidence IDs
 - `inferences`: calculated or model-assisted conclusions
 - `missingEvidence`: data needed before a stronger decision can be made
 - `recommendedActions`: proposed actions, each with approval requirement
-- `blockedActions`: actions the agent refuses or defers
-- `supplierCaution`: whether supplier/product trust evidence changes the plan
+- `blockedActions`: unsafe, clinical, unapproved, unsupported, or deferred
+  actions
+- `supplierOrPartnerCaution`: whether partner evidence changes the plan
 - `confidence`: 0 to 1
 - `explanation`: manager-readable summary
 
 ## Baseline Calculations
 
-Use deterministic calculations before any model wording:
+Use deterministic calculations before model wording:
 
 ```text
-availableStock = shelfStock + backroomStock + warehouseStock + incomingStock
-adjustedDemand = dailySalesVelocity * promotionUpliftMultiplier
-daysOfCover = availableStock / adjustedDemand
-expiryDaysRemaining = expiryDate - businessDate
-wasteRiskUnits = nearExpiryUnits - expectedSalesBeforeExpiry
-salesAtRiskUnits = max(0, adjustedDemand * leadTimeDays - availableStock)
+availableCapacity = totalCapacity - blockedCapacity - reservedCapacity
+demandPressure = expectedDemand / max(1, availableCapacity)
+queueLoad = waitingCount / max(1, serviceRatePerHour)
+stockDaysRemaining = availableStock / max(1, averageDailyUsage)
+slaBreachRisk = minutesUntilDeadline < estimatedMinutesToResolve
+coverageGap = requiredStaffByRole - availableStaffByRole
 ```
 
 Suggested thresholds:
 
-- `daysOfCover < 1`: Critical stockout risk
-- `daysOfCover < 2`: High stockout risk
-- `expiryDaysRemaining <= 1`: Critical expiry risk
-- `expiryDaysRemaining <= 3`: High expiry risk for fresh/dairy/bakery
-- `wasteRiskUnits > 0`: recommend rotation, markdown, transfer, or removal
-- active complaint cluster on same batch: pause blind reorder and ask for
-  supplier response or replacement batch
+- `demandPressure > 1.25`: High capacity risk
+- `demandPressure > 1.75`: Critical capacity risk
+- `queueLoad > 1`: High queue risk
+- `stockDaysRemaining < 1`: Critical stock risk
+- `stockDaysRemaining < 2`: High stock risk
+- `slaBreachRisk = true`: require escalation or manager attention
+- active complaint cluster on same department/resource: qualify the plan and
+  include patient trust implications
 
 These thresholds can be changed, but the formula and reason must be documented.
 
-## Important Supplier Rule
+## Clinical Boundary Rule
 
-Do not recommend "order more" blindly when complaints or supplier risk exist.
+Do not recommend diagnosis, treatment, dosage, clinical triage, or clinical
+priority decisions.
 
 Correct behavior:
 
-- If the issue is only stock pressure, recommend reorder or transfer.
-- If the issue is stock pressure plus batch complaints, recommend quarantine of
-  suspect batch, supplier response, replacement batch, or alternate source.
-- If supplier response confirms replacement, update the recommendation.
-- If supplier response is missing, name the uncertainty and request manager
-  approval for consequential actions.
+- If the issue is operational capacity, recommend tasking, staff movement,
+  resource release, vendor escalation, or manager review.
+- If the issue asks which patient should be treated first, refuse and route to
+  a clinician or clinical manager.
+- If clinical evidence is missing or restricted, name the restriction and do not
+  infer clinical action.
+- If a partner response changes operational capacity, update the
+  recommendation.
 
 ## Implementation Checklist
 
@@ -130,6 +143,12 @@ Correct behavior:
 - [x] Ensure recommendations feed the approval/action path rather than execute
       actions directly.
 - [x] Keep labels product-category neutral.
+- [ ] Generalize scenario labels from retail to global/hospital operations.
+- [ ] Add Resource and Capacity hospital scenarios.
+- [ ] Add capacity, queue, stock, SLA, staff, and partner calculations where
+      appropriate.
+- [ ] Add `CLINICAL_REFUSAL` or equivalent blocked-action scenario.
+- [ ] Ensure recommendations feed the hospital approval/action path.
 
 ## Scenario Checklist
 
@@ -141,26 +160,37 @@ Correct behavior:
 - [x] Supplier replacement batch changes the recommendation.
 - [x] Missing expiry data causes a cautious recommendation.
 - [x] Missing supplier response blocks supplier-wide decision.
+- [ ] Bed capacity pressure with blocked discharge rooms.
+- [ ] Outpatient queue risk with staff coverage gap.
+- [ ] Pharmacy stock risk with approved restock or transfer recommendation.
+- [ ] Lab partner delay that changes the recommendation.
+- [ ] Billing approval delay that requires financial approval.
+- [ ] Missing capacity evidence that causes a cautious recommendation.
+- [ ] Clinical triage request that is refused and routed to clinician review.
 
 ## Testing Checklist
 
-- [x] Run `npm run check:agentforce`.
-- [x] Run `npm run check:models` if model gateway fixtures change. Not
-      applicable: model gateway fixtures did not change.
-- [x] Run `npm run check:project` if Apex metadata or classes change. Not
-      applicable: Apex metadata and classes did not change.
-- [x] Add or update tests for: - evidence citation; - fact versus inference separation; - supplier complaint caution; - missing evidence; - refusal to execute protected actions directly.
+- [ ] Run `npm run check:agentforce`.
+- [ ] Run `npm run check:models` if model gateway fixtures change.
+- [ ] Run `npm run check:project` if Apex metadata or classes change.
+- [ ] Add or update tests for evidence citation, fact versus inference
+      separation, partner caution, missing evidence, refusal to execute
+      protected actions directly, and clinical-decision refusal.
 
 ## Demo Acceptance
 
-The Inventory and Waste reasoning work is demo-ready when:
+The Resource and Capacity reasoning work is demo-ready when:
 
-- Agentforce can explain why a product is at risk;
-- it calculates or cites days of cover and expiry/waste pressure;
-- it changes or qualifies the plan when complaint/supplier evidence exists;
+- Agentforce can explain why a hospital operation is at risk;
+- it calculates or cites capacity pressure, queue load, stock days remaining,
+  SLA risk, or staff coverage gap;
+- it changes or qualifies the plan when complaint, partner, billing, or stock
+  evidence exists;
 - it proposes actions that flow into approval;
-- it does not send Slack, WhatsApp, reorder, markdown, or supplier actions
-  directly;
+- it does not send Slack, WhatsApp, vendor, billing, pharmacy, room/bed, or
+  staff-task actions directly;
+- it refuses diagnosis, treatment, dosage, triage, and clinical priority
+  decisions;
 - a manager can understand the reasoning in less than one minute.
 
 ## Codex Prompt Starter
@@ -169,8 +199,10 @@ Use this when starting a fresh Codex task:
 
 ```text
 Read docs/assignments/ranveer.md, docs/agentforce-action-contract.md,
-docs/apex-service-contract.md, and intelligence/agentforce fixtures. Implement
-the next smallest Inventory and Waste reasoning task. Preserve evidence
-citations, fact/inference separation, supplier caution, and approval gating.
-Run npm run check:agentforce and any focused checks for changed files.
+docs/apex-service-contract.md, and intelligence/agentforce fixtures. Preserve
+the latest inventory/waste reasoning work, then implement the next smallest
+Resource and Capacity reasoning task for the private hospital operations demo.
+Preserve evidence citations, fact/inference separation, partner caution,
+approval gating, and clinical-decision refusal. Run npm run check:agentforce and
+any focused checks for changed files.
 ```

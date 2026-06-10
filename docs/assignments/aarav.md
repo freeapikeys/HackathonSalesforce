@@ -1,21 +1,25 @@
-# Aarav Assignment: Fake Data, Complaints, And Demo Scenario Grounding
+# Aarav Assignment: Synthetic Hospital Data And Demo Grounding
 
 ## Goal
 
-Create the realistic synthetic retail data that North Star's agents, fixtures,
-command center, and demo flow will use. The data must feel like a real
-supermarket operation in Mauritius, but it must not contain real customer,
-staff, phone, supplier, or credential data.
+Create realistic synthetic private hospital operations data for North Star's
+agents, fixtures, command center, and demo flow. The data must feel like a
+large hospital operation in Mauritius, but it must not contain real patient,
+staff, phone, supplier, insurer, credential, or medical-record data.
 
 This assignment is not "make random fake data." It is building the evidence
 base that lets the agents reason:
 
-- Inventory and Waste Agent needs stock, sales, promotions, expiry, and lead
-  time data.
-- Supplier and Product Trust Agent needs complaints, batches, supplier history,
-  supplier replies, refunds, and quality signals.
-- Store Execution and Outreach Agent needs staff roles, queue pressure, tasks,
-  channels, acknowledgements, and deadlines.
+- Patient Trust Agent needs patient/visitor complaints, complaint clusters,
+  service recovery context, and safe message drafts.
+- Resource and Capacity Agent needs beds, rooms, queues, staff, pharmacy stock,
+  equipment, and service counters.
+- Partner and Vendor Agent needs lab, laundry, insurer, payment, food,
+  maintenance, transport, and equipment partner status.
+- Financial Impact Agent needs billing issues, insurance approvals, refund
+  requests, compensation thresholds, and payment failures.
+- Operations Execution Agent needs staff roles, task templates, channel
+  aliases, acknowledgements, due times, and escalation paths.
 - The Orchestrator Topic needs all of the above to produce one coordinated
   recovery plan.
 
@@ -23,20 +27,20 @@ base that lets the agents reason:
 
 Start from the existing project structure:
 
-- `docs/north-star-mvp.md` defines the MVP and the three-agent system.
+- `docs/north-star-mvp.md` defines the global operating model and hospital demo.
 - `docs/north-star-implementation-plan.md` defines generic build checklists.
 - `docs/event-contract.md` defines source event expectations.
 - `docs/demo-harness.md` defines the demo proof path.
 - `docs/ui-state-contract.md` defines command-center state expectations.
-- `docs/salesforce-data-model.md` maps retail data onto HFS records.
+- `docs/salesforce-data-model.md` maps data onto HFS records.
 - `integration/events/fixtures/` contains current source event fixtures.
 - `intelligence/agentforce/fixtures/agentforce-scenarios-v1.json` contains
   current Agentforce fixtures.
 - `force-app/main/default/lwc/hfsRelationshipCommandCenter/fixtures.js`
   contains current UI fixture state.
 
-The current fixtures are still generic in places. Your job is to create or
-prepare North Star retail data that future implementation work can consume.
+The current fixtures are still retail-oriented in places. Your job is to create
+or prepare hospital operations data that future implementation work can consume.
 
 ## Demo Business Date
 
@@ -46,9 +50,6 @@ Use one consistent demo business date unless a test requires another date:
 2026-06-13
 ```
 
-This creates a weekend-promotion story and lets expiry, staffing, and supplier
-lead-time examples stay consistent.
-
 Use Mauritius time:
 
 ```text
@@ -57,207 +58,102 @@ Indian/Mauritius, UTC+04:00
 
 ## Data Safety Rules
 
-- Use synthetic names only.
-- Do not use real customer names, phone numbers, emails, or addresses.
-- Do not use real supplier contract terms.
-- Use role aliases such as `role:duty-manager` instead of personal phone
-  numbers.
+- Use synthetic aliases only.
+- Do not use real patient names, staff names, phone numbers, emails, addresses,
+  insurer records, medical records, diagnoses, treatments, prescriptions, or
+  clinical notes.
+- Use role aliases such as `role:bed-manager` instead of personal contact data.
 - Use deterministic IDs so tests can reference records.
-- Every complaint must connect to product, batch or no-batch reason, store,
-  supplier, timestamp, and evidence ID.
+- Every complaint must connect to department, location, resource if relevant,
+  timestamp, and evidence ID.
 - Include messy data. Perfect data makes the demo weaker.
+- Include clinical-decision requests only as refusal scenarios, not as
+  actionable medical instructions.
 
 ## Required Data Volume
 
-Create enough data to prove this applies to all products, not only burgers.
+Create enough data to prove this is a global operations system, not a single
+hospital ticket demo.
 
-| Data type                         | Target count     | Why it is needed                                      |
-| --------------------------------- | ---------------- | ----------------------------------------------------- |
-| Stores                            | 3                | Compare different store conditions                    |
-| Suppliers                         | 6                | Show supplier choice, lead time, and reliability      |
-| Product categories                | 8                | Prove category-neutral architecture                   |
-| Products                          | 30               | Enough variety for demo and fallback scenarios        |
-| Product batches                   | 45 to 60         | Needed for expiry and batch-specific complaints       |
-| Inventory positions               | 90 store records | 3 stores x 30 products                                |
-| Warehouse inventory records       | 30               | One warehouse position per product                    |
-| Daily sales summaries             | 1,260            | 3 stores x 30 products x 14 days                      |
-| Promotions                        | 8                | Demand spike, price mismatch, and signage examples    |
-| Complaint records                 | 50 to 70         | Isolated complaints plus meaningful clusters          |
-| Complaint clusters                | 8                | Direct input to Supplier/Product Trust reasoning      |
-| Refund records                    | 20 to 30         | Helps distinguish complaints from actual loss         |
-| Supplier responses                | 10               | Shows recommendation changing after supplier evidence |
-| Roster and queue pressure records | 84               | 3 stores x 7 days x 4 time bands                      |
-| Staff task templates              | 20               | Store execution actions                               |
-| Channel recipient aliases         | 12               | Slack/WhatsApp role targets without personal data     |
-| Expected recommendation cases     | 12               | Evaluation notes for Agentforce and demo QA           |
-| Retail event fixtures             | 18 to 24         | Intake, duplicate, late, malformed, and outcome paths |
+| Data type                     | Target count | Why it is needed                                  |
+| ----------------------------- | ------------ | ------------------------------------------------- |
+| Hospital campus               | 1            | One coherent flagship demo environment            |
+| Departments/service areas     | 8 to 10      | Show cross-functional operations                  |
+| Locations                     | 20 to 30     | Wards, counters, rooms, pharmacy, lab, billing    |
+| Resource types                | 8 to 12      | Beds, rooms, queues, stock, equipment, counters   |
+| Resource records              | 80 to 120    | Enough capacity and availability evidence         |
+| Synthetic customer aliases    | 40 to 60     | Patient/visitor complaint and service recovery    |
+| Staff role aliases            | 20 to 30     | Task routing without personal data                |
+| Partner/vendor aliases        | 8 to 12      | Lab, laundry, insurer, payment, food, maintenance |
+| Complaint records             | 50 to 70     | Isolated complaints plus meaningful clusters      |
+| Complaint clusters            | 8 to 10      | Direct input to Patient Trust reasoning           |
+| Queue/capacity records        | 60 to 100    | Time-band capacity pressure                       |
+| Pharmacy/supply records       | 30 to 50     | Stock risk, transfer, restock decisions           |
+| Billing/insurance cases       | 20 to 30     | Financial exposure and approval routing           |
+| Partner responses             | 12 to 16     | Recommendation changes after new evidence         |
+| Staff task templates          | 20 to 25     | Operations execution actions                      |
+| Channel recipient aliases     | 12 to 16     | Slack/WhatsApp role targets without personal data |
+| Expected recommendation cases | 12 to 15     | Evaluation notes for Agentforce and demo QA       |
+| Hospital event fixtures       | 18 to 24     | Intake, duplicate, late, malformed, outcome paths |
 
-Do not create all of this as huge transaction-level data unless the repo needs
-it. Daily summaries are enough for the hackathon.
+Do not create huge transaction-level data unless the repo needs it. Time-band
+summaries are enough for the hackathon.
 
-## Required Product Categories
+## Required Departments And Risks
 
-Use these categories and include at least the minimum number of products:
+| Department/service area    | Required risks                                                  |
+| -------------------------- | --------------------------------------------------------------- |
+| Outpatient reception       | queue spike, wait complaint, front-desk staff pressure          |
+| Emergency intake desk      | non-clinical congestion, escalation, safety-sensitive flag      |
+| Inpatient discharge ward   | bed blocked, cleaning delay, porter task delay                  |
+| Housekeeping               | room readiness, cleanliness complaint, SLA breach               |
+| Pharmacy                   | stock risk, substitute/transfer request, counter queue          |
+| Laboratory coordination    | partner response delay, status uncertainty, SLA evidence        |
+| Billing and insurance      | duplicate invoice, claim approval stuck, refund request         |
+| Food and hospitality       | meal complaint, allergy-safe service escalation, supplier delay |
+| Facilities and maintenance | wheelchair, lift, HVAC, equipment, or cleaning issue            |
+| Patient experience desk    | complaint cluster, service recovery, approved message           |
 
-| Category       | Minimum products | Required risks                                      |
-| -------------- | ---------------- | --------------------------------------------------- |
-| Fresh food     | 5                | expiry, quality complaint, demand spike             |
-| Frozen food    | 4                | stockout, freezer/batch concern, supplier lead time |
-| Bakery         | 4                | same-day waste, markdown, promotion readiness       |
-| Dairy          | 4                | expiry, cold-chain complaint, replacement batch     |
-| Beverages      | 4                | seasonal demand, overstock, transfer                |
-| Household      | 3                | price mismatch, promotion signage, slow movement    |
-| Pharmacy shelf | 3                | expiry, compliance, manager approval                |
-| Electronics    | 3                | high-value stockout, supplier delay                 |
+## Required Partners
 
-Example products:
+Use synthetic partner aliases:
 
-- fresh tomatoes;
-- salad packs;
-- frozen beef patties;
-- frozen vegetables;
-- baguettes;
-- croissants;
-- fresh milk;
-- yogurt multipack;
-- bottled water;
-- juice cartons;
-- detergent;
-- paper towels;
-- pain relief tablets;
-- batteries;
-- phone chargers.
+| Partner ID                | Partner type                     | Risks to represent                   |
+| ------------------------- | -------------------------------- | ------------------------------------ |
+| `partner-lablink-001`     | laboratory coordination          | delayed response, recovered response |
+| `partner-laundrycare-001` | laundry and linen                | linen shortage, SLA breach           |
+| `partner-insureplus-001`  | insurance/pre-authorization      | pending approval, approved follow-up |
+| `partner-payflow-001`     | payment processing               | duplicate charge, gateway issue      |
+| `partner-medstock-001`    | pharmacy/supply distributor      | restock lead time, partial supply    |
+| `partner-foodservice-001` | food and meal operations         | meal complaint, supplier delay       |
+| `partner-maintenance-001` | facilities maintenance           | lift, HVAC, equipment delay          |
+| `partner-transport-001`   | patient transport/porter support | wheelchair/porter delay              |
 
-## Required Stores
+Each partner should have:
 
-Use three synthetic stores:
-
-| Store ID               | Store name            | Demo role                                     |
-| ---------------------- | --------------------- | --------------------------------------------- |
-| `store-grand-baie-001` | Grand Baie Market     | tourism/weekend rush and promotion pressure   |
-| `store-curepipe-001`   | Curepipe Central      | mixed stock, expiry, and staff pressure       |
-| `store-port-louis-001` | Port Louis Waterfront | high traffic, queue pressure, supplier timing |
-
-Each store should have:
-
-- opening hours;
-- role aliases;
-- shelf areas;
-- inventory positions;
-- queue-pressure records;
-- at least one active risk event.
-
-## Required Suppliers
-
-Use six synthetic suppliers:
-
-| Supplier ID                 | Supplier type              | Risks to represent                          |
-| --------------------------- | -------------------------- | ------------------------------------------- |
-| `supplier-island-fresh-001` | fresh produce              | variable quality, fast replacement          |
-| `supplier-coldchain-001`    | frozen and dairy logistics | cold-chain concern, delivery delay          |
-| `supplier-bakeryline-001`   | bakery                     | same-day supply and waste                   |
-| `supplier-bevco-001`        | beverages                  | seasonal bulk delivery                      |
-| `supplier-homecare-001`     | household                  | slow-moving stock and promo price mismatch  |
-| `supplier-techshelf-001`    | electronics/pharmacy shelf | high-value delay and controlled replacement |
-
-Each supplier should have:
-
-- normal lead time in days;
-- emergency lead time in days;
-- reliability score or qualitative status;
-- contact alias, not a real email or phone;
+- normal response time;
+- emergency response time;
+- reliability status or score;
+- contact alias, not real email or phone;
 - at least one response example.
 
 ## Data Objects To Create
 
-### Product
+### Hospital Resource
 
 Required fields:
 
-- `productId`
-- `sku`
+- `resourceId`
+- `resourceType`: `BED`, `ROOM`, `QUEUE`, `SUPPLY`, `EQUIPMENT`,
+  `SERVICE_COUNTER`, `STAFF_POOL`, or `PARTNER_SLOT`
 - `name`
-- `category`
-- `storageType`: `ambient`, `chilled`, `frozen`, `controlled`, or `locked`
-- `unit`
-- `supplierId`
-- `shelfArea`
-- `isPerishable`
-- `normalShelfLifeDays`
-- `reorderPoint`
-- `safetyStock`
-
-### Product Batch
-
-Required fields:
-
-- `batchId`
-- `productId`
-- `supplierId`
-- `receivedAt`
-- `expiryDate`
-- `quantityReceived`
-- `quantityRemaining`
-- `storeId` or `warehouseId`
-- `qualityStatus`: `clear`, `watch`, `suspect`, `quarantined`, or `expired`
-- `evidenceIds`
-
-Only perishable, controlled, or quality-sensitive products need batches.
-
-### Inventory Position
-
-Required fields:
-
-- `inventoryPositionId`
-- `storeId`
-- `productId`
-- `shelfStock`
-- `backroomStock`
-- `reservedStock`
-- `lastCountedAt`
-- `countConfidence`: `high`, `medium`, or `low`
-- `evidenceId`
-
-### Warehouse Inventory
-
-Required fields:
-
-- `warehousePositionId`
-- `productId`
-- `availableStock`
-- `reservedStock`
-- `nextDispatchWindow`
-- `evidenceId`
-
-### Daily Sales Summary
-
-Required fields:
-
-- `salesSummaryId`
-- `storeId`
-- `productId`
-- `businessDate`
-- `unitsSold`
-- `refundUnits`
-- `averageUnitPrice`
-- `promotionId` if applicable
-- `evidenceId`
-
-Use 14 days of summaries before the demo business date.
-
-### Promotion
-
-Required fields:
-
-- `promotionId`
-- `name`
-- `storeIds`
-- `productIds`
-- `startsAt`
-- `endsAt`
-- `expectedUpliftMultiplier`
-- `signageRequired`
-- `priceOverride`
+- `departmentId`
+- `locationId`
+- `status`: `available`, `busy`, `blocked`, `reserved`, `low_stock`,
+  `delayed`, `maintenance`, or `unknown`
+- `capacity`
+- `availableCapacity`
+- `blockedCapacity`
 - `evidenceId`
 
 ### Complaint
@@ -265,17 +161,17 @@ Required fields:
 Required fields:
 
 - `complaintId`
-- `storeId`
-- `productId`
-- `batchId` or `batchUnknownReason`
-- `supplierId`
+- `customerAliasId`
+- `departmentId`
+- `locationId`
+- `resourceId` or `resourceUnknownReason`
 - `reportedAt`
-- `complaintType`: `quality`, `smell`, `packaging`, `expiry`, `price`,
-  `availability`, `refund`, `service`, or `cold_chain`
+- `complaintType`: `wait_time`, `room_readiness`, `cleanliness`, `food`,
+  `billing`, `discharge_delay`, `pharmacy_delay`, `lost_item`,
+  `accessibility`, `privacy`, `safety`, or `staff_interaction`
 - `severity`: `low`, `medium`, `high`, or `critical`
 - `summary`
-- `refundRequested`
-- `refundApproved`
+- `serviceRecoveryRequested`
 - `evidenceId`
 
 ### Complaint Cluster
@@ -283,49 +179,79 @@ Required fields:
 Required fields:
 
 - `clusterId`
-- `productId`
-- `batchId` if known
-- `storeIds`
-- `supplierId`
+- `departmentId`
+- `locationIds`
+- `resourceIds`
 - `firstReportedAt`
 - `lastReportedAt`
 - `complaintCount`
 - `dominantTypes`
-- `riskInterpretation`: `isolated`, `batch_specific`, `store_specific`,
-  `supplier_suspected`, or `price_signage`
+- `riskInterpretation`: `isolated`, `capacity_driven`, `partner_driven`,
+  `billing_driven`, `service_recovery`, `privacy_sensitive`, or
+  `safety_sensitive`
 - `recommendedCaution`
 - `evidenceIds`
 
-### Supplier Response
+### Capacity Record
 
 Required fields:
 
-- `supplierResponseId`
-- `supplierId`
-- `relatedClusterId`
-- `receivedAt`
-- `responseType`: `replacement_batch`, `credit_note`, `delivery_confirmed`,
-  `delayed_delivery`, `insufficient_evidence`, `quality_denied`, or
-  `corrective_action`
-- `summary`
-- `replacementBatchId` if applicable
-- `expectedDeliveryAt` if applicable
-- `changesRecommendation`: true or false
-- `evidenceId`
-
-### Roster And Queue Pressure
-
-Required fields:
-
-- `queueRecordId`
-- `storeId`
+- `capacityRecordId`
+- `departmentId`
+- `locationId`
 - `businessDate`
 - `timeBand`: `morning`, `midday`, `afternoon`, or `evening`
-- `expectedFootfall`
-- `expectedBasketCount`
-- `cashiersScheduled`
-- `floorStaffScheduled`
+- `expectedDemand`
+- `availableCapacity`
+- `blockedCapacity`
+- `staffAvailable`
+- `staffRequired`
 - `queueRisk`: `low`, `medium`, `high`, or `critical`
+- `evidenceId`
+
+### Pharmacy Or Supply Position
+
+Required fields:
+
+- `supplyPositionId`
+- `departmentId`
+- `resourceId`
+- `itemAlias`
+- `availableStock`
+- `reservedStock`
+- `averageDailyUsage`
+- `incomingStock`
+- `supplierLeadTimeHours`
+- `stockConfidence`: `high`, `medium`, or `low`
+- `evidenceId`
+
+### Billing Or Insurance Case
+
+Required fields:
+
+- `caseId`
+- `customerAliasId`
+- `departmentId`
+- `caseType`: `duplicate_invoice`, `claim_pending`, `refund_request`,
+  `deposit_issue`, `payment_failure`, or `compensation_review`
+- `amountBand`: `low`, `medium`, or `high`
+- `approvalRequired`
+- `status`: `open`, `pending_partner`, `approved`, `denied`, or `resolved`
+- `evidenceId`
+
+### Partner Response
+
+Required fields:
+
+- `partnerResponseId`
+- `partnerId`
+- `relatedIssueId`
+- `receivedAt`
+- `responseType`: `delayed`, `recovered`, `approved`, `denied`,
+  `insufficient_evidence`, `partial_resolution`, or `corrective_action`
+- `summary`
+- `expectedResolutionAt` if applicable
+- `changesRecommendation`: true or false
 - `evidenceId`
 
 ### Staff Task Template
@@ -333,8 +259,10 @@ Required fields:
 Required fields:
 
 - `taskTemplateId`
-- `taskType`: `restock`, `shelf_check`, `quarantine`, `markdown`, `signage`,
-  `cashier_move`, `supplier_call`, `manager_review`, or `customer_notice`
+- `taskType`: `patient_service`, `bed_cleaning`, `porter_dispatch`,
+  `pharmacy_restock`, `billing_review`, `insurance_followup`,
+  `vendor_escalation`, `maintenance_check`, `food_service_review`,
+  `manager_review`, or `clinical_route`
 - `defaultOwnerRole`
 - `defaultDueMinutes`
 - `requiresApproval`
@@ -346,72 +274,82 @@ Required fields:
 
 - `recipientAliasId`
 - `role`
-- `storeId`
+- `departmentId`
 - `slackTarget`
 - `whatsappTargetAlias`
 - `canReceiveUrgentAlerts`
 
-Use aliases only. Example: `role:grand-baie-duty-manager`.
+Use aliases only. Example: `role:outpatient-operations-manager`.
 
-## Required Complaint Scenarios
+## Required Hospital Scenarios
 
 Create these exact scenario types:
 
-1. Isolated low-severity complaint with no action beyond monitoring.
-2. Batch-specific quality cluster for a fresh/frozen product.
-3. Store-specific packaging complaints caused by shelf handling.
-4. Supplier-suspected cold-chain complaint requiring supplier response.
-5. Price mismatch complaints caused by promotion signage.
-6. Expiry complaint where batch data confirms risk.
-7. Refund pattern that looks high but is not linked to product quality.
-8. High-severity food safety concern requiring manager escalation.
+1. Isolated low-severity wait complaint with monitoring only.
+2. Complaint cluster caused by outpatient queue pressure.
+3. Room readiness complaint linked to blocked discharge cleaning.
+4. Pharmacy stock risk requiring approved restock or transfer.
+5. Lab partner delay that changes the recommendation after response.
+6. Billing or insurance approval stuck and needing financial approval.
+7. Food or hospitality complaint requiring service recovery.
+8. Accessibility support delay requiring task assignment.
+9. Privacy or safety-sensitive complaint requiring escalation.
+10. Clinical triage/treatment request that North Star refuses.
+11. Missing resource evidence causing a cautious recommendation.
+12. Late partner response updating the plan without overwriting audit history.
 
 Each scenario should include:
 
-- source complaints;
-- cluster summary;
-- related inventory/batch facts;
-- supplier status if relevant;
-- expected recommendation note.
+- source complaints or signals;
+- cluster summary if relevant;
+- related capacity/resource/partner/billing facts;
+- expected recommendation note;
+- what the system must refuse to do;
+- which approval is required;
+- which Slack or WhatsApp alert would be appropriate after approval.
 
 ## Required Expected Recommendation Cases
 
-Create 12 expected recommendation notes:
+Create 12 to 15 expected recommendation notes:
 
-| Case ID | Situation                       | Expected behavior                                         |
-| ------- | ------------------------------- | --------------------------------------------------------- |
-| ER-01   | clean stockout risk             | reorder or warehouse transfer                             |
-| ER-02   | stockout plus complaint cluster | do not blindly reorder same batch; ask supplier/manager   |
-| ER-03   | replacement batch confirmed     | update plan to replacement plus staff task                |
-| ER-04   | near-expiry fresh food          | markdown, rotate, remove expired units                    |
-| ER-05   | overstock beverages             | transfer or promotion adjustment                          |
-| ER-06   | bakery same-day waste           | markdown and production adjustment                        |
-| ER-07   | price mismatch                  | signage task and customer service note                    |
-| ER-08   | queue risk during promotion     | move staff or open cashier                                |
-| ER-09   | missing batch data              | cautious recommendation and missing evidence              |
-| ER-10   | supplier denies quality issue   | preserve evidence, do not close without manager review    |
-| ER-11   | malformed duplicate event       | intake should reject or dedupe without corrupting context |
-| ER-12   | late supplier response          | recommendation should update and keep audit history       |
+| Case ID | Situation                           | Expected behavior                                             |
+| ------- | ----------------------------------- | ------------------------------------------------------------- |
+| ER-H01  | clean queue pressure                | move staff or open service counter after approval if needed   |
+| ER-H02  | complaint cluster plus blocked beds | create cleaning/porter tasks and patient trust recovery       |
+| ER-H03  | partner response received           | update plan and preserve previous recommendation history      |
+| ER-H04  | pharmacy stock risk                 | restock, transfer, or substitute operationally after approval |
+| ER-H05  | billing approval stalled            | open billing/insurance review and estimate exposure           |
+| ER-H06  | food complaint                      | route service task and approved message draft                 |
+| ER-H07  | accessibility delay                 | assign support task and track acknowledgement                 |
+| ER-H08  | maintenance delay                   | vendor escalation and fallback resource check                 |
+| ER-H09  | missing capacity data               | cautious recommendation and missing evidence                  |
+| ER-H10  | duplicate event                     | intake should dedupe without corrupting context               |
+| ER-H11  | clinical triage request             | refuse clinical decision and route to clinician               |
+| ER-H12  | late outcome callback               | update outcome and keep correlation history                   |
 
 Each note should say:
 
-- what the agent should recommend;
-- what the agent should refuse to do;
+- what North Star should recommend;
+- what North Star should refuse to do;
 - which evidence IDs matter;
 - whether manager approval is needed;
 - which Slack or WhatsApp alert would be appropriate after approval.
 
-## Required Retail Event Fixtures
+## Required Hospital Event Fixtures
 
-Prepare 18 to 24 retail event fixtures using the existing event-envelope style.
-Include:
+Prepare 18 to 24 hospital event fixtures using the existing event-envelope
+style. Include:
 
-- stockout risk detected;
-- expiry risk detected;
-- complaint cluster detected;
-- supplier response received;
-- queue risk detected;
-- action outcome captured;
+- patient complaint cluster detected;
+- bed capacity pressure detected;
+- discharge room blocked;
+- pharmacy stock risk detected;
+- lab vendor response delayed;
+- billing approval stalled;
+- staff queue risk detected;
+- clinical decision request refused;
+- approved action executed;
+- hospital outcome captured;
 - duplicate event;
 - malformed event;
 - late event;
@@ -419,75 +357,95 @@ Include:
 - idempotency conflict;
 - invalid content hash.
 
-Recommended future path:
-
-```text
-integration/events/fixtures/retail/
-```
-
-If implementation has not created that folder yet, write the data plan and JSON
-drafts clearly so another Codex session can wire them into the validator.
-
 ## How The Agents Will Use The Data
 
-### Inventory and Waste Agent
-
-Consumes:
-
-- product catalog;
-- inventory positions;
-- warehouse inventory;
-- daily sales summaries;
-- promotions;
-- product batches;
-- supplier lead time.
-
-Produces:
-
-- days of cover;
-- sales at risk;
-- waste risk units;
-- markdown, transfer, reorder, or quarantine recommendation;
-- missing evidence list.
-
-### Supplier and Product Trust Agent
+### Patient Trust Agent
 
 Consumes:
 
 - complaints;
 - complaint clusters;
-- refund records;
-- batch quality status;
-- supplier response;
-- supplier reliability.
+- customer aliases;
+- department and location context;
+- safety/privacy flags;
+- service recovery status.
 
 Produces:
 
 - isolated versus meaningful cluster classification;
-- batch-specific versus supplier-wide caution;
-- supplier response request;
-- replacement batch, credit note, quarantine, escalation, or customer-message
-  recommendation.
+- patient trust risk;
+- approved message draft;
+- escalation or monitoring recommendation;
+- missing evidence list.
 
-### Store Execution and Outreach Agent
+### Resource And Capacity Agent
+
+Consumes:
+
+- hospital resources;
+- capacity records;
+- pharmacy/supply positions;
+- queue data;
+- staff role coverage;
+- partner status.
+
+Produces:
+
+- capacity pressure;
+- queue risk;
+- stock days remaining;
+- SLA breach risk;
+- task, restock, transfer, or escalation recommendation.
+
+### Partner And Vendor Agent
+
+Consumes:
+
+- partner responses;
+- SLA history;
+- billing/insurance partner status;
+- lab/laundry/maintenance/food/transport issues.
+
+Produces:
+
+- partner delay classification;
+- response request;
+- escalation;
+- recommendation change when new evidence arrives.
+
+### Financial Impact Agent
+
+Consumes:
+
+- billing cases;
+- insurance approvals;
+- refund requests;
+- compensation thresholds;
+- payment failures.
+
+Produces:
+
+- financial exposure;
+- approval requirement;
+- billing review or insurance follow-up action.
+
+### Operations Execution Agent
 
 Consumes:
 
 - task templates;
-- queue pressure;
-- store roles;
+- staff roles;
+- resource pressure;
 - channel recipient aliases;
 - approved action plan.
 
 Produces:
 
-- restock task;
-- shelf check;
-- quarantine task;
-- signage task;
-- cashier movement;
-- Slack/WhatsApp target role;
-- acknowledgement expectation.
+- task queue;
+- owner role;
+- due time;
+- acknowledgement expectation;
+- escalation path.
 
 ### Orchestrator Topic
 
@@ -497,6 +455,9 @@ Produces one final plan:
 
 - facts;
 - inferences;
+- assumptions;
+- missing evidence;
+- blocked clinical actions;
 - recommendation;
 - required approvals;
 - protected actions;
@@ -507,52 +468,51 @@ Produces one final plan:
 
 - [ ] Pull latest `main`.
 - [ ] Read this file and the required docs.
-- [ ] Create the data inventory table before writing large JSON files.
-- [ ] Draft product catalog with 30 products across 8 categories.
-- [ ] Draft 3 stores and 6 suppliers.
-- [ ] Draft 45 to 60 product batches.
-- [ ] Draft inventory positions for all products in all stores.
-- [ ] Draft warehouse inventory for all products.
-- [ ] Draft 14 days of daily sales summaries.
-- [ ] Draft 8 promotions.
-- [ ] Draft 50 to 70 complaints.
-- [ ] Draft 8 complaint clusters.
-- [ ] Draft 10 supplier responses.
-- [ ] Draft queue and roster pressure records.
+- [ ] Create the hospital data inventory table before writing large JSON files.
+- [ ] Draft hospital campus, departments, locations, and resource types.
+- [ ] Draft synthetic customer aliases and staff role aliases.
+- [ ] Draft partner/vendor aliases and response examples.
+- [ ] Draft hospital resources across beds, rooms, queues, supplies, equipment,
+      counters, and staff pools.
+- [ ] Draft complaint records and complaint clusters.
+- [ ] Draft capacity and queue pressure records.
+- [ ] Draft pharmacy/supply positions.
+- [ ] Draft billing and insurance cases.
 - [ ] Draft staff task templates and channel recipient aliases.
-- [ ] Draft 12 expected recommendation notes.
-- [ ] Draft 18 to 24 retail event fixtures.
+- [ ] Draft expected recommendation notes.
+- [ ] Draft hospital event fixtures.
 - [ ] Include duplicate, malformed, late, out-of-order, idempotency-conflict,
-      and invalid-hash cases.
+      invalid-hash, and clinical-refusal cases.
 - [ ] Check that every scenario has evidence IDs.
-- [ ] Check that no scenario is burger-only.
-- [ ] Check that supplier complaints never automatically stop all supplier
-      orders.
+- [ ] Check that no scenario contains real patient/staff/vendor data.
+- [ ] Check that clinical decision requests are refusal-only.
 
 ## Validation Checklist
 
-- [ ] Every product has a category, supplier, and shelf area.
-- [ ] Every perishable product has at least one batch.
-- [ ] Every complaint links to product, store, supplier, and evidence.
+- [ ] Every resource has a type, department, location, status, and evidence ID.
+- [ ] Every complaint links to customer alias, department, location, and
+      evidence.
 - [ ] Every complaint cluster has source complaint IDs.
-- [ ] Every supplier response links to a cluster.
+- [ ] Every partner response links to a related issue.
 - [ ] Every expected recommendation names evidence IDs.
 - [ ] Every protected action says whether approval is needed.
 - [ ] Every channel recipient is an alias, not personal contact data.
 - [ ] Every messy event has a clear expected intake result.
-- [ ] The final demo story has a trigger, conflict, supplier response, approval,
-      action, alert, and outcome.
+- [ ] The final demo story has a trigger, conflict, partner/capacity response,
+      approval, action, alert, and outcome.
 
 ## Demo Acceptance
 
 The data work is demo-ready when:
 
-- the demo can start from one retail risk event;
-- evidence includes inventory, expiry, complaint, supplier, promotion, and queue
-  context;
-- the agent recommendation changes after supplier response;
-- there are multiple product categories visible;
-- there is at least one clean stockout story and one complaint-sensitive story;
+- the demo can start from one hospital operations surge event;
+- evidence includes complaint, capacity, resource, partner, stock, billing,
+  staff, approval, and outcome context;
+- the agent recommendation changes after partner or capacity evidence arrives;
+- there are multiple hospital departments visible;
+- there is at least one clean operations story and one high-risk complaint
+  story;
+- clinical decision requests are refused;
 - fake data is realistic but clearly synthetic;
 - another teammate can use the data without asking what each ID means.
 
@@ -563,9 +523,9 @@ Use this when starting a fresh task:
 ```text
 Read docs/assignments/aarav.md, docs/north-star-mvp.md,
 docs/event-contract.md, docs/salesforce-data-model.md, and docs/demo-harness.md.
-Create or refine synthetic North Star retail data. Use deterministic IDs,
-multiple product categories, complaint clusters, supplier responses, messy event
-cases, and expected recommendation notes. Do not use real personal data. Keep
-the output usable by the Inventory/Waste, Supplier/Product Trust, Store
-Execution/Outreach, and Orchestrator agents.
+Create or refine synthetic private hospital operations data. Use deterministic
+IDs, global primitives, complaint clusters, resource/capacity records, partner
+responses, billing cases, messy event cases, expected recommendation notes, and
+clinical-refusal examples. Do not use real personal, patient, medical, vendor,
+phone, email, or credential data.
 ```

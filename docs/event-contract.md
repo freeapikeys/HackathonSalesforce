@@ -61,11 +61,6 @@ The executable fixture validator and MuleSoft reference runtime use the same
 stateful classifier. Idempotency is scoped by tenant, source, and idempotency
 key, and exact replay compares the canonical `data` hash rather than
 transport-level fields such as event occurrence ID or observation time.
-Every runtime attempt records its disposition, detail, preservation decision,
-lateness, and source watermark. Rejected attempts never enter the accepted
-source-event store. Preserved event identity is scoped by tenant, source, and
-CloudEvents ID; reusing that identity for different source data is rejected
-rather than overwritten.
 
 Schema/hash failures and accepted events whose source-store retries are
 exhausted enter an immutable `QUARANTINED` intake attempt. An authorized replay
@@ -75,25 +70,28 @@ Permanent idempotency and state conflicts cannot be replayed.
 
 ## Synthetic Case
 
-Fixtures model an industry-neutral organization with a person, employing
-organization, employee relationship, supplier, agreement, SOP execution, and
-operational issue. The scenario then replays a duplicate, sends malformed
-input, delivers a late event, introduces a contradictory agreement assertion,
-and sends an out-of-order event.
+Fixtures model an industry-neutral organization with people, departments,
+resources, partners, agreements, work, evidence, and outcomes. The scenario then
+replays a duplicate, sends malformed input, delivers a late event, introduces a
+contradictory assertion, and sends an out-of-order event.
 
-The North Star demo should add retail fixtures using the same envelope and intake
-rules. Candidate event types:
+The North Star private hospital demo should add hospital operations fixtures
+using the same envelope and intake rules. Candidate event types:
 
-- `io.github.freeapikeys.hfs.retail.stockout-risk-detected.v1`;
-- `io.github.freeapikeys.hfs.retail.expiry-risk-detected.v1`;
-- `io.github.freeapikeys.hfs.retail.complaint-cluster-detected.v1`;
-- `io.github.freeapikeys.hfs.retail.supplier-response-received.v1`;
-- `io.github.freeapikeys.hfs.retail.queue-risk-detected.v1`;
-- `io.github.freeapikeys.hfs.retail.action-outcome-captured.v1`.
+- `io.github.freeapikeys.hfs.hospital.patient-complaint-cluster-detected.v1`;
+- `io.github.freeapikeys.hfs.hospital.bed-capacity-pressure-detected.v1`;
+- `io.github.freeapikeys.hfs.hospital.discharge-room-blocked.v1`;
+- `io.github.freeapikeys.hfs.hospital.pharmacy-stock-risk-detected.v1`;
+- `io.github.freeapikeys.hfs.hospital.lab-vendor-response-delayed.v1`;
+- `io.github.freeapikeys.hfs.hospital.billing-approval-stalled.v1`;
+- `io.github.freeapikeys.hfs.hospital.staff-queue-risk-detected.v1`;
+- `io.github.freeapikeys.hfs.hospital.clinical-decision-request-refused.v1`;
+- `io.github.freeapikeys.hfs.hospital.action-outcome-captured.v1`.
 
-Retail event payloads must name product, product category, store, supplier,
-batch where relevant, source metric, and evidence summary. They must not assume
-the selected product is a burger item.
+Hospital event payloads must name department, location, typed resource, partner
+where relevant, source metric, evidence summary, and approval/action context
+where relevant. They must not contain real patient data, medical records,
+diagnoses, treatments, phone numbers, emails, or credentials.
 
 Run:
 
