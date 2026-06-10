@@ -10,13 +10,12 @@ human approval -> mocked MuleSoft write-back -> outcome -> evaluation ->
 refreshed Lightning context`
 
 This is currently the generic HFS vertical slice. North Star should reuse the
-same verifier once the retail seed, event fixtures, channel mocks, and command
-center are wired. The North Star proof should become:
+same verifier once the hospital seed, event fixtures, channel mocks, and
+command center are wired. The North Star proof should become:
 
-`retail event -> product, store, supplier, batch, complaint, inventory, and
-staff context -> recovery recommendation -> manager approval -> MuleSoft
-supplier/reorder/task/channel actions -> retail outcome -> refreshed North Star
-command center`
+`hospital operations event -> global primitives and evidence -> recovery
+recommendation -> manager approval -> MuleSoft task/channel actions -> hospital
+outcome -> refreshed North Star command center`
 
 The verifier creates a temporary clone, installs locked dependencies, runs all
 repository checks, deploys Salesforce metadata with the four Apex test suites,
@@ -72,7 +71,7 @@ npm run verify:clean-clone -- \
 | Clone               | `git clone --single-branch --branch main ...`                | Temporary clone resolves to one full commit SHA                                                                          |
 | Bootstrap           | `./scripts/bootstrap-runtime.sh`                             | Locked Python and npm dependencies install                                                                               |
 | Repository checks   | `npm run check`                                              | Contracts, ontology, events, MuleSoft, models, Agentforce, metadata, formatting, lint, harness tests, and LWC tests pass |
-| Salesforce deploy   | `sf project deploy start ... --test-level RunSpecifiedTests` | Metadata succeeds; all four Apex test classes run with zero failures                                                     |
+| Salesforce deploy   | `sf project deploy start ... --test-level RunSpecifiedTests` | Metadata succeeds; all Apex test classes run with zero failures                                                          |
 | Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes and emits a sanitized demo report                                                            |
 | Evidence validation | `scripts/verify_clean_clone_result.py`                       | Required success and refusal invariants pass                                                                             |
 
@@ -98,7 +97,7 @@ artifact has:
 ```
 
 The artifact records no access token, refresh token, username, org URL,
-command log, or machine-local path.
+command log, machine-local path, real patient data, or medical record.
 
 ## Required Invariants
 
@@ -115,14 +114,14 @@ Evidence validation fails unless all of these are true:
 - the final action is `EXECUTED`, outcome is `SUCCESS`, work item is
   `COMPLETED`, and an evaluation exists.
 
-North Star should add these invariants when implemented:
+North Star hospital should add these invariants when implemented:
 
-- the selected product category can change without changing code;
-- supplier action is not executed before complaint evidence and supplier
-  response are evaluated;
+- global primitives can represent customer alias, resource, partner, approval,
+  action, outcome, and metric without new architecture;
+- clinical decision requests are refused and routed to human review;
 - Slack and WhatsApp-style alerts are recorded only after approved execution;
-- outcome metrics include stockout, waste, complaint, and staff-readiness
-  dimensions.
+- outcome metrics include wait time, bed release, stock risk, complaint
+  containment, billing resolution, partner SLA, and staff-task completion.
 
 ## Recovery
 

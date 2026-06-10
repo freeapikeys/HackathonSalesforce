@@ -1,13 +1,13 @@
 # Synthetic Demo Harness
 
 The harness validates prerequisites, resets only the `demo-mauritius` tenant,
-loads one deterministic relationship case, verifies every object count and
-stable external key, and emits a versioned JSON result.
+loads one deterministic operations case, verifies every object count and stable
+external key, and emits a versioned JSON result.
 
 For North Star, the harness should evolve from the existing foundation case into
-one deterministic retail operations case. The seed should include multiple
-product categories and one selected product at risk, with inventory, expiry,
-complaint, supplier, promotion, and staffing evidence.
+one deterministic private hospital operations case. The seed should include
+patient/visitor complaints, resource/capacity evidence, pharmacy stock, partner
+responses, billing/insurance evidence, staffing evidence, and approval context.
 
 `demo:seed` stops at the review state used by the Lightning command center.
 `demo:run` continues through the complete governed vertical slice:
@@ -25,16 +25,19 @@ complaint, supplier, promotion, and staffing evidence.
 11. evaluate the defined outcome;
 12. refresh the Lightning controller and verify completed state.
 
-North Star adds these demo assertions:
+North Star hospital assertions:
 
-- the selected product is not hard-coded to burgers;
-- complaint evidence is evaluated before supplier action;
-- supplier response can change the recommendation;
+- the case uses global primitives, not one-off hospital-only objects;
+- patient/visitor aliases contain no real personal or medical data;
+- complaint evidence is evaluated with capacity, partner, billing, stock, and
+  staffing evidence;
+- clinical decision requests are refused;
 - manager approval is required before protected write-back;
 - Slack and WhatsApp-style internal alerts are recorded after approved
   execution;
-- outcome metrics include stockout avoided, waste reduced, complaint risk
-  contained, and staff readiness.
+- outcome metrics include wait time reduced, bed released, stockout avoided,
+  complaint contained, billing issue resolved, vendor SLA, and staff task
+  completion.
 
 ## Commands
 
@@ -78,12 +81,8 @@ Configure the Lightning command center with:
 
 - tenant key: `demo-mauritius`;
 - work item ID: the report's `workItemId`;
-- purpose: `RELATIONSHIP_SERVICE`;
+- purpose: `RESOLVE_HOSPITAL_OPERATION_RISK`;
 - synthetic demo data: disabled.
-
-North Star live mode should eventually use purpose `RESOLVE_RETAIL_OPERATION_RISK`
-or another documented purpose once the Apex, Agentforce, and model fixtures are
-updated consistently.
 
 ## Connected Invariants
 
@@ -92,6 +91,7 @@ The connected report must show:
 - `NO_QUALIFIED_DEPLOYMENT` and `FAILED_CLOSED` for restricted model data;
 - `INACCESSIBLE_EVIDENCE` for a transient work item with no evidence;
 - Agentforce citations and the same model invocation ID that was persisted;
+- a clinical decision request refused or blocked when included in the scenario;
 - `externalActionExecuted = false` for Agentforce;
 - `INVALID_STATE` before human approval in Salesforce;
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
@@ -104,5 +104,5 @@ The connected report must show:
 The process exits nonzero and still emits a JSON report when a required tool,
 org connection, contract check, model route, Agentforce action, approval,
 MuleSoft write-back, Apex fixture, count, or identifier fails. No credentials,
-access tokens, command logs, usernames, org details, or local Salesforce state
-are written to the report.
+access tokens, command logs, usernames, org details, local Salesforce state,
+real patient data, or medical records are written to the report.

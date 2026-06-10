@@ -2,181 +2,258 @@
 
 ## Product Position
 
-North Star is an Agentforce-powered retail operations command center for
-supermarkets and multi-store retailers. It coordinates inventory, expiry,
-supplier recovery, complaints, promotions, and staff execution across all
-product categories.
+North Star is an Agentforce-powered operations command center for organizations
+that need to resolve messy, cross-functional issues quickly. It uses one global
+operating model and one business profile at a time. The hackathon demo profile
+is a large private hospital.
 
-The MVP is not a generic chatbot and not a burger-only demo. Burger patties can
-be used as the first story because the scenario is easy to understand, but every
-object, prompt, action, and UI label should work for any product: fresh produce,
-frozen items, bakery, dairy, beverages, household goods, pharmacy items,
-electronics, school supplies, seasonal products, or high-value locked products.
+North Star is not a generic chatbot. It is a governed multi-agent system that
+turns one operational signal into:
+
+1. source-backed evidence;
+2. facts separated from inference;
+3. multi-function impact analysis;
+4. manager-approved actions;
+5. Slack and WhatsApp-style coordination;
+6. outcome tracking.
+
+## Global Operating Model
+
+The core model uses reusable primitives:
+
+| Primitive        | Meaning                                                                    |
+| ---------------- | -------------------------------------------------------------------------- |
+| `Signal`         | The event, complaint, alert, request, or anomaly that starts the work      |
+| `Evidence`       | Source record, message, fixture, timestamp, or system fact                 |
+| `Entity`         | Organization, department, person role, supplier, vendor, or account        |
+| `Resource`       | Bed, room, stock item, equipment, account, gate, batch, or service slot    |
+| `Location`       | Ward, counter, branch, terminal, store, room, or service area              |
+| `Actor`          | User, manager, agent, vendor, staff role, or system actor                  |
+| `Customer`       | Patient, guest, passenger, shopper, client, or visitor                     |
+| `Partner`        | Lab, laundry, insurer, payment processor, supplier, airline, or vendor     |
+| `Process`        | Admission, discharge, billing, restock, complaint, approval, or escalation |
+| `Risk`           | Capacity, safety, financial, service, compliance, reputation, or SLA risk  |
+| `Policy`         | Approval, permission, threshold, compliance, or escalation rule            |
+| `Recommendation` | Evidence-backed plan proposed by North Star                                |
+| `Approval`       | Human business approval before protected action execution                  |
+| `Action`         | Task, alert, vendor request, billing review, stock request, or callback    |
+| `Outcome`        | Result after action execution                                              |
+| `Metric`         | Wait time, stock risk, cost exposure, SLA, completion, or complaint change |
+
+Business-specific details are typed values on these primitives, not separate
+architecture. A hospital bed, hotel room, airport gate, bank account,
+supermarket batch, and cruise cabin are all `Resource` records with different
+types, policies, and actions.
 
 ## Winning Demo Story
 
-A supermarket is preparing a weekend promotion. One promoted product is at risk:
+A large private hospital starts the morning with several connected problems:
 
-- point-of-sale data shows demand will exceed shelf and warehouse stock;
-- batch and expiry records show some units should be sold or removed soon;
-- complaints mention smell, packaging damage, refund requests, or price
-  mismatch;
-- supplier lead time and supplier reliability are uncertain;
-- store staffing data shows peak queue pressure;
-- the store manager needs one coordinated recovery plan before the rush.
+- patient complaints are increasing around waiting time, billing, and room
+  readiness;
+- discharge rooms are blocked because cleaning and porter tasks are delayed;
+- pharmacy stock for a common supply is low before the afternoon rush;
+- a lab partner response is late, which affects service recovery;
+- insurance and billing approvals are stuck for several cases;
+- the operations manager needs one coordinated recovery plan before queues get
+  worse.
 
-A weak agent simply says "order more." North Star does more:
+A weak assistant says "notify the manager." North Star does more:
 
-1. separates source facts from inference;
-2. checks whether the issue is product-wide, batch-specific, store-specific, or
-   supplier-specific;
-3. asks the supplier for a resolution before recommending a final supplier
-   decision;
-4. compares options: reorder, replacement batch, warehouse transfer, alternate
-   supplier, markdown, promotion adjustment, quarantine, or manager escalation;
-5. creates approved tasks and outreach through Salesforce and MuleSoft;
-6. alerts staff through Slack and WhatsApp-style channels;
-7. records outcomes so the next recommendation can learn from what happened.
+1. detects whether complaints are isolated, clustered, capacity-driven, billing
+   driven, vendor-driven, or safety-sensitive;
+2. checks beds, rooms, queues, staff roles, pharmacy stock, vendor status, and
+   approval state;
+3. separates facts from inference and names missing evidence;
+4. creates a recovery plan across patient trust, capacity, operations, vendor,
+   billing, risk, and communications;
+5. refuses diagnosis, treatment, dosage, or clinical priority decisions;
+6. requires business approval before protected actions;
+7. executes approved MuleSoft mock actions and records outcomes.
 
-## Three-Agent System
+## Agents
 
-North Star should feel like one coordinated product, not four disconnected
-chatbots. The MVP therefore has three specialist agents plus a lightweight
-orchestrator topic that combines their outputs into one recommendation.
+North Star should feel like one coordinated product, not ten disconnected
+chatbots.
 
 ### North Star Orchestrator Topic
 
-The orchestrator topic owns the final decision trace. It receives the unified
-retail context, asks the three specialist agents for analysis, resolves
-tradeoffs, and produces one action plan with required approvals.
+Owns the final decision trace. It expands one issue across all affected
+business functions, resolves tradeoffs, and produces one recovery plan.
 
 Responsibilities:
 
-- decide whether a situation is a stockout, waste, supplier, complaint, price,
-  promotion, or staffing incident;
-- combine facts from all specialist agents;
-- create one recommendation instead of separate disconnected suggestions;
-- define which actions are autonomous and which require manager approval;
-- log the decision trace, assumptions, confidence, and evidence.
+- decide whether a case is mainly complaint, capacity, vendor, billing, risk,
+  communication, inventory, or mixed;
+- combine facts from specialist agents;
+- identify conflicts such as "move patients faster" versus "room cleaning is
+  not complete";
+- define which actions need approval;
+- log assumptions, confidence, missing evidence, actions, and outcomes.
 
-### Inventory and Waste Agent
+### Evidence And Context Agent
 
-Main job: protect availability while reducing waste.
-
-Responsibilities:
-
-- calculate days of cover from sales velocity and on-hand stock;
-- detect stockout risk for any product;
-- detect overstock and dead-stock risk;
-- inspect expiry batches and near-expiry quantities;
-- recommend transfer, reorder, markdown, quarantine, or promotion adjustment;
-- distinguish shelf stock, backroom stock, warehouse stock, and supplier stock;
-- estimate waste avoided and sales-at-risk.
-
-Evidence examples:
-
-- POS sales history;
-- inventory position;
-- shelf/backroom/warehouse stock;
-- product batch and expiry date;
-- promotion calendar;
-- supplier lead time.
-
-### Supplier and Product Trust Agent
-
-Main job: protect product trust without making bad supplier decisions.
+Owns grounding.
 
 Responsibilities:
 
-- detect complaint clusters by product, batch, supplier, store, and time;
-- determine whether complaints are batch-specific or supplier-wide;
-- classify complaints into quality, price mismatch, packaging, expiry, service,
-  refund, and availability issues;
-- distinguish isolated complaints from statistically meaningful clusters;
-- open supplier quality cases;
-- request supplier response, credit note, replacement batch, delivery
-  confirmation, or proof of corrective action;
-- evaluate supplier response before blocking future orders;
-- recommend safe alternatives: replacement batch, partial reorder, alternate
-  supplier, warehouse transfer, or manager approval;
-- trigger manager escalation for food safety, allergen, expiry, or high-volume
-  complaints;
-- recommend customer-facing messages only from approved templates;
-- preserve evidence so supplier conversations are auditable.
+- normalize messy signals from complaints, fixtures, Salesforce records, and
+  MuleSoft callbacks;
+- link evidence IDs to affected patients, departments, resources, vendors,
+  approvals, and outcomes;
+- detect missing or contradictory evidence;
+- keep source facts separate from claims and inference.
 
-Important rule:
+### Patient Trust Agent
 
-North Star must not automatically stop all supplier orders just because
-complaints exist. It can quarantine a suspicious batch, request supplier
-resolution, and require manager approval for consequential supplier changes.
-
-### Store Execution and Outreach Agent
-
-Main job: make the plan happen inside the store.
+Owns patient and visitor experience without making clinical decisions.
 
 Responsibilities:
 
-- create restocking, shelf-check, quarantine, markdown, and signage tasks;
-- assign tasks to store roles such as floor supervisor, stockroom, cashier lead,
-  fresh-food lead, and duty manager;
-- detect peak queue risk from historical sales and promotion windows;
-- recommend cashier allocation and staff movement;
-- track acknowledgements through Salesforce, Slack, and WhatsApp-style alerts;
-- produce internal alert drafts for Slack and WhatsApp-style channels;
-- escalate missed tasks before the promotion or rush window.
+- classify complaints into waiting time, room readiness, food, billing,
+  discharge delay, staff interaction, lost item, pharmacy delay, accessibility,
+  safety, privacy, or service recovery;
+- detect repeated complaint clusters;
+- draft manager-approved messages;
+- recommend service recovery actions that require approval when consequential.
+
+### Resource And Capacity Agent
+
+Owns availability and pressure.
+
+Responsibilities:
+
+- evaluate beds, rooms, pharmacy stock, staff capacity, service counters,
+  equipment, queue pressure, and appointment slots;
+- calculate capacity pressure, stock days remaining, and SLA risk;
+- recommend task, transfer, restock, or escalation options;
+- name missing evidence when data is incomplete.
+
+### Operations Execution Agent
+
+Owns tasking.
+
+Responsibilities:
+
+- create room-cleaning, porter, pharmacy, billing, front-desk, vendor-follow-up,
+  and manager-review tasks;
+- assign owners by role;
+- track acknowledgement and completion;
+- escalate missed tasks before the service window is lost.
+
+### Partner And Vendor Agent
+
+Owns external dependency recovery.
+
+Responsibilities:
+
+- track lab, laundry, food, insurance, payment, maintenance, and transport
+  partner status;
+- request vendor response or corrective action;
+- preserve SLA evidence;
+- update recommendations when partner evidence changes.
+
+### Risk And Approval Agent
+
+Owns boundaries.
+
+Responsibilities:
+
+- require manager approval for protected actions;
+- refuse clinical decisions and unsafe actions;
+- enforce permission and purpose restrictions;
+- preserve audit trail.
+
+### Financial Impact Agent
+
+Owns cost and revenue exposure.
+
+Responsibilities:
+
+- estimate refund, claim, voucher, billing, SLA, and revenue-risk impact;
+- flag duplicate billing, stuck insurance approval, or compensation threshold;
+- route financial actions through approval.
+
+### Communication Agent
+
+Owns approved outreach.
+
+Responsibilities:
+
+- draft internal Slack and WhatsApp-style alerts;
+- route messages to role aliases, not personal contact data;
+- keep message content operational and privacy-safe;
+- return honest `SENT`, `FAILED`, `DENIED`, or `MOCK_SENT` status.
+
+### Outcome Learning Agent
+
+Owns closure.
+
+Responsibilities:
+
+- record wait time reduced, bed released, stockout avoided, complaint
+  contained, vendor SLA updated, billing issue resolved, and task completion;
+- compare expected outcome against actual outcome;
+- preserve correlation IDs and evidence IDs.
 
 ## Demo Phases
 
-1. **Trigger:** launch a retail risk event for a selected product category.
-2. **Context:** show product, store, batch, complaint, supplier, promotion, and
-   staffing evidence.
-3. **Conflict:** inventory wants reorder, complaints warn of quality risk, and
-   store execution predicts a queue spike.
-4. **Supplier response:** supplier confirms a replacement batch, credit note,
-   delayed delivery, or unresolved quality issue.
-5. **Recommendation:** Agentforce proposes a recovery plan with cited facts and
-   inferences.
-6. **Approval:** manager approves consequential actions.
-7. **Action:** MuleSoft mock executes Salesforce task creation, supplier case,
-   reorder or transfer request, Slack alert, WhatsApp-style alert, and outcome
-   callback.
-8. **Outcome:** command center updates with avoided stockout, waste reduced,
-   complaint containment, staff readiness, and supplier SLA state.
+1. **Trigger:** a hospital operations surge starts from complaints and capacity
+   signals.
+2. **Context:** show department, resource, complaint, vendor, queue, billing,
+   approval, and stock evidence.
+3. **Conflict:** patient trust wants fast recovery, capacity shows blocked
+   rooms, pharmacy stock is low, and billing approvals are stuck.
+4. **Partner response:** lab, insurance, laundry, or pharmacy partner evidence
+   changes the recommendation.
+5. **Recommendation:** Agentforce proposes one recovery plan with cited facts,
+   inferences, missing evidence, blocked clinical actions, and approval needs.
+6. **Approval:** operations manager approves protected actions.
+7. **Action:** MuleSoft mock executes approved tasks, vendor follow-up, Slack
+   alert, WhatsApp-style alert, and outcome callback.
+8. **Outcome:** command center updates with wait-time, bed, stock, complaint,
+   billing, vendor, and task metrics.
 
 ## Demo Data
 
-Use several product categories so the system does not look burger-only:
+Use synthetic data only. No real patient names, phone numbers, emails, medical
+records, diagnoses, or treatment details.
 
-| Category       | Example risk                                        |
-| -------------- | --------------------------------------------------- |
-| Fresh food     | Expiry, quality complaint, demand spike             |
-| Frozen food    | Stockout, freezer batch concern, supplier lead time |
-| Bakery         | Same-day waste, promotion readiness                 |
-| Dairy          | Expiry and cold-chain complaint                     |
-| Beverages      | Overstock and seasonal demand                       |
-| Household      | Price mismatch and promotion signage                |
-| Electronics    | High-value stockout and supplier delay              |
-| Pharmacy shelf | expiry, compliance, and manager approval            |
+| Area                 | Example risk                                                |
+| -------------------- | ----------------------------------------------------------- |
+| Outpatient reception | queue spike, long wait complaints, staffing gap             |
+| Inpatient rooms      | bed blocked, discharge cleaning delay, room complaint       |
+| Pharmacy             | supply running low, stock transfer or restock needed        |
+| Laboratory           | vendor response delay, result-status communication issue    |
+| Billing              | duplicate invoice, insurance approval stuck, refund request |
+| Food and hospitality | meal complaint, allergy-safe service escalation             |
+| Facilities           | wheelchair, lift, HVAC, cleaning, or maintenance delay      |
+| Partner operations   | laundry, lab, insurer, payment, food, or maintenance SLA    |
 
 ## Non-Goals
 
-- Do not claim real POS, supplier, WhatsApp, or Slack production integrations
-  unless they are configured and demonstrated.
+- Do not claim diagnosis, treatment, dosage, or clinical triage capability.
+- Do not claim real hospital, patient, insurer, WhatsApp, Slack, or vendor
+  production integrations unless configured and demonstrated.
 - Do not claim machine-learning forecasting if the prototype uses deterministic
   rules. Say "rules-based baseline with model-ready architecture."
 - Do not let Agentforce execute protected external actions directly.
-- Do not hard-code one product or one supplier into architecture.
+- Do not hard-code one department, one supply item, one vendor, or one patient
+  scenario into the architecture.
 - Do not hide uncertainty behind one unexplained score.
 
 ## Success Criteria
 
 The demo succeeds when judges see:
 
-- messy retail signals becoming a single operational plan;
-- Agentforce changing its recommendation after supplier evidence arrives;
+- messy hospital operations signals becoming one coordinated plan;
+- universal primitives that can map to hotel, airport, banking, retail, and
+  hospital operations;
+- Agentforce changing its recommendation after partner or capacity evidence
+  arrives;
+- clinical decision requests refused or routed to human clinicians;
 - manager approval gating consequential changes;
-- Slack and WhatsApp-style alerts reaching internal staff;
+- Slack and WhatsApp-style alerts reaching internal roles or honest mock
+  channels;
 - Salesforce records preserving evidence, tasks, approvals, actions, and
-  outcomes;
-- architecture that can be adapted to hotels, telecom shops, airport retail,
-  smart districts, or any inventory-heavy business.
+  outcomes.

@@ -4,21 +4,25 @@
 
 Agentforce can ask the product to:
 
-1. explain the current accessible relationship case;
+1. explain the current accessible operations case;
 2. draft a grounded recommendation through a qualified model profile;
 3. create a pending human approval request.
 
-In the North Star MVP, "relationship case" means the current retail operations
-case: selected product, store, supplier, batch where applicable, promotion,
-complaint evidence, inventory evidence, staffing context, recommendation,
-approval, action, and outcome.
+In the North Star MVP, "operations case" means the current private hospital demo
+case mapped through global primitives: signal, evidence, customer alias,
+department, location, resource, partner, policy, recommendation, approval,
+action, outcome, and metric.
 
 Agentforce cannot decide the approval or execute a protected external action.
-Those operations remain behind the current user's permissions, the Apex
-service contract, human approval, and the MuleSoft execution boundary.
+Those operations remain behind the current user's permissions, the Apex service
+contract, human approval, and the MuleSoft execution boundary.
+
 Protected North Star actions include Slack alerts, WhatsApp-style alerts,
-reorders, supplier cases, markdown plans, warehouse transfers, and store-task
-write-backs.
+patient-service tasks, bed-cleaning requests, lab/vendor escalation, pharmacy
+restock requests, billing review, insurance follow-up, and outcome capture.
+
+Agentforce must not make diagnosis, treatment, dosage, triage, or clinical
+priority decisions.
 
 ## Grounding
 
@@ -27,8 +31,11 @@ Version `1.0.0` returns separate collections for facts and inferences.
 - Every fact cites one or more returned accessible evidence identifiers.
 - Every inference names its basis facts and confidence from zero to one.
 - Every recommendation cites returned evidence, records the logical model
-  profile and invocation identifier, and sets `requiresHumanApproval = true`.
+  profile and invocation identifier, and sets `requiresHumanApproval = true`
+  when a protected action is proposed.
 - Citations preserve source event, source URI, content hash, and summary.
+- Clinical-decision requests return a refusal or blocked action, not a medical
+  recommendation.
 
 The action response also preserves tenant, correlation, purpose, actor, agent,
 permission evaluation, model invocation, and external-execution audit values.
@@ -43,9 +50,10 @@ Refusals are normal structured results, not prompt text.
 | `UNAUTHORIZED_ACTION`   | The requested action is outside Agentforce authority         |
 | `PURPOSE_DENIED`        | The declared purpose does not permit the requested access    |
 | `NO_QUALIFIED_MODEL`    | No deployment satisfies model routing and data policy        |
+| `CLINICAL_DECISION`     | The request asks for diagnosis, treatment, dosage, or triage |
 
-Refusal responses contain no facts, inferences, citations, recommendation,
-approval, or disclosed record identifiers.
+Refusal responses contain no inaccessible facts, inferences, citations,
+recommendation, approval, or disclosed record identifiers.
 
 ## Salesforce Action Shape
 
@@ -61,6 +69,9 @@ The deployed entry points are:
 | `EXPLAIN_RELATIONSHIP_CASE`         | `HFS_AgentExplainAction`         |
 | `DRAFT_RELATIONSHIP_RECOMMENDATION` | `HFS_AgentRecommendationAction`  |
 | `REQUEST_HUMAN_APPROVAL`            | `HFS_AgentApprovalRequestAction` |
+
+The historical names remain for compatibility; their descriptions should now
+describe North Star operations cases, not retail-only relationship cases.
 
 Each action returns typed status, citation, model-invocation, approval,
 refusal, error, and external-execution fields. `responseJson` is the canonical
@@ -78,7 +89,7 @@ boundary.
 
 Permission-set access is intentionally narrower than method availability:
 
-- relationship users can explain cases and retrieve qualified recommendations;
+- operations users can explain cases and retrieve qualified recommendations;
 - approvers can explain cases and request human approval;
 - integration users can invoke all three actions;
 - no permission set receives an Agentforce external-execution action because

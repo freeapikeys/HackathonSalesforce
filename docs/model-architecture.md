@@ -14,17 +14,21 @@ Examples:
 - `embedding_general`
 - `sensitive_on_prem`
 
-North Star can reuse these logical profiles and add retail-specific aliases only
+North Star can reuse these logical profiles and add hospital/global aliases only
 when they describe a distinct capability. Candidate profiles:
 
-- `retail_signal_classification`
-- `retail_recovery_reasoning`
-- `supplier_response_analysis`
+- `hospital_signal_classification`
+- `hospital_recovery_reasoning`
+- `resource_capacity_reasoning`
+- `partner_response_analysis`
+- `financial_impact_review`
+- `clinical_boundary_refusal`
 - `staff_alert_drafting`
 - `manager_briefing`
 
-Do not encode provider names or product names such as burger items into a model
-profile. The selected product belongs in context, not routing policy.
+Do not encode provider names, patient aliases, hospital names, or one-off demo
+scenario names into a model profile. The selected business profile belongs in
+context, not routing policy.
 
 Each logical profile resolves to a versioned deployment and policy.
 
@@ -93,27 +97,6 @@ Defines the authorized dataset, metrics, thresholds, judge configuration,
 regression cases, and test results required before a deployment or prompt
 version can be promoted.
 
-## Salesforce Connection
-
-Salesforce currently supports:
-
-- Salesforce-managed models;
-- external models through BYOLLM;
-- custom or in-house models through the LLM Open Connector;
-- model access through Prompt Builder and the Models API;
-- model selection at the Agentforce agent and subagent level.
-
-The LLM Open Connector service implements Salesforce's `chat/completions`
-contract. The required endpoint is standard HTTPS on port 443. A model hosted
-inside a customer network therefore needs a secured endpoint reachable from
-Salesforce, normally through an API gateway, private-cloud ingress, or
-controlled relay with allowlisting and customer-approved authentication.
-
-A fully air-gapped model cannot be invoked directly by Salesforce. That case
-requires an architecture in which an on-prem execution service receives an
-approved job through a customer-controlled integration boundary and returns a
-result. It must not be described as direct Agentforce inference.
-
 ## Gateway Pattern
 
 The initial implementation uses Salesforce AI Models as the model-management
@@ -122,8 +105,8 @@ entry point and the Einstein Trust Layer where available.
 For custom providers, our LLM Open Connector adapter presents one stable
 contract and translates provider-specific requests and responses. The adapter
 may be fronted by MuleSoft for policy, routing, observability, and production
-connectivity, but model-streaming and latency requirements must be tested
-before choosing MuleSoft as the inference proxy.
+connectivity, but model-streaming and latency requirements must be tested before
+choosing MuleSoft as the inference proxy.
 
 The application must also keep a narrow internal interface:
 
@@ -132,13 +115,14 @@ generate(profile, messages, context, response_schema, invocation_policy)
 embed(profile, inputs, invocation_policy)
 ```
 
-This interface lets custom Apex, Flow, Agentforce actions, and future non-
-Salesforce services request capabilities without encoding a provider.
-
 For North Star, the generation context must distinguish source facts from
 inferences and include only the evidence the current user and purpose can see:
-product, batch, store, supplier, complaint cluster, inventory position,
-promotion window, staff context, and prior outcome evidence.
+customer alias, department, location, resource, complaint cluster, capacity
+record, partner response, pharmacy stock, billing case, staffing context,
+approval state, and prior outcome evidence.
+
+The model may interpret and recommend operational next steps. It must not make
+diagnosis, treatment, dosage, triage, or clinical priority decisions.
 
 ## Failover
 

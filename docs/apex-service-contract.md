@@ -5,16 +5,16 @@
 Version `1.0.0` defines the Core-lane boundary used by Lightning, Agentforce,
 and integration adapters. It covers:
 
-- permission-aware relationship context retrieval;
+- permission-aware relationship/context retrieval;
 - source provenance and evidence citations;
 - recommendation storage;
 - approval requests and human decisions;
 - pending action logging;
 - outcome capture.
 
-The service remains domain-neutral. North Star maps supermarket products,
-stores, suppliers, batches, complaints, promotions, tasks, and channel alerts
-onto the same context, recommendation, approval, action, and outcome boundary.
+The service remains domain-neutral. North Star maps global primitives and the
+private hospital demo profile onto the same context, recommendation, approval,
+action, and outcome boundary.
 
 The contract and implementation classes are under
 `force-app/main/default/classes/`. `HFS_RelationshipServiceImpl` is the
@@ -40,6 +40,25 @@ authorization, replay, and error behavior.
 - Outcome capture records the outcome, marks the action executed, and completes
   terminal work in one rollback-protected transaction.
 
+## North Star Hospital Mapping
+
+The Apex service should be able to represent:
+
+- patient or visitor aliases without real personal or medical data;
+- departments, locations, beds, rooms, queues, pharmacy stock, equipment, and
+  staff pools as global `Entity` or typed `Resource` records;
+- lab, laundry, insurer, payment, food, maintenance, transport, and equipment
+  partners;
+- complaint, capacity, stock, partner, billing, staff, approval, action, and
+  outcome evidence;
+- protected actions such as service task, bed cleaning, vendor escalation,
+  pharmacy restock, billing review, insurance follow-up, Slack alert, WhatsApp
+  alert, and hospital outcome capture.
+
+Clinical diagnosis, treatment, dosage, triage, and clinical priority decisions
+must be refused or routed to human clinical review, not executed as Apex or
+MuleSoft actions.
+
 ## Verified Failure Paths
 
 The Apex suite executes with the deployed `HFS_Relationship_User`,
@@ -54,6 +73,9 @@ users. It proves:
 - invalid approval and action states are rejected;
 - a failure after outcome insertion rolls back the outcome, action update, and
   work update, so a single-command transaction never returns a partial commit.
+
+Hospital-specific tests should also prove clinical-decision refusal and
+protected-action denial before approval.
 
 ## Service Interface
 
@@ -99,8 +121,8 @@ transaction boundary for every operation.
 - Service implementations and entry-point controllers use `with sharing`.
 - Queries and DML enforce current-user CRUD and field-level security.
 - Tenant keys on referenced records must match the request tenant.
-- Inaccessible source evidence returns
-  `SOURCE_EVIDENCE_INACCESSIBLE`; it is never silently summarized.
+- Inaccessible source evidence returns `SOURCE_EVIDENCE_INACCESSIBLE`; it is
+  never silently summarized.
 - Approval decisions derive `Decision_By__c` from `UserInfo.getUserId()` and
   `Decided_At__c` from the server clock.
 - Recommendation generation time, approval request time, and action request

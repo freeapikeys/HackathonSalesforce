@@ -3,240 +3,309 @@
 This roadmap is the hackathon checklist. Keep it honest: mark an item complete
 only when the code, fixture, UI, test, or demo evidence exists in the repo.
 
+Beads is not installed in the current local environment, so this roadmap is the
+active task tracker.
+
 ## North Star
 
-Build a Salesforce and Agentforce command center that helps a supermarket
-manager prevent stockouts, reduce waste, handle supplier quality issues, and
-coordinate staff actions before the rush.
+Build a Salesforce, Agentforce, and MuleSoft command center that lets a business
+plug in a profile and coordinate messy operational issues across evidence,
+agents, approvals, protected actions, alerts, and outcomes.
+
+The active demo profile is a large private hospital operations command center.
+It solves non-clinical operations issues. It must not make diagnosis, treatment,
+dosage, triage, or clinical priority decisions.
 
 North Star must answer:
 
-- What product, batch, store, supplier, promotion, shelf area, and team are
-  involved?
-- What source evidence triggered the risk?
-- Is the issue stockout, expiry, overstock, cold chain, complaint, supplier,
-  queue, shelf-layout, price, promotion, or a mix?
-- Which agent found the issue and what does it recommend?
-- Which facts are source evidence and which are inference?
-- Which actions need manager approval?
-- What action was executed, through which mock channel, and what happened next?
+- Which signal triggered the issue?
+- Which global primitives are involved: customer, resource, location, partner,
+  process, policy, approval, action, outcome, and metric?
+- What source evidence supports each fact?
+- Which parts are claims, inference, recommendation, decision, and action?
+- Which agents contributed?
+- Which actions require business manager approval?
+- What MuleSoft action or channel mock executed, and what happened next?
 
-## Supermarket Issues We Solve
+## Universal Issue Modules
 
-These are the issues from the multi-agent brief that North Star must cover.
+These modules are the problems North Star should solve across hospital, hotel,
+airport, banking, supermarket, cruise, and other profiles.
 
-| ID    | Supermarket issue                        | Primary agent                        | Demo response                                                                 |
-| ----- | ---------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
-| NS-01 | Stock finishing soon                     | Inventory and Demand Agent           | Predict days of cover, check warehouse stock, recommend reorder or transfer   |
-| NS-02 | Poor stock capacity planning             | Inventory and Demand Agent           | Compare sales velocity, promotion demand, stock-on-hand, and supplier lead    |
-| NS-03 | Overstock and dead stock                 | Inventory and Demand Agent           | Detect slow-moving products and recommend markdown, transfer, or promo change |
-| NS-04 | Expired food not replaced in time        | Inventory and Demand Agent           | Flag expired or near-expiry batches and create removal/replacement tasks      |
-| NS-05 | Food waste risk                          | Inventory and Demand Agent           | Estimate waste risk and suggest rotation, discount, or markdown               |
-| NS-06 | Seasonal or promotion demand spike       | Inventory and Demand Agent           | Use historical/promotion data to forecast demand pressure                     |
-| NS-07 | Supplier delay risk                      | Inventory and Demand Agent           | Compare lead time against days of cover and suggest alternatives              |
-| NS-08 | Cashier allocation problems              | Store Operations Agent               | Predict peak queue windows and recommend cashier/staff movement               |
-| NS-09 | Peak-hour queue risk                     | Store Operations Agent               | Use past traffic/sales patterns and create staffing recommendations           |
-| NS-10 | Misplaced items or shelf-layout mismatch | Store Operations Agent               | Create shelf-check and correction tasks                                       |
-| NS-11 | Restocking work not prioritized          | Store Operations Agent               | Assign refill, rotation, quarantine, markdown, and signage tasks              |
-| NS-12 | Staff task prioritization is unclear     | Store Operations Agent               | Rank tasks by risk, deadline, customer impact, and approval state             |
-| NS-13 | Customer complaint clusters              | Customer and Risk Intelligence Agent | Detect repeated complaints by product, batch, store, supplier, and time       |
-| NS-14 | Product quality issues                   | Customer and Risk Intelligence Agent | Connect smell, packaging, refund, or quality reports to batch/supplier        |
-| NS-15 | Supplier reliability concern             | Customer and Risk Intelligence Agent | Ask for supplier response before changing reorder decision                    |
-| NS-16 | Price mismatch complaints                | Customer and Risk Intelligence Agent | Link complaint, shelf price, POS price, promo, and signage task               |
-| NS-17 | Repeated refunds or damaged packaging    | Customer and Risk Intelligence Agent | Escalate bad-batch or packaging-risk review                                   |
-| NS-18 | Reputation or customer satisfaction risk | Customer and Risk Intelligence Agent | Draft manager-approved internal/customer-facing response                      |
-| NS-19 | Promotion planning failure               | North Star Orchestrator              | Combine stock, price, queue, supplier, and complaint signals into one plan    |
-| NS-20 | Cold chain failure                       | Customer and Risk Intelligence Agent | Treat as high-risk future extension requiring quarantine and manager approval |
+| ID    | Issue module                     | Primary agent           | Hospital demo response                                                   |
+| ----- | -------------------------------- | ----------------------- | ------------------------------------------------------------------------ |
+| NS-01 | Complaint and trust              | Patient Trust           | Cluster complaints, classify cause, draft approved service recovery      |
+| NS-02 | Capacity and availability        | Resource and Capacity   | Check beds, rooms, queues, staff, pharmacy stock, and equipment          |
+| NS-03 | Staff coordination               | Operations Execution    | Assign tasks, owners, due times, acknowledgements, and escalation        |
+| NS-04 | Partner and vendor failure       | Partner and Vendor      | Escalate lab, laundry, insurer, food, payment, or maintenance delay      |
+| NS-05 | Inventory and supply             | Resource and Capacity   | Detect low pharmacy/linen/food stock and recommend restock or transfer   |
+| NS-06 | Billing and financial exposure   | Financial Impact        | Flag duplicate billing, claim delay, refund, voucher, or revenue risk    |
+| NS-07 | Risk, safety, and compliance     | Risk and Approval       | Gate protected actions and refuse clinical decisions                     |
+| NS-08 | Communication and escalation     | Communication           | Send approved Slack/WhatsApp-style alerts to role aliases                |
+| NS-09 | Disruption recovery              | North Star Orchestrator | Combine complaints, capacity, vendor, billing, and staff signals         |
+| NS-10 | Outcome learning                 | Outcome Learning        | Track wait-time, bed release, stockout avoidance, SLA, and task outcome  |
+| NS-11 | Evidence quality and uncertainty | Evidence and Context    | Detect missing, contradictory, late, duplicate, or restricted evidence   |
+| NS-12 | Policy and approval routing      | Risk and Approval       | Decide manager approval, refusal, defer, modification, or execution path |
+
+## Private Hospital Issues We Solve
+
+| ID     | Hospital issue                          | Primary agent         | Demo response                                                               |
+| ------ | --------------------------------------- | --------------------- | --------------------------------------------------------------------------- |
+| HOS-01 | Patient wait-time complaints            | Patient Trust         | Cluster complaints, cite queue evidence, draft service recovery             |
+| HOS-02 | Room readiness or cleanliness complaint | Patient Trust         | Link complaint to blocked room, housekeeping task, and manager escalation   |
+| HOS-03 | Discharge bed blocked                   | Resource and Capacity | Detect blocked beds, assign cleaning/porter task, estimate bed release      |
+| HOS-04 | Outpatient queue spike                  | Resource and Capacity | Predict queue risk and recommend staff movement                             |
+| HOS-05 | Pharmacy supply running low             | Resource and Capacity | Calculate stock days remaining and request approved restock or transfer     |
+| HOS-06 | Lab vendor response delayed             | Partner and Vendor    | Escalate vendor case and update recommendation when response arrives        |
+| HOS-07 | Insurance approval stuck                | Financial Impact      | Open approved insurance follow-up and estimate claim-delay exposure         |
+| HOS-08 | Duplicate billing or refund complaint   | Financial Impact      | Open billing review, require approval for refund or compensation            |
+| HOS-09 | Food or hospitality complaint           | Patient Trust         | Route food-service task and approved patient-safe message                   |
+| HOS-10 | Accessibility support missing           | Operations Execution  | Assign wheelchair/porter/support task and track acknowledgement             |
+| HOS-11 | Equipment or maintenance unavailable    | Partner and Vendor    | Check resource status, vendor SLA, and fallback options                     |
+| HOS-12 | Privacy or safety-sensitive complaint   | Risk and Approval     | Escalate, preserve evidence, and prevent unsafe message/action              |
+| HOS-13 | Clinical-decision request               | Risk and Approval     | Refuse diagnosis/treatment/triage decision and route to clinician           |
+| HOS-14 | Multi-department morning surge          | Orchestrator          | Create one recovery plan across trust, capacity, vendor, billing, and tasks |
 
 ## Agent Responsibilities
 
 ### North Star Orchestrator
 
-- [ ] Combine inventory, supplier, customer-risk, and store-operation findings
-      into one recovery plan.
-- [ ] Resolve conflicts, for example "reorder now" versus "do not reorder this
-      batch until supplier confirms quality."
+- [ ] Combine patient trust, resource capacity, partner/vendor, financial,
+      communication, and outcome findings into one recovery plan.
+- [ ] Resolve conflicts, for example "move patients faster" versus "room
+      cleaning is not complete."
 - [ ] Decide which actions require manager approval.
-- [ ] Produce one recommendation with facts, inferences, confidence, and
-      expected outcome.
-- [ ] Update the recommendation after supplier response arrives.
+- [ ] Produce one recommendation with facts, inferences, assumptions, missing
+      evidence, blocked actions, confidence, and expected outcome.
+- [ ] Update the recommendation after partner, capacity, billing, or stock
+      evidence arrives.
 
-### Inventory and Demand Agent
+### Evidence And Context Agent
 
-- [ ] Detect stock finishing soon using sales velocity and current stock.
-- [ ] Check shelf, backroom, warehouse, and supplier stock.
-- [ ] Calculate days of cover.
-- [ ] Include supplier lead time in reorder recommendation.
-- [ ] Detect slow-moving products, overstock, and dead stock.
-- [ ] Detect expired and near-expiry batches.
-- [ ] Recommend rotation, discount, markdown, reorder, or transfer.
-- [ ] Estimate sales-at-risk and waste-at-risk.
-- [ ] Handle seasonal and promotion demand prediction.
+- [ ] Normalize hospital signals into global primitives.
+- [ ] Link complaints, queues, resources, partners, policies, approvals,
+      actions, and outcomes to evidence IDs.
+- [ ] Detect missing, contradictory, restricted, duplicate, late, out-of-order,
+      malformed, and low-confidence evidence.
+- [ ] Preserve source facts separately from claims and inferences.
+- [ ] Ask for missing operational evidence when needed.
 
-### Store Operations Agent
+### Patient Trust Agent
 
-- [ ] Predict peak-hour queue risk.
-- [ ] Recommend cashier allocation for the risky window.
-- [ ] Recommend moving staff from aisle duty to checkout when needed.
-- [ ] Create restocking tasks.
-- [ ] Create shelf-layout and misplaced-item correction tasks.
-- [ ] Create expiry removal and fresh-product rotation tasks.
-- [ ] Prioritize staff tasks by urgency and risk.
-- [ ] Track task acknowledgement and completion.
+- [ ] Detect patient and visitor complaint clusters.
+- [ ] Classify complaints into wait time, room readiness, cleanliness, food,
+      billing, discharge delay, lost item, accessibility, privacy, safety,
+      pharmacy delay, and staff interaction.
+- [ ] Connect complaints to location, department, resource, time window,
+      partner, and evidence.
+- [ ] Draft approved service-recovery or patient-facing message text.
+- [ ] Escalate safety, privacy, or high-severity complaints.
 
-### Customer and Risk Intelligence Agent
+### Resource And Capacity Agent
 
-- [ ] Detect complaint clusters.
-- [ ] Classify complaints into quality, smell, damaged packaging, price
-      mismatch, refund, service, expiry, and availability.
-- [ ] Connect complaints to product, batch, supplier, store, and promotion.
-- [ ] Detect bad-batch risk.
-- [ ] Detect repeated refunds and damaged packaging reports.
-- [ ] Evaluate supplier reliability and response.
-- [ ] Escalate high-risk cases to manager or supplier.
-- [ ] Draft approved message or alert text without sending it directly.
+- [ ] Evaluate bed, room, queue, staff, pharmacy stock, equipment, and service
+      counter capacity.
+- [ ] Calculate available capacity, demand pressure, queue risk, stock days
+      remaining, and SLA breach risk.
+- [ ] Detect blocked discharge rooms and delayed cleaning/porter tasks.
+- [ ] Recommend task, restock, transfer, staffing, or escalation actions.
+- [ ] Name missing evidence when data is incomplete.
+
+### Operations Execution Agent
+
+- [ ] Create patient-service, room-cleaning, porter, pharmacy, billing,
+      front-desk, vendor-follow-up, and manager-review tasks.
+- [ ] Assign tasks to role aliases.
+- [ ] Prioritize tasks by urgency, risk, approval state, and service window.
+- [ ] Track acknowledgement and completion.
+- [ ] Escalate missed tasks before the recovery window is lost.
+
+### Partner And Vendor Agent
+
+- [ ] Track lab, laundry, food, insurer, payment, maintenance, transport, and
+      equipment partner status.
+- [ ] Create vendor escalation or response request after approval.
+- [ ] Preserve SLA evidence and partner response details.
+- [ ] Update the recommendation when a partner response changes the plan.
+
+### Risk And Approval Agent
+
+- [ ] Enforce business manager approval before protected actions.
+- [ ] Refuse diagnosis, treatment, dosage, triage, and clinical priority
+      decisions.
+- [ ] Decide approve, reject, modify, defer, or execute-ready state.
+- [ ] Preserve policy reason, approver role, approval ID, and action ID.
+- [ ] Ensure agents operate with current user permissions and purpose limits.
+
+### Financial Impact Agent
+
+- [ ] Detect duplicate billing, stuck claim approval, refund request, voucher
+      request, compensation threshold, payment gateway issue, and revenue risk.
+- [ ] Estimate financial exposure with formula, time window, and confidence.
+- [ ] Route refund, compensation, or payment actions through approval.
+- [ ] Preserve billing and insurance evidence without personal data.
+
+### Communication Agent
+
+- [x] Support approved `SEND_SLACK_ALERT` with real webhook or honest
+      `MOCK_SENT` fallback.
+- [ ] Support approved `SEND_WHATSAPP_ALERT` with real provider only when
+      configured or honest `MOCK_SENT` fallback.
+- [ ] Route alerts to role aliases, not personal contact data.
+- [ ] Keep messages privacy-safe and operational.
+- [ ] Preserve provider, status, fallback reason, evidence IDs, action ID,
+      approval ID, and correlation ID.
+
+### Outcome Learning Agent
+
+- [ ] Capture wait-time reduced, bed released, stockout avoided, complaint
+      contained, billing issue resolved, vendor SLA state, and task completion.
+- [ ] Compare expected outcome with actual outcome.
+- [ ] Preserve correlation IDs and evidence IDs.
+- [ ] Feed outcome summaries into the next recommendation.
 
 ## Demo Story
 
-A promoted supermarket product is at risk before a weekend rush. POS demand is
-rising, stock cover is low, some units are near expiry, complaints mention
-quality or price mismatch, supplier lead time is uncertain, and queue pressure
-is expected later in the day.
+A large private hospital has a morning operations surge. Patient complaints are
+increasing, discharge rooms are blocked, outpatient wait time is rising, pharmacy
+stock is low, a lab partner response is delayed, and billing/insurance approvals
+are stuck.
 
 North Star should produce one recovery plan:
 
-- inspect or quarantine risky batch if needed;
-- choose reorder, transfer, markdown, promotion adjustment, or supplier case;
-- assign store tasks;
+- identify whether the root issue is complaint, capacity, partner, billing,
+  stock, staffing, or mixed;
+- check hospital resources and evidence;
+- refuse any clinical treatment or triage decision;
+- create approved service, cleaning, restock, vendor, and billing actions;
 - send internal Slack and WhatsApp-style alerts;
-- require manager approval for consequential actions;
-- record outcome metrics.
-
-The story may use burger patties for the first demo, but the labels, fixtures,
-and UI must support any supermarket product category.
+- record outcome metrics and audit trail.
 
 ## Detailed Checklist
 
-### 1. Product Direction and Scope
+### 1. Product Direction And Scope
 
-- [x] Supermarket operations selected as the hackathon scope.
-- [x] Product name changed to North Star in active docs.
-- [x] MVP brief created in `docs/north-star-mvp.md`.
-- [x] Implementation plan created in `docs/north-star-implementation-plan.md`.
-- [x] Old broad platform wording removed from active docs.
-- [x] Supermarket issue map added to this roadmap.
-- [x] Teammate assignment docs created in `docs/assignments/`.
-- [x] One-sentence product pitch finalized.
-- [x] Three-minute judge demo narrative drafted.
-- [x] Five-minute extended demo narrative drafted.
-- [x] Backup recorded-demo path defined in case live integrations fail.
-- [x] Final non-goals reviewed by whole team.
+- [x] Product name remains North Star.
+- [x] Active docs now define a global operating model with a private hospital
+      demo profile.
+- [x] Universal primitive list added to active docs.
+- [x] Hospital non-clinical boundary documented.
+- [x] Teammate assignment docs exist in `docs/assignments/`.
+- [ ] One-sentence hospital/global product pitch finalized.
+- [ ] Three-minute judge demo narrative updated.
+- [ ] Five-minute extended demo narrative updated.
+- [ ] Backup recorded-demo path updated for hospital scenario.
+- [ ] Final non-goals reviewed by whole team.
 
 ### 2. Team Assignment Checkpoints
 
 Each teammate has a detailed assignment file. AI agents should read the relevant
 file before editing.
 
-- [ ] Aarav: create realistic synthetic retail data, complaints, supplier
-      responses, queue pressure, task templates, and channel recipient aliases.
-- [ ] Fahan: implement `SEND_SLACK_ALERT` behind approved MuleSoft action
-      execution, with real webhook support only through `SLACK_WEBHOOK_URL` and
-      honest `MOCK_SENT` fallback.
-- [ ] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add the
-      voice-mode prototype that converts operator speech/transcript into a
-      governed request without bypassing approval.
-- [ ] Ranveer: implement Inventory and Waste reasoning with deterministic
-      stockout, expiry, waste, overstock, promotion-readiness calculations and
-      evidence-backed recommendation output.
+- [ ] Aarav: create realistic synthetic hospital operations data, complaints,
+      partner responses, capacity pressure, task templates, channel recipient
+      aliases, and expected recommendation cases.
+- [ ] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved
+      MuleSoft action execution, with real webhook support only through
+      `SLACK_WEBHOOK_URL` and honest `MOCK_SENT` fallback.
+- [ ] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add voice
+      transcript flow that creates a governed recommendation request without
+      bypassing approval or making clinical decisions.
+- [ ] Ranveer: preserve completed Agentforce reasoning work and generalize
+      inventory/waste logic into resource, capacity, stock, queue, and SLA
+      reasoning for hospital operations.
 - [ ] Merge owner: keep branches aligned, review conflicts, protect `main`, and
       verify the demo still tells one North Star story.
 
-### 3. Product Categories and Demo Data
+### 3. Global Primitive And Hospital Data
 
-- [x] Choose first demo product category and product.
-- [x] Add at least two other product categories to prove this is not
-      burger-only.
-- [x] Define store, supplier, product, product batch, promotion, shelf area,
-      roster, and task fixture IDs.
-- [x] Define stock quantities for shelf, backroom, warehouse, and supplier.
-- [x] Define sales velocity and forecast window.
-- [x] Define supplier lead time and supplier response options.
-- [x] Define complaint examples for smell, packaging, price mismatch, refund,
-      and availability.
-- [x] Define expiry dates and near-expiry quantities.
-- [x] Define queue-risk window and staffing baseline.
-- [x] Define expected outcome metrics for the demo.
+- [ ] Define hospital organization, department, ward, location, resource,
+      partner, policy, action, outcome, and metric IDs.
+- [ ] Define synthetic patient/visitor aliases with no personal data.
+- [ ] Define bed, room, pharmacy item, equipment, queue, service counter, and
+      staff role resources.
+- [ ] Define hospital partners: lab, laundry, insurer, payment, food,
+      maintenance, transport, and equipment vendor.
+- [ ] Define complaint examples for waiting time, room readiness, food,
+      billing, discharge delay, accessibility, privacy, pharmacy delay, and
+      staff interaction.
+- [ ] Define capacity facts for beds, blocked rooms, queue pressure, staff
+      availability, pharmacy stock, and equipment availability.
+- [ ] Define billing and insurance facts for duplicate invoice, stuck claim,
+      refund request, payment issue, and approval threshold.
+- [ ] Define expected outcome metrics for the demo.
+- [ ] Ensure every fixture uses global primitive language where possible.
 
-### 4. Retail Event Fixtures
+### 4. Hospital Event Fixtures
 
-- [x] Add `STOCKOUT_RISK_DETECTED` fixture.
-- [x] Add `WAREHOUSE_STOCK_CHECKED` fixture.
-- [x] Add `SUPPLIER_LEAD_TIME_UPDATED` fixture.
-- [x] Add `EXPIRY_RISK_DETECTED` fixture.
-- [x] Add `NEAR_EXPIRY_MARKDOWN_RECOMMENDED` fixture.
-- [x] Add `COMPLAINT_CLUSTER_DETECTED` fixture.
-- [x] Add `PRICE_MISMATCH_REPORTED` fixture.
-- [x] Add `DAMAGED_PACKAGING_REPORTED` fixture.
-- [x] Add `SUPPLIER_RESPONSE_RECEIVED` fixture.
-- [x] Add `QUEUE_RISK_DETECTED` fixture.
-- [x] Add `SHELF_LAYOUT_MISMATCH_DETECTED` fixture.
-- [x] Add `STORE_TASK_CREATED` fixture.
-- [x] Add `APPROVED_ACTION_EXECUTED` fixture.
-- [x] Add `RETAIL_OUTCOME_CAPTURED` fixture.
-- [x] Keep duplicate, malformed, late, out-of-order, replay, hash, and
+- [ ] Add `PATIENT_COMPLAINT_CLUSTER_DETECTED` fixture.
+- [ ] Add `BED_CAPACITY_PRESSURE_DETECTED` fixture.
+- [ ] Add `DISCHARGE_ROOM_BLOCKED` fixture.
+- [ ] Add `PHARMACY_STOCK_RISK_DETECTED` fixture.
+- [ ] Add `LAB_VENDOR_RESPONSE_DELAYED` fixture.
+- [ ] Add `BILLING_APPROVAL_STALLED` fixture.
+- [ ] Add `STAFF_QUEUE_RISK_DETECTED` fixture.
+- [ ] Add `CLINICAL_DECISION_REQUEST_REFUSED` fixture.
+- [ ] Add `APPROVED_ACTION_EXECUTED` hospital fixture.
+- [ ] Add `HOSPITAL_OUTCOME_CAPTURED` fixture.
+- [ ] Keep duplicate, malformed, late, out-of-order, replay, hash, and
       idempotency-conflict cases passing.
 
 ### 5. Salesforce Core
 
-- [x] Map store to existing Salesforce entity record.
-- [x] Map product to existing Salesforce entity record.
-- [x] Map product batch to existing Salesforce entity or add the smallest
-      needed field/type.
-- [x] Map supplier to existing Salesforce entity record.
-- [x] Map promotion to event, agreement, or work context.
-- [x] Map complaints to evidence records.
-- [ ] Map store tasks to action records and/or Salesforce task records.
-- [x] Add optional metadata only when current records cannot express demo needs.
-- [ ] Apex context includes product, batch, store, supplier, promotion,
-      complaint, stock, staffing, recommendation, approval, action, and outcome.
-- [ ] Manager approval is enforced before reorder, supplier case, markdown,
-      quarantine, staff alert, or customer-facing message.
+- [ ] Map hospital and departments to existing Salesforce entity records.
+- [ ] Map resources such as bed, room, pharmacy stock, queue, service counter,
+      and equipment to existing entity/resource patterns.
+- [ ] Map patient and visitor aliases without personal data.
+- [ ] Map hospital partners to entity records.
+- [ ] Map complaints to evidence records.
+- [ ] Map tasks to action records and/or Salesforce task records.
+- [ ] Apex context includes customer alias, department, location, resource,
+      partner, complaint, capacity, stock, billing, recommendation, approval,
+      action, and outcome.
+- [ ] Manager approval is enforced before vendor, billing, pharmacy, Slack,
+      WhatsApp, patient-message, room/bed, or staff-task write-back.
+- [ ] Clinical decision requests are refused.
 - [ ] Action and outcome records preserve correlation IDs and evidence IDs.
 - [ ] Apex tests cover success, denial, inaccessible evidence, approval
-      mismatch, and invalid state.
+      mismatch, invalid state, and clinical refusal.
 
-### 6. Agentforce and Intelligence
+### 6. Agentforce And Intelligence
 
-- [x] Define North Star Orchestrator topic.
-- [x] Define Inventory and Demand topic.
-- [x] Define Store Operations topic.
-- [x] Define Customer and Risk Intelligence topic.
-- [x] Recommendation request includes inventory, expiry, supplier, complaint,
-      promotion, and staffing evidence.
-- [ ] Recommendation response separates facts, inferences, assumptions,
-      recommended actions, approval requirements, and expected outcomes.
-- [x] Supplier decision follows the rule: do not blindly stop all supplier
-      orders because complaints exist.
-- [x] Agentforce updates recommendation after supplier response arrives.
-- [x] Agentforce refuses restricted or missing evidence.
-- [x] Model gateway uses retail profile names, not product-specific names.
+- [ ] Define/update North Star Orchestrator topic for global primitives.
+- [ ] Define/update Evidence and Context topic.
+- [ ] Define/update Patient Trust topic.
+- [ ] Define/update Resource and Capacity topic.
+- [ ] Define/update Operations Execution topic.
+- [ ] Define/update Partner and Vendor topic.
+- [ ] Define/update Risk and Approval topic.
+- [ ] Define/update Financial Impact topic.
+- [ ] Define/update Communication topic.
+- [ ] Define/update Outcome Learning topic.
+- [ ] Recommendation request includes complaint, resource, capacity, partner,
+      billing, stock, staffing, approval, and outcome evidence.
+- [ ] Recommendation response separates facts, inferences, assumptions, missing
+      evidence, recommended actions, blocked actions, approval requirements,
+      and expected outcomes.
+- [ ] Agentforce refuses diagnosis, treatment, dosage, triage, and clinical
+      priority decisions.
+- [x] Agentforce fixtures include evidence-backed reasoning from latest
+      inventory/waste work.
 - [x] Agentforce fixtures include a denied-action scenario.
 - [x] Agentforce fixtures include a changed-recommendation scenario.
+- [ ] Model gateway uses global/hospital profile names, not retail-only names.
 
-### 7. MuleSoft and Channel Mocks
+### 7. MuleSoft And Channel Mocks
 
-- [x] Mock `CREATE_SUPPLIER_QUALITY_CASE`.
-- [x] Mock `REQUEST_REPLACEMENT_BATCH`.
-- [x] Mock `CREATE_REORDER_REQUEST`.
-- [x] Mock `CREATE_WAREHOUSE_TRANSFER`.
-- [x] Mock `CREATE_MARKDOWN_PLAN`.
-- [x] Mock `CREATE_QUARANTINE_TASK`.
-- [x] Mock `CREATE_RESTOCK_TASK`.
-- [x] Mock `CREATE_SHELF_LAYOUT_TASK`.
-- [x] Mock `OPEN_EXTRA_CASHIER_TASK`.
+- [ ] Mock `CREATE_PATIENT_SERVICE_TASK`.
+- [ ] Mock `REQUEST_BED_CLEANING`.
+- [ ] Mock `ESCALATE_LAB_VENDOR_CASE`.
+- [ ] Mock `CREATE_PHARMACY_RESTOCK_REQUEST`.
+- [ ] Mock `OPEN_BILLING_REVIEW`.
+- [ ] Mock `REQUEST_INSURANCE_FOLLOWUP`.
 - [x] Mock `SEND_SLACK_ALERT`.
-- [x] Mock `SEND_WHATSAPP_STYLE_ALERT`.
-- [x] Mock `CAPTURE_RETAIL_OUTCOME`.
+- [ ] Mock `SEND_WHATSAPP_ALERT`.
+- [ ] Mock `CAPTURE_HOSPITAL_OUTCOME`.
 - [x] Unapproved execution returns denial.
 - [x] Approved execution returns queued or success response with correlation.
 - [x] If `SLACK_WEBHOOK_URL` exists, send real Slack webhook message.
@@ -249,72 +318,78 @@ file before editing.
 - [ ] WhatsApp channel responses preserve `tenantId`, `correlationId`,
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
-- [x] Mock channel results are visible in the command center.
+- [ ] Mock channel results are visible in the hospital command center.
 
 ### 8. Voice Mode
 
 - [ ] Add voice transcript input or browser speech input path.
-- [ ] Convert transcript into structured product, issue, store, urgency, and
-      evidence fields.
+- [ ] Convert transcript into structured hospital operations request fields:
+      issue, department, location, resource, urgency, requester role, and
+      evidence.
 - [ ] Voice mode can ask Agentforce for a recommendation.
-- [ ] Voice mode cannot execute Slack, WhatsApp, reorder, markdown, supplier,
-      or task actions directly.
-- [ ] Voice mode refusal is visible when the user asks it to bypass manager
-      approval.
-- [ ] LWC or fixture tests cover transcript-to-request and protected-action
-      refusal.
+- [ ] Voice mode cannot execute Slack, WhatsApp, vendor, pharmacy, billing,
+      room/bed, staff-task, or patient-message actions directly.
+- [ ] Voice mode refuses clinical decision requests.
+- [ ] LWC or fixture tests cover transcript-to-request, protected-action
+      refusal, and clinical-decision refusal.
 
 ### 9. Lightning Command Center
 
-- [x] UI title and labels use North Star.
-- [x] Risk pulse cards show stockout, expiry, overstock, complaint, supplier,
-      queue, shelf-layout, price, promotion, and staff readiness.
-- [x] Product and batch context is visible.
-- [x] Shelf, backroom, warehouse, and supplier stock are visible.
-- [x] Complaint cluster panel shows complaint type, count, product, batch,
-      supplier, and time window.
-- [x] Supplier response panel shows status, lead time, replacement, credit note,
-      or unresolved quality issue.
-- [x] Store execution panel shows cashier recommendation and task queue.
-- [x] Evidence timeline cites source records.
-- [x] Agent reasoning panel separates facts from inference.
+- [ ] UI title and labels use North Star global/hospital operations language.
+- [ ] Risk pulse cards show complaint, bed capacity, queue, pharmacy stock,
+      vendor delay, billing, approval, and outcome readiness.
+- [ ] Patient/visitor alias, department, location, and resource context are
+      visible.
+- [ ] Complaint cluster panel shows complaint type, count, department,
+      location, resource, partner, and time window.
+- [ ] Partner response panel shows lab, laundry, insurer, payment, food,
+      maintenance, or transport status.
+- [ ] Operations panel shows task queue, owner role, acknowledgement, and due
+      time.
+- [ ] Evidence timeline cites source records.
+- [ ] Agent reasoning panel separates facts from inference.
 - [ ] Approval cockpit supports approve, reject, modify, defer, and executed
       states.
-- [x] Channel log shows Slack and WhatsApp-style alert results.
+- [ ] Channel log shows Slack and WhatsApp-style alert results.
+- [ ] Clinical-refusal state is visible when relevant.
 - [ ] Voice transcript or voice request panel is visible if voice mode is in
       the demo.
-- [x] Outcome panel shows stockout avoided, waste reduced, complaint risk,
-      queue readiness, staff task completion, and supplier SLA state.
-- [x] LWC tests cover ready, loading, empty, denied, error, restricted,
-      approval, action, and outcome states.
+- [ ] Outcome panel shows wait time reduced, bed released, stockout avoided,
+      complaint containment, vendor SLA, billing resolution, and task
+      completion.
+- [ ] LWC tests cover ready, loading, empty, denied, error, restricted,
+      approval, action, outcome, voice, and clinical-refusal states.
 
-### 10. End-to-End Demo
+### 10. End-To-End Demo
 
 - [ ] `npm run check` passes in the intended demo environment.
 - [ ] `npm run demo:reset` works.
-- [ ] `npm run demo:seed` creates the retail case.
+- [ ] `npm run demo:seed` creates the hospital operations case.
 - [ ] `npm run demo:run` completes trigger through outcome.
-- [ ] Clean-clone runbook reflects the North Star flow.
-- [ ] Demo starts from one clear supermarket risk event.
+- [ ] Clean-clone runbook reflects the hospital/global flow.
+- [ ] Demo starts from one clear hospital operations surge event.
 - [ ] Demo shows conflicting recommendations before orchestration.
-- [ ] Demo shows supplier response changing the recommendation.
+- [ ] Demo shows partner or capacity response changing the recommendation.
 - [ ] Demo shows manager approval before action execution.
 - [ ] Demo shows Slack and WhatsApp-style internal alerts.
-- [ ] Demo shows voice mode only if it is stable and honest.
+- [ ] Demo shows clinical-decision refusal.
 - [ ] Demo shows outcome metrics and audit trail.
 - [ ] Final rehearsal completed with the whole team.
 
-### 11. Pitch and Presentation
+### 11. Pitch And Presentation
 
-- [ ] Problem slide explains the supermarket issues from this roadmap.
-- [ ] Agent slide explains the three specialist agents and orchestrator.
+- [ ] Problem slide explains universal issue modules and the hospital demo.
+- [ ] Agent slide explains the orchestrator, global primitives, and specialist
+      agents.
 - [ ] Salesforce slide explains Agentforce, Salesforce records, MuleSoft mocks,
       and approval boundary.
 - [ ] Demo slide shows the exact live flow.
-- [ ] Business value slide quantifies stockout avoided, waste reduced, queue
-      readiness, supplier response, and complaint containment.
-- [ ] Honesty slide states what is mocked and what is production-ready
-      architecture.
+- [ ] Business value slide quantifies wait time reduced, bed released, stockout
+      avoided, billing risk contained, vendor SLA, and complaint containment.
+- [ ] Plug-and-play slide maps hospital resources to hotel, airport, banking,
+      and supermarket equivalents.
+- [ ] Honesty slide states what is mocked, what is production-ready
+      architecture, and what clinical decisions are out of scope.
 - [ ] Timing has been rehearsed.
 
 ## Done Means
@@ -324,14 +399,18 @@ A task is done only when:
 - the implementation or fixture exists;
 - the relevant check passes;
 - the demo state is visible to a judge;
-- failure or denial behavior is handled;
-- docs are updated without broad platform wording.
+- failure, denial, refusal, or fallback behavior is handled;
+- docs are updated without drifting back to a narrow supermarket-only story.
 
 ## Non-Goals
 
-- Do not build a general business platform for this hackathon.
-- Do not build a burger-only demo.
+- Do not build a generic chatbot.
+- Do not claim zero-configuration plug-and-play. Say "global primitives plus a
+  business profile."
+- Do not claim diagnosis, treatment, dosage, triage, or clinical priority
+  decisions.
 - Do not claim live integrations that are actually mocks.
 - Do not let agents execute protected external actions without manager
   approval.
-- Do not add new architecture unless it directly improves the North Star demo.
+- Do not commit real patient, staff, vendor, insurer, phone, email, credential,
+  or medical-record data.

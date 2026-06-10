@@ -7,17 +7,20 @@ work without stepping on each other. Work should start from the relevant
 contract, fixture, or checklist item, then move through verification before
 handoff.
 
-For the hackathon, the active vertical is North Star. Keep coordination focused
-on the supermarket operations demo.
+For the hackathon, the active vertical is North Star: a global operations
+command center with a private hospital demo profile. Keep coordination focused
+on the roadmap, teammate assignment docs, and existing contract boundaries.
 
-Claim leaf beads only. The `hfs-v1-05` through `hfs-v1-10` feature beads are
-coordination containers and completion summaries.
+Claim leaf beads only when Beads is installed. The `hfs-v1-05` through
+`hfs-v1-10` feature beads are coordination containers and completion summaries.
 
 Record active work by claiming the relevant bead when Beads is available:
 
 ```bash
 bd update <bead-id> --claim
 ```
+
+If Beads is not installed, name the `ROADMAP.md` checklist item being advanced.
 
 ## Checkpoints
 
@@ -34,7 +37,7 @@ Required:
 
 After this checkpoint, incompatible interface changes require:
 
-1. an explicit compatibility note on the changed bead;
+1. an explicit compatibility note on the changed bead or roadmap item;
 2. review from every affected surface;
 3. updated examples and contract tests in the same pull request.
 
@@ -61,7 +64,8 @@ The connected path must preserve:
 - permission and purpose restrictions;
 - model deployment and policy versions;
 - human approval before protected action;
-- action and outcome audit history.
+- action and outcome audit history;
+- clinical-decision refusal for hospital demo requests.
 
 ### Checkpoint 4: Clean-Clone Completion
 
@@ -103,19 +107,19 @@ flowchart LR
   E2E --> CP4["Checkpoint 4: clean-clone completion"]
 ```
 
-## Branch and Pull Request Rules
+## Branch And Pull Request Rules
 
-- Use one branch and pull request per leaf bead.
-- Name branches `<handle>/<bead-id>-short-description`.
+- Use one branch and pull request per leaf bead or roadmap item.
+- Name branches with the repo prefix convention, usually `codex/<short-task>`.
 - Keep pull requests focused on one contract, feature, or verification path.
 - Contract pull requests contain schemas, examples, and validation before broad
   implementation.
 - Consumers may use versioned fixtures and mocks before providers are complete.
 - Contract changes need review from every affected surface.
-- Rebase or merge current `main` before connected integration work.
-- Close a leaf bead only after its acceptance criteria pass and the pull request
-  is merged.
-- Close the coordination parent after all of its leaf beads pass.
+- Merge or rebase current `main` before connected integration work.
+- Close a leaf item only after its acceptance criteria pass and the pull
+  request is merged.
+- Close the coordination parent after all of its leaf items pass.
 
 ## File Collision Rules
 

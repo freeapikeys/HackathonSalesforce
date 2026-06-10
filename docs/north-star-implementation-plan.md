@@ -2,9 +2,13 @@
 
 ## Goal
 
-Convert the existing HFS vertical slice into a North Star supermarket MVP
-without weakening the governed Salesforce, Agentforce, MuleSoft, and model
-contracts already present in the repository.
+Convert the existing HFS vertical slice into a North Star universal operations
+MVP with a private hospital demo profile, without weakening the governed
+Salesforce, Agentforce, MuleSoft, model gateway, LWC, and harness contracts
+already present in the repository.
+
+The first task is specialization through global primitives and a hospital
+profile, not reinvention.
 
 ## Current Starting Point
 
@@ -16,150 +20,177 @@ The repository already has:
 - MuleSoft OpenAPI and Python mock runtime;
 - provider-neutral model gateway and fixtures;
 - Lightning command center component and state adapter;
-- deterministic seed, reset, and end-to-end harness scripts.
+- deterministic seed, reset, and end-to-end harness scripts;
+- Slack approved-action support on the current branch;
+- Agentforce inventory and waste reasoning work from latest `origin/main`.
 
-The first task is specialization, not reinvention.
+Preserve those assets. Generalize them where needed instead of replacing them
+with a new architecture.
 
-## Workstream 1: Retail Domain Mapping
+## Workstream 1: Global Primitive Mapping
 
 Tasks:
 
-1. Map retail concepts onto existing HFS objects.
-2. Add optional fields only where the current generic records cannot express
-   demo needs.
-3. Keep all mappings product-category neutral.
+1. Map private-hospital concepts onto global primitives.
+2. Use existing HFS records before adding metadata.
+3. Keep the model reusable for hotel, airport, banking, supermarket, and other
+   profiles.
 
 Initial mapping:
 
-| Retail concept      | HFS object                                                        |
-| ------------------- | ----------------------------------------------------------------- |
-| Store               | `HFS_Entity__c` with type `ORGANIZATION` or `ORGANIZATIONAL_UNIT` |
-| Product             | `HFS_Entity__c` with type `PRODUCT`                               |
-| Supplier            | `HFS_Entity__c` with type `SUPPLIER`                              |
-| Product batch       | `HFS_Entity__c` with type `ASSET` or `PRODUCT_BATCH` if added     |
-| Promotion           | `HFS_Agreement__c` or `HFS_Event__c` depending on source          |
-| Stockout risk       | `HFS_Event__c` plus `HFS_Work_Item__c`                            |
-| Complaint cluster   | `HFS_Event__c` plus `HFS_Evidence__c`                             |
-| Supplier resolution | `HFS_Event__c`, `HFS_Evidence__c`, and `HFS_Outcome__c`           |
-| Staff/store task    | `HFS_Action__c` and optionally Salesforce Task                    |
+| Hospital concept                                         | Global primitive       | HFS object                        |
+| -------------------------------------------------------- | ---------------------- | --------------------------------- |
+| Hospital, ward, department                               | `Entity` or `Location` | `HFS_Entity__c`                   |
+| Patient or visitor alias                                 | `Customer`             | `HFS_Entity__c` or evidence alias |
+| Bed, room, stock item, equipment, queue slot             | `Resource`             | `HFS_Entity__c`                   |
+| Complaint, queue spike, low stock, vendor delay          | `Signal`               | `HFS_Event__c`                    |
+| Complaint text, queue record, stock record, vendor reply | `Evidence`             | `HFS_Evidence__c`                 |
+| Lab, laundry, insurer, payment processor, supplier       | `Partner`              | `HFS_Entity__c`                   |
+| Discharge cleaning, billing review, restock, alert       | `Action`               | `HFS_Action__c`                   |
+| Operations manager approval                              | `Approval`             | `HFS_Approval__c`                 |
+| Wait reduced, bed released, stockout avoided             | `Outcome`              | `HFS_Outcome__c`                  |
 
 Acceptance:
 
-- seed data creates multiple product categories;
-- no metadata or UI label assumes burgers only;
-- Apex tests still pass.
+- no source label assumes supermarket-only or burger-only behavior;
+- hospital concepts map through global primitives;
+- protected action and approval contracts remain unchanged.
 
-## Workstream 2: North Star Demo Seed and Event Fixtures
+## Workstream 2: Hospital Demo Seed And Event Fixtures
 
 Tasks:
 
-1. Replace generic service-interruption seed with North Star retail scenario.
-2. Add event fixtures for:
-   - `STOCKOUT_RISK_DETECTED`;
-   - `EXPIRY_RISK_DETECTED`;
-   - `COMPLAINT_CLUSTER_DETECTED`;
-   - `SUPPLIER_RESPONSE_RECEIVED`;
-   - `QUEUE_RISK_DETECTED`;
-   - `ACTION_OUTCOME_CAPTURED`.
-3. Keep duplicate, malformed, late, out-of-order, and replay cases.
+1. Convert the demo story to a private hospital morning operations surge.
+2. Add or update event fixtures for:
+   - `PATIENT_COMPLAINT_CLUSTER_DETECTED`;
+   - `BED_CAPACITY_PRESSURE_DETECTED`;
+   - `DISCHARGE_ROOM_BLOCKED`;
+   - `PHARMACY_STOCK_RISK_DETECTED`;
+   - `LAB_VENDOR_RESPONSE_DELAYED`;
+   - `BILLING_APPROVAL_STALLED`;
+   - `STAFF_QUEUE_RISK_DETECTED`;
+   - `APPROVED_ACTION_EXECUTED`;
+   - `HOSPITAL_OUTCOME_CAPTURED`.
+3. Keep duplicate, malformed, late, out-of-order, hash, replay, and
+   idempotency-conflict cases.
 
 Acceptance:
 
 - `npm run check:events` passes;
 - `npm run check:mulesoft` passes;
-- `npm run demo:seed` creates one coherent retail case.
+- `npm run demo:seed` creates one coherent hospital operations case.
 
-## Workstream 3: Agentforce Topics and Actions
+## Workstream 3: Agentforce Topics And Actions
 
 Agentforce topics:
 
 - North Star Orchestration;
-- Inventory and Waste;
-- Supplier and Product Trust;
-- Store Execution and Outreach;
-- Manager Approval and Outreach.
+- Evidence and Context;
+- Patient Trust;
+- Resource and Capacity;
+- Operations Execution;
+- Partner and Vendor;
+- Risk and Approval;
+- Financial Impact;
+- Communication;
+- Outcome Learning.
 
 Agentforce action catalog:
 
 - explain North Star case;
 - draft evidence-backed recovery plan;
 - request manager approval;
-- summarize supplier response;
-- draft staff alerts;
-- draft supplier quality message.
+- summarize partner or capacity response;
+- draft internal staff alerts;
+- draft patient-safe service message;
+- refuse clinical decision requests.
 
 Protected execution remains behind Salesforce approval and MuleSoft action
 execution. Agentforce can draft and request approval, but it cannot directly
-send Slack, WhatsApp, reorder, supplier, or markdown actions.
+send Slack, WhatsApp, vendor, billing, pharmacy, staff-task, refund, or patient
+message actions.
 
 Acceptance:
 
-- recommendations cite inventory, complaint, supplier, and staffing evidence;
-- supplier decision includes the "do not blindly stop orders" rule;
+- recommendations cite complaint, capacity, vendor, billing, staff, stock, and
+  outcome evidence;
+- facts, inference, assumptions, missing evidence, recommended actions,
+  blocked clinical actions, approval requirements, and expected outcomes are
+  separated;
 - restricted or missing evidence fails closed.
 
-## Workstream 4: MuleSoft Mock Actions and Channels
+## Workstream 4: MuleSoft Mock Actions And Channels
 
-Mock actions:
+Keep the existing Process API operations:
 
-- `CREATE_SUPPLIER_QUALITY_CASE`;
-- `REQUEST_REPLACEMENT_BATCH`;
-- `CREATE_REORDER_REQUEST`;
-- `CREATE_WAREHOUSE_TRANSFER`;
-- `CREATE_MARKDOWN_PLAN`;
-- `CREATE_STORE_TASKS`;
+- `INGEST_EVENT` at `POST /v1/events`;
+- `REPLAY_EVENT` at `POST /v1/events/replays`;
+- `READ_CONTEXT` at `POST /v1/context/queries`;
+- `EXECUTE_APPROVED_ACTION` at `POST /v1/actions/executions`;
+- `CAPTURE_OUTCOME` at `POST /v1/outcomes/callbacks`.
+
+Hospital mock actions behind `EXECUTE_APPROVED_ACTION`:
+
+- `CREATE_PATIENT_SERVICE_TASK`;
+- `REQUEST_BED_CLEANING`;
+- `ESCALATE_LAB_VENDOR_CASE`;
+- `CREATE_PHARMACY_RESTOCK_REQUEST`;
+- `OPEN_BILLING_REVIEW`;
+- `REQUEST_INSURANCE_FOLLOWUP`;
 - `SEND_SLACK_ALERT`;
 - `SEND_WHATSAPP_ALERT`;
-- `CAPTURE_RETAIL_OUTCOME`.
+- `CAPTURE_HOSPITAL_OUTCOME`.
 
 Slack:
 
-- use a real incoming webhook when available;
-- otherwise preserve a mock sent-message record and show it in the UI.
+- use a real incoming webhook when `SLACK_WEBHOOK_URL` exists;
+- otherwise preserve an honest `MOCK_SENT` result.
 
 WhatsApp:
 
-- use Twilio WhatsApp Sandbox or Meta Cloud API only if setup is complete;
-- otherwise use a WhatsApp-style internal alert panel and a MuleSoft mock
-  response that is honest about being a demo substitute.
+- use Twilio Sandbox or Meta Cloud API only if setup is complete;
+- otherwise use an honest WhatsApp-style internal alert mock.
 
 Acceptance:
 
-- one approved action writes back through MuleSoft;
-- Slack and WhatsApp-style alert results are visible;
-- unapproved action execution returns denial.
+- unapproved action execution returns denial;
+- approved action execution returns queued, success, or honest mock status with
+  correlation IDs;
+- channel results are visible in the command center.
 
 ## Workstream 5: North Star Command Center
 
-Update the Lightning command center from relationship wording to retail
-operations wording.
+Update the Lightning command center from retail operations wording to universal
+hospital operations wording.
 
 Required panels:
 
-- risk pulse cards: stockout, expiry, complaint, supplier, queue;
-- product and batch context;
+- risk pulse cards: complaint, bed capacity, pharmacy stock, vendor delay,
+  queue, billing, approval, and outcome;
+- patient/visitor alias, department, location, and resource context;
 - evidence timeline;
 - agent reasoning with facts and inferences;
-- supplier response panel;
+- partner/vendor response panel;
 - approval cockpit;
 - Slack and WhatsApp-style alert log;
 - outcome metrics.
 
 Acceptance:
 
-- mock mode works without Salesforce live data;
+- mock mode works without live Salesforce data;
 - live mode works from `HFS_RelationshipController`;
-- UI labels support any product category;
-- LWC tests cover ready, restricted, denied, error, and approval states.
+- UI labels use global/hospital language, not supermarket-only language;
+- LWC tests cover ready, restricted, denied, error, approval, action, and
+  outcome states.
 
-## Workstream 6: End-to-End Proof Path
+## Workstream 6: End-To-End Proof Path
 
 Required beats:
 
-1. Launch risk event.
+1. Launch hospital operations surge event.
 2. Show conflicting evidence.
 3. Ask Agentforce for recommendation.
-4. Receive supplier response.
+4. Receive partner/capacity response.
 5. Show recommendation update.
 6. Approve.
 7. Execute MuleSoft action.
@@ -168,35 +199,20 @@ Required beats:
 
 ## Implementation Guardrails
 
-Every contributor should understand all three agents:
+Every contributor should understand the universal model and the hospital demo
+profile.
 
-- Inventory and Waste Agent;
-- Supplier and Product Trust Agent;
-- Store Execution and Outreach Agent.
-
-Approval here means business approval by a demo role such as Store Manager,
-Duty Manager, or Operations Manager. It does not require the demo user to be a
-Salesforce org admin. For the MVP, approval can be implemented as a Salesforce
-record/status or command-center button that allows MuleSoft to execute a
-protected action only after the manager role has approved it.
-
-CLI workflow for each Codex user:
-
-1. Pull latest `main`.
-2. Read [north-star-mvp.md](north-star-mvp.md) and this implementation plan.
-3. Pick one checklist item from the relevant workstream.
-4. Ask Codex to inspect the exact files and tests before editing.
-5. Make the smallest working change.
-6. Run the focused check for the changed surface.
-7. Update the relevant Markdown or fixture if behavior changed.
-8. Push or hand off only after the focused check passes.
+Approval here means business approval by a demo role such as Operations
+Manager, Bed Manager, Pharmacy Lead, Billing Supervisor, Patient Experience
+Manager, or Duty Manager. It does not require the demo user to be a Salesforce
+org admin.
 
 Rules:
 
-- no one hard-codes burger-only labels, product IDs, supplier names, or channel
-  assumptions;
-- each change updates the relevant doc, fixture, or runbook when behavior
-  changes;
+- do not make diagnosis, treatment, dosage, triage, or clinical priority
+  decisions;
+- do not use real patient names, medical records, phone numbers, emails,
+  insurer records, or hospital credentials;
 - every protected action requires a business manager approval record/status
   before MuleSoft execution;
 - Slack and WhatsApp integrations must have honest fallback modes when real
@@ -209,50 +225,48 @@ Focused checks:
 | Surface                  | Minimum focused checks                                                                                    |
 | ------------------------ | --------------------------------------------------------------------------------------------------------- |
 | Salesforce core          | `npm run check:project`, Apex tests for recommendation, approval, evidence, action, and outcome behavior  |
-| Agentforce contracts     | Agentforce contract fixture checks, refusal checks, evidence citation checks                              |
-| MuleSoft and channels    | `npm run check:mulesoft`, approved action execution path, denied action execution path, channel fixtures  |
+| Agentforce contracts     | `npm run check:agentforce`, refusal checks, evidence citation checks                                      |
+| MuleSoft and channels    | `npm run check:mulesoft`, approved action execution path, denied path, channel fixtures                   |
 | Lightning command center | LWC unit tests, UI mock fixture render, ready/restricted/denied/error/approval states                     |
 | Event and data fixtures  | fixture schema validation, malformed/late/duplicate/out-of-order examples, expected recommendation review |
 
 ## Build Checklist
 
-### Slack and Approved MuleSoft Execution
+### Slack And Approved MuleSoft Execution
 
-- [ ] Inspect `docs/mulesoft-api-contract.md`, `mulesoft/README.md`, and the
-      existing MuleSoft mock runtime before editing.
-- [ ] Ensure `EXECUTE_APPROVED_ACTION` supports `SEND_SLACK_ALERT` with a clear
-      request/response shape, correlation ID, approval ID, action ID, channel,
-      target role, message body, delivery status, and fallback reason.
-- [ ] Add a Slack configuration path that can use `SLACK_WEBHOOK_URL` when it is
-      present and returns an honest mock result when it is missing.
-- [ ] Make unapproved Slack execution fail closed with a useful error and no
-      fake success.
-- [ ] Store or return enough delivery evidence for Salesforce and the command
+- [x] Inspect `docs/mulesoft-api-contract.md`, `mulesoft/README.md`, and the
+      existing MuleSoft mock runtime.
+- [x] Ensure `EXECUTE_APPROVED_ACTION` supports `SEND_SLACK_ALERT` with
+      correlation ID, approval ID, action ID, channel, target role, message
+      body, delivery status, and fallback reason.
+- [x] Add a Slack configuration path that can use `SLACK_WEBHOOK_URL` when it
+      exists and returns honest `MOCK_SENT` when it is missing.
+- [x] Make unapproved Slack execution fail closed.
+- [x] Store or return enough delivery evidence for Salesforce and the command
       center to show `PENDING`, `SENT`, `FAILED`, or `MOCK_SENT`.
-- [ ] Add or update fixtures for approved Slack success, missing-webhook mock
+- [x] Add or update fixtures for approved Slack success, missing-webhook mock
       mode, and unapproved denial.
-- [ ] Run `npm run check:mulesoft` before handoff.
+- [ ] Update Slack examples and labels from retail roles to hospital roles.
+- [ ] Run `npm run check:mulesoft` after hospital action changes.
 
-### Salesforce Core and Agentforce Recommendation
+### Salesforce Core And Agentforce Recommendation
 
 - [ ] Inspect `docs/salesforce-data-model.md`,
       `docs/agentforce-action-contract.md`, `docs/apex-service-contract.md`, and
       the Apex service classes before editing.
-- [ ] Confirm the Salesforce records can represent product, batch, store,
-      supplier, promotion, complaint evidence, approval, action, and outcome for
-      any product category.
-- [ ] Add or update seed data for at least three categories, not only the first
-      burger-style scenario.
-- [ ] Wire Agentforce-facing outputs for Inventory/Waste so recommendations cite
-      facts, separate inferences, and name the missing evidence when uncertain.
-- [ ] Ensure the orchestrator recommendation includes supplier/product trust and
-      store execution implications.
-- [ ] Preserve the rule that complaints trigger investigation and supplier
-      response first, not automatic supplier blocking.
-- [ ] Run `npm run check:project` plus the relevant Apex/Agentforce contract
-      checks before handoff.
+- [ ] Confirm the Salesforce records can represent patient alias, department,
+      resource, partner, complaint evidence, approval, action, and outcome.
+- [ ] Add or update seed data for hospital departments and reusable global
+      resources.
+- [ ] Wire Agentforce-facing outputs so recommendations cite facts, separate
+      inferences, and name missing evidence.
+- [ ] Ensure the orchestrator recommendation includes patient trust, resource
+      capacity, partner/vendor, financial, and operations execution
+      implications.
+- [ ] Preserve clinical refusal and manager approval boundaries.
+- [ ] Run `npm run check:project` plus the relevant Apex/Agentforce checks.
 
-### WhatsApp and Command Center Experience
+### WhatsApp And Command Center Experience
 
 - [ ] Inspect `docs/ui-state-contract.md`, `docs/mulesoft-api-contract.md`, the
       LWC command center, and existing UI fixtures before editing.
@@ -262,31 +276,32 @@ Focused checks:
 - [ ] Add a WhatsApp configuration path that can use Twilio Sandbox or Meta
       Cloud API only when credentials are configured, otherwise returns
       `MOCK_SENT` honestly.
-- [ ] Update the command center to show risk pulse, evidence timeline, supplier
-      response, approval cockpit, Slack result, WhatsApp result, and store-task
-      acknowledgement without product-specific labels.
+- [ ] Update the command center to show hospital risk pulse, evidence timeline,
+      vendor response, approval cockpit, Slack result, WhatsApp result, and task
+      acknowledgement.
 - [ ] Add UI mock states for ready, restricted, denied, channel failed, channel
-      mock sent, and action approved.
+      mock sent, voice request, clinical refusal, and action approved.
 - [ ] Run LWC tests and `npm run check:mulesoft` when the WhatsApp contract
       changes.
 
-### Data, Edge Cases, and Recommendation Validation
+### Data, Edge Cases, And Recommendation Validation
 
-- [ ] Build a small product catalog across fresh food, frozen food, dairy,
-      beverages, household, and one higher-value category.
-- [ ] Create realistic complaint clusters that test isolated complaints,
-      batch-specific issues, supplier-wide suspicion, price mismatch, expiry,
-      packaging damage, and refund patterns.
-- [ ] Create supplier response examples: replacement batch approved, credit note
-      offered, delayed delivery, insufficient evidence, and unresolved quality
-      issue.
-- [ ] Create late, malformed, duplicate, and out-of-order event examples so the
-      integration path proves it handles messy data.
-- [ ] Write expected recommendation notes for each scenario: what the agent
+- [ ] Build synthetic hospital data for departments, resources, partners,
+      complaints, queues, stock, billing, insurance, tasks, channel aliases, and
+      outcomes.
+- [ ] Create realistic complaint clusters that test isolated complaints, wait
+      time, room readiness, food, billing, pharmacy delay, accessibility,
+      privacy, and service recovery.
+- [ ] Create partner response examples: lab delayed, lab recovered, insurance
+      pending, insurance approved, laundry delayed, food supplier delayed,
+      maintenance unresolved.
+- [ ] Create late, malformed, duplicate, out-of-order, idempotency-conflict, and
+      invalid-hash event examples.
+- [ ] Write expected recommendation notes for each scenario: what North Star
       should recommend, what it should refuse to do, what needs approval, and
       what evidence is missing.
-- [ ] Validate manually that the final system never treats every supplier
-      complaint as a reason to stop all orders.
+- [ ] Validate manually that the final system never makes diagnosis, treatment,
+      dosage, or clinical priority decisions.
 
 ## Minimum Checks
 

@@ -44,17 +44,19 @@ For the hackathon, use the tools to preserve the North Star build path:
 - Contributors should pull latest `main`, inspect the relevant contract, make a
   focused change, run the focused check, and update docs or fixtures when
   behavior changes.
-- Generated data, supplier replies, malformed event cases, expected
-  recommendation notes, and manual validation must land in committed files,
-  fixtures, or checklists.
-- Tooling should support the three-agent system: Inventory and Waste, Supplier
-  and Product Trust, and Store Execution and Outreach.
+- Generated hospital operations data, partner replies, malformed event cases,
+  clinical-refusal cases, expected recommendation notes, and manual validation
+  must land in committed files, fixtures, or checklists.
+- Tooling should support the multi-agent system: Orchestrator, Evidence and
+  Context, Patient Trust, Resource and Capacity, Operations Execution, Partner
+  and Vendor, Risk and Approval, Financial Impact, Communication, and Outcome
+  Learning.
 - Keep Slack, WhatsApp, Agentforce, MuleSoft, Salesforce, and LWC changes
   contract-compatible so they converge cleanly.
 
 ## Tool Responsibilities
 
-Beads is authoritative for implementation work and dependencies.
+Beads is authoritative for implementation work and dependencies when installed.
 
 The live Dolt database is local unless a team Dolt remote is configured. The
 repository therefore tracks `.beads/issues.jsonl` as a portable exchange and

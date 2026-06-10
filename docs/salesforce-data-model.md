@@ -10,10 +10,10 @@ recommendation -> approval -> action -> outcome -> evaluation`
 | Object                     | Responsibility                                                                 |
 | -------------------------- | ------------------------------------------------------------------------------ |
 | `HFS_Event__c`             | Preserved event envelope, source identity, ordering, hashes, and intake result |
-| `HFS_Entity__c`            | Person, organization, supplier, partner, regulator, unit, or other entity      |
+| `HFS_Entity__c`            | Person alias, organization, partner, regulator, unit, resource, or location    |
 | `HFS_Relationship__c`      | Directed, typed, time-bounded relationship between two entities                |
 | `HFS_Event_Participant__c` | Entity participation and role in an event                                      |
-| `HFS_Agreement__c`         | Agreement, promise, obligation, status, and material terms                     |
+| `HFS_Agreement__c`         | Agreement, policy, SLA, promise, obligation, status, and material terms        |
 | `HFS_Work_Item__c`         | Accountable cross-functional work triggered by evidence                        |
 | `HFS_SOP_Execution__c`     | Versioned SOP execution and current step                                       |
 | `HFS_Evidence__c`          | Citable source evidence connected to work                                      |
@@ -26,26 +26,45 @@ recommendation -> approval -> action -> outcome -> evaluation`
 Every mapped operational record has a tenant key and stable external key.
 Source-derived records link to the immutable event that produced them.
 
-## North Star Retail Mapping
+## Global Primitive Mapping
 
-North Star should map retail operations concepts onto this model before adding
+North Star should map business concepts onto global primitives before adding
 new custom objects. Add fields or types only when the generic model cannot
 express the demo requirement.
 
-| Retail concept                                                         | Initial model mapping                    |
-| ---------------------------------------------------------------------- | ---------------------------------------- |
-| Store                                                                  | `HFS_Entity__c`                          |
-| Product                                                                | `HFS_Entity__c`                          |
-| Product category                                                       | entity attribute or event payload        |
-| Supplier                                                               | `HFS_Entity__c`                          |
-| Batch or lot                                                           | `HFS_Entity__c` or evidence attribute    |
-| Promotion                                                              | `HFS_Agreement__c` or `HFS_Event__c`     |
-| Stockout, expiry, complaint, queue, or supplier signal                 | `HFS_Event__c`                           |
-| Source proof                                                           | `HFS_Evidence__c`                        |
-| Recovery plan                                                          | `HFS_Recommendation__c`                  |
-| Manager decision                                                       | `HFS_Approval__c`                        |
-| Supplier, reorder, markdown, task, Slack, or WhatsApp-style write-back | `HFS_Action__c`                          |
-| Result                                                                 | `HFS_Outcome__c` and `HFS_Evaluation__c` |
+| Global primitive | Initial model mapping                                      |
+| ---------------- | ---------------------------------------------------------- |
+| `Signal`         | `HFS_Event__c`                                             |
+| `Evidence`       | `HFS_Evidence__c`                                          |
+| `Entity`         | `HFS_Entity__c`                                            |
+| `Resource`       | `HFS_Entity__c` with a resource type or evidence attribute |
+| `Location`       | `HFS_Entity__c` or event/evidence location attribute       |
+| `Actor`          | user, role alias, or `HFS_Entity__c`                       |
+| `Customer`       | alias entity or evidence alias                             |
+| `Partner`        | `HFS_Entity__c`                                            |
+| `Process`        | `HFS_Work_Item__c` or `HFS_SOP_Execution__c`               |
+| `Risk`           | event, evidence, recommendation, or evaluation attribute   |
+| `Policy`         | `HFS_Agreement__c` or approval policy field                |
+| `Recommendation` | `HFS_Recommendation__c`                                    |
+| `Approval`       | `HFS_Approval__c`                                          |
+| `Action`         | `HFS_Action__c`                                            |
+| `Outcome`        | `HFS_Outcome__c`                                           |
+| `Metric`         | `HFS_Evaluation__c`, outcome field, or evidence metric     |
+
+## Private Hospital Mapping
+
+| Hospital concept                                                     | Initial model mapping                                    |
+| -------------------------------------------------------------------- | -------------------------------------------------------- |
+| Hospital, department, ward, service desk                             | `HFS_Entity__c`                                          |
+| Patient or visitor alias                                             | `HFS_Entity__c` or evidence alias, no real personal data |
+| Bed, room, queue, pharmacy item, equipment, staff pool               | `HFS_Entity__c` as typed resource                        |
+| Lab, laundry, insurer, payment, food, maintenance partner            | `HFS_Entity__c`                                          |
+| Complaint, queue spike, stock risk, vendor delay, billing issue      | `HFS_Event__c`                                           |
+| Source proof                                                         | `HFS_Evidence__c`                                        |
+| Recovery plan                                                        | `HFS_Recommendation__c`                                  |
+| Operations manager decision                                          | `HFS_Approval__c`                                        |
+| Service task, bed cleaning, vendor escalation, billing review, alert | `HFS_Action__c`                                          |
+| Result                                                               | `HFS_Outcome__c` and `HFS_Evaluation__c`                 |
 
 ## Enforced Relationships
 
@@ -79,6 +98,13 @@ The initial objects use read/write organization sharing for the single-org MVP.
 Permission sets define functional access. Tenant enforcement, restriction
 rules, and private sharing are production-hardening work and must be completed
 before multi-tenant or regulated deployment.
+
+## Clinical Boundary
+
+The Salesforce model may preserve evidence that a user asked for a clinical
+decision, but the recommendation/action chain must refuse diagnosis, treatment,
+dosage, triage, and clinical priority decisions. Such requests should route to
+a clinician or clinical manager review path, not an automated action.
 
 ## Generation And Validation
 
