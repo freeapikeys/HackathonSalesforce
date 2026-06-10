@@ -41,6 +41,13 @@ ENSURE_PERMISSIONS_SCRIPT = (
 PREPARE_CONNECTED_SCRIPT = (
     ROOT / "scripts" / "apex" / "prepare_connected_demo.apex"
 )
+HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
+HOSPITAL_ACTION_PURPOSE = "EXECUTE_APPROVED_HOSPITAL_ACTION"
+HOSPITAL_OUTCOME_PURPOSE = "CAPTURE_APPROVED_HOSPITAL_OUTCOME"
+HOSPITAL_RECOMMENDATION_TYPE = "NORTH_STAR_HOSPITAL_RECOVERY_PLAN"
+HOSPITAL_PROPOSED_ACTION_TYPE = "APPROVE_HOSPITAL_RECOVERY_ACTIONS"
+HOSPITAL_ALERT_ACTION_TYPE = "SEND_SLACK_ALERT"
+HOSPITAL_APPROVAL_POLICY_KEY = "north-star-hospital-manager-approval-v1"
 
 
 class HarnessFailure(RuntimeError):
@@ -331,7 +338,8 @@ class DemoHarness:
         generation_request = deepcopy(fixture["generateRequest"])
         output = deepcopy(fixture["normalizedResponses"][0]["output"])
         
-        # Use fixture's purpose (RESOLVE_RETAIL_RISK); align tenantKey and correlationId with config
+        # Use the fixture's purpose until the model-gateway profile is
+        # fully migrated; align tenantKey and correlationId with config.
         fixture_purpose = fixture["generateRequest"]["purpose"]
         
         for value in (routing_request, generation_request):
@@ -397,13 +405,13 @@ HFS_RecommendationCommand command = new HFS_RecommendationCommand();
 command.contractVersion = HFS_ServiceContract.VERSION;
 command.correlationId = '{apex_string(self.config["correlationId"])}';
 command.tenantKey = '{apex_string(self.config["tenantKey"])}';
-command.purpose = 'RESOLVE_RETAIL_RISK';
+command.purpose = '{HOSPITAL_PURPOSE}';
 command.externalKey = '{apex_string(recommendation_key)}';
 command.workItemId = '{apex_string(source["workItemId"])}';
 command.subjectEntityId = '{apex_string(source["subjectEntityId"])}';
 command.primaryEvidenceId = '{apex_string(source["evidenceId"])}';
-command.recommendationType = 'PROACTIVE_RELATIONSHIP_UPDATE';
-command.proposedActionType = 'SEND_STATUS_UPDATE';
+command.recommendationType = '{HOSPITAL_RECOMMENDATION_TYPE}';
+command.proposedActionType = '{HOSPITAL_PROPOSED_ACTION_TYPE}';
 command.rationale = '{apex_string(output["recommendation"])}';
 command.confidence = {output["confidence"]};
 command.modelProfile = '{apex_string(model["profileKey"])}';
@@ -429,14 +437,14 @@ System.debug(
         recommendation: dict[str, Any],
         model: dict[str, Any],
     ) -> dict[str, Any]:
-        policy_key = "external-relationship-communication-v1"
+        policy_key = HOSPITAL_APPROVAL_POLICY_KEY
         script = f"""
 HFS_AgentActionRequest explainRequest = new HFS_AgentActionRequest();
 explainRequest.contractVersion = HFS_ServiceContract.VERSION;
 explainRequest.action = HFS_AgentActionService.EXPLAIN;
 explainRequest.tenantKey = '{apex_string(self.config["tenantKey"])}';
 explainRequest.correlationId = '{apex_string(self.config["correlationId"])}';
-explainRequest.purpose = 'RESOLVE_RETAIL_RISK';
+explainRequest.purpose = '{HOSPITAL_PURPOSE}';
 explainRequest.workItemId = '{apex_string(source["workItemId"])}';
 HFS_AgentActionResult explanation = HFS_AgentExplainAction.invoke(
   new List<HFS_AgentActionRequest>{{ explainRequest }}
@@ -540,14 +548,14 @@ HFS_ActionCommand actionCommand = new HFS_ActionCommand();
 actionCommand.contractVersion = HFS_ServiceContract.VERSION;
 actionCommand.correlationId = '{apex_string(self.config["correlationId"])}';
 actionCommand.tenantKey = '{apex_string(self.config["tenantKey"])}';
-actionCommand.purpose = 'PROVIDE_APPROVED_STATUS_UPDATE';
+actionCommand.purpose = '{HOSPITAL_ACTION_PURPOSE}';
 actionCommand.externalKey = '{apex_string(action_key)}';
 actionCommand.idempotencyKey = '{apex_string(action_key)}-v1';
 actionCommand.recommendationId =
   '{apex_string(recommendation["recommendationId"])}';
 actionCommand.approvalId = '{apex_string(agentforce["approvalId"])}';
 actionCommand.targetEntityId = '{apex_string(source["subjectEntityId"])}';
-actionCommand.actionType = 'SEND_STATUS_UPDATE';
+actionCommand.actionType = '{HOSPITAL_ALERT_ACTION_TYPE}';
 HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
 HFS_CommandResult blocked = service.logAction(actionCommand);
 System.assertEquals(false, blocked.success);
@@ -613,7 +621,22 @@ System.debug(
                 "approvalId": action["approvalId"],
                 "actionId": action["actionId"],
                 "targetEntityId": source["subjectEntityId"],
-                "actionType": "SEND_STATUS_UPDATE",
+                "actionType": HOSPITAL_ALERT_ACTION_TYPE,
+                "sourceSystem": "slack",
+                "payload": {
+                    "targetRole": "Operations Manager",
+                    "targetChannel": "#north-star-demo",
+                    "messageTitle": "Hospital operations surge recovery",
+                    "messageBody": (
+                        "Coordinate room cleaning, pharmacy restock, lab "
+                        "escalation, billing review, and privacy-safe "
+                        "internal updates."
+                    ),
+                    "evidenceIds": [source["evidenceId"]],
+                    "sourceRecommendationId": recommendation[
+                        "recommendationId"
+                    ],
+                },
             }
         )
         headers = deepcopy(example["x-hfs-headers"])
@@ -676,9 +699,9 @@ System.debug(
 HFS_Event__c outcomeEvent = new HFS_Event__c(
   Event_Id__c = 'event-demo-outcome-001',
   Tenant_Key__c = '{apex_string(self.config["tenantKey"])}',
-  Source_URI__c = 'urn:hfs:source:service-platform',
+  Source_URI__c = 'urn:hfs:source:hospital:slack-alert',
   Source_Record_Id__c = '{apex_string(outcome["sourceRecordId"])}',
-  Event_Type__c = 'APPROVED_ACTION_EXECUTED',
+  Event_Type__c = 'HOSPITAL_APPROVED_ACTION_EXECUTED',
   Subject__c = '{apex_string(outcome["summary"])}',
   Occurred_At__c = Datetime.valueOfGmt('{observed_at}'),
   Observed_At__c = Datetime.valueOfGmt('{observed_at}'),
@@ -697,7 +720,7 @@ HFS_OutcomeCommand command = new HFS_OutcomeCommand();
 command.contractVersion = HFS_ServiceContract.VERSION;
 command.correlationId = '{apex_string(self.config["correlationId"])}';
 command.tenantKey = '{apex_string(self.config["tenantKey"])}';
-command.purpose = 'CAPTURE_APPROVED_ACTION_OUTCOME';
+command.purpose = '{HOSPITAL_OUTCOME_PURPOSE}';
 command.externalKey = '{apex_string(outcome["externalKey"])}';
 command.actionId = '{apex_string(action["actionId"])}';
 command.sourceEventId = outcomeEvent.Id;
@@ -729,7 +752,7 @@ HFS_ContextRequest contextRequest = new HFS_ContextRequest();
 contextRequest.contractVersion = HFS_ServiceContract.VERSION;
 contextRequest.tenantKey = command.tenantKey;
 contextRequest.workItemId = '{apex_string(source["workItemId"])}';
-contextRequest.purpose = 'RELATIONSHIP_SERVICE';
+contextRequest.purpose = '{HOSPITAL_PURPOSE}';
 contextRequest.correlationId = command.correlationId;
 contextRequest.includeProvenance = true;
 contextRequest.timelineLimit = 100;

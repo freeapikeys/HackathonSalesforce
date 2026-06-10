@@ -134,17 +134,17 @@ Expected behavior:
 
 ## Implementation Checklist
 
-- [ ] Pull latest `main`.
-- [ ] Read this file and the required docs.
-- [ ] Inspect the MuleSoft approved action path before editing.
-- [ ] Add or finish `SEND_WHATSAPP_ALERT` examples and mock runtime handling.
+- [x] Pull latest `main`.
+- [x] Read this file and the required docs.
+- [x] Inspect the MuleSoft approved action path before editing.
+- [x] Add or finish `SEND_WHATSAPP_ALERT` examples and mock runtime handling.
 - [ ] Add credential-driven provider selection for Twilio or Meta only if
       practical.
-- [ ] Add honest `MOCK_SENT` fallback when credentials are missing.
-- [ ] Add denial behavior when approval is missing or not approved.
-- [ ] Add WhatsApp status fields that the command center can display.
-- [ ] Add malformed WhatsApp payload validation.
-- [ ] Add WhatsApp response preservation for `tenantId`, `correlationId`,
+- [x] Add honest `MOCK_SENT` fallback when credentials are missing.
+- [x] Add denial behavior when approval is missing or not approved.
+- [x] Add WhatsApp status fields that the command center can display.
+- [x] Add malformed WhatsApp payload validation.
+- [x] Add WhatsApp response preservation for `tenantId`, `correlationId`,
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
 - [ ] Add a voice transcript input surface or fixture path.
@@ -160,14 +160,14 @@ Expected behavior:
 
 ## Testing Checklist
 
-- [ ] Run `npm run check:mulesoft` when WhatsApp action behavior changes.
-- [ ] Run `npm run test:unit` when LWC voice or channel UI changes.
+- [x] Run direct MuleSoft checks when WhatsApp action behavior changes.
+- [x] Run `npm run test:unit` when LWC voice or channel UI changes.
 - [ ] Run `npm run check:agentforce` when Agentforce fixtures or actions
       change.
-- [ ] Add or update tests for approved WhatsApp execution, mock WhatsApp
-      fallback, missing approval denial, malformed payload rejection, voice
-      transcript to structured request, voice protected-action refusal, and
-      clinical-decision refusal.
+- [x] Add or update tests for approved WhatsApp execution, mock WhatsApp
+      fallback, missing approval denial, and malformed payload rejection.
+- [ ] Add or update tests for voice transcript to structured request, voice
+      protected-action refusal, and clinical-decision refusal.
 - [ ] Confirm no phone numbers, credentials, real patient data, medical records,
       emails, or local paths appear in `git diff`.
 

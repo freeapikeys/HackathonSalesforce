@@ -125,18 +125,18 @@ treatment details, phone numbers, or unsupported model claims.
 - [x] Add fixtures for approved real-capable Slack, mock Slack, and denied
       Slack.
 - [x] Add enough result data for the LWC to display channel status.
-- [ ] Replace retail Slack examples with hospital operations examples.
-- [ ] Add hospital role aliases for Slack targets.
-- [ ] Confirm Slack message body is privacy-safe.
-- [ ] Confirm clinical decision requests are never sent as Slack instructions.
-- [ ] Update docs only if the action contract or fallback behavior changes.
+- [x] Replace retail Slack examples with hospital operations examples.
+- [x] Add hospital role aliases for Slack targets.
+- [x] Confirm Slack message body is privacy-safe.
+- [x] Confirm clinical decision requests are never sent as Slack instructions.
+- [x] Update docs only if the action contract or fallback behavior changes.
 
 ## Testing Checklist
 
 - [ ] Run `npm run check:mulesoft`.
-- [ ] Run `npm run check:project` if Salesforce metadata or generated examples
+- [x] Run `npm run check:project` if Salesforce metadata or generated examples
       are touched.
-- [ ] Add or update MuleSoft tests for hospital Slack examples if the contract
+- [x] Add or update MuleSoft tests for hospital Slack examples if the contract
       changes.
 - [ ] Confirm no credential values, real patient data, phone numbers, emails,
       medical records, or local machine paths appear in `git diff`.

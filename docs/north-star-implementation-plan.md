@@ -252,19 +252,19 @@ Focused checks:
 
 ### Salesforce Core And Agentforce Recommendation
 
-- [ ] Inspect `docs/salesforce-data-model.md`,
+- [x] Inspect `docs/salesforce-data-model.md`,
       `docs/agentforce-action-contract.md`, `docs/apex-service-contract.md`, and
       the Apex service classes before editing.
-- [ ] Confirm the Salesforce records can represent patient alias, department,
+- [x] Confirm the Salesforce records can represent patient alias, department,
       resource, partner, complaint evidence, approval, action, and outcome.
-- [ ] Add or update seed data for hospital departments and reusable global
+- [x] Add or update seed data for hospital departments and reusable global
       resources.
 - [ ] Wire Agentforce-facing outputs so recommendations cite facts, separate
       inferences, and name missing evidence.
 - [ ] Ensure the orchestrator recommendation includes patient trust, resource
       capacity, partner/vendor, financial, and operations execution
       implications.
-- [ ] Preserve clinical refusal and manager approval boundaries.
+- [x] Preserve clinical refusal and manager approval boundaries.
 - [ ] Run `npm run check:project` plus the relevant Apex/Agentforce checks.
 
 ### WhatsApp And Command Center Experience

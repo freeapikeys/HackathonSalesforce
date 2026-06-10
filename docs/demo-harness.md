@@ -72,9 +72,11 @@ and sanitized completion evidence, follow
 repeatedly therefore produces the same counts and external keys without
 touching records from another tenant.
 
-The seed report includes the Salesforce IDs for `work-demo-001`,
-`recommendation-demo-001`, and `approval-demo-001`. The connected report also
-includes the action, outcome, and evaluation IDs plus the model deployment,
+The seed report includes the Salesforce IDs for
+`work-north-star-hospital-surge-001`,
+`recommendation-north-star-hospital-001`, and
+`approval-north-star-hospital-001`. The connected report also includes the
+hospital Slack action, outcome, and evaluation IDs plus the model deployment,
 profile, policy, and invocation versions used by the run.
 
 Configure the Lightning command center with:

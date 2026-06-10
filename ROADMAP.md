@@ -253,20 +253,20 @@ file before editing.
 
 ### 5. Salesforce Core
 
-- [ ] Map hospital and departments to existing Salesforce entity records.
-- [ ] Map resources such as bed, room, pharmacy stock, queue, service counter,
+- [x] Map hospital and departments to existing Salesforce entity records.
+- [x] Map resources such as bed, room, pharmacy stock, queue, service counter,
       and equipment to existing entity/resource patterns.
-- [ ] Map patient and visitor aliases without personal data.
-- [ ] Map hospital partners to entity records.
-- [ ] Map complaints to evidence records.
+- [x] Map patient and visitor aliases without personal data.
+- [x] Map hospital partners to entity records.
+- [x] Map complaints to evidence records.
 - [ ] Map tasks to action records and/or Salesforce task records.
 - [ ] Apex context includes customer alias, department, location, resource,
       partner, complaint, capacity, stock, billing, recommendation, approval,
       action, and outcome.
-- [ ] Manager approval is enforced before vendor, billing, pharmacy, Slack,
+- [x] Manager approval is enforced before vendor, billing, pharmacy, Slack,
       WhatsApp, patient-message, room/bed, or staff-task write-back.
 - [ ] Clinical decision requests are refused.
-- [ ] Action and outcome records preserve correlation IDs and evidence IDs.
+- [x] Action and outcome records preserve correlation IDs and evidence IDs.
 - [ ] Apex tests cover success, denial, inaccessible evidence, approval
       mismatch, invalid state, and clinical refusal.
 
