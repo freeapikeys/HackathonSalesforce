@@ -219,21 +219,21 @@ file before editing.
 
 ### 3. Global Primitive And Hospital Data
 
-- [ ] Define hospital organization, department, ward, location, resource,
+- [x] Define hospital organization, department, ward, location, resource,
       partner, policy, action, outcome, and metric IDs.
-- [ ] Define synthetic patient/visitor aliases with no personal data.
-- [ ] Define bed, room, pharmacy item, equipment, queue, service counter, and
+- [x] Define synthetic patient/visitor aliases with no personal data.
+- [x] Define bed, room, pharmacy item, equipment, queue, service counter, and
       staff role resources.
-- [ ] Define hospital partners: lab, laundry, insurer, payment, food,
+- [x] Define hospital partners: lab, laundry, insurer, payment, food,
       maintenance, transport, and equipment vendor.
-- [ ] Define complaint examples for waiting time, room readiness, food,
+- [x] Define complaint examples for waiting time, room readiness, food,
       billing, discharge delay, accessibility, privacy, pharmacy delay, and
       staff interaction.
-- [ ] Define capacity facts for beds, blocked rooms, queue pressure, staff
+- [x] Define capacity facts for beds, blocked rooms, queue pressure, staff
       availability, pharmacy stock, and equipment availability.
-- [ ] Define billing and insurance facts for duplicate invoice, stuck claim,
+- [x] Define billing and insurance facts for duplicate invoice, stuck claim,
       refund request, payment issue, and approval threshold.
-- [ ] Define expected outcome metrics for the demo.
+- [x] Define expected outcome metrics for the demo.
 - [ ] Ensure every fixture uses global primitive language where possible.
 
 ### 4. Hospital Event Fixtures

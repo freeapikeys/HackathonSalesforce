@@ -259,13 +259,13 @@ Focused checks:
       resource, partner, complaint evidence, approval, action, and outcome.
 - [x] Add or update seed data for hospital departments and reusable global
       resources.
-- [ ] Wire Agentforce-facing outputs so recommendations cite facts, separate
+- [x] Wire Agentforce-facing outputs so recommendations cite facts, separate
       inferences, and name missing evidence.
-- [ ] Ensure the orchestrator recommendation includes patient trust, resource
+- [x] Ensure the orchestrator recommendation includes patient trust, resource
       capacity, partner/vendor, financial, and operations execution
       implications.
 - [x] Preserve clinical refusal and manager approval boundaries.
-- [ ] Run `npm run check:project` plus the relevant Apex/Agentforce checks.
+- [x] Run `npm run check:project` plus the relevant Apex/Agentforce checks.
 
 ### WhatsApp And Command Center Experience
 
@@ -280,7 +280,7 @@ Focused checks:
 - [x] Update the command center to show hospital risk pulse, evidence timeline,
       vendor response, approval cockpit, Slack result, WhatsApp result, and task
       acknowledgement.
-- [ ] Add UI mock states for ready, restricted, denied, channel failed, channel
+- [x] Add UI mock states for ready, restricted, denied, channel failed, channel
       mock sent, voice request, clinical refusal, and action approved.
 - [x] Run LWC tests and direct MuleSoft checks when the WhatsApp contract
       changes.
@@ -292,18 +292,18 @@ Focused checks:
       outcomes.
 - [x] Create an initial realistic complaint cluster for wait time, room
       readiness, billing, pharmacy delay, and service recovery.
-- [ ] Add complaint variants for isolated complaints, food, accessibility,
+- [x] Add complaint variants for isolated complaints, food, accessibility,
       privacy, and staff interaction.
 - [x] Create initial partner response examples for lab delay and
       billing/insurance follow-up.
-- [ ] Add partner recovery variants: lab recovered, insurance approved,
+- [x] Add partner recovery variants: lab recovered, insurance approved,
       laundry delayed, food supplier delayed, and maintenance unresolved.
 - [x] Create late, malformed, duplicate, out-of-order, idempotency-conflict, and
       invalid-hash event examples.
-- [ ] Write expected recommendation notes for each scenario: what North Star
+- [x] Write expected recommendation notes for each scenario: what North Star
       should recommend, what it should refuse to do, what needs approval, and
       what evidence is missing.
-- [ ] Validate manually that the final system never makes diagnosis, treatment,
+- [x] Validate manually that the final system never makes diagnosis, treatment,
       dosage, or clinical priority decisions.
 
 ## Minimum Checks
