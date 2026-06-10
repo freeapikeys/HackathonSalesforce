@@ -7,10 +7,11 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "npm run check:project && npm run check:ontology && npm run check:mappings && npm run check:temporal && npm run check:events && npm run check:identity && npm run check:mulesoft && npm run check:models && npm run check:agentforce && npm run check:metadata && npm run check:harness && npm run prettier:verify && npm run lint && npm run test:unit",
+    "check": "npm run check:project && npm run check:ontology && npm run check:mappings && npm run check:temporal && npm run check:events && npm run check:identity && npm run check:metrics && npm run check:mulesoft && npm run check:models && npm run check:agentforce && npm run check:metadata && npm run check:harness && npm run prettier:verify && npm run lint && npm run test:unit",
     "check:agentforce": "./scripts/validate-agentforce-contract.sh",
     "check:events": "./scripts/validate-event-contract.sh",
     "check:identity": "./scripts/verify-identity-history.sh",
+    "check:metrics": "node scripts/verify_metric_attribution.mjs",
     "check:metadata": "python3 scripts/generate_core_salesforce_metadata.py --check",
     "check:mappings": "./scripts/validate-semantic-mappings.sh",
     "check:models": "./scripts/validate-model-gateway-contract.sh",

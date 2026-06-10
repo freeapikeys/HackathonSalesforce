@@ -256,6 +256,8 @@ and UI must support any supermarket product category.
 - [x] Add a shared semantics verification harness that proves ontology,
       mappings, temporal queries, source terminology, supersession, and source
       evidence together.
+- [x] Add versioned metric definitions and deterministic outcome-attribution
+      verification from source fixtures.
 
 ### 5. Identity Relationships and History
 

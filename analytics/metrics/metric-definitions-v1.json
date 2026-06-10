@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-06-10",
+  "owner": "analytics-core",
+  "contract": {
+    "eventFixtures": "integration/events/fixtures/events",
+    "outcomeObject": "HFS_Outcome__c",
+    "metricKeyField": "Metric_Key__c",
+    "metricValueField": "Metric_Value__c"
+  },
+  "metrics": [
+    {
+      "key": "stockout_avoided_units",
+      "label": "Stockout avoided units",
+      "description": "Units protected from stockout by approved transfer, replacement, or recovery work.",
+      "valueType": "number",
+      "unit": "units",
+      "direction": "higher_is_better",
+      "formula": "data.attributes.stockoutavoidedunits",
+      "timeWindow": "Single captured outcome event effective time.",
+      "calculation": {
+        "type": "attributeNumber",
+        "path": "data.attributes.stockoutavoidedunits"
+      },
+      "attribution": {
+        "method": "direct_source_event",
+        "sourceEventType": "io.github.freeapikeys.hfs.retail.outcome.captured.v1",
+        "sourceEventCode": "RETAIL_OUTCOME_CAPTURED",
+        "rule": "Credit the approved recovery loop whose correlation id matches the captured outcome event.",
+        "limitations": "This MVP metric is directly observed in the outcome fixture; production should reconcile stock ledgers before final reporting."
+      },
+      "examples": [
+        {
+          "fixture": "integration/events/fixtures/events/28-retail-outcome-captured.json",
+          "expectedValue": 54,
+          "displayedValue": "54 units"
+        }
+      ]
+    },
+    {
+      "key": "waste_reduction_units",
+      "label": "Waste reduction units",
+      "description": "Near-expiry or at-risk units rotated, marked down, quarantined, or otherwise prevented from avoidable waste.",
+      "valueType": "number",
+      "unit": "units",
+      "direction": "higher_is_better",
+      "formula": "data.attributes.wastereductionunits",
+      "timeWindow": "Single captured outcome event effective time.",
+      "calculation": {
+        "type": "attributeNumber",
+        "path": "data.attributes.wastereductionunits"
+      },
+      "attribution": {
+        "method": "direct_source_event",
+        "sourceEventType": "io.github.freeapikeys.hfs.retail.outcome.captured.v1",
+        "sourceEventCode": "RETAIL_OUTCOME_CAPTURED",
+        "rule": "Credit the approved recovery loop whose correlation id matches the captured outcome event.",
+        "limitations": "This MVP metric is directly observed in the outcome fixture; production should reconcile inventory and disposal records."
+      },
+      "examples": [
+        {
+          "fixture": "integration/events/fixtures/events/28-retail-outcome-captured.json",
+          "expectedValue": 18,
+          "displayedValue": "18 units"
+        }
+      ]
+    },
+    {
+      "key": "readiness_score_delta",
+      "label": "Readiness score delta",
+      "description": "Point improvement between the observed starting readiness score and the post-action readiness score.",
+      "valueType": "number",
+      "unit": "points",
+      "direction": "higher_is_better",
+      "formula": "Extract 'readiness score increased from X to Y' from data.attributes.actual_outcomes and calculate Y - X.",
+      "timeWindow": "Single captured outcome event effective time.",
+      "calculation": {
+        "type": "regexDelta",
+        "path": "data.attributes.actual_outcomes",
+        "pattern": "readiness score increased from (\\d+) to (\\d+)",
+        "fromGroup": 1,
+        "toGroup": 2
+      },
+      "attribution": {
+        "method": "direct_source_event",
+        "sourceEventType": "io.github.freeapikeys.hfs.nexavenu.revenue.outcome.captured.v1",
+        "sourceEventCode": "NEXAVENU_REVENUE_OUTCOME_CAPTURED",
+        "rule": "Credit the approved nurture and handoff loop whose correlation id matches the captured outcome event.",
+        "limitations": "This MVP metric is extracted from structured fixture text; production should store readiness scores as typed source attributes."
+      },
+      "examples": [
+        {
+          "fixture": "integration/events/fixtures/events/36-nexavenu-revenue-outcome-captured.json",
+          "expectedValue": 28,
+          "displayedValue": "+28 points"
+        }
+      ]
+    }
+  ]
+}
