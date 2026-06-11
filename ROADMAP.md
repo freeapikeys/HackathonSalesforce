@@ -113,7 +113,7 @@ airport, banking, supermarket, cruise, and other profiles.
 
 ### Operations Execution Agent
 
-- [ ] Create patient-service, room-cleaning, porter, pharmacy, billing,
+- [x] Create patient-service, room-cleaning, porter, pharmacy, billing,
       front-desk, vendor-follow-up, and manager-review tasks.
 - [x] Assign tasks to role aliases.
 - [x] Prioritize tasks by urgency, risk, approval state, and service window.

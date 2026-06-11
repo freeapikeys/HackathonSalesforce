@@ -1771,9 +1771,27 @@
                 "requiresHumanApproval": true
               },
               {
+                "actionId": "action-porter-support",
+                "actionType": "REQUEST_PORTER_SUPPORT_TASK",
+                "statement": "Dispatch porter support so cleaned discharge rooms can actually return to capacity.",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
                 "actionId": "action-staff-support",
                 "actionType": "CREATE_PATIENT_SERVICE_TASK",
                 "statement": "Create an approved front-desk support task to reduce the outpatient queue without making clinical triage decisions.",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-front-desk-queue",
+                "actionType": "OPEN_FRONT_DESK_QUEUE_TASK",
+                "statement": "Open a front-desk queue support task for reception load balancing and patient-safe updates.",
                 "evidenceIds": [
                   "a06000000000022AAA"
                 ],
@@ -1801,6 +1819,15 @@
                 "actionId": "action-billing-review",
                 "actionType": "OPEN_BILLING_REVIEW",
                 "statement": "Open duplicate invoice and insurer follow-up review before refund or compensation decisions.",
+                "evidenceIds": [
+                  "a06000000000025AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-manager-review",
+                "actionType": "CREATE_MANAGER_REVIEW_TASK",
+                "statement": "Create the operations manager review task that keeps the recovery plan approved, auditable, and time-boxed.",
                 "evidenceIds": [
                   "a06000000000025AAA"
                 ],

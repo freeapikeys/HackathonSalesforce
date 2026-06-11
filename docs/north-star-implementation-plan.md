@@ -194,7 +194,7 @@ Required beats:
 4. Receive partner/capacity response.
 5. Show recommendation update.
 6. Approve.
-7. Log approved Salesforce task action records with owner role aliases,
+7. Log eight approved Salesforce task action records with owner role aliases,
    escalation role aliases, priority ranks, approval requirement, service
    windows, and missed-task escalation windows.
 8. Execute approved Slack and WhatsApp-style MuleSoft channel actions.

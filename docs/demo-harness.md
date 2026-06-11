@@ -26,7 +26,7 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 6. create a pending human approval through Agentforce;
 7. prove a clinical treatment-priority request is refused before storage;
 8. prove Salesforce refuses action logging before approval;
-9. record the human approval and log five pending operational task actions plus
+9. record the human approval and log eight pending operational task actions plus
    pending Slack and WhatsApp-style channel actions;
 10. prove MuleSoft refuses an unregistered approval;
 11. execute approved Slack and WhatsApp-style mock write-backs and preserve
@@ -49,16 +49,17 @@ North Star hospital assertions:
   staffing evidence;
 - clinical decision requests are refused;
 - manager approval is required before protected write-back;
-- service, bed-cleaning, pharmacy, lab, and billing task actions are mapped to
-  approved Salesforce action records;
+- service, bed-cleaning, porter, pharmacy, front-desk, lab, billing, and
+  manager-review task actions are mapped to approved Salesforce action records;
 - task action results preserve owner role alias, escalation role alias,
   priority rank, urgency, risk class, approval requirement, service window, and
   missed-task escalation window;
 - Slack and WhatsApp-style internal alerts are recorded after approved
   execution;
 - outcome metrics include wait time reduced, complaint contained, rooms
-  released, stockout avoided, billing issue routed, vendor SLA escalated, and
-  channel delivery.
+  released, porter support dispatched, front-desk support opened, stockout
+  avoided, billing issue routed, manager review opened, vendor SLA escalated,
+  and channel delivery.
 
 ## Commands
 
@@ -98,7 +99,7 @@ The seed report includes the Salesforce IDs for
 `recommendation-north-star-hospital-001`, and
 `approval-north-star-hospital-001`. The connected report also includes the
 hospital Slack and WhatsApp-style action, outcome, and evaluation IDs, and the
-final action count includes five Salesforce task action records plus two
+final action count includes eight Salesforce task action records plus two
 channel action records. The report also includes the model deployment, profile,
 policy, and invocation versions used by the run.
 
@@ -122,8 +123,8 @@ The connected report must show:
 - `externalActionExecuted = false` for Agentforce;
 - `INVALID_STATE` before human approval in Salesforce;
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
-- five approved task action records, two approved channel actions, eight
-  correlated outcomes, and eight evaluations;
+- eight approved task action records, two approved channel actions, eleven
+  correlated outcomes, and eleven evaluations;
 - task routing includes the required owner aliases, escalation aliases,
   deterministic priority ranks, approval requirement, service windows, and
   missed-task escalation windows before service-window loss;

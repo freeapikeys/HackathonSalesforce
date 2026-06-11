@@ -34,11 +34,11 @@ REQUIRED_STEPS = [
     "verify-connected",
 ]
 FINAL_COUNT_MINIMUMS = {
-    "HFS_Action__c": 7,
+    "HFS_Action__c": 10,
     "HFS_Evidence__c": 7,
-    "HFS_Evaluation__c": 8,
-    "HFS_Event__c": 9,
-    "HFS_Outcome__c": 8,
+    "HFS_Evaluation__c": 11,
+    "HFS_Event__c": 12,
+    "HFS_Outcome__c": 11,
     "HFS_Recommendation__c": 1,
     "HFS_Work_Item__c": 1,
 }
@@ -70,8 +70,11 @@ REQUIRED_FINAL_ACTION_TYPES = {
     "CREATE_PATIENT_SERVICE_TASK",
     "REQUEST_BED_CLEANING",
     "CREATE_PHARMACY_RESTOCK_REQUEST",
+    "REQUEST_PORTER_SUPPORT_TASK",
+    "OPEN_FRONT_DESK_QUEUE_TASK",
     "ESCALATE_LAB_VENDOR_CASE",
     "OPEN_BILLING_REVIEW",
+    "CREATE_MANAGER_REVIEW_TASK",
     "SEND_SLACK_ALERT",
     "SEND_WHATSAPP_ALERT",
 }
@@ -88,6 +91,14 @@ REQUIRED_TASK_ROUTING = {
         "ownerRoleAlias": "role:pharmacy-lead",
         "escalationRoleAlias": "role:duty-manager",
     },
+    "REQUEST_PORTER_SUPPORT_TASK": {
+        "ownerRoleAlias": "role:porter-lead",
+        "escalationRoleAlias": "role:bed-manager",
+    },
+    "OPEN_FRONT_DESK_QUEUE_TASK": {
+        "ownerRoleAlias": "role:front-desk-lead",
+        "escalationRoleAlias": "role:operations-manager",
+    },
     "ESCALATE_LAB_VENDOR_CASE": {
         "ownerRoleAlias": "role:lab-coordination-lead",
         "escalationRoleAlias": "role:partner-manager",
@@ -96,13 +107,20 @@ REQUIRED_TASK_ROUTING = {
         "ownerRoleAlias": "role:billing-supervisor",
         "escalationRoleAlias": "role:finance-manager",
     },
+    "CREATE_MANAGER_REVIEW_TASK": {
+        "ownerRoleAlias": "role:operations-manager",
+        "escalationRoleAlias": "role:duty-executive",
+    },
 }
 REQUIRED_FINAL_OUTCOME_TYPES = {
     "BILLING_REVIEW_OPENED",
     "COMPLAINT_CONTAINED",
     "DISCHARGE_ROOMS_RELEASED",
+    "FRONT_DESK_QUEUE_SUPPORT_OPENED",
     "LAB_PARTNER_SLA_ESCALATED",
+    "MANAGER_REVIEW_OPENED",
     "PHARMACY_STOCKOUT_AVOIDED",
+    "PORTER_SUPPORT_DISPATCHED",
     "SLACK_ALERT_DELIVERY",
     "WAIT_TIME_REDUCED",
     "WHATSAPP_ALERT_DELIVERY",
@@ -110,8 +128,11 @@ REQUIRED_FINAL_OUTCOME_TYPES = {
 REQUIRED_FINAL_OUTCOME_METRICS = {
     "billing_issue_routed",
     "complaint_contained",
+    "front_desk_support_opened",
+    "manager_review_opened",
     "outpatient_wait_time_reduced_minutes",
     "partner_sla_escalated",
+    "porter_support_dispatched",
     "rooms_released",
     "slack_alert_delivery_success",
     "stockout_avoided",
@@ -400,7 +421,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         "The final governed outcome is incomplete",
     )
     require(
-        integer(outcome.get("taskActionCount", 0), "task action count") >= 5
+        integer(outcome.get("taskActionCount", 0), "task action count") >= 8
         and integer(
             outcome.get("executedChannelActionCount", 0),
             "executed channel action count",
@@ -413,18 +434,18 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             outcome.get("executedTaskActionCount", 0),
             "executed task action count",
         )
-        >= 5
+        >= 8
         and integer(
             outcome.get("businessOutcomeCount", 0),
             "business outcome count",
         )
-        >= 6
-        and integer(outcome.get("outcomeCount", 0), "outcome count") >= 8
+        >= 9
+        and integer(outcome.get("outcomeCount", 0), "outcome count") >= 11
         and integer(
             outcome.get("evaluationCount", 0),
             "evaluation count",
         )
-        >= 8,
+        >= 11,
         "The final governed context is missing business outcomes or evaluations",
     )
     require(
@@ -490,17 +511,17 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             apex_final_context.get("actionCount", 0),
             "Final Apex action count",
         )
-        >= 7
+        >= 10
         and integer(
             apex_final_context.get("outcomeCount", 0),
             "Final Apex outcome count",
         )
-        >= 8
+        >= 11
         and integer(
             apex_final_context.get("evaluationCount", 0),
             "Final Apex evaluation count",
         )
-        >= 8,
+        >= 11,
         "Final Apex context is missing recommendation, approval, action, "
         "outcome, or evaluation records",
     )

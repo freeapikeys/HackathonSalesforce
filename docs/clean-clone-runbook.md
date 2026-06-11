@@ -7,9 +7,9 @@ hospital MVP without manual Salesforce record edits:
 
 `hospital operations surge -> global primitives and evidence -> model-routed
 Agentforce recommendation -> clinical-refusal guardrail -> manager approval ->
-approved Salesforce task action records plus Slack and WhatsApp-style MuleSoft
-channel actions -> hospital outcomes and evaluations -> refreshed North Star
-command center`
+eight approved Salesforce task action records plus Slack and WhatsApp-style
+MuleSoft channel actions -> hospital outcomes and evaluations -> refreshed
+North Star command center`
 
 The verifier creates a temporary clone, installs locked dependencies, runs all
 repository checks, deploys Salesforce metadata with the four Apex test suites,
@@ -113,17 +113,17 @@ Evidence validation fails unless all of these are true:
 - MuleSoft accepts approved channel write-backs with `202 QUEUED`;
 - approved Slack delivery is recorded as `SENT` or honest `MOCK_SENT`;
 - approved WhatsApp-style delivery is recorded as `SENT` or honest `MOCK_SENT`;
-- five task action records and two channel actions are `EXECUTED` in the final
+- eight task action records and two channel actions are `EXECUTED` in the final
   Salesforce context;
-- the five task actions include required owner role aliases, escalation role
+- the eight task actions include required owner role aliases, escalation role
   aliases, deterministic priority ranks, approval requirement, service windows,
   and missed-task escalation windows that occur before service-window loss;
 - direct Apex final context includes the customer alias, department/location,
   resources, partner, process, hospital evidence types, approved actions,
   delivery outcomes, business outcomes, and metric keys;
 - outcomes are `SUCCESS`, work item is `COMPLETED`, and evaluations exist;
-- final Salesforce counts include at least nine events, seven evidence records,
-  seven actions, eight outcomes, eight evaluations, one recommendation,
+- final Salesforce counts include at least twelve events, seven evidence records,
+  ten actions, eleven outcomes, eleven evaluations, one recommendation,
   and one work item.
 
 ## Recovery

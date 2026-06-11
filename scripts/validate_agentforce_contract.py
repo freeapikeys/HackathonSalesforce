@@ -379,9 +379,12 @@ def main() -> int:
         {
             "REQUEST_BED_CLEANING",
             "CREATE_PATIENT_SERVICE_TASK",
+            "REQUEST_PORTER_SUPPORT_TASK",
+            "OPEN_FRONT_DESK_QUEUE_TASK",
             "CREATE_PHARMACY_RESTOCK_REQUEST",
             "ESCALATE_LAB_VENDOR_CASE",
             "OPEN_BILLING_REVIEW",
+            "CREATE_MANAGER_REVIEW_TASK",
         }
         <= hospital_actions,
         "Hospital recovery scenario is missing cross-functional actions.",

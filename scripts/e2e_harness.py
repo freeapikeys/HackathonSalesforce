@@ -83,11 +83,35 @@ HOSPITAL_TASK_ACTIONS = [
         "targetEntityKey": "RESOURCE-PHARMACY-IV-KITS",
         "ownerRoleAlias": "role:pharmacy-lead",
         "escalationRoleAlias": "role:duty-manager",
-        "priorityRank": 3,
+        "priorityRank": 5,
         "urgency": "MEDIUM_HIGH",
         "riskClass": "STOCK",
         "serviceWindowMinutes": 45,
         "missedEscalationMinutes": 25,
+    },
+    {
+        "key": "action-north-star-hospital-task-porter-001",
+        "actionType": "REQUEST_PORTER_SUPPORT_TASK",
+        "targetEntityKey": "RESOURCE-WARD-A3-DISCHARGE-ROOMS",
+        "ownerRoleAlias": "role:porter-lead",
+        "escalationRoleAlias": "role:bed-manager",
+        "priorityRank": 3,
+        "urgency": "HIGH",
+        "riskClass": "CAPACITY",
+        "serviceWindowMinutes": 25,
+        "missedEscalationMinutes": 12,
+    },
+    {
+        "key": "action-north-star-hospital-task-front-desk-001",
+        "actionType": "OPEN_FRONT_DESK_QUEUE_TASK",
+        "targetEntityKey": "DEPT-OUTPATIENT-RECEPTION",
+        "ownerRoleAlias": "role:front-desk-lead",
+        "escalationRoleAlias": "role:operations-manager",
+        "priorityRank": 4,
+        "urgency": "HIGH",
+        "riskClass": "QUEUE",
+        "serviceWindowMinutes": 20,
+        "missedEscalationMinutes": 8,
     },
     {
         "key": "action-north-star-hospital-task-lab-001",
@@ -95,7 +119,7 @@ HOSPITAL_TASK_ACTIONS = [
         "targetEntityKey": "PARTNER-ISLAND-DIAGNOSTICS",
         "ownerRoleAlias": "role:lab-coordination-lead",
         "escalationRoleAlias": "role:partner-manager",
-        "priorityRank": 4,
+        "priorityRank": 6,
         "urgency": "MEDIUM_HIGH",
         "riskClass": "PARTNER_SLA",
         "serviceWindowMinutes": 20,
@@ -107,11 +131,23 @@ HOSPITAL_TASK_ACTIONS = [
         "targetEntityKey": "PROCESS-BILLING-INSURANCE-REVIEW",
         "ownerRoleAlias": "role:billing-supervisor",
         "escalationRoleAlias": "role:finance-manager",
-        "priorityRank": 5,
+        "priorityRank": 7,
         "urgency": "MEDIUM",
         "riskClass": "FINANCIAL_EXPOSURE",
         "serviceWindowMinutes": 60,
         "missedEscalationMinutes": 30,
+    },
+    {
+        "key": "action-north-star-hospital-task-manager-review-001",
+        "actionType": "CREATE_MANAGER_REVIEW_TASK",
+        "targetEntityKey": "PROCESS-BILLING-INSURANCE-REVIEW",
+        "ownerRoleAlias": "role:operations-manager",
+        "escalationRoleAlias": "role:duty-executive",
+        "priorityRank": 8,
+        "urgency": "MEDIUM",
+        "riskClass": "GOVERNANCE",
+        "serviceWindowMinutes": 90,
+        "missedEscalationMinutes": 45,
     },
 ]
 HOSPITAL_TASK_OUTCOME_TEMPLATES = {
@@ -148,6 +184,27 @@ HOSPITAL_TASK_OUTCOME_TEMPLATES = {
             "risk was avoided."
         ),
     },
+    "REQUEST_PORTER_SUPPORT_TASK": {
+        "outcomeType": "PORTER_SUPPORT_DISPATCHED",
+        "metricKey": "porter_support_dispatched",
+        "metricValue": 1,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:porter-support-task",
+        "summary": (
+            "Porter support task acknowledged for discharge-room release "
+            "coordination."
+        ),
+    },
+    "OPEN_FRONT_DESK_QUEUE_TASK": {
+        "outcomeType": "FRONT_DESK_QUEUE_SUPPORT_OPENED",
+        "metricKey": "front_desk_support_opened",
+        "metricValue": 1,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:front-desk-queue-task",
+        "summary": (
+            "Front-desk queue support task opened for the outpatient surge."
+        ),
+    },
     "ESCALATE_LAB_VENDOR_CASE": {
         "outcomeType": "LAB_PARTNER_SLA_ESCALATED",
         "metricKey": "partner_sla_escalated",
@@ -168,6 +225,17 @@ HOSPITAL_TASK_OUTCOME_TEMPLATES = {
         "summary": (
             "Billing review task acknowledged and duplicate invoice/insurer "
             "follow-up routed."
+        ),
+    },
+    "CREATE_MANAGER_REVIEW_TASK": {
+        "outcomeType": "MANAGER_REVIEW_OPENED",
+        "metricKey": "manager_review_opened",
+        "metricValue": 1,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:manager-review-task",
+        "summary": (
+            "Manager review task opened to keep the approved recovery plan "
+            "governed."
         ),
     },
 }
@@ -1357,8 +1425,11 @@ System.assertEquals(
 System.assertEquals(true, actionTypes.contains('CREATE_PATIENT_SERVICE_TASK'));
 System.assertEquals(true, actionTypes.contains('REQUEST_BED_CLEANING'));
 System.assertEquals(true, actionTypes.contains('CREATE_PHARMACY_RESTOCK_REQUEST'));
+System.assertEquals(true, actionTypes.contains('REQUEST_PORTER_SUPPORT_TASK'));
+System.assertEquals(true, actionTypes.contains('OPEN_FRONT_DESK_QUEUE_TASK'));
 System.assertEquals(true, actionTypes.contains('ESCALATE_LAB_VENDOR_CASE'));
 System.assertEquals(true, actionTypes.contains('OPEN_BILLING_REVIEW'));
+System.assertEquals(true, actionTypes.contains('CREATE_MANAGER_REVIEW_TASK'));
 System.assertEquals(true, commandCenter.permissions.canApprove);
 System.assertEquals(true, commandCenter.permissions.canExecute);
 Map<String, Object> result = new Map<String, Object>{{
@@ -1504,8 +1575,11 @@ System.assert(context.actions.size() >= 7);
 System.assertEquals(true, actionTypes.contains('CREATE_PATIENT_SERVICE_TASK'));
 System.assertEquals(true, actionTypes.contains('REQUEST_BED_CLEANING'));
 System.assertEquals(true, actionTypes.contains('CREATE_PHARMACY_RESTOCK_REQUEST'));
+System.assertEquals(true, actionTypes.contains('REQUEST_PORTER_SUPPORT_TASK'));
+System.assertEquals(true, actionTypes.contains('OPEN_FRONT_DESK_QUEUE_TASK'));
 System.assertEquals(true, actionTypes.contains('ESCALATE_LAB_VENDOR_CASE'));
 System.assertEquals(true, actionTypes.contains('OPEN_BILLING_REVIEW'));
+System.assertEquals(true, actionTypes.contains('CREATE_MANAGER_REVIEW_TASK'));
 System.assertEquals(true, actionTypes.contains('{HOSPITAL_SLACK_ACTION_TYPE}'));
 System.assertEquals(
   true,
