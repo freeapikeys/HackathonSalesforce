@@ -268,8 +268,10 @@ records, diagnoses, or treatment details.
 - Do not claim diagnosis, treatment, dosage, or clinical triage capability.
 - Do not claim real hospital, patient, insurer, WhatsApp, Slack, or vendor
   production integrations unless configured and demonstrated.
-- Do not claim live WhatsApp customer intake or email delivery until the inbound
-  webhook or email adapter exists and has been tested.
+- Do not claim live WhatsApp customer intake until the Mule webhook app is
+  deployed, Twilio points to it, and a real sandbox message creates Salesforce
+  records. Do not claim live email delivery until an email adapter exists and
+  has been tested.
 - Do not claim machine-learning forecasting if the prototype uses deterministic
   rules. Say "rules-based baseline with model-ready architecture."
 - Do not let Agentforce execute protected external actions directly.

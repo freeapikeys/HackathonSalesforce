@@ -148,14 +148,14 @@ execute actions.
 Outbound action channels execute approved `Action` records. They require a
 business manager approval unless the demo clearly marks them as local mocks.
 
-| Channel                     | Best use                                                 | Current demo state                                                         |
-| --------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
-| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | Twilio Sandbox is the hackathon path; local mapper and harness proof exist |
-| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                    |
-| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                                 |
-| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                    |
-| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live outbound delivery works through Twilio Sandbox                        |
-| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured              |
+| Channel                     | Best use                                                 | Current demo state                                                                   |
+| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | CloudHub Mule endpoint is deployed and tested; Twilio Sandbox must point to that URL |
+| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                              |
+| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                                           |
+| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                              |
+| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live outbound delivery works through Twilio Sandbox                                  |
+| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured                        |
 
 Recommended hackathon stance:
 
@@ -238,15 +238,27 @@ North Star should not only send a message. It should connect:
 - Communication: Slack internal alert and approved WhatsApp response;
 - Outcome Learning: wait reduced, stockout avoided, billing review opened.
 
-The current MuleSoft runtime includes a deterministic Twilio WhatsApp intake
-mapper for this pattern. It masks the phone number, stores a synthetic customer
-alias, hashes the raw message, classifies complaint types, adds follow-up
-questions, adds root-cause hypotheses, and sends the result through
-`INGEST_EVENT`.
+The current repo includes two intake paths for this pattern:
 
-The live public webhook is still a final rehearsal configuration task. Until
-that endpoint is hosted, use the runtime mapper and harness proof as the
-reliable demo fallback.
+- local harness/runtime proof through `MockIntegrationApi.ingest_twilio_whatsapp`;
+- deployable Mule app `mulesoft/north-star-twilio-webhook` that receives
+  Twilio Sandbox form posts and calls Salesforce Apex REST endpoint
+  `/services/apexrest/northstar/v1/twilio/whatsapp`.
+
+The Salesforce endpoint creates a synthetic customer alias, safe evidence,
+work item, recommendation, and pending approval. It does not store raw phone
+numbers or raw message text.
+
+The live public webhook is proven when the Mule app is deployed to CloudHub and
+Twilio Sandbox points "When a message comes in" to that public URL. The current
+CloudHub endpoint has been tested with a synthetic Twilio-style form post and
+created Salesforce event, evidence, recommendation, and approval records.
+
+Current deployed demo webhook:
+
+```text
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
+```
 
 ## Key Demo IDs
 
@@ -375,7 +387,8 @@ What this proves:
 
 What it does not prove yet:
 
-- a public Twilio webhook receiving live customer messages from the internet;
+- a live WhatsApp customer message reaching Salesforce through Twilio, unless
+  Twilio Sandbox has been pointed to the deployed CloudHub webhook URL;
 - an in-command-center form where a judge types a fresh complaint;
 - live Slack button clicks unless the Slack App Interactivity Request URL is
   configured to reach the runtime endpoint.
@@ -417,8 +430,8 @@ customer messages unless that Request URL has also been hosted and tested.
 
 Highest-value tasks still open:
 
-1. Host the public Twilio inbound webhook end to end for final rehearsal; the
-   deterministic runtime mapper and harness proof already exist.
+1. Point Twilio Sandbox "When a message comes in" to the CloudHub webhook URL:
+   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 2. Configure Slack App Interactivity with a public Request URL if the live demo
    should use real Slack button clicks; otherwise use the signed harness proof
    and Salesforce command-center approval fallback.

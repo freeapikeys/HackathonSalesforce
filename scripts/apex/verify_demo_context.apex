@@ -30,7 +30,7 @@ System.assertEquals(1, context.recommendations.size());
 System.assertEquals(1, context.approvals.size());
 System.assertEquals('PENDING', context.approvals[0].status);
 System.assertEquals(
-  'NORTH_STAR_HOSPITAL_RECOVERY_PLAN',
+  'NORTH_STAR_HOSPITAL_ACTION_PLAN',
   context.recommendations[0].recordType
 );
 

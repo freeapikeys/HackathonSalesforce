@@ -106,6 +106,21 @@ phone number, hashes the raw message body, adds follow-up questions, adds
 root-cause hypotheses, and preserves the event through the same intake
 classifier used by the Process API.
 
+The repo also includes `mulesoft/north-star-twilio-webhook`, a deployable Mule
+app for live Twilio Sandbox inbound messages. It receives Twilio's
+form-encoded webhook at `https://<cloudhub-host>/twilio/whatsapp/inbound`, maps
+the message into a safe JSON payload, and calls Salesforce Apex REST endpoint
+`/services/apexrest/northstar/v1/twilio/whatsapp`. Salesforce then creates the
+event, synthetic customer alias, evidence, work item, recommendation, and
+pending approval. Deploying the Mule app to CloudHub and pointing Twilio to the
+public URL is the final live-intake rehearsal step.
+
+Current deployed demo webhook:
+
+```text
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
+```
+
 Verify with:
 
 ```bash

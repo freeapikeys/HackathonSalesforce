@@ -985,7 +985,8 @@
         "HFS_RelationshipController",
         "HFS_AgentExplainAction",
         "HFS_AgentRecommendationAction",
-        "HFS_AgentApprovalRequestAction"
+        "HFS_AgentApprovalRequestAction",
+        "HFS_TwilioIntakeResource"
       ],
       "editableObjects": ["*"],
       "deleteObjects": ["*"],

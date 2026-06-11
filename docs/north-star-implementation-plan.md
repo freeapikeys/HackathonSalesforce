@@ -203,29 +203,43 @@ Preferred intake paths:
 Inbound WhatsApp flow:
 
 1. Customer sends a WhatsApp message to the sandbox number.
-2. Twilio posts the webhook payload to a MuleSoft/source adapter endpoint.
-3. The adapter maps the message to `INGEST_EVENT` with source channel,
-   synthetic customer alias, timestamp, department/resource hints, and
-   correlation ID.
-4. Salesforce stores the signal and evidence. No diagnosis, treatment, dosage,
-   triage, clinical priority, personal medical record, or raw phone number is
-   stored in demo fixtures.
+2. Twilio posts the webhook payload to the public CloudHub webhook URL:
+   `https://<cloudhub-host>/twilio/whatsapp/inbound`.
+3. Mule maps the message to the Salesforce Apex REST intake endpoint at
+   `/services/apexrest/northstar/v1/twilio/whatsapp`.
+4. Salesforce stores the signal, synthetic customer alias, evidence, work item,
+   recommendation, and pending approval. No diagnosis, treatment, dosage,
+   triage, clinical priority, personal medical record, raw phone number, or raw
+   message text is stored in demo records.
 5. Agentforce drafts an action plan from the new evidence.
 6. A manager approves protected actions.
 7. MuleSoft sends approved Slack, WhatsApp, vendor, billing, stock, task, or
    protected mock vendor-email actions.
 8. Outcomes return to Salesforce and update the command center.
 
+Implemented bridge:
+
+- Salesforce endpoint:
+  `/services/apexrest/northstar/v1/twilio/whatsapp`.
+- Mule app: `mulesoft/north-star-twilio-webhook`.
+- Current deployed CloudHub webhook:
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+- Public hosting requires packaging/deploying the Mule app to CloudHub and
+  setting the Twilio Sandbox inbound Request URL to the public webhook URL.
+
 Acceptance:
 
 - inbound complaint text can become a `Signal` and `Evidence` record;
 - source channel and correlation ID are preserved;
-- personal contact data is masked or represented by a synthetic alias;
+- personal contact data and raw text are masked or represented by hashes,
+  synthetic aliases, and safe summaries;
 - Agentforce uses the new evidence in its recommendation;
 - customer-facing replies are not sent without approval;
 - clinical requests are refused or routed to a clinician;
 - the command center shows the intake source, evidence, approval, action, and
   outcome.
+- the CloudHub Salesforce credential is refreshed before rehearsal or replaced
+  with a Connected App/JWT credential path.
 
 ## Workstream 5: North Star Command Center
 

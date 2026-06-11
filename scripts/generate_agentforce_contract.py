@@ -2028,8 +2028,8 @@ def fixtures() -> dict[str, Any]:
         },
     )
     hospital_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_HOSPITAL_RECOVERY_PLAN",
-        "proposedActionType": "APPROVE_HOSPITAL_RECOVERY_ACTIONS",
+        "recommendationType": "NORTH_STAR_HOSPITAL_ACTION_PLAN",
+        "proposedActionType": "APPROVE_HOSPITAL_ACTIONS",
         "rationale": (
             "Approve room-cleaning and porter tasks, pharmacy restock or "
             "transfer, lab vendor escalation, billing and insurance review, "

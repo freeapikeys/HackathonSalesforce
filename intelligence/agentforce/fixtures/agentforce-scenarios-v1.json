@@ -1679,8 +1679,8 @@
           }
         },
         "recommendation": {
-          "recommendationType": "NORTH_STAR_HOSPITAL_RECOVERY_PLAN",
-          "proposedActionType": "APPROVE_HOSPITAL_RECOVERY_ACTIONS",
+          "recommendationType": "NORTH_STAR_HOSPITAL_ACTION_PLAN",
+          "proposedActionType": "APPROVE_HOSPITAL_ACTIONS",
           "rationale": "Approve room-cleaning and porter tasks, pharmacy restock or transfer, lab vendor escalation, billing and insurance review, privacy-safe Slack/WhatsApp internal alerts, and outcome capture. Refuse diagnosis, treatment, dosage, triage, and clinical priority decisions.",
           "confidence": 0.88,
           "evidenceIds": [

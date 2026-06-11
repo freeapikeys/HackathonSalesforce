@@ -351,6 +351,11 @@ file before editing.
       configured.
 - [x] Implement or simulate a Twilio inbound WhatsApp webhook that maps customer
       complaint text to `INGEST_EVENT`.
+- [x] Add Salesforce Apex REST intake endpoint
+      `/services/apexrest/northstar/v1/twilio/whatsapp` so live MuleSoft
+      intake can create a command-center case.
+- [x] Add deployable Mule app `mulesoft/north-star-twilio-webhook` for Twilio
+      Sandbox inbound WhatsApp to Salesforce intake.
 - [x] Keep the existing Salesforce command center as the visibility, approval,
       and fallback surface instead of adding a new complaint form.
 - [x] Convert inbound complaint text into a synthetic customer alias, source
@@ -371,6 +376,15 @@ file before editing.
 - [x] Add signed Slack approval buttons in the mock runtime and harness.
 - [ ] Configure a public Slack App interactivity Request URL for live button
       clicks during final rehearsal.
+- [x] Package/deploy the Twilio webhook Mule app to CloudHub and verify the
+      public endpoint creates Salesforce event, evidence, recommendation, and
+      approval records.
+- [ ] Point Twilio Sandbox "When a message comes in" to the public CloudHub
+      webhook URL in Twilio Console:
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+- [ ] Replace the temporary Salesforce session token in CloudHub with a
+      Connected App/JWT path or refresh the secure property immediately before
+      final rehearsal.
 - [ ] Add WhatsApp approval templates only if approved templates are available;
       otherwise keep WhatsApp as intake/outbound alert, not approval surface.
 - [x] Add a demo script beat: WhatsApp complaint enters MuleSoft intake,

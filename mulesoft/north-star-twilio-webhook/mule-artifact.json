@@ -1,0 +1,17 @@
+{
+  "name": "north-star-twilio-webhook",
+  "minMuleVersion": "4.6.0",
+  "requiredProduct": "MULE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "configs": ["north-star-twilio-webhook.xml"]
+}
