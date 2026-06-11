@@ -410,6 +410,14 @@ repo has code for the demo.
 - Salesforce/Agentforce gate: one connected org alias, normally `hfs-dev`, must
   deploy the metadata, assign the demo permission sets, seed the hospital case,
   and pass `npm run demo:run -- --target-org hfs-dev`.
+- Current connected evidence: on 2026-06-11, `hfs-dev` deployed `force-app`
+  with `HFS_ServiceContractTest`, `HFS_RelationshipServiceImplTest`,
+  `HFS_AgentActionServiceTest`, and `HFS_RelationshipControllerTest` passing;
+  `npm run demo:reset`, `npm run demo:seed`, and the connected demo run passed;
+  the run wrote `artifacts/demo-harness-result.json`. The connected run
+  completed the work item with 10 actions, 11 outcomes, 11 evaluations,
+  `CLINICAL_DECISION_REFUSED`, and honest `MOCK_SENT` Slack and WhatsApp-style
+  delivery because channel credentials were not configured.
 - Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` only if the team wants
   a real Slack webhook; WhatsApp-style delivery uses Twilio or Meta credentials
   only if they are configured outside Git. Missing credentials are acceptable
