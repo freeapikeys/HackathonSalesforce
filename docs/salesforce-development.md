@@ -99,3 +99,15 @@ The expected demo should create private hospital operations context, manager
 approval, MuleSoft mock write-back, Slack and WhatsApp-style alert records,
 clinical-decision refusal, outcome, and evaluation without manual Salesforce
 record edits.
+
+For the final rehearsal, the human setup work is:
+
+- authenticate the org alias with `sf org login web --alias hfs-dev --set-default`;
+- confirm it with `sf org display --target-org hfs-dev`;
+- deploy metadata and assign `HFS_Integration_User`; the harness assigns
+  `HFS_Approver` and `HFS_Integration_User` to the connected user before seed
+  and run;
+- keep Slack and WhatsApp credentials outside Git. `SLACK_WEBHOOK_URL` enables a
+  real Slack webhook. Twilio or Meta credentials enable real WhatsApp-style
+  delivery. Missing credentials are acceptable only when the presenter calls out
+  the honest `MOCK_SENT` fallback.

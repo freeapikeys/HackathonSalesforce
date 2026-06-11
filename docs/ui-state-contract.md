@@ -49,6 +49,9 @@ North Star hospital ready state should additionally expose:
 - voice/transcript request examples that show interpreted intent, structured
   operations fields, Agentforce recommendation action, protected-action
   blocking, and clinical-decision refusal;
+- optional browser speech capture may emit a transcript event when supported,
+  but it must not execute Slack, WhatsApp, vendor, billing, pharmacy, room/bed,
+  staff-task, or patient-message actions;
 - outcome metrics for wait time, bed release, stockout avoidance, complaint
   containment, billing resolution, vendor SLA, and task completion.
 

@@ -448,6 +448,19 @@ dd {
   gap: 0.75rem;
 }
 
+.voice-capture {
+  align-items: center;
+  display: flex;
+  gap: 0.65rem;
+  margin: 0 0 0.85rem;
+}
+
+.voice-capture span {
+  color: var(--hfs-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .voice-card {
   background: #f8fafc;
   border: 1px solid var(--hfs-line);
@@ -462,6 +475,13 @@ dd {
   font-weight: 700;
   margin: 0;
   padding-left: 0.65rem;
+}
+
+.voice-transcript_captured {
+  background: #edf8f1;
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
 }
 
 .voice-meta {
@@ -497,6 +517,15 @@ dd {
   color: #8b3024;
   font-weight: 700;
   margin: 0;
+  padding: 0.65rem;
+}
+
+.voice-capture-error {
+  background: #fff0ed;
+  border-left: 3px solid #a33a2b;
+  color: #8b3024;
+  font-weight: 700;
+  margin: 0 0 0.85rem;
   padding: 0.65rem;
 }
 
@@ -559,6 +588,7 @@ dd {
   .hero,
   .case-heading,
   .panel-heading,
+  .voice-capture,
   .approval-controls {
     align-items: stretch;
     flex-direction: column;

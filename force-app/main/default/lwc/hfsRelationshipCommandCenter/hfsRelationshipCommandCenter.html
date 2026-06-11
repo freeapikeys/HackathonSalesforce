@@ -563,6 +563,34 @@
                   </div>
                 </div>
                 <p class="voice-summary">{voiceMode.summary}</p>
+                <template lwc:if={showVoiceCaptureControls}>
+                  <div
+                    class="voice-capture"
+                    data-testid="voice-capture-controls"
+                  >
+                    <lightning-button
+                      label={voiceCaptureButtonLabel}
+                      onclick={handleToggleVoiceCapture}
+                    ></lightning-button>
+                    <span>{voiceCaptureStatus}</span>
+                  </div>
+                </template>
+                <template lwc:if={voiceTranscript}>
+                  <p
+                    class="voice-transcript voice-transcript_captured"
+                    data-testid="voice-captured-transcript"
+                  >
+                    {voiceTranscript}
+                  </p>
+                </template>
+                <template lwc:if={voiceCaptureError}>
+                  <p
+                    class="voice-capture-error"
+                    data-testid="voice-capture-error"
+                  >
+                    {voiceCaptureError}
+                  </p>
+                </template>
                 <div class="voice-request-list">
                   <template for:each={voiceMode.requests} for:item="request">
                     <article key={request.id} class="voice-card">

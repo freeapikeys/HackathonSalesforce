@@ -148,7 +148,7 @@ Expected behavior:
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
 - [x] Add a voice transcript input surface or fixture path.
-- [ ] Add optional browser speech recognition only if it does not destabilize
+- [x] Add optional browser speech recognition only if it does not destabilize
       the UI.
 - [x] Map transcript to a structured hospital operations request.
 - [x] Ensure voice mode can ask Agentforce for a recommendation but cannot

@@ -285,6 +285,8 @@ Focused checks:
       acknowledgement.
 - [x] Add UI mock states for ready, restricted, denied, channel failed, channel
       mock sent, voice request, clinical refusal, and action approved.
+- [x] Add optional browser speech capture for supported browsers while keeping
+      manual transcript fixtures as the stable demo fallback.
 - [x] Run LWC tests and direct MuleSoft checks when the WhatsApp contract
       changes.
 
@@ -331,3 +333,33 @@ npm run demo:reset -- --target-org hfs-dev
 npm run demo:seed -- --target-org hfs-dev
 npm run demo:run -- --target-org hfs-dev
 ```
+
+## Manual Setup Before The Final Rehearsal
+
+The repo is allowed to run without real channel credentials. The presenter must
+be explicit about which path is active.
+
+1. Connect one Salesforce org alias:
+
+   ```bash
+   sf org login web --alias hfs-dev --set-default
+   sf org display --target-org hfs-dev
+   ```
+
+2. Deploy and verify the Salesforce metadata from
+   `docs/salesforce-development.md`, then run the demo reset, seed, and run
+   commands above.
+3. For real Slack delivery, configure `SLACK_WEBHOOK_URL` outside Git. Without
+   it, the MuleSoft mock must return honest `MOCK_SENT`.
+4. For real WhatsApp-style delivery, configure Twilio Sandbox or Meta Cloud API
+   credentials outside Git. Without them, the MuleSoft mock must return honest
+   `MOCK_SENT`.
+5. Review the final non-goals as a team: no diagnosis, treatment, dosage,
+   triage, clinical priority, real patient records, or autonomous protected
+   actions.
+6. Freeze or protect `main` after the final merge owner confirms the branch,
+   runs `npm run check`, and verifies the demo still tells one North Star story.
+7. Rehearse the three-minute path from
+   `docs/north-star-demo-narrative.md`: trigger, evidence, Agentforce
+   recommendation, clinical refusal, manager approval, MuleSoft channel results,
+   outcome metrics, judge-sector mapping, and honesty close.

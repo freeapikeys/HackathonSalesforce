@@ -323,6 +323,8 @@ file before editing.
 ### 8. Voice Mode
 
 - [x] Add voice transcript request panel or fixture path.
+- [x] Add optional browser speech capture when the browser supports it; the
+      manual transcript fixture remains the reliable fallback.
 - [x] Convert transcript into structured hospital operations request fields:
       issue, department, location, resource, urgency, requester role, and
       evidence.
@@ -391,6 +393,31 @@ file before editing.
 - [x] Honesty slide states what is mocked, what is production-ready
       architecture, and what clinical decisions are out of scope.
 - [ ] Timing has been rehearsed.
+
+## Final Manual Gates
+
+These items remain intentionally unchecked until Fahan, Hassan, Aarav, and
+Ranveer have actually done them together. Do not check them just because the
+repo has code for the demo.
+
+- Final non-goals review: the whole team must agree to say that North Star is
+  not a generic chatbot, does not make clinical decisions, does not use real
+  patient data, and uses mock hospital/channel integrations unless credentials
+  are configured live.
+- Merge owner gate: one person must pull latest, confirm `origin/main` contains
+  the final demo commit, protect or freeze `main`, resolve any teammate branch
+  conflicts, and run `npm run check` after the final merge.
+- Salesforce/Agentforce gate: one connected org alias, normally `hfs-dev`, must
+  deploy the metadata, assign the demo permission sets, seed the hospital case,
+  and pass `npm run demo:run -- --target-org hfs-dev`.
+- Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` only if the team wants
+  a real Slack webhook; WhatsApp-style delivery uses Twilio or Meta credentials
+  only if they are configured outside Git. Missing credentials are acceptable
+  only when the presenter clearly says the result is `MOCK_SENT`.
+- Final rehearsal gate: the whole team must run the three-minute pitch at least
+  twice, use the timing table in `docs/north-star-demo-narrative.md`, confirm the
+  backup recorded/mock path, and assign who speaks for Salesforce, Agentforce,
+  MuleSoft, LWC, data, and business value.
 
 ## Done Means
 

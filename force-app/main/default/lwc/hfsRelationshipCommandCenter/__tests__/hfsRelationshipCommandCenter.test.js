@@ -173,6 +173,8 @@ const livePayload = {
 describe("c-hfs-relationship-command-center", () => {
   afterEach(() => {
     jest.clearAllMocks();
+    delete window.SpeechRecognition;
+    delete window.webkitSpeechRecognition;
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
     }
@@ -235,6 +237,59 @@ describe("c-hfs-relationship-command-center", () => {
       root.querySelector('[data-testid="voice-clinical-refusal"]')
     ).not.toBeNull();
     expect(root.textContent).toContain("routed to a clinician");
+  });
+
+  it("captures optional browser speech transcripts without protected execution", async () => {
+    const recognitionInstances = [];
+    window.SpeechRecognition = jest.fn().mockImplementation(function () {
+      this.start = jest.fn();
+      this.stop = jest.fn();
+      recognitionInstances.push(this);
+    });
+    const element = createComponent();
+    const handler = jest.fn();
+    element.addEventListener("voicetranscript", handler);
+
+    const captureButton = element.shadowRoot.querySelector(
+      '[data-testid="voice-capture-controls"] lightning-button'
+    );
+    expect(captureButton).not.toBeNull();
+    captureButton.dispatchEvent(new CustomEvent("click"));
+
+    expect(recognitionInstances).toHaveLength(1);
+    expect(recognitionInstances[0].start).toHaveBeenCalledTimes(1);
+
+    recognitionInstances[0].onresult({
+      results: [
+        [
+          {
+            transcript:
+              "Please coordinate discharge rooms and pharmacy stock recovery"
+          }
+        ]
+      ]
+    });
+    await flushPromises();
+
+    expect(
+      element.shadowRoot.querySelector(
+        '[data-testid="voice-captured-transcript"]'
+      ).textContent
+    ).toContain(
+      "Please coordinate discharge rooms and pharmacy stock recovery"
+    );
+    expect(handler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: expect.objectContaining({
+          source: "browserSpeech",
+          transcript:
+            "Please coordinate discharge rooms and pharmacy stock recovery",
+          protectedActionState: "No protected action executed",
+          correlationId: "20000000-0000-4000-8000-000000000001",
+          stateVersion: UI_STATE_VERSION
+        })
+      })
+    );
   });
 
   it.each([

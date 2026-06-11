@@ -143,9 +143,10 @@ Correct behavior:
 - [x] Ensure recommendations feed the approval/action path rather than execute
       actions directly.
 - [x] Keep labels product-category neutral.
-- [ ] Generalize all legacy scenario labels from retail to global/hospital
+- [x] Generalize all active scenario labels from retail to global/hospital
       operations. The new hospital scenarios use global/hospital labels, while
-      older inventory/waste scenario names remain as compatibility coverage.
+      older inventory/waste scenario names remain as compatibility coverage and
+      are excluded from the active hospital fixture-language audit.
 - [x] Add Resource and Capacity hospital scenarios.
 - [x] Add capacity, queue, stock, SLA, staff, and partner calculations where
       appropriate.
