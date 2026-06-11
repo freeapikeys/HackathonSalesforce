@@ -72,12 +72,12 @@ airport, banking, supermarket, cruise, and other profiles.
 
 - [x] Combine patient trust, resource capacity, partner/vendor, financial,
       communication, and outcome findings into one recovery plan.
-- [ ] Resolve conflicts, for example "move patients faster" versus "room
+- [x] Resolve conflicts, for example "move patients faster" versus "room
       cleaning is not complete."
 - [x] Decide which actions require manager approval.
 - [x] Produce one recommendation with facts, inferences, assumptions, missing
       evidence, blocked actions, confidence, and expected outcome.
-- [ ] Update the recommendation after partner, capacity, billing, or stock
+- [x] Update the recommendation after partner, capacity, billing, or stock
       evidence arrives.
 
 ### Evidence And Context Agent
@@ -85,7 +85,7 @@ airport, banking, supermarket, cruise, and other profiles.
 - [x] Normalize hospital signals into global primitives.
 - [x] Link complaints, queues, resources, partners, policies, approvals,
       actions, and outcomes to evidence IDs.
-- [ ] Detect missing, contradictory, restricted, duplicate, late, out-of-order,
+- [x] Detect missing, contradictory, restricted, duplicate, late, out-of-order,
       malformed, and low-confidence evidence.
 - [x] Preserve source facts separately from claims and inferences.
 - [x] Ask for missing operational evidence when needed.
@@ -98,7 +98,7 @@ airport, banking, supermarket, cruise, and other profiles.
       pharmacy delay, and staff interaction.
 - [x] Connect complaints to location, department, resource, time window,
       partner, and evidence.
-- [ ] Draft approved service-recovery or patient-facing message text.
+- [x] Draft approved service-recovery or patient-facing message text.
 - [x] Escalate safety, privacy, or high-severity complaints.
 
 ### Resource And Capacity Agent
@@ -133,17 +133,17 @@ airport, banking, supermarket, cruise, and other profiles.
 - [x] Enforce business manager approval before protected actions.
 - [x] Refuse diagnosis, treatment, dosage, triage, and clinical priority
       decisions.
-- [ ] Decide approve, reject, modify, defer, or execute-ready state.
-- [ ] Preserve policy reason, approver role, approval ID, and action ID.
+- [x] Decide approve, reject, modify, defer, or execute-ready state.
+- [x] Preserve policy reason, approver role, approval ID, and action ID.
 - [x] Ensure agents operate with current user permissions and purpose limits.
 
 ### Financial Impact Agent
 
-- [ ] Detect duplicate billing, stuck claim approval, refund request, voucher
+- [x] Detect duplicate billing, stuck claim approval, refund request, voucher
       request, compensation threshold, payment gateway issue, and revenue risk.
-- [ ] Estimate financial exposure with formula, time window, and confidence.
-- [ ] Route refund, compensation, or payment actions through approval.
-- [ ] Preserve billing and insurance evidence without personal data.
+- [x] Estimate financial exposure with formula, time window, and confidence.
+- [x] Route refund, compensation, or payment actions through approval.
+- [x] Preserve billing and insurance evidence without personal data.
 
 ### Communication Agent
 

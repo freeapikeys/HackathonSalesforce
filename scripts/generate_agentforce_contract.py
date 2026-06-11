@@ -468,6 +468,165 @@ def schema() -> dict[str, Any]:
                     "evidenceIds": evidence_id_list(min_items=0),
                 },
             },
+            "evidenceQualityFinding": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "findingType",
+                    "summary",
+                    "action",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "findingType": {
+                        "enum": [
+                            "MISSING",
+                            "CONTRADICTORY",
+                            "RESTRICTED",
+                            "DUPLICATE",
+                            "LATE",
+                            "OUT_OF_ORDER",
+                            "MALFORMED",
+                            "LOW_CONFIDENCE",
+                        ]
+                    },
+                    "summary": string(1000),
+                    "action": string(1000),
+                    "evidenceIds": evidence_id_list(min_items=0),
+                },
+            },
+            "conflictResolution": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "conflictId",
+                    "tension",
+                    "resolution",
+                    "winningPolicy",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "conflictId": key,
+                    "tension": string(1000),
+                    "resolution": string(1000),
+                    "winningPolicy": string(500),
+                    "evidenceIds": evidence_id_list(),
+                },
+            },
+            "recommendationUpdate": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "trigger",
+                    "changedByEvidenceId",
+                    "before",
+                    "after",
+                    "decision",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "trigger": string(300),
+                    "changedByEvidenceId": identifier,
+                    "before": string(1000),
+                    "after": string(1000),
+                    "decision": string(1000),
+                    "evidenceIds": evidence_id_list(),
+                },
+            },
+            "serviceRecoveryDraft": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "draftId",
+                    "audience",
+                    "message",
+                    "approvalRequired",
+                    "approvalId",
+                    "policyReason",
+                    "privacySafe",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "draftId": key,
+                    "audience": string(200),
+                    "message": string(1200),
+                    "approvalRequired": {"const": True},
+                    "approvalId": identifier,
+                    "policyReason": string(500),
+                    "privacySafe": {"const": True},
+                    "evidenceIds": evidence_id_list(),
+                },
+            },
+            "approvalDecision": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "decisionState",
+                    "approvalId",
+                    "actionId",
+                    "approverRole",
+                    "policyReason",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "decisionState": {
+                        "enum": [
+                            "APPROVE",
+                            "REJECT",
+                            "MODIFY",
+                            "DEFER",
+                            "EXECUTE_READY",
+                        ]
+                    },
+                    "approvalId": identifier,
+                    "actionId": key,
+                    "approverRole": string(200),
+                    "policyReason": string(1000),
+                    "evidenceIds": evidence_id_list(min_items=0),
+                },
+            },
+            "financialImpactSummary": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "detectedCaseTypes",
+                    "exposureFormula",
+                    "exposureValue",
+                    "currencyCode",
+                    "timeWindow",
+                    "confidence",
+                    "approvalRequired",
+                    "protectedActionTypes",
+                    "personalDataPolicy",
+                    "evidenceIds",
+                ],
+                "properties": {
+                    "detectedCaseTypes": {
+                        "type": "array",
+                        "items": key,
+                        "minItems": 1,
+                        "uniqueItems": True,
+                    },
+                    "exposureFormula": string(500),
+                    "exposureValue": {"type": "number"},
+                    "currencyCode": string(10),
+                    "timeWindow": string(200),
+                    "confidence": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1,
+                    },
+                    "approvalRequired": {"const": True},
+                    "protectedActionTypes": {
+                        "type": "array",
+                        "items": string(100),
+                        "minItems": 1,
+                        "uniqueItems": True,
+                    },
+                    "personalDataPolicy": string(500),
+                    "evidenceIds": evidence_id_list(),
+                },
+            },
             "expectedHospitalOutcome": {
                 "type": "object",
                 "additionalProperties": False,
@@ -493,10 +652,16 @@ def schema() -> dict[str, Any]:
                     "calculations",
                     "assumptions",
                     "missingEvidence",
+                    "evidenceQualityFindings",
+                    "conflictResolutions",
+                    "recommendationUpdates",
                     "recommendedActions",
                     "blockedActions",
                     "partnerCaution",
                     "clinicalBoundary",
+                    "serviceRecoveryDraft",
+                    "approvalDecisions",
+                    "financialImpact",
                     "expectedOutcomes",
                     "explanation",
                 ],
@@ -531,6 +696,20 @@ def schema() -> dict[str, Any]:
                         "items": string(500),
                         "uniqueItems": True,
                     },
+                    "evidenceQualityFindings": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/$defs/evidenceQualityFinding"
+                        },
+                    },
+                    "conflictResolutions": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/conflictResolution"},
+                    },
+                    "recommendationUpdates": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/recommendationUpdate"},
+                    },
                     "recommendedActions": {
                         "type": "array",
                         "items": {
@@ -545,6 +724,16 @@ def schema() -> dict[str, Any]:
                     "clinicalBoundary": {
                         "$ref": "#/$defs/clinicalBoundary"
                     },
+                    "serviceRecoveryDraft": nullable(
+                        "#/$defs/serviceRecoveryDraft"
+                    ),
+                    "approvalDecisions": {
+                        "type": "array",
+                        "items": {"$ref": "#/$defs/approvalDecision"},
+                    },
+                    "financialImpact": nullable(
+                        "#/$defs/financialImpactSummary"
+                    ),
                     "expectedOutcomes": {
                         "type": "array",
                         "items": {
@@ -1715,7 +1904,7 @@ def fixtures() -> dict[str, Any]:
     )
     hospital_billing = citation(
         "a06000000000025AAA",
-        "Three duplicate invoice reviews and two insurer follow-ups are open; refunds or compensation need manager approval.",
+        "Three duplicate invoice reviews, two insurer follow-ups, one refund request, one voucher request, one payment gateway issue, and one revenue-risk hold need manager approval.",
         "hospital:billing",
         "sha256:1b7c5f38159d8e86f0a1e9e00f27acfc4f9657cdcfb30fc4a7c383563e826355",
         "BILLING_AND_INSURANCE_HOLD",
@@ -1907,6 +2096,13 @@ def fixtures() -> dict[str, Any]:
                     "unit": "staff",
                     "evidenceIds": [hospital_capacity["evidenceId"]],
                 },
+                {
+                    "metricKey": "financial_exposure_estimate",
+                    "formula": "duplicateInvoiceCases*2500 + claimPendingCases*10000 + refundCompensationVoucherCases*25000 + paymentGatewayIssues*10000 + revenueRiskCases*30000",
+                    "value": 142500,
+                    "unit": "MUR",
+                    "evidenceIds": [hospital_billing["evidenceId"]],
+                },
             ],
             "assumptions": [
                 "Manager approval is required before external alerts, vendor escalation, pharmacy restock, billing review, or staff tasks execute.",
@@ -1914,6 +2110,120 @@ def fixtures() -> dict[str, Any]:
                 "Synthetic hospital fixtures contain no patient personal data.",
             ],
             "missingEvidence": [],
+            "evidenceQualityFindings": [
+                {
+                    "findingType": "MISSING",
+                    "summary": "Outcome evidence is not available until approved actions execute.",
+                    "action": "Track outcome callbacks after manager approval and do not claim final impact early.",
+                    "evidenceIds": [],
+                },
+                {
+                    "findingType": "CONTRADICTORY",
+                    "summary": "Patient trust asks for immediate service recovery while capacity evidence shows discharge rooms are still blocked.",
+                    "action": "Send only approved internal updates now and delay room-release claims until cleaning and porter acknowledgements arrive.",
+                    "evidenceIds": [
+                        hospital_complaint["evidenceId"],
+                        hospital_capacity["evidenceId"],
+                    ],
+                },
+                {
+                    "findingType": "RESTRICTED",
+                    "summary": "Clinical priority evidence is restricted to clinicians and cannot be used for automated treatment decisions.",
+                    "action": "Refuse clinical decisions and route the matter to clinician review.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                },
+                {
+                    "findingType": "DUPLICATE",
+                    "summary": "Duplicate invoice reviews are present in billing evidence and must be reviewed before refunds or compensation.",
+                    "action": "Open billing review instead of issuing automatic refund or voucher decisions.",
+                    "evidenceIds": [hospital_billing["evidenceId"]],
+                },
+                {
+                    "findingType": "LATE",
+                    "summary": "The lab partner acknowledgement is forty-two minutes late against the operational SLA.",
+                    "action": "Escalate the partner case only through approved vendor recovery.",
+                    "evidenceIds": [hospital_partner["evidenceId"]],
+                },
+                {
+                    "findingType": "OUT_OF_ORDER",
+                    "summary": "Capacity and partner responses may arrive after the first recommendation.",
+                    "action": "Recompute the recommendation when late capacity or partner evidence changes the safe action set.",
+                    "evidenceIds": [
+                        hospital_capacity["evidenceId"],
+                        hospital_partner["evidenceId"],
+                    ],
+                },
+                {
+                    "findingType": "MALFORMED",
+                    "summary": "Malformed event fixtures are rejected before they can become recommendation facts.",
+                    "action": "Keep malformed evidence out of facts and preserve the validation failure in the intake audit.",
+                    "evidenceIds": [],
+                },
+                {
+                    "findingType": "LOW_CONFIDENCE",
+                    "summary": "Staff coverage is lower confidence until role-owner acknowledgements return.",
+                    "action": "Create role-owned tasks with acknowledgement tracking instead of claiming staffing is fixed.",
+                    "evidenceIds": [hospital_staffing["evidenceId"]],
+                },
+            ],
+            "conflictResolutions": [
+                {
+                    "conflictId": "conflict-patient-trust-capacity",
+                    "tension": "Patient Trust wants immediate service recovery, but Resource and Capacity shows rooms are still blocked.",
+                    "resolution": "Approve privacy-safe updates and service tasks now; release rooms only after housekeeping and porter acknowledgements.",
+                    "winningPolicy": "Operational safety and evidence-backed capacity claims override speed-only messaging.",
+                    "evidenceIds": [
+                        hospital_complaint["evidenceId"],
+                        hospital_capacity["evidenceId"],
+                    ],
+                },
+                {
+                    "conflictId": "conflict-finance-stock-recovery",
+                    "tension": "Pharmacy restock, refund, voucher, and billing work all compete for manager attention during the surge.",
+                    "resolution": "Bundle stock, billing, insurer, voucher, and payment actions under one approval so the manager sees the full exposure.",
+                    "winningPolicy": "Protected financial and inventory actions require manager approval before execution.",
+                    "evidenceIds": [
+                        hospital_pharmacy["evidenceId"],
+                        hospital_billing["evidenceId"],
+                    ],
+                },
+                {
+                    "conflictId": "conflict-clinical-boundary",
+                    "tension": "The fastest-sounding request asks which patient should receive treatment first.",
+                    "resolution": "Refuse clinical priority decisions and route them to clinicians while North Star continues non-clinical operations coordination.",
+                    "winningPolicy": "Clinical safety boundary overrides operational optimization.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                },
+            ],
+            "recommendationUpdates": [
+                {
+                    "trigger": "Partner response arrived after the first recommendation.",
+                    "changedByEvidenceId": hospital_partner["evidenceId"],
+                    "before": "Keep lab escalation pending and name missing partner response evidence.",
+                    "after": "Escalate the SLA and request the second courier route only after approval.",
+                    "decision": "Partner evidence narrows the plan from generic follow-up to approved SLA escalation.",
+                    "evidenceIds": [hospital_partner["evidenceId"]],
+                },
+                {
+                    "trigger": "Capacity evidence qualified the complaint cluster.",
+                    "changedByEvidenceId": hospital_capacity["evidenceId"],
+                    "before": "Treat complaints as patient-trust messages only.",
+                    "after": "Tie complaints to blocked rooms, queue pressure, staff tasks, pharmacy cover, billing exposure, and outcomes.",
+                    "decision": "Capacity evidence expands one complaint cluster into cross-functional recovery.",
+                    "evidenceIds": [
+                        hospital_complaint["evidenceId"],
+                        hospital_capacity["evidenceId"],
+                    ],
+                },
+                {
+                    "trigger": "Billing and payment evidence changed the recovery risk.",
+                    "changedByEvidenceId": hospital_billing["evidenceId"],
+                    "before": "Open a simple billing review.",
+                    "after": "Estimate exposure and route refund, voucher, compensation, payment, and insurer follow-up through approval.",
+                    "decision": "Financial evidence prevents automatic compensation and makes the exposure visible.",
+                    "evidenceIds": [hospital_billing["evidenceId"]],
+                },
+            ],
             "recommendedActions": [
                 {
                     "actionId": "action-room-cleaning",
@@ -1965,6 +2275,23 @@ def fixtures() -> dict[str, Any]:
                     "requiresHumanApproval": True,
                 },
                 {
+                    "actionId": "action-insurance-followup",
+                    "actionType": "REQUEST_INSURANCE_FOLLOWUP",
+                    "statement": "Request insurer follow-up for stuck claim approvals before revenue-risk or refund decisions.",
+                    "evidenceIds": [hospital_billing["evidenceId"]],
+                    "requiresHumanApproval": True,
+                },
+                {
+                    "actionId": "action-service-recovery-message",
+                    "actionType": "CREATE_PATIENT_SERVICE_TASK",
+                    "statement": "Draft a privacy-safe service-recovery message for manager approval, without clinical advice or personal data.",
+                    "evidenceIds": [
+                        hospital_complaint["evidenceId"],
+                        hospital_billing["evidenceId"],
+                    ],
+                    "requiresHumanApproval": True,
+                },
+                {
                     "actionId": "action-manager-review",
                     "actionType": "CREATE_MANAGER_REVIEW_TASK",
                     "statement": "Create the operations manager review task that keeps the recovery plan approved, auditable, and time-boxed.",
@@ -1988,6 +2315,91 @@ def fixtures() -> dict[str, Any]:
                 "applies": True,
                 "statement": "Clinical decisions are refused and routed to clinician review; only operations coordination is recommended.",
                 "evidenceIds": [hospital_clinical["evidenceId"]],
+            },
+            "serviceRecoveryDraft": {
+                "draftId": "draft-service-recovery-hospital-surge",
+                "audience": "Patient and visitor service desk",
+                "message": "We are coordinating outpatient queue support, room-readiness work, pharmacy stock recovery, and billing follow-up. A hospital operations manager is reviewing the protected actions, and clinical questions will be handled by clinical staff.",
+                "approvalRequired": True,
+                "approvalId": "a08000000000021AAA",
+                "policyReason": "Patient-facing service messages are protected because they may affect trust, refunds, billing, and clinical-boundary wording.",
+                "privacySafe": True,
+                "evidenceIds": [
+                    hospital_complaint["evidenceId"],
+                    hospital_billing["evidenceId"],
+                    hospital_clinical["evidenceId"],
+                ],
+            },
+            "approvalDecisions": [
+                {
+                    "decisionState": "APPROVE",
+                    "approvalId": "a08000000000021AAA",
+                    "actionId": "action-room-cleaning",
+                    "approverRole": "Operations Manager",
+                    "policyReason": "Room-release tasks are protected write-backs and need manager approval before execution.",
+                    "evidenceIds": [hospital_capacity["evidenceId"]],
+                },
+                {
+                    "decisionState": "REJECT",
+                    "approvalId": "a08000000000021AAA",
+                    "actionId": "action-clinical-triage",
+                    "approverRole": "Clinical Manager",
+                    "policyReason": "North Star must not approve diagnosis, treatment, dosage, triage, or clinical-priority decisions.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                },
+                {
+                    "decisionState": "MODIFY",
+                    "approvalId": "a08000000000021AAA",
+                    "actionId": "action-service-recovery-message",
+                    "approverRole": "Patient Experience Manager",
+                    "policyReason": "Patient-facing wording must remain privacy-safe and avoid clinical advice before it can be sent.",
+                    "evidenceIds": [
+                        hospital_complaint["evidenceId"],
+                        hospital_clinical["evidenceId"],
+                    ],
+                },
+                {
+                    "decisionState": "DEFER",
+                    "approvalId": "a08000000000021AAA",
+                    "actionId": "action-refund-voucher-compensation",
+                    "approverRole": "Billing Supervisor",
+                    "policyReason": "Refund, voucher, and compensation decisions wait for billing and insurer evidence.",
+                    "evidenceIds": [hospital_billing["evidenceId"]],
+                },
+                {
+                    "decisionState": "EXECUTE_READY",
+                    "approvalId": "a08000000000021AAA",
+                    "actionId": "action-lab-escalation",
+                    "approverRole": "Operations Manager",
+                    "policyReason": "Vendor escalation is ready only after approval preserves the SLA evidence and action ID.",
+                    "evidenceIds": [hospital_partner["evidenceId"]],
+                },
+            ],
+            "financialImpact": {
+                "detectedCaseTypes": [
+                    "duplicate_invoice",
+                    "claim_pending",
+                    "refund_request",
+                    "voucher_request",
+                    "compensation_review",
+                    "payment_failure",
+                    "revenue_risk",
+                ],
+                "exposureFormula": "duplicateInvoiceCases*2500 + claimPendingCases*10000 + refundCompensationVoucherCases*25000 + paymentGatewayIssues*10000 + revenueRiskCases*30000",
+                "exposureValue": 142500,
+                "currencyCode": "MUR",
+                "timeWindow": "Morning surge through same-day billing cutoff",
+                "confidence": 0.82,
+                "approvalRequired": True,
+                "protectedActionTypes": [
+                    "OPEN_BILLING_REVIEW",
+                    "REQUEST_INSURANCE_FOLLOWUP",
+                    "REFUND_OR_VOUCHER_DECISION",
+                    "PAYMENT_GATEWAY_REVIEW",
+                    "REVENUE_RISK_ESCALATION",
+                ],
+                "personalDataPolicy": "Use synthetic aliases and evidence IDs only; no patient, insurer, payment-card, phone, email, or medical-record data.",
+                "evidenceIds": [hospital_billing["evidenceId"]],
             },
             "expectedOutcomes": [
                 {
@@ -2013,6 +2425,12 @@ def fixtures() -> dict[str, Any]:
                     "target": "Receive lab partner acknowledgement or approved alternate courier response.",
                     "timeWindow": "Within 20 minutes of escalation",
                     "evidenceIds": [hospital_partner["evidenceId"]],
+                },
+                {
+                    "metricKey": "financial_exposure_contained",
+                    "target": "Route refund, voucher, compensation, payment, insurer, and revenue-risk decisions through approval.",
+                    "timeWindow": "Before same-day billing cutoff",
+                    "evidenceIds": [hospital_billing["evidenceId"]],
                 },
             ],
             "explanation": "The hospital surge is cross-functional: complaints are rising, rooms are blocked, stock cover is low, a partner SLA is late, and billing approvals are stuck. The safe next step is one manager-approved operations recovery plan with clinical decisions refused.",
@@ -2097,6 +2515,16 @@ def fixtures() -> dict[str, Any]:
                 "Outpatient waiting count",
                 "Available staff by role",
             ],
+            "evidenceQualityFindings": [
+                {
+                    "findingType": "MISSING",
+                    "summary": "Current capacity, queue, and staffing evidence is missing.",
+                    "action": "Request operational evidence before claiming bed-release or staffing impact.",
+                    "evidenceIds": [hospital_complaint["evidenceId"]],
+                }
+            ],
+            "conflictResolutions": [],
+            "recommendationUpdates": [],
             "recommendedActions": [
                 {
                     "actionId": "action-request-capacity-evidence",
@@ -2123,6 +2551,9 @@ def fixtures() -> dict[str, Any]:
                 "statement": "No clinical decision was requested in this missing-evidence scenario.",
                 "evidenceIds": [],
             },
+            "serviceRecoveryDraft": None,
+            "approvalDecisions": [],
+            "financialImpact": None,
             "expectedOutcomes": [
                 {
                     "metricKey": "capacity_evidence_received",
@@ -2185,6 +2616,24 @@ def fixtures() -> dict[str, Any]:
                 "The user request asks for clinical treatment priority, which is outside North Star's authority.",
             ],
             "missingEvidence": [],
+            "evidenceQualityFindings": [
+                {
+                    "findingType": "RESTRICTED",
+                    "summary": "Clinical priority evidence is restricted to clinicians and cannot be used for automated decisions.",
+                    "action": "Refuse the clinical decision and route the request to clinician review.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                }
+            ],
+            "conflictResolutions": [
+                {
+                    "conflictId": "conflict-clinical-priority-request",
+                    "tension": "The user asks North Star to optimize treatment priority.",
+                    "resolution": "North Star refuses the clinical decision and keeps only non-clinical operations support in scope.",
+                    "winningPolicy": "Clinical safety boundary overrides operational speed.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                }
+            ],
+            "recommendationUpdates": [],
             "recommendedActions": [
                 {
                     "actionId": "action-route-clinician-review",
@@ -2211,6 +2660,18 @@ def fixtures() -> dict[str, Any]:
                 "statement": "North Star refuses clinical priority decisions and routes to human clinical review.",
                 "evidenceIds": [hospital_clinical["evidenceId"]],
             },
+            "serviceRecoveryDraft": None,
+            "approvalDecisions": [
+                {
+                    "decisionState": "REJECT",
+                    "approvalId": "a08000000000022AAA",
+                    "actionId": "action-decide-treatment-priority",
+                    "approverRole": "Clinical Manager",
+                    "policyReason": "Automated clinical-priority decisions are outside North Star scope.",
+                    "evidenceIds": [hospital_clinical["evidenceId"]],
+                }
+            ],
+            "financialImpact": None,
             "expectedOutcomes": [
                 {
                     "metricKey": "clinical_review_routed",

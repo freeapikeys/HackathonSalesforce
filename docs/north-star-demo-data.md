@@ -83,59 +83,59 @@ These IDs are the stable vocabulary the agents, fixtures, command center, and
 demo script should reuse. They are business-profile values on global
 primitives, not new architecture.
 
-| Primitive  | Hospital demo ID                                  | Type or role                    | Notes                                                |
-| ---------- | ------------------------------------------------- | ------------------------------- | ---------------------------------------------------- |
-| `Entity`   | `HOSP-NORTH-STAR-PRIVATE`                         | organization                    | Large private hospital campus                        |
-| `Location` | `DEPT-OUTPATIENT-RECEPTION`                       | service area                    | Queue, wait-time, front-desk pressure                |
-| `Location` | `WARD-DISCHARGE-002`                              | ward                            | Blocked rooms, porter and cleaning coordination      |
-| `Location` | `PHARMACY-COUNTER-001`                            | service counter                 | Stock and queue pressure                             |
-| `Location` | `BILLING-INSURANCE-DESK-001`                      | service counter                 | Claim, duplicate invoice, refund, approval follow-up |
-| `Resource` | `RESOURCE-WARD-A3-DISCHARGE-ROOMS`                | room pool                       | 18 rooms, 7 blocked, 6 available                     |
-| `Resource` | `RESOURCE-QUEUE-OUTPATIENT-009`                   | queue                           | 34 waiting, target below 18                          |
-| `Resource` | `RESOURCE-PHARMACY-IV-KITS`                       | supply                          | 2.4 hours cover, below 4-hour threshold              |
-| `Resource` | `RESOURCE-FRONT-DESK-STAFF-POOL`                  | staff pool                      | 3 available, 5 needed                                |
-| `Resource` | `RESOURCE-WHEELCHAIR-SUPPORT-003`                 | equipment/support               | Accessibility support delay variant                  |
-| `Customer` | `ALIAS-PATIENT-GROUP-MORNING-001`                 | synthetic patient/visitor group | No personal data                                     |
-| `Partner`  | `PARTNER-ISLAND-DIAGNOSTICS`                      | lab                             | Delayed then recovered response variant              |
-| `Partner`  | `PARTNER-INSUREPLUS-001`                          | insurer                         | Stuck then approved claim variant                    |
-| `Partner`  | `PARTNER-LAUNDRYCARE-001`                         | laundry                         | Linen delay variant                                  |
-| `Partner`  | `PARTNER-FOODSERVICE-001`                         | food service                    | Meal complaint and supplier-delay variant            |
-| `Partner`  | `PARTNER-MAINTENANCE-001`                         | maintenance                     | Lift, HVAC, or equipment delay variant               |
-| `Process`  | `PROCESS-BILLING-INSURANCE-REVIEW`                | billing/insurance review        | Approval threshold and financial exposure            |
-| `Policy`   | `POLICY-HOSPITAL-MANAGER-APPROVAL-V1`             | protected action gate           | Manager approval before write-back                   |
-| `Policy`   | `POLICY-CLINICAL-DECISION-BOUNDARY-V1`            | clinical refusal                | No diagnosis, treatment, dosage, triage, priority    |
-| `Approval` | `approval-north-star-hospital-001`                | operations manager approval     | Demo approval record                                 |
-| `Action`   | `action-north-star-hospital-slack-001`            | `SEND_SLACK_ALERT`              | Live harness approved channel action                 |
-| `Action`   | `action-north-star-hospital-whatsapp-001`         | `SEND_WHATSAPP_ALERT`           | Live harness approved channel action                 |
-| `Outcome`  | `outcome-action-north-star-hospital-slack-001`    | Slack delivery outcome          | `SENT` or honest `MOCK_SENT`                         |
-| `Outcome`  | `outcome-action-north-star-hospital-whatsapp-001` | WhatsApp-style delivery outcome | `SENT` or honest `MOCK_SENT`                         |
-| `Metric`   | `METRIC-WAIT-TIME-REDUCED`                        | service metric                  | Waiting count moves toward target                    |
-| `Metric`   | `METRIC-BEDS-RELEASED`                            | capacity metric                 | Blocked discharge rooms released                     |
-| `Metric`   | `METRIC-STOCKOUT-AVOIDED`                         | supply metric                   | Pharmacy stock risk reduced                          |
-| `Metric`   | `METRIC-COMPLAINT-CONTAINMENT`                    | trust metric                    | Complaint cluster acknowledged                       |
-| `Metric`   | `METRIC-BILLING-ROUTED`                           | financial metric                | Billing or insurer follow-up opened                  |
-| `Metric`   | `METRIC-PARTNER-SLA`                              | partner metric                  | Partner response captured                            |
-| `Metric`   | `METRIC-STAFF-TASK-ACK`                           | execution metric                | Critical task acknowledged                           |
+| Primitive  | Hospital demo ID                                  | Type or role                    | Notes                                                 |
+| ---------- | ------------------------------------------------- | ------------------------------- | ----------------------------------------------------- |
+| `Entity`   | `HOSP-NORTH-STAR-PRIVATE`                         | organization                    | Large private hospital campus                         |
+| `Location` | `DEPT-OUTPATIENT-RECEPTION`                       | service area                    | Queue, wait-time, front-desk pressure                 |
+| `Location` | `WARD-DISCHARGE-002`                              | ward                            | Blocked rooms, porter and cleaning coordination       |
+| `Location` | `PHARMACY-COUNTER-001`                            | service counter                 | Stock and queue pressure                              |
+| `Location` | `BILLING-INSURANCE-DESK-001`                      | service counter                 | Claim, duplicate invoice, refund, approval follow-up  |
+| `Resource` | `RESOURCE-WARD-A3-DISCHARGE-ROOMS`                | room pool                       | 18 rooms, 7 blocked, 6 available                      |
+| `Resource` | `RESOURCE-QUEUE-OUTPATIENT-009`                   | queue                           | 34 waiting, target below 18                           |
+| `Resource` | `RESOURCE-PHARMACY-IV-KITS`                       | supply                          | 2.4 hours cover, below 4-hour threshold               |
+| `Resource` | `RESOURCE-FRONT-DESK-STAFF-POOL`                  | staff pool                      | 3 available, 5 needed                                 |
+| `Resource` | `RESOURCE-WHEELCHAIR-SUPPORT-003`                 | equipment/support               | Accessibility support delay variant                   |
+| `Customer` | `ALIAS-PATIENT-GROUP-MORNING-001`                 | synthetic patient/visitor group | No personal data                                      |
+| `Partner`  | `PARTNER-ISLAND-DIAGNOSTICS`                      | lab                             | Delayed then recovered response variant               |
+| `Partner`  | `PARTNER-INSUREPLUS-001`                          | insurer                         | Stuck then approved claim variant                     |
+| `Partner`  | `PARTNER-LAUNDRYCARE-001`                         | laundry                         | Linen delay variant                                   |
+| `Partner`  | `PARTNER-FOODSERVICE-001`                         | food service                    | Meal complaint and supplier-delay variant             |
+| `Partner`  | `PARTNER-MAINTENANCE-001`                         | maintenance                     | Lift, HVAC, or equipment delay variant                |
+| `Process`  | `PROCESS-BILLING-INSURANCE-REVIEW`                | billing/insurance review        | Approval threshold, voucher/payment, and revenue risk |
+| `Policy`   | `POLICY-HOSPITAL-MANAGER-APPROVAL-V1`             | protected action gate           | Manager approval before write-back                    |
+| `Policy`   | `POLICY-CLINICAL-DECISION-BOUNDARY-V1`            | clinical refusal                | No diagnosis, treatment, dosage, triage, priority     |
+| `Approval` | `approval-north-star-hospital-001`                | operations manager approval     | Demo approval record                                  |
+| `Action`   | `action-north-star-hospital-slack-001`            | `SEND_SLACK_ALERT`              | Live harness approved channel action                  |
+| `Action`   | `action-north-star-hospital-whatsapp-001`         | `SEND_WHATSAPP_ALERT`           | Live harness approved channel action                  |
+| `Outcome`  | `outcome-action-north-star-hospital-slack-001`    | Slack delivery outcome          | `SENT` or honest `MOCK_SENT`                          |
+| `Outcome`  | `outcome-action-north-star-hospital-whatsapp-001` | WhatsApp-style delivery outcome | `SENT` or honest `MOCK_SENT`                          |
+| `Metric`   | `METRIC-WAIT-TIME-REDUCED`                        | service metric                  | Waiting count moves toward target                     |
+| `Metric`   | `METRIC-BEDS-RELEASED`                            | capacity metric                 | Blocked discharge rooms released                      |
+| `Metric`   | `METRIC-STOCKOUT-AVOIDED`                         | supply metric                   | Pharmacy stock risk reduced                           |
+| `Metric`   | `METRIC-COMPLAINT-CONTAINMENT`                    | trust metric                    | Complaint cluster acknowledged                        |
+| `Metric`   | `METRIC-BILLING-ROUTED`                           | financial metric                | Billing or insurer follow-up opened                   |
+| `Metric`   | `METRIC-PARTNER-SLA`                              | partner metric                  | Partner response captured                             |
+| `Metric`   | `METRIC-STAFF-TASK-ACK`                           | execution metric                | Critical task acknowledged                            |
 
 ## Synthetic Aliases And Role Targets
 
 Use role aliases only. Do not commit personal names, phone numbers, emails,
 patient identifiers, insurer records, medical notes, or real vendor contacts.
 
-| Alias ID                          | Alias type     | Used by                           |
-| --------------------------------- | -------------- | --------------------------------- |
-| `alias-patient-group-morning-001` | customer group | Complaint clusters and recovery   |
-| `alias-visitor-billing-queue-001` | visitor group  | Billing complaint variant         |
-| `alias-patient-accessibility-001` | customer alias | Accessibility support variant     |
-| `role:operations-manager`         | manager role   | Final approval and Slack target   |
-| `role:bed-manager`                | manager role   | Room release and bed cleaning     |
-| `role:pharmacy-lead`              | manager role   | Restock or transfer approval      |
-| `role:billing-supervisor`         | manager role   | Billing review and refund routing |
-| `role:patient-experience-lead`    | manager role   | WhatsApp-style internal alert     |
-| `role:lab-coordination-lead`      | staff role     | Partner escalation                |
-| `role:housekeeping-coordinator`   | staff role     | Room readiness and cleaning tasks |
-| `role:porter-dispatch`            | staff role     | Porter and wheelchair tasks       |
-| `role:facilities-duty-manager`    | staff role     | Lift, HVAC, equipment fallback    |
+| Alias ID                          | Alias type     | Used by                                      |
+| --------------------------------- | -------------- | -------------------------------------------- |
+| `alias-patient-group-morning-001` | customer group | Complaint clusters and recovery              |
+| `alias-visitor-billing-queue-001` | visitor group  | Billing complaint variant                    |
+| `alias-patient-accessibility-001` | customer alias | Accessibility support variant                |
+| `role:operations-manager`         | manager role   | Final approval and Slack target              |
+| `role:bed-manager`                | manager role   | Room release and bed cleaning                |
+| `role:pharmacy-lead`              | manager role   | Restock or transfer approval                 |
+| `role:billing-supervisor`         | manager role   | Billing, refund, voucher, and payment review |
+| `role:patient-experience-lead`    | manager role   | WhatsApp-style internal alert                |
+| `role:lab-coordination-lead`      | staff role     | Partner escalation                           |
+| `role:housekeeping-coordinator`   | staff role     | Room readiness and cleaning tasks            |
+| `role:porter-dispatch`            | staff role     | Porter and wheelchair tasks                  |
+| `role:facilities-duty-manager`    | staff role     | Lift, HVAC, equipment fallback               |
 
 ## Capacity And Demand
 
@@ -253,7 +253,7 @@ Expected behavior:
 | ER-H03  | Lab delayed                 | Escalate only the affected lab case and preserve SLA evidence           |
 | ER-H04  | Lab recovered               | Update recommendation without deleting the earlier delay history        |
 | ER-H05  | Pharmacy stock risk         | Recommend restock or transfer after approval; no clinical substitute    |
-| ER-H06  | Billing approval stalled    | Open billing and insurance review, estimate exposure band               |
+| ER-H06  | Billing approval stalled    | Open billing, insurer, voucher, payment, and revenue-risk review        |
 | ER-H07  | Food complaint              | Route food-service review and approved privacy-safe message             |
 | ER-H08  | Accessibility delay         | Assign support task and track acknowledgement                           |
 | ER-H09  | Maintenance delay           | Escalate facilities partner and propose fallback resource path          |

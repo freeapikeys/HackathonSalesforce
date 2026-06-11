@@ -159,6 +159,24 @@ const requiredPartnerTypes = new Set([
   "transport",
   "equipment_vendor"
 ]);
+const requiredFinancialCaseTypes = new Set([
+  "duplicate_invoice",
+  "claim_pending",
+  "refund_request",
+  "deposit_issue",
+  "voucher_request",
+  "compensation_review",
+  "payment_failure",
+  "revenue_risk"
+]);
+const allowedFinancialStatuses = new Set([
+  "open",
+  "pending_partner",
+  "approved",
+  "denied",
+  "resolved"
+]);
+const allowedAmountBands = new Set(["low", "medium", "high"]);
 
 countBetween("department", masterData.departments.length, 8, 10);
 countBetween("location", masterData.locations.length, 20, 30);
@@ -205,11 +223,19 @@ for (const complaintType of requiredComplaintTypes) {
   );
 }
 
+const financialCaseTypes = new Set(
+  financialCases.map((financialCase) => financialCase.caseType)
+);
+for (const caseType of requiredFinancialCaseTypes) {
+  assert(financialCaseTypes.has(caseType), `Missing financial case ${caseType}`);
+}
+
 const departmentIds = new Set(
   masterData.departments.map((d) => d.departmentId)
 );
 const locationIds = new Set(masterData.locations.map((l) => l.locationId));
 const resourceIds = new Set(resources.map((r) => r.resourceId));
+const partnerIds = new Set(masterData.partners.map((partner) => partner.partnerId));
 const customerAliasIds = new Set(
   masterData.customerAliases.map((alias) => alias.customerAliasId)
 );
@@ -300,6 +326,42 @@ for (const cluster of complaintClusters) {
     cluster.evidenceIds.length > 0,
     `${cluster.clusterId} has no evidence IDs`
   );
+}
+
+for (const financialCase of financialCases) {
+  assert(
+    financialCase.globalPrimitive === "Process",
+    `${financialCase.caseId} is not a Process primitive`
+  );
+  assert(
+    customerAliasIds.has(financialCase.customerAliasId),
+    `${financialCase.caseId} has unknown customer alias`
+  );
+  assert(
+    departmentIds.has(financialCase.departmentId),
+    `${financialCase.caseId} has unknown department`
+  );
+  assert(
+    requiredFinancialCaseTypes.has(financialCase.caseType),
+    `${financialCase.caseId} has unknown case type ${financialCase.caseType}`
+  );
+  assert(
+    allowedAmountBands.has(financialCase.amountBand),
+    `${financialCase.caseId} has unknown amount band ${financialCase.amountBand}`
+  );
+  assert(
+    financialCase.approvalRequired === true,
+    `${financialCase.caseId} must require approval`
+  );
+  assert(
+    allowedFinancialStatuses.has(financialCase.status),
+    `${financialCase.caseId} has unknown status ${financialCase.status}`
+  );
+  assert(
+    partnerIds.has(financialCase.relatedPartnerId),
+    `${financialCase.caseId} has unknown related partner`
+  );
+  assert(financialCase.evidenceId, `${financialCase.caseId} is missing evidenceId`);
 }
 
 for (const response of partnerResponses) {

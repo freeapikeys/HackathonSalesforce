@@ -145,7 +145,7 @@ Quantify the demo with operational metrics, not vague AI language:
 | Bed capacity          | 7 discharge rooms are blocked; recovery plan targets room release     |
 | Stockout prevention   | Pharmacy supply is below threshold before the afternoon rush          |
 | Complaint containment | 11 synthetic complaints are clustered and tied to recovery actions    |
-| Billing risk          | 5 stuck cases are routed through billing and insurance follow-up      |
+| Financial risk        | Billing, insurer, voucher, payment, and revenue-risk cases are gated  |
 | Partner SLA           | Lab delay is preserved, escalated, then updated when response changes |
 | Staff execution       | Tasks have role owners, due windows, acknowledgement, and escalation  |
 

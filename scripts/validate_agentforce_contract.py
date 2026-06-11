@@ -186,6 +186,53 @@ def main() -> int:
                     <= citation_ids,
                     f"{name}: hospital clinical boundary cites inaccessible evidence.",
                 )
+                for finding in hospital_reasoning["evidenceQualityFindings"]:
+                    require(
+                        set(finding["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital evidence-quality finding cites inaccessible evidence.",
+                    )
+                for conflict in hospital_reasoning["conflictResolutions"]:
+                    require(
+                        set(conflict["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital conflict resolution cites inaccessible evidence.",
+                    )
+                for update in hospital_reasoning["recommendationUpdates"]:
+                    require(
+                        update["changedByEvidenceId"] in citation_ids,
+                        f"{name}: hospital recommendation update cites inaccessible trigger evidence.",
+                    )
+                    require(
+                        set(update["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital recommendation update cites inaccessible evidence.",
+                    )
+                service_recovery = hospital_reasoning["serviceRecoveryDraft"]
+                if service_recovery:
+                    require(
+                        set(service_recovery["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital service-recovery draft cites inaccessible evidence.",
+                    )
+                for decision in hospital_reasoning["approvalDecisions"]:
+                    require(
+                        set(decision["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital approval decision cites inaccessible evidence.",
+                    )
+                    require(
+                        decision["policyReason"]
+                        and decision["approverRole"]
+                        and decision["approvalId"]
+                        and decision["actionId"],
+                        f"{name}: hospital approval decision is missing audit detail.",
+                    )
+                financial_impact = hospital_reasoning["financialImpact"]
+                if financial_impact:
+                    require(
+                        set(financial_impact["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital financial impact cites inaccessible evidence.",
+                    )
+                    require(
+                        0 < financial_impact["confidence"] <= 1,
+                        f"{name}: hospital financial confidence is not bounded.",
+                    )
                 for outcome in hospital_reasoning["expectedOutcomes"]:
                     require(
                         set(outcome["evidenceIds"]) <= citation_ids,
@@ -390,6 +437,98 @@ def main() -> int:
         hospital_reasoning["assumptions"],
         "Hospital recovery scenario did not preserve assumptions.",
     )
+    evidence_quality_types = {
+        finding["findingType"]
+        for finding in hospital_reasoning["evidenceQualityFindings"]
+    }
+    require(
+        {
+            "MISSING",
+            "CONTRADICTORY",
+            "RESTRICTED",
+            "DUPLICATE",
+            "LATE",
+            "OUT_OF_ORDER",
+            "MALFORMED",
+            "LOW_CONFIDENCE",
+        }
+        <= evidence_quality_types,
+        "Hospital recovery scenario is missing evidence-quality findings.",
+    )
+    conflict_ids = {
+        conflict["conflictId"]
+        for conflict in hospital_reasoning["conflictResolutions"]
+    }
+    require(
+        {
+            "conflict-patient-trust-capacity",
+            "conflict-finance-stock-recovery",
+            "conflict-clinical-boundary",
+        }
+        <= conflict_ids,
+        "Hospital recovery scenario is missing conflict resolutions.",
+    )
+    update_triggers = {
+        update["changedByEvidenceId"]
+        for update in hospital_reasoning["recommendationUpdates"]
+    }
+    require(
+        {
+            "a06000000000022AAA",
+            "a06000000000024AAA",
+            "a06000000000025AAA",
+        }
+        <= update_triggers,
+        "Hospital recovery scenario is missing post-evidence recommendation updates.",
+    )
+    service_recovery = hospital_reasoning["serviceRecoveryDraft"]
+    require(
+        service_recovery
+        and service_recovery["approvalRequired"] is True
+        and service_recovery["privacySafe"] is True
+        and "clinical" in service_recovery["message"].lower(),
+        "Hospital recovery scenario is missing an approved privacy-safe service-recovery draft.",
+    )
+    approval_states = {
+        decision["decisionState"]
+        for decision in hospital_reasoning["approvalDecisions"]
+    }
+    require(
+        {
+            "APPROVE",
+            "REJECT",
+            "MODIFY",
+            "DEFER",
+            "EXECUTE_READY",
+        }
+        <= approval_states,
+        "Hospital recovery scenario is missing approval decision states.",
+    )
+    financial_impact = hospital_reasoning["financialImpact"]
+    require(
+        financial_impact is not None,
+        "Hospital recovery scenario is missing financial impact analysis.",
+    )
+    require(
+        {
+            "duplicate_invoice",
+            "claim_pending",
+            "refund_request",
+            "voucher_request",
+            "compensation_review",
+            "payment_failure",
+            "revenue_risk",
+        }
+        <= set(financial_impact["detectedCaseTypes"]),
+        "Hospital recovery scenario is missing financial case types.",
+    )
+    require(
+        financial_impact["approvalRequired"] is True
+        and financial_impact["exposureFormula"]
+        and financial_impact["timeWindow"]
+        and financial_impact["personalDataPolicy"],
+        "Hospital recovery scenario did not define financial formula, time window, privacy policy, and approval.",
+    )
     coverage = hospital_response["contextCoverage"]
     coverage_categories = coverage["evidenceCategories"]
     required_categories = {
@@ -443,6 +582,7 @@ def main() -> int:
             "stock_cover_hours",
             "partner_sla_delay_minutes",
             "staff_coverage_gap",
+            "financial_exposure_estimate",
         }
         <= hospital_metrics,
         "Hospital recovery scenario is missing required calculations.",
@@ -460,6 +600,7 @@ def main() -> int:
             "CREATE_PHARMACY_RESTOCK_REQUEST",
             "ESCALATE_LAB_VENDOR_CASE",
             "OPEN_BILLING_REVIEW",
+            "REQUEST_INSURANCE_FOLLOWUP",
             "CREATE_MANAGER_REVIEW_TASK",
         }
         <= hospital_actions,
@@ -493,6 +634,7 @@ def main() -> int:
             "rooms_released",
             "pharmacy_stock_cover_hours",
             "lab_partner_acknowledgement",
+            "financial_exposure_contained",
         }
         <= hospital_outcome_metrics,
         "Hospital recovery scenario is missing required expected outcomes.",

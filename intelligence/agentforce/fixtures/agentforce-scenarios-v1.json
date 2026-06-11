@@ -1440,7 +1440,7 @@
           },
           {
             "factId": "fact-hospital-billing",
-            "statement": "Three duplicate invoice reviews and two insurer follow-ups are open; refunds or compensation need manager approval.",
+            "statement": "Three duplicate invoice reviews, two insurer follow-ups, one refund request, one voucher request, one payment gateway issue, and one revenue-risk hold need manager approval.",
             "evidenceIds": [
               "a06000000000025AAA"
             ]
@@ -1527,7 +1527,7 @@
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:billing",
             "contentHash": "sha256:1b7c5f38159d8e86f0a1e9e00f27acfc4f9657cdcfb30fc4a7c383563e826355",
-            "summary": "Three duplicate invoice reviews and two insurer follow-ups are open; refunds or compensation need manager approval.",
+            "summary": "Three duplicate invoice reviews, two insurer follow-ups, one refund request, one voucher request, one payment gateway issue, and one revenue-risk hold need manager approval.",
             "accessible": true
           },
           {
@@ -1752,6 +1752,15 @@
                 "evidenceIds": [
                   "a06000000000022AAA"
                 ]
+              },
+              {
+                "metricKey": "financial_exposure_estimate",
+                "formula": "duplicateInvoiceCases*2500 + claimPendingCases*10000 + refundCompensationVoucherCases*25000 + paymentGatewayIssues*10000 + revenueRiskCases*30000",
+                "value": 142500,
+                "unit": "MUR",
+                "evidenceIds": [
+                  "a06000000000025AAA"
+                ]
               }
             ],
             "assumptions": [
@@ -1760,6 +1769,134 @@
               "Synthetic hospital fixtures contain no patient personal data."
             ],
             "missingEvidence": [],
+            "evidenceQualityFindings": [
+              {
+                "findingType": "MISSING",
+                "summary": "Outcome evidence is not available until approved actions execute.",
+                "action": "Track outcome callbacks after manager approval and do not claim final impact early.",
+                "evidenceIds": []
+              },
+              {
+                "findingType": "CONTRADICTORY",
+                "summary": "Patient trust asks for immediate service recovery while capacity evidence shows discharge rooms are still blocked.",
+                "action": "Send only approved internal updates now and delay room-release claims until cleaning and porter acknowledgements arrive.",
+                "evidenceIds": [
+                  "a06000000000021AAA",
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "findingType": "RESTRICTED",
+                "summary": "Clinical priority evidence is restricted to clinicians and cannot be used for automated treatment decisions.",
+                "action": "Refuse clinical decisions and route the matter to clinician review.",
+                "evidenceIds": [
+                  "a06000000000027AAA"
+                ]
+              },
+              {
+                "findingType": "DUPLICATE",
+                "summary": "Duplicate invoice reviews are present in billing evidence and must be reviewed before refunds or compensation.",
+                "action": "Open billing review instead of issuing automatic refund or voucher decisions.",
+                "evidenceIds": [
+                  "a06000000000025AAA"
+                ]
+              },
+              {
+                "findingType": "LATE",
+                "summary": "The lab partner acknowledgement is forty-two minutes late against the operational SLA.",
+                "action": "Escalate the partner case only through approved vendor recovery.",
+                "evidenceIds": [
+                  "a06000000000024AAA"
+                ]
+              },
+              {
+                "findingType": "OUT_OF_ORDER",
+                "summary": "Capacity and partner responses may arrive after the first recommendation.",
+                "action": "Recompute the recommendation when late capacity or partner evidence changes the safe action set.",
+                "evidenceIds": [
+                  "a06000000000022AAA",
+                  "a06000000000024AAA"
+                ]
+              },
+              {
+                "findingType": "MALFORMED",
+                "summary": "Malformed event fixtures are rejected before they can become recommendation facts.",
+                "action": "Keep malformed evidence out of facts and preserve the validation failure in the intake audit.",
+                "evidenceIds": []
+              },
+              {
+                "findingType": "LOW_CONFIDENCE",
+                "summary": "Staff coverage is lower confidence until role-owner acknowledgements return.",
+                "action": "Create role-owned tasks with acknowledgement tracking instead of claiming staffing is fixed.",
+                "evidenceIds": [
+                  "a06000000000026AAA"
+                ]
+              }
+            ],
+            "conflictResolutions": [
+              {
+                "conflictId": "conflict-patient-trust-capacity",
+                "tension": "Patient Trust wants immediate service recovery, but Resource and Capacity shows rooms are still blocked.",
+                "resolution": "Approve privacy-safe updates and service tasks now; release rooms only after housekeeping and porter acknowledgements.",
+                "winningPolicy": "Operational safety and evidence-backed capacity claims override speed-only messaging.",
+                "evidenceIds": [
+                  "a06000000000021AAA",
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "conflictId": "conflict-finance-stock-recovery",
+                "tension": "Pharmacy restock, refund, voucher, and billing work all compete for manager attention during the surge.",
+                "resolution": "Bundle stock, billing, insurer, voucher, and payment actions under one approval so the manager sees the full exposure.",
+                "winningPolicy": "Protected financial and inventory actions require manager approval before execution.",
+                "evidenceIds": [
+                  "a06000000000023AAA",
+                  "a06000000000025AAA"
+                ]
+              },
+              {
+                "conflictId": "conflict-clinical-boundary",
+                "tension": "The fastest-sounding request asks which patient should receive treatment first.",
+                "resolution": "Refuse clinical priority decisions and route them to clinicians while North Star continues non-clinical operations coordination.",
+                "winningPolicy": "Clinical safety boundary overrides operational optimization.",
+                "evidenceIds": [
+                  "a06000000000027AAA"
+                ]
+              }
+            ],
+            "recommendationUpdates": [
+              {
+                "trigger": "Partner response arrived after the first recommendation.",
+                "changedByEvidenceId": "a06000000000024AAA",
+                "before": "Keep lab escalation pending and name missing partner response evidence.",
+                "after": "Escalate the SLA and request the second courier route only after approval.",
+                "decision": "Partner evidence narrows the plan from generic follow-up to approved SLA escalation.",
+                "evidenceIds": [
+                  "a06000000000024AAA"
+                ]
+              },
+              {
+                "trigger": "Capacity evidence qualified the complaint cluster.",
+                "changedByEvidenceId": "a06000000000022AAA",
+                "before": "Treat complaints as patient-trust messages only.",
+                "after": "Tie complaints to blocked rooms, queue pressure, staff tasks, pharmacy cover, billing exposure, and outcomes.",
+                "decision": "Capacity evidence expands one complaint cluster into cross-functional recovery.",
+                "evidenceIds": [
+                  "a06000000000021AAA",
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "trigger": "Billing and payment evidence changed the recovery risk.",
+                "changedByEvidenceId": "a06000000000025AAA",
+                "before": "Open a simple billing review.",
+                "after": "Estimate exposure and route refund, voucher, compensation, payment, and insurer follow-up through approval.",
+                "decision": "Financial evidence prevents automatic compensation and makes the exposure visible.",
+                "evidenceIds": [
+                  "a06000000000025AAA"
+                ]
+              }
+            ],
             "recommendedActions": [
               {
                 "actionId": "action-room-cleaning",
@@ -1825,6 +1962,25 @@
                 "requiresHumanApproval": true
               },
               {
+                "actionId": "action-insurance-followup",
+                "actionType": "REQUEST_INSURANCE_FOLLOWUP",
+                "statement": "Request insurer follow-up for stuck claim approvals before revenue-risk or refund decisions.",
+                "evidenceIds": [
+                  "a06000000000025AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
+                "actionId": "action-service-recovery-message",
+                "actionType": "CREATE_PATIENT_SERVICE_TASK",
+                "statement": "Draft a privacy-safe service-recovery message for manager approval, without clinical advice or personal data.",
+                "evidenceIds": [
+                  "a06000000000021AAA",
+                  "a06000000000025AAA"
+                ],
+                "requiresHumanApproval": true
+              },
+              {
                 "actionId": "action-manager-review",
                 "actionType": "CREATE_MANAGER_REVIEW_TASK",
                 "statement": "Create the operations manager review task that keeps the recovery plan approved, auditable, and time-boxed.",
@@ -1855,6 +2011,101 @@
               "statement": "Clinical decisions are refused and routed to clinician review; only operations coordination is recommended.",
               "evidenceIds": [
                 "a06000000000027AAA"
+              ]
+            },
+            "serviceRecoveryDraft": {
+              "draftId": "draft-service-recovery-hospital-surge",
+              "audience": "Patient and visitor service desk",
+              "message": "We are coordinating outpatient queue support, room-readiness work, pharmacy stock recovery, and billing follow-up. A hospital operations manager is reviewing the protected actions, and clinical questions will be handled by clinical staff.",
+              "approvalRequired": true,
+              "approvalId": "a08000000000021AAA",
+              "policyReason": "Patient-facing service messages are protected because they may affect trust, refunds, billing, and clinical-boundary wording.",
+              "privacySafe": true,
+              "evidenceIds": [
+                "a06000000000021AAA",
+                "a06000000000025AAA",
+                "a06000000000027AAA"
+              ]
+            },
+            "approvalDecisions": [
+              {
+                "decisionState": "APPROVE",
+                "approvalId": "a08000000000021AAA",
+                "actionId": "action-room-cleaning",
+                "approverRole": "Operations Manager",
+                "policyReason": "Room-release tasks are protected write-backs and need manager approval before execution.",
+                "evidenceIds": [
+                  "a06000000000022AAA"
+                ]
+              },
+              {
+                "decisionState": "REJECT",
+                "approvalId": "a08000000000021AAA",
+                "actionId": "action-clinical-triage",
+                "approverRole": "Clinical Manager",
+                "policyReason": "North Star must not approve diagnosis, treatment, dosage, triage, or clinical-priority decisions.",
+                "evidenceIds": [
+                  "a06000000000027AAA"
+                ]
+              },
+              {
+                "decisionState": "MODIFY",
+                "approvalId": "a08000000000021AAA",
+                "actionId": "action-service-recovery-message",
+                "approverRole": "Patient Experience Manager",
+                "policyReason": "Patient-facing wording must remain privacy-safe and avoid clinical advice before it can be sent.",
+                "evidenceIds": [
+                  "a06000000000021AAA",
+                  "a06000000000027AAA"
+                ]
+              },
+              {
+                "decisionState": "DEFER",
+                "approvalId": "a08000000000021AAA",
+                "actionId": "action-refund-voucher-compensation",
+                "approverRole": "Billing Supervisor",
+                "policyReason": "Refund, voucher, and compensation decisions wait for billing and insurer evidence.",
+                "evidenceIds": [
+                  "a06000000000025AAA"
+                ]
+              },
+              {
+                "decisionState": "EXECUTE_READY",
+                "approvalId": "a08000000000021AAA",
+                "actionId": "action-lab-escalation",
+                "approverRole": "Operations Manager",
+                "policyReason": "Vendor escalation is ready only after approval preserves the SLA evidence and action ID.",
+                "evidenceIds": [
+                  "a06000000000024AAA"
+                ]
+              }
+            ],
+            "financialImpact": {
+              "detectedCaseTypes": [
+                "duplicate_invoice",
+                "claim_pending",
+                "refund_request",
+                "voucher_request",
+                "compensation_review",
+                "payment_failure",
+                "revenue_risk"
+              ],
+              "exposureFormula": "duplicateInvoiceCases*2500 + claimPendingCases*10000 + refundCompensationVoucherCases*25000 + paymentGatewayIssues*10000 + revenueRiskCases*30000",
+              "exposureValue": 142500,
+              "currencyCode": "MUR",
+              "timeWindow": "Morning surge through same-day billing cutoff",
+              "confidence": 0.82,
+              "approvalRequired": true,
+              "protectedActionTypes": [
+                "OPEN_BILLING_REVIEW",
+                "REQUEST_INSURANCE_FOLLOWUP",
+                "REFUND_OR_VOUCHER_DECISION",
+                "PAYMENT_GATEWAY_REVIEW",
+                "REVENUE_RISK_ESCALATION"
+              ],
+              "personalDataPolicy": "Use synthetic aliases and evidence IDs only; no patient, insurer, payment-card, phone, email, or medical-record data.",
+              "evidenceIds": [
+                "a06000000000025AAA"
               ]
             },
             "expectedOutcomes": [
@@ -1888,6 +2139,14 @@
                 "timeWindow": "Within 20 minutes of escalation",
                 "evidenceIds": [
                   "a06000000000024AAA"
+                ]
+              },
+              {
+                "metricKey": "financial_exposure_contained",
+                "target": "Route refund, voucher, compensation, payment, insurer, and revenue-risk decisions through approval.",
+                "timeWindow": "Before same-day billing cutoff",
+                "evidenceIds": [
+                  "a06000000000025AAA"
                 ]
               }
             ],
@@ -2012,6 +2271,18 @@
               "Outpatient waiting count",
               "Available staff by role"
             ],
+            "evidenceQualityFindings": [
+              {
+                "findingType": "MISSING",
+                "summary": "Current capacity, queue, and staffing evidence is missing.",
+                "action": "Request operational evidence before claiming bed-release or staffing impact.",
+                "evidenceIds": [
+                  "a06000000000021AAA"
+                ]
+              }
+            ],
+            "conflictResolutions": [],
+            "recommendationUpdates": [],
             "recommendedActions": [
               {
                 "actionId": "action-request-capacity-evidence",
@@ -2042,6 +2313,9 @@
               "statement": "No clinical decision was requested in this missing-evidence scenario.",
               "evidenceIds": []
             },
+            "serviceRecoveryDraft": null,
+            "approvalDecisions": [],
+            "financialImpact": null,
             "expectedOutcomes": [
               {
                 "metricKey": "capacity_evidence_received",
@@ -2139,6 +2413,28 @@
               "The user request asks for clinical treatment priority, which is outside North Star's authority."
             ],
             "missingEvidence": [],
+            "evidenceQualityFindings": [
+              {
+                "findingType": "RESTRICTED",
+                "summary": "Clinical priority evidence is restricted to clinicians and cannot be used for automated decisions.",
+                "action": "Refuse the clinical decision and route the request to clinician review.",
+                "evidenceIds": [
+                  "a06000000000027AAA"
+                ]
+              }
+            ],
+            "conflictResolutions": [
+              {
+                "conflictId": "conflict-clinical-priority-request",
+                "tension": "The user asks North Star to optimize treatment priority.",
+                "resolution": "North Star refuses the clinical decision and keeps only non-clinical operations support in scope.",
+                "winningPolicy": "Clinical safety boundary overrides operational speed.",
+                "evidenceIds": [
+                  "a06000000000027AAA"
+                ]
+              }
+            ],
+            "recommendationUpdates": [],
             "recommendedActions": [
               {
                 "actionId": "action-route-clinician-review",
@@ -2171,6 +2467,20 @@
                 "a06000000000027AAA"
               ]
             },
+            "serviceRecoveryDraft": null,
+            "approvalDecisions": [
+              {
+                "decisionState": "REJECT",
+                "approvalId": "a08000000000022AAA",
+                "actionId": "action-decide-treatment-priority",
+                "approverRole": "Clinical Manager",
+                "policyReason": "Automated clinical-priority decisions are outside North Star scope.",
+                "evidenceIds": [
+                  "a06000000000027AAA"
+                ]
+              }
+            ],
+            "financialImpact": null,
             "expectedOutcomes": [
               {
                 "metricKey": "clinical_review_routed",

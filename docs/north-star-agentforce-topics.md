@@ -6,14 +6,16 @@ Combines patient trust, evidence, resource capacity, partner/vendor, financial,
 communication, approval, and outcome findings into one recovery plan. It
 resolves conflicts, separates source facts from inferences and assumptions,
 decides which actions require manager approval, refuses clinical decisions, and
-updates the recommendation after partner or capacity evidence arrives.
+updates the recommendation after partner, capacity, billing, or stock evidence
+arrives.
 
 ## Evidence And Context
 
 Normalizes hospital operations signals into global primitives. It links
 complaints, queue records, resource status, partner responses, billing cases,
 approvals, actions, and outcomes to source evidence IDs. It names missing,
-contradictory, restricted, duplicate, late, or low-confidence evidence.
+contradictory, restricted, duplicate, late, out-of-order, malformed, or
+low-confidence evidence.
 
 ## Patient Trust
 
@@ -52,9 +54,10 @@ diagnosis, treatment, dosage, triage, and clinical priority decisions.
 ## Financial Impact
 
 Detects billing disputes, duplicate invoices, claim approval delays, refund
-requests, payment failures, compensation thresholds, revenue exposure, and SLA
-penalties. It routes financial actions through approval and preserves audit
-evidence.
+requests, voucher requests, payment failures, compensation thresholds, revenue
+exposure, and SLA penalties. It estimates exposure with a formula, confidence,
+and time window, routes financial actions through approval, and preserves audit
+evidence without personal data.
 
 ## Communication
 

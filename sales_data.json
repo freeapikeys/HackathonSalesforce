@@ -290,6 +290,30 @@
       "status": "denied",
       "relatedPartnerId": "PARTNER-PAYFLOW-001",
       "evidenceId": "evidence-billing-024"
+    },
+    {
+      "caseId": "BILL-HOS-025",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-030",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "voucher_request",
+      "amountBand": "medium",
+      "approvalRequired": true,
+      "status": "open",
+      "relatedPartnerId": "PARTNER-INSUREPLUS-001",
+      "evidenceId": "evidence-billing-025"
+    },
+    {
+      "caseId": "BILL-HOS-026",
+      "globalPrimitive": "Process",
+      "customerAliasId": "alias-patient-visitor-031",
+      "departmentId": "DEPT-BILLING-INSURANCE-007",
+      "caseType": "revenue_risk",
+      "amountBand": "high",
+      "approvalRequired": true,
+      "status": "pending_partner",
+      "relatedPartnerId": "PARTNER-PAYFLOW-001",
+      "evidenceId": "evidence-billing-026"
     }
   ]
 }

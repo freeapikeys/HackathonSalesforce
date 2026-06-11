@@ -745,6 +745,335 @@
         }
       }
     },
+    "evidenceQualityFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "findingType",
+        "summary",
+        "action",
+        "evidenceIds"
+      ],
+      "properties": {
+        "findingType": {
+          "enum": [
+            "MISSING",
+            "CONTRADICTORY",
+            "RESTRICTED",
+            "DUPLICATE",
+            "LATE",
+            "OUT_OF_ORDER",
+            "MALFORMED",
+            "LOW_CONFIDENCE"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 0
+        }
+      }
+    },
+    "conflictResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflictId",
+        "tension",
+        "resolution",
+        "winningPolicy",
+        "evidenceIds"
+      ],
+      "properties": {
+        "conflictId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "tension": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "resolution": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "winningPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "recommendationUpdate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trigger",
+        "changedByEvidenceId",
+        "before",
+        "after",
+        "decision",
+        "evidenceIds"
+      ],
+      "properties": {
+        "trigger": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "changedByEvidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "before": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "after": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "decision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "serviceRecoveryDraft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftId",
+        "audience",
+        "message",
+        "approvalRequired",
+        "approvalId",
+        "policyReason",
+        "privacySafe",
+        "evidenceIds"
+      ],
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "audience": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1200
+        },
+        "approvalRequired": {
+          "const": true
+        },
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "policyReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "privacySafe": {
+          "const": true
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "approvalDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionState",
+        "approvalId",
+        "actionId",
+        "approverRole",
+        "policyReason",
+        "evidenceIds"
+      ],
+      "properties": {
+        "decisionState": {
+          "enum": [
+            "APPROVE",
+            "REJECT",
+            "MODIFY",
+            "DEFER",
+            "EXECUTE_READY"
+          ]
+        },
+        "approvalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "actionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        },
+        "approverRole": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "policyReason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 0
+        }
+      }
+    },
+    "financialImpactSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "detectedCaseTypes",
+        "exposureFormula",
+        "exposureValue",
+        "currencyCode",
+        "timeWindow",
+        "confidence",
+        "approvalRequired",
+        "protectedActionTypes",
+        "personalDataPolicy",
+        "evidenceIds"
+      ],
+      "properties": {
+        "detectedCaseTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "exposureFormula": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "exposureValue": {
+          "type": "number"
+        },
+        "currencyCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10
+        },
+        "timeWindow": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "approvalRequired": {
+          "const": true
+        },
+        "protectedActionTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "personalDataPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
     "expectedHospitalOutcome": {
       "type": "object",
       "additionalProperties": false,
@@ -792,10 +1121,16 @@
         "calculations",
         "assumptions",
         "missingEvidence",
+        "evidenceQualityFindings",
+        "conflictResolutions",
+        "recommendationUpdates",
         "recommendedActions",
         "blockedActions",
         "partnerCaution",
         "clinicalBoundary",
+        "serviceRecoveryDraft",
+        "approvalDecisions",
+        "financialImpact",
         "expectedOutcomes",
         "explanation"
       ],
@@ -845,6 +1180,24 @@
           },
           "uniqueItems": true
         },
+        "evidenceQualityFindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceQualityFinding"
+          }
+        },
+        "conflictResolutions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/conflictResolution"
+          }
+        },
+        "recommendationUpdates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recommendationUpdate"
+          }
+        },
         "recommendedActions": {
           "type": "array",
           "items": {
@@ -862,6 +1215,32 @@
         },
         "clinicalBoundary": {
           "$ref": "#/$defs/clinicalBoundary"
+        },
+        "serviceRecoveryDraft": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/serviceRecoveryDraft"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "approvalDecisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/approvalDecision"
+          }
+        },
+        "financialImpact": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/financialImpactSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "expectedOutcomes": {
           "type": "array",
