@@ -1,7 +1,6 @@
 {
   "name": "North Star private hospital demo data",
   "sourceOfTruth": "data/hospital",
-  "mirror": "synthetic_data legacy compatibility copies",
   "safety": {
     "mode": "synthetic_demo_only",
     "realPatientData": false,
@@ -12,7 +11,6 @@
   "files": [
     {
       "path": "data/hospital/master_data.json",
-      "mirrorPath": "synthetic_data/master_data.json",
       "contains": [
         "hospital departments",
         "locations",
@@ -23,7 +21,6 @@
     },
     {
       "path": "data/hospital/resources.json",
-      "mirrorPath": "synthetic_data/warehouse_inventory.json",
       "contains": [
         "hospital resources",
         "beds",
@@ -36,7 +33,6 @@
     },
     {
       "path": "data/hospital/complaints.json",
-      "mirrorPath": "synthetic_data/complaints.json",
       "contains": [
         "synthetic patient and visitor complaints",
         "complaint types",
@@ -47,7 +43,6 @@
     },
     {
       "path": "data/hospital/complaint_clusters.json",
-      "mirrorPath": "synthetic_data/complaint_clusters.json",
       "contains": [
         "clustered complaints",
         "dominant issue types",
@@ -57,7 +52,6 @@
     },
     {
       "path": "data/hospital/capacity_pressure.json",
-      "mirrorPath": "synthetic_data/queue_pressure.json",
       "contains": [
         "queue pressure",
         "capacity records",
@@ -66,7 +60,6 @@
     },
     {
       "path": "data/hospital/supply_positions.json",
-      "mirrorPath": "synthetic_data/inventory_positions.json",
       "contains": [
         "pharmacy and supply positions",
         "stock cover",
@@ -76,7 +69,6 @@
     },
     {
       "path": "data/hospital/financial_cases.json",
-      "mirrorPath": "synthetic_data/sales_data.json",
       "contains": [
         "billing cases",
         "insurance cases",
@@ -87,7 +79,6 @@
     },
     {
       "path": "data/hospital/partner_responses.json",
-      "mirrorPath": "synthetic_data/supplier_responses.json",
       "contains": [
         "partner responses",
         "vendor SLA signals",
@@ -96,7 +87,6 @@
     },
     {
       "path": "data/hospital/task_templates.json",
-      "mirrorPath": "synthetic_data/task_templates.json",
       "contains": [
         "approved task templates",
         "owner role aliases",
@@ -106,7 +96,6 @@
     },
     {
       "path": "data/hospital/channel_aliases.json",
-      "mirrorPath": "synthetic_data/channel_aliases.json",
       "contains": [
         "Slack role aliases",
         "WhatsApp-style role aliases",
@@ -115,7 +104,6 @@
     },
     {
       "path": "data/hospital/recommendation_cases.json",
-      "mirrorPath": "synthetic_data/recommendation_cases.json",
       "contains": [
         "expected Agentforce recommendation cases",
         "approval requirements",
@@ -124,7 +112,6 @@
     },
     {
       "path": "data/hospital/event_stream.json",
-      "mirrorPath": "synthetic_data/event_stream.json",
       "contains": [
         "hospital event summaries",
         "late events",
@@ -135,12 +122,10 @@
     },
     {
       "path": "data/hospital/supply_batches.json",
-      "mirrorPath": "synthetic_data/product_batches.json",
       "contains": ["hospital supply batches"]
     },
     {
       "path": "data/hospital/service_recovery_options.json",
-      "mirrorPath": "synthetic_data/promotions.json",
       "contains": ["service recovery options"]
     }
   ]

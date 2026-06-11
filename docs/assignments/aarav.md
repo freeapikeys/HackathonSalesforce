@@ -102,8 +102,7 @@ summaries are enough for the hackathon.
 ## Current Completion Evidence
 
 The committed hospital data inventory now satisfies the target ranges above
-through canonical `data/hospital/` files and matching `synthetic_data/`
-compatibility copies:
+through canonical `data/hospital/` files:
 
 - `data/hospital/master_data.json`: hospital campus, 10 departments, 24
   locations, 50 customer aliases, 24 staff role aliases, and 10 partners.
@@ -129,9 +128,8 @@ compatibility copies:
 - `data/hospital/supply_batches.json`: 24 hospital supply batches.
 - `data/hospital/service_recovery_options.json`: 12 service recovery options.
 
-Run `npm run check:demo-data` to verify counts, canonical/synthetic copy
-parity, evidence links, role aliases, approval flags, and absence of personal
-contact or clinical decision data.
+Run `npm run check:demo-data` to verify counts, evidence links, role aliases,
+approval flags, and absence of personal contact or clinical decision data.
 
 ## Required Departments And Risks
 

@@ -25,10 +25,8 @@ make diagnosis, treatment, dosage, triage, or clinical priority decisions.
 
 ## Committed Synthetic Data Files
 
-The full fake-data inventory is committed under `data/hospital/`. The older
-`synthetic_data/` folder remains as a compatibility mirror for teammates or
-agents that still use that path. The validator checks both copies so they do
-not drift.
+The full fake-data inventory is committed under `data/hospital/`. This is the
+single source of truth for hospital demo data.
 
 For a quick agent-friendly index, use
 `data/hospital-demo-data-manifest.json`.

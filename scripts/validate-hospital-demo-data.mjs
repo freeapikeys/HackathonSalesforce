@@ -5,26 +5,20 @@ const root = process.cwd();
 const canonicalDataDir = path.join("data", "hospital");
 
 const dataFiles = [
-  { canonical: "master_data.json", mirror: "master_data.json" },
-  { canonical: "resources.json", mirror: "warehouse_inventory.json" },
-  { canonical: "supply_positions.json", mirror: "inventory_positions.json" },
-  { canonical: "supply_batches.json", mirror: "product_batches.json" },
-  { canonical: "complaints.json", mirror: "complaints.json" },
-  { canonical: "complaint_clusters.json", mirror: "complaint_clusters.json" },
-  { canonical: "capacity_pressure.json", mirror: "queue_pressure.json" },
-  { canonical: "financial_cases.json", mirror: "sales_data.json" },
-  { canonical: "partner_responses.json", mirror: "supplier_responses.json" },
-  { canonical: "task_templates.json", mirror: "task_templates.json" },
-  { canonical: "channel_aliases.json", mirror: "channel_aliases.json" },
-  {
-    canonical: "recommendation_cases.json",
-    mirror: "recommendation_cases.json"
-  },
-  { canonical: "event_stream.json", mirror: "event_stream.json" },
-  {
-    canonical: "service_recovery_options.json",
-    mirror: "promotions.json"
-  }
+  "master_data.json",
+  "resources.json",
+  "supply_positions.json",
+  "supply_batches.json",
+  "complaints.json",
+  "complaint_clusters.json",
+  "capacity_pressure.json",
+  "financial_cases.json",
+  "partner_responses.json",
+  "task_templates.json",
+  "channel_aliases.json",
+  "recommendation_cases.json",
+  "event_stream.json",
+  "service_recovery_options.json"
 ];
 
 const forbiddenKeys = [
@@ -99,29 +93,15 @@ function assertNoForbiddenPersonalData(fileName, value) {
 }
 
 const hospitalData = Object.fromEntries(
-  dataFiles.map(({ canonical }) => [
-    canonical,
-    readJson(path.join(canonicalDataDir, canonical))
-  ])
-);
-const syntheticData = Object.fromEntries(
-  dataFiles.map(({ canonical, mirror }) => [
-    canonical,
-    readJson(path.join("synthetic_data", mirror))
+  dataFiles.map((fileName) => [
+    fileName,
+    readJson(path.join(canonicalDataDir, fileName))
   ])
 );
 
-for (const { canonical, mirror } of dataFiles) {
-  const canonicalPath = path.join(canonicalDataDir, canonical);
-  const mirrorPath = path.join("synthetic_data", mirror);
-
-  assertNoForbiddenPersonalData(canonicalPath, hospitalData[canonical]);
-  assertNoForbiddenPersonalData(mirrorPath, syntheticData[canonical]);
-  assert(
-    JSON.stringify(hospitalData[canonical]) ===
-      JSON.stringify(syntheticData[canonical]),
-    `${canonicalPath} and ${mirrorPath} are not identical`
-  );
+for (const fileName of dataFiles) {
+  const canonicalPath = path.join(canonicalDataDir, fileName);
+  assertNoForbiddenPersonalData(canonicalPath, hospitalData[fileName]);
 }
 
 const masterData = hospitalData["master_data.json"];
