@@ -11,8 +11,9 @@ batches, cruise cabins, and hospital beds.
 ## Three-Minute Judge Demo
 
 The demo opens with a morning operations surge at a private hospital. The
-signal can start from a WhatsApp patient complaint, a Salesforce intake
-fallback, or a system event. The command center shows rising patient
+signal can start from a Twilio Sandbox WhatsApp patient complaint or a system
+event. The Salesforce command center is the visibility, audit, and fallback
+approval surface. It shows rising patient
 complaints, blocked discharge rooms, a growing outpatient queue, pharmacy stock
 pressure, delayed lab response, and stuck billing/insurance approvals.
 
@@ -30,9 +31,10 @@ proposes operational action: release cleaned beds, assign porter tasks,
 request pharmacy restock, open billing review, escalate the lab partner, and
 prepare approved internal alerts.
 
-The operations manager approves consequential actions in the command center.
-The live harness executes approved Slack and WhatsApp-style MuleSoft channel
-actions and captures the resulting Salesforce outcomes. The broader action
+The operations manager approves consequential actions through Slack approval or
+the command-center fallback. The live harness executes approved Slack,
+WhatsApp, and protected vendor-email MuleSoft channel actions and captures the
+resulting Salesforce outcomes. The broader action
 plan names the service task, bed-cleaning request, vendor escalation, billing
 review, pharmacy restock, and outcome metrics that the mocked action catalog
 supports. The final view shows wait time reduced, beds released, stockout
@@ -127,8 +129,8 @@ The system boundary is the strongest part of the story:
 
 Show the exact flow the repo can run:
 
-1. start with one WhatsApp/customer complaint, Salesforce intake fallback, or
-   hospital operations surge event;
+1. start with one Twilio Sandbox WhatsApp/customer complaint or hospital
+   operations surge event;
 2. show global primitive context and conflicting evidence;
 3. ask Agentforce for the action recommendation;
 4. show the clinical-decision request refused;
@@ -172,9 +174,9 @@ hospital demo:
 Be direct:
 
 - mocked in the hackathon: synthetic hospital data, local MuleSoft runtime,
-  provider channels when credentials are absent, real hospital systems, and
-  live customer intake unless the inbound WhatsApp or Salesforce intake path is
-  implemented;
+  provider channels when credentials are absent, real hospital systems, live
+  customer intake unless the public Twilio webhook is configured, and live email
+  unless an Anypoint or email provider is connected;
 - production-shaped architecture: evidence records, approval gate, protected
   action execution, provider-neutral model gateway, Salesforce audit trail,
   clean-clone runbook, and deterministic refusal checks;
@@ -206,8 +208,9 @@ use the deterministic mock path:
    response, approval, action execution, channel results, clinical refusal, and
    outcome panels.
 
-The presenter must state that Slack and WhatsApp-style delivery are mock channel
-results unless real credentials are configured for that rehearsal.
+The presenter must state that Slack, WhatsApp, and vendor-email delivery are
+mock channel results unless real credentials or connectors are configured for
+that rehearsal.
 
 ## Final Non-Goals
 

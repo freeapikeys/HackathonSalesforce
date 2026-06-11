@@ -21,6 +21,7 @@ REQUIRED_STEPS = [
     "verify-context",
     "ensure-permissions",
     "prepare-connected",
+    "twilio-complaint-intake",
     "connected-source",
     "model-gateway",
     "persist-recommendation",
@@ -34,11 +35,11 @@ REQUIRED_STEPS = [
     "verify-connected",
 ]
 FINAL_COUNT_MINIMUMS = {
-    "HFS_Action__c": 10,
+    "HFS_Action__c": 11,
     "HFS_Evidence__c": 7,
-    "HFS_Evaluation__c": 11,
-    "HFS_Event__c": 12,
-    "HFS_Outcome__c": 11,
+    "HFS_Evaluation__c": 12,
+    "HFS_Event__c": 13,
+    "HFS_Outcome__c": 12,
     "HFS_Recommendation__c": 1,
     "HFS_Work_Item__c": 1,
 }
@@ -77,6 +78,7 @@ REQUIRED_FINAL_ACTION_TYPES = {
     "CREATE_MANAGER_REVIEW_TASK",
     "SEND_SLACK_ALERT",
     "SEND_WHATSAPP_ALERT",
+    "SEND_VENDOR_EMAIL",
 }
 REQUIRED_TASK_ROUTING = {
     "CREATE_PATIENT_SERVICE_TASK": {
@@ -114,6 +116,7 @@ REQUIRED_TASK_ROUTING = {
 }
 REQUIRED_FINAL_OUTCOME_TYPES = {
     "BILLING_REVIEW_OPENED",
+    "ACTION_EXECUTED",
     "COMPLAINT_CONTAINED",
     "DISCHARGE_ROOMS_RELEASED",
     "FRONT_DESK_QUEUE_SUPPORT_OPENED",
@@ -136,6 +139,7 @@ REQUIRED_FINAL_OUTCOME_METRICS = {
     "rooms_released",
     "slack_alert_delivery_success",
     "stockout_avoided",
+    "vendor_email_queued",
     "whatsapp_alert_delivery_success",
 }
 SENSITIVE_KEYS = {
@@ -325,6 +329,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
 
     details = report.get("details")
     require(isinstance(details, dict), "Demo details are missing")
+    twilio_intake = details.get("twilioIntake") or {}
     model = details.get("model") or {}
     agentforce = details.get("agentforce") or {}
     clinical_refusal = details.get("clinicalRefusal") or {}
@@ -337,6 +342,35 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
     connected = details.get("connected") or {}
     counts = connected.get("counts") or {}
 
+    require(
+        twilio_intake.get("status") == "ACCEPTED"
+        and twilio_intake.get("sourceChannel") == "whatsapp-inbound"
+        and twilio_intake.get("messageBodyStored") is False
+        and twilio_intake.get("protectedActionState") == "NO_ACTION_EXECUTED"
+        and integer(
+            twilio_intake.get("followUpQuestionCount", 0),
+            "Twilio follow-up question count",
+        )
+        >= 5
+        and integer(
+            twilio_intake.get("rootCauseHypothesisCount", 0),
+            "Twilio root-cause hypothesis count",
+        )
+        >= 3,
+        "Twilio complaint intake did not create safe deep evidence",
+    )
+    require_subset(
+        twilio_intake.get("expandedFunctions"),
+        {
+            "patient trust",
+            "resource and capacity",
+            "pharmacy inventory",
+            "billing",
+            "communication",
+            "outcome learning",
+        },
+        "Twilio expanded functions",
+    )
     require(
         model.get("restrictedDecision") == "NO_QUALIFIED_DEPLOYMENT",
         "Restricted model route did not reject the deployment",
@@ -400,6 +434,15 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         "MuleSoft did not block the unregistered approval",
     )
     require(
+        mulesoft.get("pendingApprovalBlockedStatus") == 403
+        and mulesoft.get("pendingApprovalBlockedError") == "PERMISSION_DENIED",
+        "MuleSoft did not wait for the Slack approval decision",
+    )
+    require(
+        (mulesoft.get("slackApproval") or {}).get("decisionStatus") == "APPROVED",
+        "Slack approval did not approve the protected action set",
+    )
+    require(
         mulesoft.get("executionStatus") == 202
         and mulesoft.get("executionState") == "QUEUED",
         "MuleSoft did not accept the approved write-back",
@@ -414,6 +457,12 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             delivery.get("provider"),
             f"MuleSoft {action_type} delivery has no provider evidence",
         )
+    vendor_delivery = delivery_by_type.get("SEND_VENDOR_EMAIL") or {}
+    require(
+        vendor_delivery.get("status") == "QUEUED"
+        and vendor_delivery.get("metricKey") == "vendor_email_queued",
+        "MuleSoft did not queue the protected vendor email mock",
+    )
     require(
         outcome.get("actionStatus") == "EXECUTED"
         and outcome.get("outcomeStatus") == "SUCCESS"
@@ -554,17 +603,23 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
                 "recommendationEvidenceCount"
             ],
             "clinicalDecisionRefusal": clinical_refusal["errorCode"],
+            "twilioIntakeStatus": twilio_intake["status"],
+            "twilioExpandedFunctions": twilio_intake["expandedFunctions"],
             "agentforceExternalActionExecuted": agentforce[
                 "externalActionExecuted"
             ],
             "salesforcePreApprovalAction": action["blockedErrorCode"],
             "mulesoftPreApprovalStatus": mulesoft["blockedStatus"],
             "mulesoftPreApprovalError": mulesoft["blockedErrorCode"],
+            "slackApprovalDecision": mulesoft["slackApproval"][
+                "decisionStatus"
+            ],
             "mulesoftApprovedStatus": mulesoft["executionStatus"],
             "slackDeliveryStatus": delivery_by_type["SEND_SLACK_ALERT"]["status"],
             "whatsappDeliveryStatus": delivery_by_type["SEND_WHATSAPP_ALERT"][
                 "status"
             ],
+            "vendorEmailStatus": delivery_by_type["SEND_VENDOR_EMAIL"]["status"],
             "taskActionCount": outcome["taskActionCount"],
             "executedChannelActionCount": outcome[
                 "executedChannelActionCount"

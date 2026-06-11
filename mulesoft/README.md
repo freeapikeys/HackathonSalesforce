@@ -126,6 +126,15 @@ configured, the runtime posts the approved message to the webhook and records
 denied before payload execution, and malformed Slack payloads return
 `VALIDATION_FAILED`.
 
+True Slack approval is separate from the incoming webhook. It requires a Slack
+App with Interactivity enabled, a public Request URL, and
+`SLACK_SIGNING_SECRET` stored outside Git. The local reference runtime validates
+Slack request signatures, rejects replayed interactions, supports Approve and
+Reject decisions, and keeps protected actions blocked until a signed approval
+decision is accepted. The Modify button returns a safe instruction to revise the
+recommendation in Salesforce because Salesforce currently supports only
+`APPROVED` and `REJECTED` approval decisions.
+
 For an Anypoint build, keep the same Process API boundary and implement the
 Slack write-back as a Mule flow or connector-backed adapter behind
 `POST /v1/actions/executions`. Store the webhook URL in Anypoint secure
@@ -138,8 +147,10 @@ WhatsApp is modeled as the protected action type `SEND_WHATSAPP_ALERT` behind
 action validates the role alias, target alias, message, evidence IDs, and
 source recommendation before producing a channel delivery record.
 
-The runtime can send through Twilio Sandbox or a WhatsApp-enabled Twilio sender
-when all of these environment variables are configured:
+For the hackathon demo, use Twilio Sandbox. Meta Cloud API is out of scope
+unless the team already has business verification, templates, and a production
+number ready. The runtime can send through Twilio Sandbox or a WhatsApp-enabled
+Twilio sender when all of these environment variables are configured:
 
 - `TWILIO_ACCOUNT_SID`
 - `TWILIO_AUTH_TOKEN`
@@ -159,8 +170,10 @@ triage, or clinical-priority wording.
 
 For an Anypoint build, keep the same Process API boundary and implement the
 WhatsApp write-back as a Mule flow or connector-backed adapter behind
-`POST /v1/actions/executions`. Store Twilio or Meta credentials in Anypoint
-secure configuration, never in Git.
+`POST /v1/actions/executions`. For the hackathon, store Twilio Sandbox
+credentials in Anypoint secure configuration or process environment, never in
+Git. Meta Cloud API is out of scope unless the team already has business
+verification and templates ready.
 
 ## Email Path
 

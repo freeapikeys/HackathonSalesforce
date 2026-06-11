@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import json
 import unittest
+import urllib.parse
 from copy import deepcopy
 
 from mock_runtime import (
     RetryPolicy,
+    SlackApprovalInteractionHandler,
     WhatsAppProviderConfig,
     build_default_api,
 )
@@ -47,6 +50,28 @@ class MockAdapterTest(unittest.TestCase):
             path,
             deepcopy(example["x-hfs-headers"]),
             deepcopy(example["value"]),
+        )
+
+    def signed_slack_request(
+        self,
+        *,
+        signing_secret: str,
+        payload: dict,
+        timestamp: str = "1710000000",
+    ) -> tuple[dict[str, str], str]:
+        raw_body = urllib.parse.urlencode(
+            {"payload": json.dumps(payload, separators=(",", ":"))}
+        )
+        return (
+            {
+                "X-Slack-Request-Timestamp": timestamp,
+                "X-Slack-Signature": SlackApprovalInteractionHandler.signature(
+                    signing_secret=signing_secret,
+                    timestamp_value=timestamp,
+                    raw_body=raw_body,
+                ),
+            },
+            raw_body,
         )
 
     def test_synthetic_event_and_approved_action_produce_outcome(self) -> None:
@@ -282,6 +307,150 @@ class MockAdapterTest(unittest.TestCase):
             "slack-message-001",
             record["delivery"]["providerMessageId"],
         )
+
+    def test_slack_approval_message_can_include_block_kit_buttons(self) -> None:
+        transport = FakeSlackTransport()
+        api = build_default_api(
+            slack_webhook_url="https://hooks.slack.test/services/demo",
+            slack_transport=transport,
+        )
+        example = api.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        body = deepcopy(example["value"])
+        body["payload"]["approvalRequest"] = True
+
+        response = api.request(
+            "POST",
+            "/v1/actions/executions",
+            deepcopy(example["x-hfs-headers"]),
+            body,
+        )
+
+        self.assertEqual(202, response.status)
+        posted = transport.posts[0]["payload"]
+        self.assertIn("blocks", posted)
+        action_block = posted["blocks"][-1]
+        self.assertEqual("actions", action_block["type"])
+        action_ids = {
+            element["action_id"] for element in action_block["elements"]
+        }
+        self.assertEqual(
+            {
+                "north_star_approve",
+                "north_star_reject",
+                "north_star_modify",
+            },
+            action_ids,
+        )
+
+    def test_slack_interaction_approves_pending_action_before_execution(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(
+            slack_webhook_url="",
+            whatsapp_provider_config=None,
+        )
+        example = api.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        body = deepcopy(example["value"])
+        body["externalKey"] = "action-slack-interactive-approval"
+        body["idempotencyKey"] = "action-slack-interactive-approval-v1"
+        body["approvalId"] = "approval-slack-interactive-001"
+        body["actionId"] = "action-slack-interactive-001"
+        body["payload"] = {
+            "targetRole": "Operations Manager",
+            "targetChannel": "#north-star-demo",
+            "messageTitle": "Hospital operations approval",
+            "messageBody": "Approve protected North Star operations actions.",
+            "evidenceIds": ["evidence-hospital-001"],
+            "sourceRecommendationId": body["recommendationId"],
+            "approvalRequest": True,
+        }
+        headers = deepcopy(example["x-hfs-headers"])
+        headers["X-Idempotency-Key"] = body["idempotencyKey"]
+        api.write_back_adapter.register_approval(
+            approval_id=body["approvalId"],
+            tenant_key=body["tenantKey"],
+            recommendation_id=body["recommendationId"],
+            action_id=body["actionId"],
+            status="PENDING",
+        )
+
+        blocked = api.request(
+            "POST",
+            "/v1/actions/executions",
+            headers,
+            body,
+        )
+        self.assertEqual(403, blocked.status)
+        self.assertEqual(0, len(api.outcomes))
+
+        button_value = json.loads(
+            api.write_back_adapter.slack_approval_blocks(
+                tenant_key=body["tenantKey"],
+                correlation_id=body["correlationId"],
+                recommendation_id=body["recommendationId"],
+                approval_id=body["approvalId"],
+                action_ids=[body["actionId"]],
+                title="Hospital operations approval",
+                body="Approve protected North Star operations actions.",
+            )[-1]["elements"][0]["value"]
+        )
+        slack_payload = {
+            "type": "block_actions",
+            "user": {"username": "ops-manager"},
+            "actions": [
+                {
+                    "action_id": "north_star_approve",
+                    "value": json.dumps(button_value),
+                }
+            ],
+        }
+        signed_headers, raw_body = self.signed_slack_request(
+            signing_secret=signing_secret,
+            payload=slack_payload,
+        )
+        handler = SlackApprovalInteractionHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+        decision = handler.handle(signed_headers, raw_body)
+        self.assertEqual(200, decision.status)
+        self.assertEqual("APPROVED", decision.body["decisionStatus"])
+
+        approved = api.request(
+            "POST",
+            "/v1/actions/executions",
+            headers,
+            body,
+        )
+        self.assertEqual(202, approved.status)
+        self.assertEqual(1, len(api.outcomes))
+
+        replay = handler.handle(signed_headers, raw_body)
+        self.assertEqual(409, replay.status)
+        self.assertEqual("SLACK_INTERACTION_REPLAYED", replay.body["code"])
+
+    def test_slack_interaction_rejects_invalid_signature(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        handler = SlackApprovalInteractionHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+        headers, raw_body = self.signed_slack_request(
+            signing_secret=signing_secret,
+            payload={"actions": []},
+        )
+        headers["X-Slack-Signature"] = "v0=invalid"
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(401, response.status)
+        self.assertEqual("SLACK_SIGNATURE_INVALID", response.body["code"])
 
     def test_malformed_slack_payload_is_rejected(self) -> None:
         example = self.contract.examples["operations"][

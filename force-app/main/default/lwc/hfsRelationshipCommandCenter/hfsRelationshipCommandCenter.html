@@ -250,6 +250,53 @@
                   <dd>{state.case.complaintCluster.window}</dd>
                 </div>
               </dl>
+              <template lwc:if={state.case.inboundComplaintIntake}>
+                <div class="outcome" data-testid="inbound-complaint-intake">
+                  <div>
+                    <span class="entity-type">WhatsApp intake</span>
+                    <h3>{state.case.inboundComplaintIntake.sourceChannel}</h3>
+                  </div>
+                  <p>{state.case.inboundComplaintIntake.summary}</p>
+                  <strong
+                    >{state.case.inboundComplaintIntake.protectedActionState}</strong
+                  >
+                </div>
+                <div class="evidence-list evidence-list_compact">
+                  <article class="evidence-card">
+                    <h3>Follow-up questions</h3>
+                    <ul class="fact-list">
+                      <template
+                        for:each={state.case.inboundComplaintIntake.followUpQuestions}
+                        for:item="question"
+                      >
+                        <li key={question}>{question}</li>
+                      </template>
+                    </ul>
+                  </article>
+                  <article class="evidence-card">
+                    <h3>Root-cause hypotheses</h3>
+                    <ul class="inference-list">
+                      <template
+                        for:each={state.case.inboundComplaintIntake.rootCauseHypotheses}
+                        for:item="hypothesis"
+                      >
+                        <li key={hypothesis}>{hypothesis}</li>
+                      </template>
+                    </ul>
+                  </article>
+                  <article class="evidence-card">
+                    <h3>Next evidence needed</h3>
+                    <ul class="fact-list">
+                      <template
+                        for:each={state.case.inboundComplaintIntake.nextEvidenceNeeded}
+                        for:item="evidence"
+                      >
+                        <li key={evidence}>{evidence}</li>
+                      </template>
+                    </ul>
+                  </article>
+                </div>
+              </template>
             </section>
 
             <section class="panel" aria-labelledby="supplier-heading">
@@ -302,6 +349,35 @@
                         <strong>{conflict.agent}</strong>
                         <span>{conflict.conflict}</span>
                         <span>{conflict.resolution}</span>
+                      </div>
+                    </li>
+                  </template>
+                </ul>
+              </section>
+            </template>
+
+            <template lwc:if={state.case.agentHandoffTrace}>
+              <section
+                class="panel"
+                data-testid="agent-handoff-trace"
+                aria-labelledby="handoff-heading"
+              >
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">Agent handoff</p>
+                    <h2 id="handoff-heading">10-agent coordination trace</h2>
+                  </div>
+                </div>
+                <ul class="action-list">
+                  <template
+                    for:each={state.case.agentHandoffTrace}
+                    for:item="handoff"
+                  >
+                    <li key={handoff.id}>
+                      <div>
+                        <strong>{handoff.agent}</strong>
+                        <span>{handoff.contribution}</span>
+                        <span>Output: {handoff.output}</span>
                       </div>
                     </li>
                   </template>

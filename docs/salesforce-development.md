@@ -108,6 +108,8 @@ For the final rehearsal, the human setup work is:
   `HFS_Approver` and `HFS_Integration_User` to the connected user before seed
   and run;
 - keep Slack and WhatsApp credentials outside Git. `SLACK_WEBHOOK_URL` enables a
-  real Slack webhook. Twilio or Meta credentials enable real WhatsApp-style
-  delivery. Missing credentials are acceptable only when the presenter calls out
-  the honest `MOCK_SENT` fallback.
+  real Slack webhook, and `SLACK_SIGNING_SECRET` enables live Slack approval
+  buttons when a public interactivity URL is configured. Twilio Sandbox
+  credentials enable WhatsApp delivery for the hackathon. Missing credentials
+  are acceptable only when the presenter calls out the honest `MOCK_SENT`
+  fallback.

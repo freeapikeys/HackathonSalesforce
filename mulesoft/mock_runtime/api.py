@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import hmac
 import json
 import os
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -71,6 +73,19 @@ class AdapterIdempotencyConflict(RuntimeError):
 class ActionPayloadValidationError(ValueError):
     def __init__(self, field_name: str, message: str) -> None:
         self.field_name = field_name
+        super().__init__(message)
+
+
+class SlackInteractionValidationError(ValueError):
+    def __init__(
+        self,
+        code: str,
+        message: str,
+        *,
+        status: int = 400,
+    ) -> None:
+        self.code = code
+        self.status = status
         super().__init__(message)
 
 
@@ -362,24 +377,54 @@ class MockWriteBackAdapter:
         tenant_key: str,
         recommendation_id: str,
         action_id: str,
+        action_ids: list[str] | None = None,
         status: str = "APPROVED",
     ) -> None:
+        approved_action_ids = action_ids or [action_id]
         self.approvals[approval_id] = {
             "tenantKey": tenant_key,
             "recommendationId": recommendation_id,
             "actionId": action_id,
+            "actionIds": list(approved_action_ids),
             "status": status,
         }
+
+    def decide_approval(
+        self,
+        *,
+        approval_id: str,
+        tenant_key: str,
+        recommendation_id: str,
+        decision_status: str,
+        decision_notes: str,
+    ) -> dict[str, Any]:
+        if decision_status not in {"APPROVED", "REJECTED"}:
+            raise PermissionError("Only APPROVED or REJECTED decisions are supported.")
+        approval = self.approvals.get(approval_id)
+        if approval is None:
+            raise PermissionError("The approval was not registered.")
+        if approval["tenantKey"] != tenant_key:
+            raise PermissionError("The approval tenant does not match.")
+        if approval["recommendationId"] != recommendation_id:
+            raise PermissionError("The approval recommendation does not match.")
+        if approval["status"] != "PENDING":
+            raise PermissionError("Only a pending approval can be decided.")
+        approval["status"] = decision_status
+        approval["decisionNotes"] = decision_notes
+        approval["decidedAt"] = timestamp()
+        return deepcopy(approval)
 
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         approval = self.approvals.get(action["approvalId"])
         if approval is None or approval["status"] != "APPROVED":
             raise PermissionError("The linked approval is not approved.")
-        for field in ("tenantKey", "recommendationId", "actionId"):
+        for field in ("tenantKey", "recommendationId"):
             if approval[field] != action[field]:
                 raise PermissionError(
                     f"The linked approval does not match {field}."
                 )
+        if action["actionId"] not in approval.get("actionIds", []):
+            raise PermissionError("The linked approval does not include this action.")
 
         scope = (action["tenantKey"], action["idempotencyKey"])
         action_hash = canonical_hash(action)
@@ -626,7 +671,7 @@ class MockWriteBackAdapter:
             try:
                 result = self.slack_transport.post(
                     self.slack_webhook_url,
-                    {"text": text},
+                    self.slack_message_payload(slack_payload, action),
                 )
                 status = "SENT"
                 sent_at = timestamp()
@@ -735,6 +780,291 @@ class MockWriteBackAdapter:
                 f"Channel: {payload['targetChannel']}",
                 "Evidence: " + ", ".join(payload["evidenceIds"]),
             ]
+        )
+
+    def slack_message_payload(
+        self,
+        payload: dict[str, Any],
+        action: dict[str, Any],
+    ) -> dict[str, Any]:
+        text = self._slack_message_text(payload)
+        message = {"text": text}
+        if payload.get("approvalRequest"):
+            message["blocks"] = self.slack_approval_blocks(
+                tenant_key=action["tenantKey"],
+                correlation_id=action["correlationId"],
+                recommendation_id=action["recommendationId"],
+                approval_id=action["approvalId"],
+                action_ids=[action["actionId"]],
+                title=payload["messageTitle"],
+                body=payload["messageBody"],
+            )
+        return message
+
+    @staticmethod
+    def slack_approval_blocks(
+        *,
+        tenant_key: str,
+        correlation_id: str,
+        recommendation_id: str,
+        approval_id: str,
+        action_ids: list[str],
+        title: str,
+        body: str,
+    ) -> list[dict[str, Any]]:
+        def button_value(decision_status: str) -> str:
+            return json.dumps(
+                {
+                    "tenantKey": tenant_key,
+                    "correlationId": correlation_id,
+                    "recommendationId": recommendation_id,
+                    "approvalId": approval_id,
+                    "actionIds": action_ids,
+                    "decisionStatus": decision_status,
+                },
+                separators=(",", ":"),
+                sort_keys=True,
+            )
+
+        return [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": title[:150],
+                },
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": body[:3000],
+                },
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": (
+                            f"Approval `{approval_id}` for recommendation "
+                            f"`{recommendation_id}`."
+                        ),
+                    }
+                ],
+            },
+            {
+                "type": "actions",
+                "block_id": "north_star_approval_actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Approve"},
+                        "style": "primary",
+                        "action_id": "north_star_approve",
+                        "value": button_value("APPROVED"),
+                    },
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Reject"},
+                        "style": "danger",
+                        "action_id": "north_star_reject",
+                        "value": button_value("REJECTED"),
+                    },
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Modify"},
+                        "action_id": "north_star_modify",
+                        "value": button_value("MODIFY"),
+                    },
+                ],
+            },
+        ]
+
+
+class SlackApprovalInteractionHandler:
+    """Validates Slack button interactions and records approval decisions."""
+
+    def __init__(
+        self,
+        *,
+        signing_secret: str,
+        write_back_adapter: MockWriteBackAdapter,
+        now_seconds: Callable[[], int] | None = None,
+        maximum_age_seconds: int = 300,
+    ) -> None:
+        if not signing_secret:
+            raise ValueError("signing_secret is required")
+        self.signing_secret = signing_secret
+        self.write_back_adapter = write_back_adapter
+        self.now_seconds = now_seconds or (lambda: int(time.time()))
+        self.maximum_age_seconds = maximum_age_seconds
+        self._seen_signatures: set[str] = set()
+
+    @staticmethod
+    def signature(
+        *,
+        signing_secret: str,
+        timestamp_value: str,
+        raw_body: str,
+    ) -> str:
+        base = f"v0:{timestamp_value}:{raw_body}".encode("utf-8")
+        digest = hmac.new(
+            signing_secret.encode("utf-8"),
+            base,
+            hashlib.sha256,
+        ).hexdigest()
+        return f"v0={digest}"
+
+    def handle(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> MockHttpResponse:
+        try:
+            return self._handle(headers, raw_body)
+        except SlackInteractionValidationError as error:
+            return MockHttpResponse(
+                error.status,
+                {
+                    "ok": False,
+                    "code": error.code,
+                    "message": str(error),
+                },
+                {},
+            )
+
+    def _handle(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> MockHttpResponse:
+        normalized_headers = {key.lower(): value for key, value in headers.items()}
+        timestamp_value = normalized_headers.get("x-slack-request-timestamp", "")
+        signature_value = normalized_headers.get("x-slack-signature", "")
+        if not timestamp_value or not signature_value:
+            raise SlackInteractionValidationError(
+                "SLACK_SIGNATURE_MISSING",
+                "Slack signature headers are required.",
+                status=401,
+            )
+        try:
+            request_time = int(timestamp_value)
+        except ValueError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_TIMESTAMP_INVALID",
+                "Slack request timestamp must be an integer.",
+                status=401,
+            ) from error
+        if abs(self.now_seconds() - request_time) > self.maximum_age_seconds:
+            raise SlackInteractionValidationError(
+                "SLACK_TIMESTAMP_EXPIRED",
+                "Slack request timestamp is outside the allowed window.",
+                status=401,
+            )
+        expected_signature = self.signature(
+            signing_secret=self.signing_secret,
+            timestamp_value=timestamp_value,
+            raw_body=raw_body,
+        )
+        if not hmac.compare_digest(expected_signature, signature_value):
+            raise SlackInteractionValidationError(
+                "SLACK_SIGNATURE_INVALID",
+                "Slack request signature did not match.",
+                status=401,
+            )
+        if signature_value in self._seen_signatures:
+            raise SlackInteractionValidationError(
+                "SLACK_INTERACTION_REPLAYED",
+                "Slack interaction was already processed.",
+                status=409,
+            )
+
+        form = urllib.parse.parse_qs(raw_body, keep_blank_values=True)
+        payload_values = form.get("payload")
+        if not payload_values:
+            raise SlackInteractionValidationError(
+                "SLACK_PAYLOAD_MISSING",
+                "Slack interaction payload is required.",
+            )
+        try:
+            payload = json.loads(payload_values[0])
+        except json.JSONDecodeError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_PAYLOAD_INVALID",
+                "Slack interaction payload must be JSON.",
+            ) from error
+        action = (payload.get("actions") or [{}])[0]
+        action_id = action.get("action_id")
+        try:
+            value = json.loads(action.get("value") or "{}")
+        except json.JSONDecodeError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_ACTION_VALUE_INVALID",
+                "Slack action value must be JSON.",
+            ) from error
+
+        decision_status = value.get("decisionStatus")
+        if action_id == "north_star_modify" or decision_status == "MODIFY":
+            self._seen_signatures.add(signature_value)
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "decisionStatus": "MODIFY_REQUESTED",
+                    "approvalId": value.get("approvalId"),
+                    "message": (
+                        "Open the Salesforce command center to modify this "
+                        "recommendation before approval."
+                    ),
+                },
+                {},
+            )
+        if action_id == "north_star_approve":
+            decision_status = "APPROVED"
+        elif action_id == "north_star_reject":
+            decision_status = "REJECTED"
+        if decision_status not in {"APPROVED", "REJECTED"}:
+            raise SlackInteractionValidationError(
+                "SLACK_DECISION_UNSUPPORTED",
+                "Slack approval decision must be APPROVED or REJECTED.",
+            )
+        try:
+            decision = self.write_back_adapter.decide_approval(
+                approval_id=value["approvalId"],
+                tenant_key=value["tenantKey"],
+                recommendation_id=value["recommendationId"],
+                decision_status=decision_status,
+                decision_notes=(
+                    f"Slack button {action_id} by "
+                    f"{payload.get('user', {}).get('username', 'manager')}"
+                ),
+            )
+        except KeyError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_ACTION_VALUE_MISSING",
+                "Slack action value is missing approval identifiers.",
+            ) from error
+        except PermissionError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_APPROVAL_DENIED",
+                str(error),
+                status=403,
+            ) from error
+
+        self._seen_signatures.add(signature_value)
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "decisionStatus": decision_status,
+                "approvalId": value["approvalId"],
+                "recommendationId": value["recommendationId"],
+                "tenantKey": value["tenantKey"],
+                "correlationId": value.get("correlationId"),
+                "actionIds": decision.get("actionIds", []),
+            },
+            {},
         )
 
 

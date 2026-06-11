@@ -8,7 +8,8 @@ const DENIED_CODES = new Set([
 ]);
 const CHANNEL_ACTION_TYPES = new Set([
   "SEND_SLACK_ALERT",
-  "SEND_WHATSAPP_ALERT"
+  "SEND_WHATSAPP_ALERT",
+  "SEND_VENDOR_EMAIL"
 ]);
 
 function first(values) {
@@ -75,7 +76,11 @@ function taskAction(action, index, entityById) {
 
 function channelAction(action, index) {
   const channel =
-    action.recordType === "SEND_WHATSAPP_ALERT" ? "WhatsApp-style" : "Slack";
+    action.recordType === "SEND_WHATSAPP_ALERT"
+      ? "WhatsApp-style"
+      : action.recordType === "SEND_VENDOR_EMAIL"
+        ? "Vendor email"
+        : "Slack";
   return {
     id: action.recordId || `channel-action-${index}`,
     channel,
@@ -207,6 +212,31 @@ export function mapCommandCenterPayload(payload, purpose) {
         partner: "Not recorded",
         window: "Not recorded"
       },
+      inboundComplaintIntake: {
+        sourceChannel: "Salesforce or Twilio intake evidence",
+        customerAlias: entityLabel(
+          entityById,
+          workItem.subjectEntityId,
+          "Synthetic customer alias"
+        ),
+        protectedActionState: "No protected action executes before approval",
+        summary:
+          "Accessible intake evidence is converted into a governed recommendation request with raw personal contact data kept out of the command center.",
+        followUpQuestions: [
+          "Which service area was affected?",
+          "When did the issue happen?",
+          "Which operational evidence confirms the root cause?"
+        ],
+        rootCauseHypotheses: [
+          "Complaint pressure may connect to capacity, partner, billing, stock, or staffing evidence.",
+          "North Star treats hypotheses as inference until source evidence confirms them."
+        ],
+        nextEvidenceNeeded: [
+          "current queue or room status",
+          "stock or partner status",
+          "approval requirement"
+        ]
+      },
       partnerResponse: {
         status: "Not recorded",
         responseDelay: "Not recorded",
@@ -222,6 +252,78 @@ export function mapCommandCenterPayload(payload, purpose) {
           taskAction(action, index, entityById)
         )
       },
+      agentHandoffTrace: [
+        {
+          id: "handoff-orchestrator-live",
+          agent: "North Star Orchestrator",
+          contribution:
+            "Combines accessible evidence into one manager-ready action plan.",
+          output: "Recommendation and approval path"
+        },
+        {
+          id: "handoff-evidence-live",
+          agent: "Evidence and Context",
+          contribution:
+            "Maps source records into global primitives and flags missing facts.",
+          output: "Signal and evidence coverage"
+        },
+        {
+          id: "handoff-patient-trust-live",
+          agent: "Patient Trust",
+          contribution:
+            "Classifies complaint evidence and drafts safe follow-up needs.",
+          output: "Complaint impact"
+        },
+        {
+          id: "handoff-resource-live",
+          agent: "Resource and Capacity",
+          contribution:
+            "Checks resource, queue, stock, staff, and room availability.",
+          output: "Capacity and inventory risk"
+        },
+        {
+          id: "handoff-operations-live",
+          agent: "Operations Execution",
+          contribution:
+            "Turns approved recommendations into role-owned task records.",
+          output: "Task actions"
+        },
+        {
+          id: "handoff-partner-live",
+          agent: "Partner and Vendor",
+          contribution:
+            "Tracks vendor, supplier, insurer, and partner follow-up.",
+          output: "Vendor actions"
+        },
+        {
+          id: "handoff-risk-live",
+          agent: "Risk and Approval",
+          contribution:
+            "Requires human approval and blocks clinical or unsupported actions.",
+          output: "Approval boundary"
+        },
+        {
+          id: "handoff-finance-live",
+          agent: "Financial Impact",
+          contribution:
+            "Connects billing, refund, claim, and payment evidence to the plan.",
+          output: "Financial exposure"
+        },
+        {
+          id: "handoff-comms-live",
+          agent: "Communication",
+          contribution:
+            "Prepares approved Slack, WhatsApp, and vendor-email communication.",
+          output: "Channel actions"
+        },
+        {
+          id: "handoff-outcome-live",
+          agent: "Outcome Learning",
+          contribution:
+            "Compares expected outcomes with completed actions and metrics.",
+          output: "Outcome evidence"
+        }
+      ],
       affectedRelationship: {
         label: relationship.label || "Connected relationship",
         subject: entityLabel(

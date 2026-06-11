@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.parse
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,7 +29,7 @@ from hfs_model_gateway import (  # noqa: E402
     ModelGateway,
     ModelGatewayContract,
 )
-from mock_runtime import build_default_api  # noqa: E402
+from mock_runtime import SlackApprovalInteractionHandler, build_default_api  # noqa: E402
 
 
 CONFIG_PATH = ROOT / "demo" / "harness-config-v1.json"
@@ -48,9 +49,11 @@ HOSPITAL_RECOMMENDATION_TYPE = "NORTH_STAR_HOSPITAL_RECOVERY_PLAN"
 HOSPITAL_PROPOSED_ACTION_TYPE = "APPROVE_HOSPITAL_RECOVERY_ACTIONS"
 HOSPITAL_SLACK_ACTION_TYPE = "SEND_SLACK_ALERT"
 HOSPITAL_WHATSAPP_ACTION_TYPE = "SEND_WHATSAPP_ALERT"
+HOSPITAL_VENDOR_EMAIL_ACTION_TYPE = "SEND_VENDOR_EMAIL"
 HOSPITAL_CHANNEL_ACTION_TYPES = {
     HOSPITAL_SLACK_ACTION_TYPE,
     HOSPITAL_WHATSAPP_ACTION_TYPE,
+    HOSPITAL_VENDOR_EMAIL_ACTION_TYPE,
 }
 HOSPITAL_TASK_ACTIONS = [
     {
@@ -488,6 +491,74 @@ class DemoHarness:
             key: value
             for key, value in records[0].items()
             if key != "attributes"
+        }
+
+    def twilio_complaint_intake(self) -> dict[str, Any]:
+        api = build_default_api(
+            slack_webhook_url="",
+            whatsapp_provider_config=None,
+        )
+        response = api.ingest_twilio_whatsapp(
+            {
+                "MessageSid": "SMDEMO0000000000000000000000000001",
+                "From": "whatsapp:+23055550123",
+                "To": "whatsapp:+14155238886",
+                "Body": (
+                    "I waited one hour, pharmacy said there is no stock, "
+                    "and my invoice looks duplicated."
+                ),
+            },
+            tenant_key=self.config["tenantKey"],
+            observed_at="2026-06-06T08:46:00Z",
+        )
+        if response.status != 202:
+            raise HarnessFailure("Twilio complaint intake was not accepted.")
+        event = next(iter(api.source_adapter.events.values()))
+        attributes = event["data"]["attributes"]
+        required_primitives = {
+            "Signal",
+            "Evidence",
+            "Customer",
+            "Resource",
+            "Risk",
+            "Recommendation",
+            "Approval",
+            "Action",
+            "Outcome",
+        }
+        if not required_primitives.issubset(set(attributes["affectedPrimitives"])):
+            raise HarnessFailure(
+                "Twilio intake did not preserve the required primitives."
+            )
+        return {
+            "status": response.body["intakeResult"],
+            "eventId": event["id"],
+            "source": event["source"],
+            "sourceChannel": attributes["sourceChannel"],
+            "customerAlias": attributes["customerAlias"],
+            "complaintTypes": attributes["complaintTypes"],
+            "followUpQuestionCount": len(attributes["followUpQuestions"]),
+            "rootCauseHypothesisCount": len(attributes["rootCauseHypotheses"]),
+            "nextEvidenceNeeded": attributes["nextEvidenceNeeded"],
+            "affectedPrimitives": attributes["affectedPrimitives"],
+            "protectedActionState": attributes["protectedActionState"],
+            "messageBodyStored": attributes["messageBodyStored"],
+            "recommendationRequest": {
+                "agentforceAction": "DRAFT_RELATIONSHIP_RECOMMENDATION",
+                "sourceEvidenceId": event["id"],
+                "sourceChannel": attributes["sourceChannel"],
+                "requiresManagerApprovalBeforeCustomerReply": attributes[
+                    "requiresManagerApprovalBeforeCustomerReply"
+                ],
+            },
+            "expandedFunctions": [
+                "patient trust",
+                "resource and capacity",
+                "pharmacy inventory",
+                "billing",
+                "communication",
+                "outcome learning",
+            ],
         }
 
     def connected_source(self) -> dict[str, Any]:
@@ -972,6 +1043,26 @@ System.assertEquals(
 );
 System.assertEquals('PENDING', whatsappLogged.status);
 
+HFS_ActionCommand vendorEmailCommand = new HFS_ActionCommand();
+vendorEmailCommand.contractVersion = HFS_ServiceContract.VERSION;
+vendorEmailCommand.correlationId = actionCommand.correlationId;
+vendorEmailCommand.tenantKey = actionCommand.tenantKey;
+vendorEmailCommand.purpose = actionCommand.purpose;
+vendorEmailCommand.externalKey = 'action-north-star-hospital-vendor-email-001';
+vendorEmailCommand.idempotencyKey = 'action-north-star-hospital-vendor-email-001-v1';
+vendorEmailCommand.recommendationId = actionCommand.recommendationId;
+vendorEmailCommand.approvalId = actionCommand.approvalId;
+vendorEmailCommand.targetEntityId =
+  '{apex_string(source["targetEntityIds"]["PARTNER-ISLAND-DIAGNOSTICS"])}';
+vendorEmailCommand.actionType = '{HOSPITAL_VENDOR_EMAIL_ACTION_TYPE}';
+HFS_CommandResult vendorEmailLogged = service.logAction(vendorEmailCommand);
+System.assertEquals(
+  true,
+  vendorEmailLogged.success,
+  JSON.serialize(vendorEmailLogged.errors)
+);
+System.assertEquals('PENDING', vendorEmailLogged.status);
+
 {task_action_script}
 
 List<Object> channelActions = new List<Object>{{
@@ -992,6 +1083,15 @@ List<Object> channelActions = new List<Object>{{
     'actionStatus' => whatsappLogged.status,
     'actionExternalKey' => whatsappCommand.externalKey,
     'actionIdempotencyKey' => whatsappCommand.idempotencyKey
+  }},
+  new Map<String, Object>{{
+    'channel' => 'email',
+    'actionType' => vendorEmailCommand.actionType,
+    'sourceSystem' => 'email',
+    'actionId' => vendorEmailLogged.recordId,
+    'actionStatus' => vendorEmailLogged.status,
+    'actionExternalKey' => vendorEmailCommand.externalKey,
+    'actionIdempotencyKey' => vendorEmailCommand.idempotencyKey
   }}
 }};
 List<Object> taskActions = new List<Object>{{
@@ -1061,6 +1161,22 @@ System.debug(
                         "recommendationId"
                     ],
                 }
+            elif action_type == HOSPITAL_VENDOR_EMAIL_ACTION_TYPE:
+                payload = {
+                    "targetRole": "Vendor Coordinator",
+                    "targetChannel": "email-role-vendor-coordinator",
+                    "messageTitle": "Hospital stock and SLA follow-up",
+                    "messageBody": (
+                        "Queue the approved supplier and vendor follow-up "
+                        "for pharmacy stock, lab response, and billing "
+                        "evidence. This is protected mock email delivery."
+                    ),
+                    "supplierAlias": "partner-island-diagnostics",
+                    "evidenceIds": [source["evidenceId"]],
+                    "sourceRecommendationId": recommendation[
+                        "recommendationId"
+                    ],
+                }
             else:
                 payload = {
                     "targetRole": "Operations Manager",
@@ -1121,16 +1237,86 @@ System.debug(
                 "The MuleSoft unapproved-action path did not fail closed."
             )
 
+        all_action_ids = [
+            channel_action["actionId"] for channel_action in channel_actions
+        ]
+        api.write_back_adapter.register_approval(
+            approval_id=action["approvalId"],
+            tenant_key=self.config["tenantKey"],
+            recommendation_id=recommendation["recommendationId"],
+            action_id=channel_actions[0]["actionId"],
+            action_ids=all_action_ids,
+            status="PENDING",
+        )
+        pending_body = execution_body(channel_actions[0])
+        pending_attempt = api.request(
+            "POST",
+            "/v1/actions/executions",
+            execution_headers(pending_body),
+            pending_body,
+        )
+        if pending_attempt.status != 403:
+            raise HarnessFailure(
+                "MuleSoft accepted a Slack approval-gated action before approval."
+            )
+
+        signing_secret = "local-slack-signing-secret-for-harness"
+        approval_blocks = api.write_back_adapter.slack_approval_blocks(
+            tenant_key=self.config["tenantKey"],
+            correlation_id=self.config["correlationId"],
+            recommendation_id=recommendation["recommendationId"],
+            approval_id=action["approvalId"],
+            action_ids=all_action_ids,
+            title="Hospital operations approval",
+            body=(
+                "Approve protected Slack, WhatsApp, vendor email, and task "
+                "execution for the North Star hospital operations case."
+            ),
+        )
+        approve_value = approval_blocks[-1]["elements"][0]["value"]
+        slack_payload = {
+            "type": "block_actions",
+            "user": {"username": "operations-manager"},
+            "actions": [
+                {
+                    "action_id": "north_star_approve",
+                    "value": approve_value,
+                }
+            ],
+        }
+        slack_timestamp = "1710000000"
+        slack_body = urllib.parse.urlencode(
+            {
+                "payload": json.dumps(
+                    slack_payload,
+                    separators=(",", ":"),
+                )
+            }
+        )
+        slack_headers = {
+            "X-Slack-Request-Timestamp": slack_timestamp,
+            "X-Slack-Signature": SlackApprovalInteractionHandler.signature(
+                signing_secret=signing_secret,
+                timestamp_value=slack_timestamp,
+                raw_body=slack_body,
+            ),
+        }
+        slack_handler = SlackApprovalInteractionHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: int(slack_timestamp),
+        )
+        slack_decision = slack_handler.handle(slack_headers, slack_body)
+        if (
+            slack_decision.status != 200
+            or slack_decision.body.get("decisionStatus") != "APPROVED"
+        ):
+            raise HarnessFailure("Slack approval interaction did not approve.")
+
         execution_results = []
         outcomes = []
         delivery_by_type = {}
         for channel_action in channel_actions:
-            api.write_back_adapter.register_approval(
-                approval_id=action["approvalId"],
-                tenant_key=self.config["tenantKey"],
-                recommendation_id=recommendation["recommendationId"],
-                action_id=channel_action["actionId"],
-            )
             body = execution_body(channel_action)
             executed = api.request(
                 "POST",
@@ -1194,6 +1380,12 @@ System.debug(
             "deliveryByActionType": delivery_by_type,
             "outcomes": outcomes,
             "outcome": outcomes[0]["outcome"],
+            "slackApproval": slack_decision.body,
+            "slackApprovalBlocks": approval_blocks,
+            "pendingApprovalBlockedStatus": pending_attempt.status,
+            "pendingApprovalBlockedError": pending_attempt.body["errors"][0][
+                "code"
+            ],
         }
 
     def capture_single_outcome(
@@ -1210,17 +1402,41 @@ System.debug(
         identifiers = self.config["identifiers"]
         evaluation_key = channel_outcome.get("evaluationExternalKey")
         if not evaluation_key:
-            evaluation_key = (
-                identifiers["evaluationExternalKey"]
-                if index == 1
-                else identifiers["whatsappEvaluationExternalKey"]
-            )
+            evaluation_keys_by_action_type = {
+                HOSPITAL_SLACK_ACTION_TYPE: identifiers["evaluationExternalKey"],
+                HOSPITAL_WHATSAPP_ACTION_TYPE: identifiers[
+                    "whatsappEvaluationExternalKey"
+                ],
+                HOSPITAL_VENDOR_EMAIL_ACTION_TYPE: identifiers[
+                    "vendorEmailEvaluationExternalKey"
+                ],
+            }
+            try:
+                evaluation_key = evaluation_keys_by_action_type[
+                    channel_outcome["actionType"]
+                ]
+            except KeyError as error:
+                raise HarnessFailure(
+                    "No evaluation external key exists for channel action "
+                    f"{channel_outcome['actionType']}."
+                ) from error
         event_external_key = f"event-demo-outcome-{index:03d}"
-        source_uri = channel_outcome.get("sourceUri") or (
-            "urn:hfs:source:hospital:whatsapp-alert"
-            if channel_outcome["actionType"] == HOSPITAL_WHATSAPP_ACTION_TYPE
-            else "urn:hfs:source:hospital:slack-alert"
-        )
+        source_uri = channel_outcome.get("sourceUri")
+        if not source_uri:
+            source_uris_by_action_type = {
+                HOSPITAL_SLACK_ACTION_TYPE: "urn:hfs:source:hospital:slack-alert",
+                HOSPITAL_WHATSAPP_ACTION_TYPE: "urn:hfs:source:hospital:whatsapp-alert",
+                HOSPITAL_VENDOR_EMAIL_ACTION_TYPE: "urn:hfs:source:hospital:vendor-email",
+            }
+            try:
+                source_uri = source_uris_by_action_type[
+                    channel_outcome["actionType"]
+                ]
+            except KeyError as error:
+                raise HarnessFailure(
+                    "No source URI exists for channel action "
+                    f"{channel_outcome['actionType']}."
+                ) from error
         script = f"""
 HFS_Event__c outcomeEvent = new HFS_Event__c(
   Event_Id__c = '{event_external_key}',
@@ -1400,7 +1616,8 @@ for (HFS_ContextItem item : commandCenter.context.actions) {{
   actionTypes.add(item.recordType);
   Boolean isChannelAction =
     item.recordType == '{HOSPITAL_SLACK_ACTION_TYPE}' ||
-    item.recordType == '{HOSPITAL_WHATSAPP_ACTION_TYPE}';
+    item.recordType == '{HOSPITAL_WHATSAPP_ACTION_TYPE}' ||
+    item.recordType == '{HOSPITAL_VENDOR_EMAIL_ACTION_TYPE}';
   if (item.status == 'EXECUTED' && isChannelAction) {{
     executedChannelActions++;
   }}
@@ -1421,6 +1638,10 @@ System.assertEquals(true, actionTypes.contains('{HOSPITAL_SLACK_ACTION_TYPE}'));
 System.assertEquals(
   true,
   actionTypes.contains('{HOSPITAL_WHATSAPP_ACTION_TYPE}')
+);
+System.assertEquals(
+  true,
+  actionTypes.contains('{HOSPITAL_VENDOR_EMAIL_ACTION_TYPE}')
 );
 System.assertEquals(true, actionTypes.contains('CREATE_PATIENT_SERVICE_TASK'));
 System.assertEquals(true, actionTypes.contains('REQUEST_BED_CLEANING'));
@@ -1725,6 +1946,10 @@ System.debug(
                     "HFS_Action__c",
                     identifiers["whatsappActionExternalKey"],
                 ),
+                "vendorEmailActionId": self.query_identifier(
+                    "HFS_Action__c",
+                    identifiers["vendorEmailActionExternalKey"],
+                ),
                 "outcomeId": self.query_identifier(
                     "HFS_Outcome__c",
                     identifiers["outcomeExternalKey"],
@@ -1733,6 +1958,10 @@ System.debug(
                     "HFS_Outcome__c",
                     identifiers["whatsappOutcomeExternalKey"],
                 ),
+                "vendorEmailOutcomeId": self.query_identifier(
+                    "HFS_Outcome__c",
+                    identifiers["vendorEmailOutcomeExternalKey"],
+                ),
                 "evaluationId": self.query_identifier(
                     "HFS_Evaluation__c",
                     identifiers["evaluationExternalKey"],
@@ -1740,6 +1969,10 @@ System.debug(
                 "whatsappEvaluationId": self.query_identifier(
                     "HFS_Evaluation__c",
                     identifiers["whatsappEvaluationExternalKey"],
+                ),
+                "vendorEmailEvaluationId": self.query_identifier(
+                    "HFS_Evaluation__c",
+                    identifiers["vendorEmailEvaluationExternalKey"],
                 ),
             },
         }
@@ -1817,6 +2050,10 @@ System.debug(
                 "prepare-connected",
                 lambda: self.run_apex(PREPARE_CONNECTED_SCRIPT),
             )
+            twilio_intake = self.step(
+                "twilio-complaint-intake",
+                self.twilio_complaint_intake,
+            )
             source = self.step("connected-source", self.connected_source)
             model = self.step(
                 "model-gateway",
@@ -1872,6 +2109,7 @@ System.debug(
             )
             return {
                 "seed": seed_details,
+                "twilioIntake": twilio_intake,
                 "model": {
                     key: value
                     for key, value in model.items()

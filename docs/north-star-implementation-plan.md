@@ -150,7 +150,9 @@ Slack:
 
 WhatsApp:
 
-- use Twilio Sandbox or Meta Cloud API only if setup is complete;
+- use Twilio Sandbox for the hackathon demo;
+- keep Meta Cloud API out of scope unless the team already has business
+  verification, templates, and a production number ready;
 - outbound WhatsApp may be used for urgent internal mobile alerts or approved
   customer acknowledgements;
 - inbound WhatsApp should be modeled as signal intake through `INGEST_EVENT`,
@@ -164,6 +166,16 @@ Email:
   approval;
 - do not claim live email delivery until an Anypoint, SMTP, or provider-backed
   adapter exists and passes tests.
+
+Slack approval:
+
+- use `SLACK_WEBHOOK_URL` for outbound internal alerts;
+- use `SLACK_SIGNING_SECRET` and Slack App Interactivity for true approve/reject
+  buttons;
+- the local mock runtime and harness validate Slack signatures and keep
+  protected actions blocked until a signed approve decision is processed;
+- Salesforce command-center approval remains the fallback when no public Slack
+  Request URL is available.
 
 Acceptance:
 
@@ -182,7 +194,8 @@ Preferred intake paths:
 
 1. WhatsApp inbound through Twilio Sandbox for customer, patient, visitor, or
    client complaints.
-2. Salesforce command-center intake screen for a reliable live-demo fallback.
+2. Existing Salesforce command center for visibility, approval, and fallback
+   review. A new intake form is not required for hackathon v1.
 3. System event fixtures for queue spike, low stock, vendor delay, billing
    issue, room readiness, or equipment issue.
 4. Manual or voice transcript request for staff asking what to do next.
@@ -296,6 +309,8 @@ Focused checks:
       outbound executes approved `Action` records.
 - [x] Document WhatsApp as the preferred customer/patient complaint intake
       channel.
+- [x] Document Twilio Sandbox as the hackathon WhatsApp provider and Meta Cloud
+      API as out of scope.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as urgent internal mobile alert or approved
       customer acknowledgement.
@@ -303,19 +318,19 @@ Focused checks:
       live delivery capability.
 - [x] Add or simulate a Twilio inbound WhatsApp webhook that maps customer
       complaint text to `INGEST_EVENT`.
-- [ ] Add a Salesforce complaint/signal intake screen or command-center action
-      as the reliable fallback.
+- [x] Keep existing Salesforce command center as the visibility, approval, and
+      fallback review surface instead of adding a new intake screen.
 - [x] Convert inbound text into synthetic customer alias, source channel,
       timestamp, department/resource hints, correlation ID, and evidence ID.
 - [x] Add root-cause hypotheses, follow-up questions, next-evidence needs, and
       affected primitives for inbound complaint intake.
 - [x] Ensure raw phone number and raw message text are not preserved in the demo
       event.
-- [ ] Ensure the new intake evidence can trigger or request an Agentforce
-      recommendation.
-- [ ] Block customer-facing replies until manager approval and privacy-safe
+- [x] Ensure the new intake evidence can trigger or request an Agentforce
+      recommendation in the harness proof.
+- [x] Block customer-facing replies until manager approval and privacy-safe
       wording checks pass.
-- [ ] Add tests or harness evidence for WhatsApp complaint intake through
+- [x] Add tests or harness evidence for WhatsApp complaint intake through
       recommendation, approval, Slack alert, WhatsApp response, and outcome.
 - [x] Add protected mock email/vendor adapter behind the approval boundary.
 - [ ] Add live email/vendor delivery only if credentials and provider routing
@@ -338,6 +353,12 @@ Focused checks:
 - [x] Update Slack examples and labels from retail roles to hospital roles.
 - [x] Run MuleSoft contract generation, contract validation, and mock runtime
       tests after hospital action changes.
+- [x] Add signed Slack approval interaction handling with replay and invalid
+      signature tests.
+- [x] Add harness proof that pending approval blocks execution until Slack
+      approve is processed.
+- [ ] Configure Slack App Interactivity Request URL for final live button
+      rehearsal.
 
 ### Salesforce Core And Agentforce Recommendation
 
@@ -437,9 +458,10 @@ be explicit about which path is active.
    commands above.
 3. For real Slack delivery, configure `SLACK_WEBHOOK_URL` outside Git. Without
    it, the MuleSoft mock must return honest `MOCK_SENT`.
-4. For real WhatsApp-style delivery, configure Twilio Sandbox or Meta Cloud API
-   credentials outside Git. Without them, the MuleSoft mock must return honest
-   `MOCK_SENT`.
+4. For real WhatsApp delivery in the hackathon, configure Twilio Sandbox
+   credentials outside Git. Meta Cloud API remains out of scope unless the team
+   already has business verification and templates ready. Without Twilio
+   credentials, the MuleSoft mock must return honest `MOCK_SENT`.
 5. Review the final non-goals as a team: no diagnosis, treatment, dosage,
    triage, clinical priority, real patient records, or autonomous protected
    actions.

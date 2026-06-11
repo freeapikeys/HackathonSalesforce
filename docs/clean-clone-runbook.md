@@ -7,8 +7,8 @@ hospital MVP without manual Salesforce record edits:
 
 `hospital operations surge -> global primitives and evidence -> model-routed
 Agentforce recommendation -> clinical-refusal guardrail -> manager approval ->
-eight approved Salesforce task action records plus Slack and WhatsApp-style
-MuleSoft channel actions -> hospital outcomes and evaluations -> refreshed
+eight approved Salesforce task action records plus Slack, WhatsApp, and
+protected vendor-email MuleSoft channel actions -> hospital outcomes and evaluations -> refreshed
 North Star command center`
 
 The verifier creates a temporary clone, installs locked dependencies, runs all
@@ -71,7 +71,7 @@ npm run verify:clean-clone -- \
 | Bootstrap           | `./scripts/bootstrap-runtime.sh`                             | Locked Python and npm dependencies install                                                                               |
 | Repository checks   | `npm run check`                                              | Contracts, ontology, events, MuleSoft, models, Agentforce, metadata, formatting, lint, harness tests, and LWC tests pass |
 | Salesforce deploy   | `sf project deploy start ... --test-level RunSpecifiedTests` | Metadata succeeds; all Apex test classes run with zero failures                                                          |
-| Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes, including clinical refusal plus Slack and WhatsApp-style mock delivery                      |
+| Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes, including clinical refusal plus Slack, WhatsApp, and protected vendor-email mock delivery   |
 | Evidence validation | `scripts/verify_clean_clone_result.py`                       | Required success, refusal, approval, channel, and outcome invariants pass                                                |
 
 The final terminal line contains `Clean-clone verification passed`. The JSON
@@ -113,7 +113,8 @@ Evidence validation fails unless all of these are true:
 - MuleSoft accepts approved channel write-backs with `202 QUEUED`;
 - approved Slack delivery is recorded as `SENT` or honest `MOCK_SENT`;
 - approved WhatsApp-style delivery is recorded as `SENT` or honest `MOCK_SENT`;
-- eight task action records and two channel actions are `EXECUTED` in the final
+- approved vendor email is recorded as protected `QUEUED` mock delivery;
+- eight task action records and three channel actions are `EXECUTED` in the final
   Salesforce context;
 - the eight task actions include required owner role aliases, escalation role
   aliases, deterministic priority ranks, approval requirement, service windows,
@@ -122,8 +123,8 @@ Evidence validation fails unless all of these are true:
   resources, partner, process, hospital evidence types, approved actions,
   delivery outcomes, business outcomes, and metric keys;
 - outcomes are `SUCCESS`, work item is `COMPLETED`, and evaluations exist;
-- final Salesforce counts include at least twelve events, seven evidence records,
-  ten actions, eleven outcomes, eleven evaluations, one recommendation,
+- final Salesforce counts include at least thirteen events, seven evidence records,
+  eleven actions, twelve outcomes, twelve evaluations, one recommendation,
   and one work item.
 
 ## Recovery

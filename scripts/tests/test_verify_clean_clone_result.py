@@ -41,6 +41,22 @@ def passing_demo():
             for name in verify.REQUIRED_STEPS
         ],
         "details": {
+            "twilioIntake": {
+                "status": "ACCEPTED",
+                "sourceChannel": "whatsapp-inbound",
+                "messageBodyStored": False,
+                "protectedActionState": "NO_ACTION_EXECUTED",
+                "followUpQuestionCount": 5,
+                "rootCauseHypothesisCount": 3,
+                "expandedFunctions": [
+                    "patient trust",
+                    "resource and capacity",
+                    "pharmacy inventory",
+                    "billing",
+                    "communication",
+                    "outcome learning",
+                ],
+            },
             "model": {
                 "invocationId": "runtime-invocation-0001",
                 "restrictedDecision": "NO_QUALIFIED_DEPLOYMENT",
@@ -173,6 +189,11 @@ def passing_demo():
             "mulesoft": {
                 "blockedStatus": 403,
                 "blockedErrorCode": "PERMISSION_DENIED",
+                "pendingApprovalBlockedStatus": 403,
+                "pendingApprovalBlockedError": "PERMISSION_DENIED",
+                "slackApproval": {
+                    "decisionStatus": "APPROVED",
+                },
                 "executionStatus": 202,
                 "executionState": "QUEUED",
                 "deliveryByActionType": {
@@ -184,24 +205,28 @@ def passing_demo():
                         "status": "MOCK_SENT",
                         "provider": "mock-whatsapp",
                     },
+                    "SEND_VENDOR_EMAIL": {
+                        "status": "QUEUED",
+                        "metricKey": "vendor_email_queued",
+                    },
                 },
             },
             "outcome": {
                 "actionStatus": "EXECUTED",
                 "businessOutcomeCount": 9,
-                "executedChannelActionCount": 2,
+                "executedChannelActionCount": 3,
                 "executedTaskActionCount": 8,
-                "evaluationCount": 11,
-                "outcomeCount": 11,
+                "evaluationCount": 12,
+                "outcomeCount": 12,
                 "outcomeStatus": "SUCCESS",
                 "taskActionCount": 8,
                 "workItemStatus": "COMPLETED",
             },
             "postOutcomeAgentforce": {
                 "outcomeContextCovered": True,
-                "outcomeRecordCount": 11,
-                "actionRecordCount": 10,
-                "metricCount": 11,
+                "outcomeRecordCount": 12,
+                "actionRecordCount": 11,
+                "metricCount": 12,
             },
             "apexFinalContext": {
                 "workItemStatus": "COMPLETED",
@@ -240,8 +265,10 @@ def passing_demo():
                     "CREATE_MANAGER_REVIEW_TASK",
                     "SEND_SLACK_ALERT",
                     "SEND_WHATSAPP_ALERT",
+                    "SEND_VENDOR_EMAIL",
                 ],
                 "outcomeTypes": [
+                    "ACTION_EXECUTED",
                     "BILLING_REVIEW_OPENED",
                     "COMPLAINT_CONTAINED",
                     "DISCHARGE_ROOMS_RELEASED",
@@ -265,13 +292,14 @@ def passing_demo():
                     "rooms_released",
                     "slack_alert_delivery_success",
                     "stockout_avoided",
+                    "vendor_email_queued",
                     "whatsapp_alert_delivery_success",
                 ],
                 "recommendationCount": 1,
                 "approvalCount": 1,
-                "actionCount": 10,
-                "outcomeCount": 11,
-                "evaluationCount": 11,
+                "actionCount": 11,
+                "outcomeCount": 12,
+                "evaluationCount": 12,
             },
             "connected": {
                 "counts": dict(verify.FINAL_COUNT_MINIMUMS),

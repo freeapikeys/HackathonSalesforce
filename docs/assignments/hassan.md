@@ -47,9 +47,10 @@ the existing MVP.
 
 WhatsApp must be modeled as the protected action type `SEND_WHATSAPP_ALERT`.
 
-The action may execute only after a business manager approval exists. The demo
-can use Twilio Sandbox, Meta Cloud API, or a mock result, but it must label the
-result honestly.
+The action may execute only after a business manager approval exists. The
+hackathon demo should use Twilio Sandbox or an honest mock result, and it must
+label the result honestly. Meta Cloud API is out of scope unless business
+verification and templates are already ready.
 
 The action request should preserve:
 
@@ -82,7 +83,7 @@ The action response should preserve:
 
 Use this rule:
 
-- Use Twilio Sandbox or Meta Cloud API only when credentials are available.
+- Use Twilio Sandbox only when credentials are available.
 - Keep all credentials in environment variables.
 - Use aliases in fixtures, such as `role:bed-manager`, not real phone numbers.
 - If credentials are missing, return `MOCK_SENT`.
@@ -138,7 +139,7 @@ Expected behavior:
 - [x] Read this file and the required docs.
 - [x] Inspect the MuleSoft approved action path before editing.
 - [x] Add or finish `SEND_WHATSAPP_ALERT` examples and mock runtime handling.
-- [x] Add credential-driven provider selection for Twilio or Meta only if
+- [x] Add credential-driven provider selection for Twilio only if
       practical.
 - [x] Add honest `MOCK_SENT` fallback when credentials are missing.
 - [x] Add denial behavior when approval is missing or not approved.

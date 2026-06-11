@@ -54,12 +54,12 @@ execute, and outcomes are measured.
 
 Inbound channels create `Signal` and `Evidence`:
 
-| Channel                  | Primary role                                                              |
-| ------------------------ | ------------------------------------------------------------------------- |
-| WhatsApp inbound         | Customer, patient, visitor, or client complaint intake                    |
-| Salesforce intake screen | Staff-entered complaint, low-stock issue, room issue, or billing issue    |
-| System event             | Queue spike, stock threshold, vendor delay, payment issue, or room status |
-| Voice/manual transcript  | Staff request that becomes a governed recommendation request              |
+| Channel                   | Primary role                                                              |
+| ------------------------- | ------------------------------------------------------------------------- |
+| Twilio WhatsApp inbound   | Customer, patient, visitor, or client complaint intake                    |
+| Salesforce command center | Staff review, approval, audit, and fallback visibility                    |
+| System event              | Queue spike, stock threshold, vendor delay, payment issue, or room status |
+| Voice/manual transcript   | Staff request that becomes a governed recommendation request              |
 
 Outbound channels execute approved `Action` records:
 
@@ -70,11 +70,13 @@ Outbound channels execute approved `Action` records:
 | Email             | Future supplier, insurer, vendor, or formal customer follow-up adapter      |
 | Salesforce tasks  | Role-owned work for cleaning, porter, pharmacy, billing, vendor, and review |
 
-For the hospital demo, WhatsApp should be the customer-facing intake story and
-Slack should be the internal team coordination story. WhatsApp outbound should
-be used carefully: internal urgent alerts are safe for the demo, while
-customer-facing replies need approval, privacy-safe text, template/consent
-handling, and no clinical advice.
+For the hospital demo, Twilio Sandbox WhatsApp is the customer-facing intake
+story and Slack is the internal team coordination and approval story. WhatsApp
+outbound should be used carefully: internal urgent alerts are safe for the demo,
+while customer-facing replies need approval, privacy-safe text, template/consent
+handling, and no clinical advice. Meta Cloud API is out of scope for the
+hackathon unless the team already has verification, templates, and a production
+number ready.
 
 ## Winning Demo Story
 
@@ -286,8 +288,8 @@ The demo succeeds when judges see:
   arrives;
 - clinical decision requests refused or routed to human clinicians;
 - manager approval gating consequential changes;
-- a customer complaint entering through WhatsApp or a Salesforce intake
-  fallback, then becoming evidence and an action plan;
+- a customer complaint entering through Twilio Sandbox WhatsApp, then becoming
+  evidence and an action plan visible in Salesforce;
 - Slack alerts reaching internal roles, plus WhatsApp alerts or honest mock
   channel evidence;
 - Salesforce records preserving evidence, tasks, approvals, actions, and

@@ -189,8 +189,15 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("North Star operations signals");
     expect(root.textContent).toContain("Resource, partner, and capacity");
     expect(root.textContent).toContain("Complaint cluster");
+    expect(root.textContent).toContain("WhatsApp intake");
+    expect(root.textContent).toContain("Follow-up questions");
+    expect(root.textContent).toContain("Root-cause hypotheses");
+    expect(root.textContent).toContain("Next evidence needed");
     expect(root.textContent).toContain("Partner response");
     expect(root.textContent).toContain("Conflicts before orchestration");
+    expect(root.textContent).toContain("10-agent coordination trace");
+    expect(root.textContent).toContain("North Star Orchestrator");
+    expect(root.textContent).toContain("Outcome Learning");
     expect(root.textContent).toContain(
       "Partner and capacity response changed the plan"
     );
@@ -207,7 +214,12 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Beds released");
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
-    expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
+    expect(root.querySelectorAll(".evidence-card")).toHaveLength(7);
+    expect(
+      root.querySelectorAll(
+        '[data-testid="agent-handoff-trace"] .action-list li'
+      )
+    ).toHaveLength(10);
   });
 
   it("renders governed voice transcript requests without protected execution", () => {

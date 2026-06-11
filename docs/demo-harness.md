@@ -27,26 +27,28 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 7. prove a clinical treatment-priority request is refused before storage;
 8. prove Salesforce refuses action logging before approval;
 9. record the human approval and log eight pending operational task actions plus
-   pending Slack and WhatsApp-style channel actions;
+   pending Slack, WhatsApp, and protected vendor-email channel actions;
 10. prove MuleSoft refuses an unregistered approval;
-11. execute approved Slack and WhatsApp-style mock write-backs and preserve
-    correlation;
-12. ingest the resulting source events and capture two channel-delivery
+11. prove MuleSoft refuses protected channel execution before the signed Slack
+    approval decision;
+12. execute approved Slack, WhatsApp, and protected vendor-email mock
+    write-backs and preserve correlation;
+13. ingest the resulting source events and capture three channel-delivery
     outcomes plus six business outcomes in Salesforce;
-13. evaluate the defined outcomes;
-14. refresh the Lightning controller and verify completed state;
-15. re-read Agentforce recommendation context and prove outcome and metric
+14. evaluate the defined outcomes;
+15. refresh the Lightning controller and verify completed state;
+16. re-read Agentforce recommendation context and prove outcome and metric
     coverage are now present;
-16. re-read direct Apex context and prove the final graph still includes the
+17. re-read direct Apex context and prove the final graph still includes the
     customer alias, department/location, resources, partner, process, evidence,
     recommendation, approval, actions, outcomes, and outcome metrics.
 
 North Star hospital assertions:
 
 - the case uses global primitives, not one-off hospital-only objects;
-- customer or patient complaint intake can be represented by a seeded event
-  today, and should be extended to live WhatsApp inbound or a Salesforce intake
-  screen before claiming real customer intake;
+- customer or patient complaint intake is represented by Twilio Sandbox inbound
+  mapping in the harness, with the command center used for visibility and
+  fallback approval before claiming a public live webhook;
 - patient/visitor aliases contain no real personal or medical data;
 - complaint evidence is evaluated with capacity, partner, billing, stock, and
   staffing evidence;
@@ -57,8 +59,8 @@ North Star hospital assertions:
 - task action results preserve owner role alias, escalation role alias,
   priority rank, urgency, risk class, approval requirement, service window, and
   missed-task escalation window;
-- Slack and WhatsApp-style internal alerts are recorded after approved
-  execution;
+- Slack, WhatsApp, and protected vendor-email queue results are recorded after
+  approved execution;
 - outcome metrics include wait time reduced, complaint contained, rooms
   released, porter support dispatched, front-desk support opened, stockout
   avoided, billing issue routed, manager review opened, vendor SLA escalated,
@@ -101,10 +103,10 @@ The seed report includes the Salesforce IDs for
 `work-north-star-hospital-surge-001`,
 `recommendation-north-star-hospital-001`, and
 `approval-north-star-hospital-001`. The connected report also includes the
-hospital Slack and WhatsApp-style action, outcome, and evaluation IDs, and the
-final action count includes eight Salesforce task action records plus two
-channel action records. The report also includes the model deployment, profile,
-policy, and invocation versions used by the run.
+hospital Slack, WhatsApp, and vendor-email action, outcome, and evaluation IDs,
+and the final action count includes eight Salesforce task action records plus
+three channel action records. The report also includes the model deployment,
+profile, policy, and invocation versions used by the run.
 
 Configure the Lightning command center with:
 
@@ -126,8 +128,8 @@ The connected report must show:
 - `externalActionExecuted = false` for Agentforce;
 - `INVALID_STATE` before human approval in Salesforce;
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
-- eight approved task action records, two approved channel actions, eleven
-  correlated outcomes, and eleven evaluations;
+- eight approved task action records, three approved channel actions, twelve
+  correlated outcomes, and twelve evaluations;
 - task routing includes the required owner aliases, escalation aliases,
   deterministic priority ranks, approval requirement, service windows, and
   missed-task escalation windows before service-window loss;

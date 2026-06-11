@@ -50,6 +50,103 @@ const caseState = {
     partner: "Island Diagnostics Lab",
     window: "08:45-09:18"
   },
+  inboundComplaintIntake: {
+    sourceChannel: "Twilio Sandbox WhatsApp",
+    customerAlias: "alias-whatsapp-customer-demo",
+    protectedActionState: "No protected action executed",
+    summary:
+      "Inbound WhatsApp complaint expands into wait time, pharmacy stock, and billing review without storing raw phone or message text.",
+    followUpQuestions: [
+      "Which service area were you in?",
+      "When did the issue happen?",
+      "Was the pharmacy delay caused by queue time, unavailable stock, or missing approval?",
+      "Was the billing concern a duplicate charge, claim delay, refund, or payment issue?",
+      "What outcome would make this acceptable for you?"
+    ],
+    rootCauseHypotheses: [
+      "Queue pressure or staff coverage gap may be driving the complaint.",
+      "Low stock, counter queue, or approval delay may be affecting pharmacy service.",
+      "Duplicate invoice, insurer delay, or payment review may be causing financial friction."
+    ],
+    nextEvidenceNeeded: [
+      "current queue or service-area status",
+      "pharmacy stock and counter queue status",
+      "billing or insurance case status",
+      "manager approval requirement"
+    ]
+  },
+  agentHandoffTrace: [
+    {
+      id: "handoff-orchestrator",
+      agent: "North Star Orchestrator",
+      contribution:
+        "Expanded one WhatsApp complaint into trust, capacity, pharmacy, billing, vendor, communication, approval, and outcome work.",
+      output: "One manager-ready action plan"
+    },
+    {
+      id: "handoff-evidence-context",
+      agent: "Evidence and Context",
+      contribution:
+        "Mapped WhatsApp complaint, queue, stock, billing, and vendor records into global primitives.",
+      output: "Signal, Evidence, Customer, Resource, Partner, Risk"
+    },
+    {
+      id: "handoff-patient-trust",
+      agent: "Patient Trust",
+      contribution:
+        "Classified wait-time, pharmacy-delay, and billing complaint themes and drafted safe follow-up questions.",
+      output: "Complaint type, missing evidence, privacy-safe response draft"
+    },
+    {
+      id: "handoff-resource-capacity",
+      agent: "Resource and Capacity",
+      contribution:
+        "Checked bed pressure, outpatient queue, pharmacy stock cover, and staff load.",
+      output: "Capacity risk, stockout risk, staff gap"
+    },
+    {
+      id: "handoff-partner-vendor",
+      agent: "Partner and Vendor",
+      contribution:
+        "Connected the complaint to lab, supplier, insurer, and vendor SLA follow-up.",
+      output: "Vendor escalation and protected mock email"
+    },
+    {
+      id: "handoff-financial-impact",
+      agent: "Financial Impact",
+      contribution:
+        "Flagged duplicate invoice and insurance-review exposure without using personal billing data.",
+      output: "Billing review action and exposure estimate"
+    },
+    {
+      id: "handoff-risk-approval",
+      agent: "Risk and Approval",
+      contribution:
+        "Required manager approval and refused any clinical diagnosis, treatment, dosage, or triage decision.",
+      output: "Approval requirement and clinical refusal boundary"
+    },
+    {
+      id: "handoff-communication",
+      agent: "Communication",
+      contribution:
+        "Prepared Slack manager approval, internal Slack alert, and Twilio WhatsApp update after approval.",
+      output: "Slack approval, Slack alert, WhatsApp alert"
+    },
+    {
+      id: "handoff-operations",
+      agent: "Operations Execution",
+      contribution:
+        "Converted the approved plan into cleaning, porter, pharmacy, billing, and vendor tasks.",
+      output: "Role-owned task records"
+    },
+    {
+      id: "handoff-outcome-learning",
+      agent: "Outcome Learning",
+      contribution:
+        "Measured wait reduction, bed release, stockout avoidance, complaint containment, and SLA follow-up.",
+      output: "Outcome metrics and next-plan evidence"
+    }
+  ],
   partnerResponse: {
     status: "Lab escalation pending",
     responseDelay: "42 minutes over SLA",

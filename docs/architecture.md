@@ -9,11 +9,11 @@ banking, retail, cruise, and other sectors.
 
 ```mermaid
 flowchart LR
-    SOURCES["Hospital source signals<br/>WhatsApp complaints, intake form,<br/>capacity, stock, partner, billing"]
+    SOURCES["Hospital source signals<br/>Twilio WhatsApp complaints,<br/>capacity, stock, partner, billing"]
     CONTEXT["Evidence and context<br/>customer alias, department, location,<br/>resource, partner, policy, metric"]
     AGENTS["Agentforce analysis<br/>trust, capacity, vendor,<br/>finance, approval, communication"]
     REVIEW["Manager review<br/>facts, inference, recommendation,<br/>refusal, approval"]
-    ACTIONS["Approved actions<br/>service task, bed cleaning,<br/>vendor case, billing review,<br/>Slack, WhatsApp, future email"]
+    ACTIONS["Approved actions<br/>service task, bed cleaning,<br/>vendor case, billing review,<br/>Slack, WhatsApp, vendor email queue"]
     OUTCOME["Outcome<br/>wait reduced, bed released,<br/>stockout avoided, complaint contained"]
 
     SOURCES --> CONTEXT --> AGENTS --> REVIEW --> ACTIONS --> OUTCOME
@@ -27,9 +27,10 @@ clinical priority decisions are outside the demo.
 
 ## North Star Flow
 
-1. A hospital operations signal arrives from WhatsApp inbound, a Salesforce
-   intake screen, a synthetic complaint, capacity, resource, partner, billing,
-   stock, or staffing source.
+1. A hospital operations signal arrives from Twilio WhatsApp inbound, a
+   synthetic complaint, capacity, resource, partner, billing, stock, or staffing
+   source. The Salesforce command center remains the visibility, audit, and
+   fallback approval surface.
 2. The event contract validates the envelope, hash, idempotency key, sequence,
    and correlation ID.
 3. The source payload maps into Salesforce context records for global
@@ -50,7 +51,7 @@ clinical priority decisions are outside the demo.
 flowchart TB
     subgraph Sources["Hospital Operations Sources"]
         COMP["WhatsApp/customer complaints"]
-        FORM["Salesforce intake form"]
+        REVIEW_IN["Command center review/fallback"]
         CAP["Capacity and queues"]
         RES["Beds, rooms, stock, equipment"]
         PARTNER["Partner/vendor responses"]
@@ -61,7 +62,7 @@ flowchart TB
     subgraph Integration["Integration Boundary"]
         EVENTS["Event contract"]
         MULE["MuleSoft mock APIs"]
-        CHANNELS["Slack, WhatsApp, future email adapters"]
+        CHANNELS["Slack, WhatsApp, vendor email queue"]
     end
 
     subgraph Salesforce["Salesforce Core"]

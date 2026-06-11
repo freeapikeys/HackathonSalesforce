@@ -173,8 +173,7 @@ are stuck.
 
 North Star should produce one action plan:
 
-- accept a customer or patient complaint through WhatsApp or a Salesforce
-  intake fallback;
+- accept a customer or patient complaint through Twilio Sandbox WhatsApp;
 - identify whether the root issue is complaint, capacity, partner, billing,
   stock, staffing, or mixed;
 - check hospital resources and evidence;
@@ -299,7 +298,7 @@ file before editing.
 - [x] Model gateway uses global/hospital profile names, not retail-only names.
 - [x] Document optional specialist skills that support the 10 agents without
       creating a separate architecture.
-- [ ] Show the agent handoff trace in the command center: which agent found
+- [x] Show the agent handoff trace in the command center: which agent found
       facts, which agent inferred risk, which agent required approval, and
       which agent executed or measured the outcome.
 
@@ -328,6 +327,10 @@ file before editing.
       `approvalId`, `actionId`, evidence IDs, provider, status, and fallback
       reason.
 - [x] Mock channel results are visible in the hospital command center.
+- [x] Support signed Slack approval interactions in the mock runtime and
+      harness with `SLACK_SIGNING_SECRET` outside Git.
+- [x] Slack approval keeps protected actions blocked until a valid signed
+      approve decision is received.
 
 ### 7A. Signal Intake And Channel Routing
 
@@ -335,6 +338,8 @@ file before editing.
       outbound channels execute approved `Action` records.
 - [x] Document WhatsApp as the preferred customer/patient complaint intake
       story.
+- [x] Document Twilio Sandbox as the hackathon WhatsApp provider and Meta Cloud
+      API as out of scope for the final demo.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as either urgent internal mobile alert or
       approved customer acknowledgement.
@@ -346,8 +351,8 @@ file before editing.
       configured.
 - [x] Implement or simulate a Twilio inbound WhatsApp webhook that maps customer
       complaint text to `INGEST_EVENT`.
-- [ ] Add a Salesforce command-center complaint/signal intake fallback for demo
-      reliability.
+- [x] Keep the existing Salesforce command center as the visibility, approval,
+      and fallback surface instead of adding a new complaint form.
 - [x] Convert inbound complaint text into a synthetic customer alias, source
       channel, timestamp, department/resource hints, correlation ID, and
       evidence ID.
@@ -355,20 +360,23 @@ file before editing.
       next-evidence needs, and affected primitives for inbound complaints.
 - [x] Ensure inbound WhatsApp mapping does not store raw phone number or raw
       complaint text in the preserved demo event.
-- [ ] Trigger or request an Agentforce recommendation from the newly stored
-      intake evidence.
-- [ ] Show the manager approval step before Slack, WhatsApp, vendor, pharmacy,
+- [x] Add harness evidence that newly stored intake can request an Agentforce
+      recommendation without executing protected actions.
+- [x] Show the manager approval step before Slack, WhatsApp, vendor, pharmacy,
       billing, refund, email, or customer-facing response execution.
 - [x] Add protected mock email/vendor notification behind the protected action
       boundary.
 - [ ] Add live email/vendor delivery only if Anypoint/SMTP credentials are
       configured safely outside Git.
-- [ ] Add Slack/WhatsApp approval deep links or buttons only if the team can
-      configure Slack interactivity or WhatsApp approved templates safely.
-- [ ] Add a demo script beat: WhatsApp complaint enters, Salesforce stores
-      evidence, agents create an action plan, manager approves, Slack alerts
-      staff, WhatsApp sends approved reply or internal mobile alert, outcomes
-      update.
+- [x] Add signed Slack approval buttons in the mock runtime and harness.
+- [ ] Configure a public Slack App interactivity Request URL for live button
+      clicks during final rehearsal.
+- [ ] Add WhatsApp approval templates only if approved templates are available;
+      otherwise keep WhatsApp as intake/outbound alert, not approval surface.
+- [x] Add a demo script beat: WhatsApp complaint enters MuleSoft intake,
+      evidence is preserved, agents create an action plan, manager approves,
+      Slack alerts staff, WhatsApp sends approved reply or internal mobile
+      alert, outcomes update.
 
 ### 7B. Deep Resolution Differentiator
 
@@ -381,9 +389,9 @@ notifies a manager.
 - [x] Add deterministic root-cause hypotheses to inbound complaint intake.
 - [x] Add next-evidence needs so agents ask for the missing operational facts
       instead of guessing.
-- [ ] Display follow-up questions and missing evidence in the command center
+- [x] Display follow-up questions and missing evidence in the command center
       when an inbound complaint starts the case.
-- [ ] Add a demo scenario where one complaint expands into at least four
+- [x] Add a demo scenario where one complaint expands into at least four
       affected functions: patient trust, capacity, inventory, billing, and
       communication.
 - [ ] Add an outcome comparison showing what changed after the actions, not
@@ -447,6 +455,9 @@ notifies a manager.
 - [x] Demo shows partner or capacity response changing the recommendation.
 - [x] Demo shows manager approval before action execution.
 - [x] Demo shows Slack and WhatsApp-style internal alerts.
+- [x] Demo harness shows Twilio Sandbox complaint intake before Agentforce
+      recommendation and Slack approval.
+- [x] Demo harness shows protected mock vendor email after approval.
 - [x] Demo shows clinical-decision refusal.
 - [x] Demo shows outcome metrics and audit trail.
 - [ ] Final rehearsal completed with the whole team.
@@ -483,20 +494,25 @@ repo has code for the demo.
 - Salesforce/Agentforce gate: one connected org alias, normally `hfs-dev`, must
   deploy the metadata, assign the demo permission sets, seed the hospital case,
   and pass `npm run demo:run -- --target-org hfs-dev`.
-- Current connected evidence: on 2026-06-11, `hfs-dev` deployed `force-app`
-  with `HFS_ServiceContractTest`, `HFS_RelationshipServiceImplTest`,
-  `HFS_AgentActionServiceTest`, and `HFS_RelationshipControllerTest` passing;
-  `npm run demo:reset`, `npm run demo:seed`, and the connected demo run passed;
-  the live-channel run wrote
-  `artifacts/demo-harness-result-live-channels-simple-language.json`. The
-  connected run completed the work item with 10 actions, 11 outcomes, 11
-  evaluations, `CLINICAL_DECISION_REFUSED`, `SEND_SLACK_ALERT.status = SENT`,
-  and `SEND_WHATSAPP_ALERT.status = SENT`. This proves approved outbound
-  channels, not live inbound WhatsApp customer intake.
-- Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` only if the team wants
-  a real Slack webhook; WhatsApp-style delivery uses Twilio or Meta credentials
-  only if they are configured outside Git. Missing credentials are acceptable
-  only when the presenter clearly says the result is `MOCK_SENT`.
+- Current connected evidence: on 2026-06-11, `force-app` deployed to `hfs-dev`
+  with 20 specified Apex tests passing, then `hfs-dev` ran
+  `npm run demo:run -- --target-org hfs-dev --output
+artifacts/demo-harness-result-current.json` successfully. The connected run
+  proved Twilio Sandbox complaint intake mapping, Agentforce recommendation,
+  clinical refusal, manager approval, signed Slack approval proof,
+  pre-approval MuleSoft denial, and approved Slack, WhatsApp, vendor-email, and
+  task outcomes. It completed the work item with 11 actions, 12 outcomes, 12
+  evaluations, 13 events, `CLINICAL_DECISION_REFUSED`,
+  `SEND_SLACK_ALERT.status = MOCK_SENT`,
+  `SEND_WHATSAPP_ALERT.status = MOCK_SENT`, and
+  `SEND_VENDOR_EMAIL.status = QUEUED`. This proves the governed end-to-end path;
+  real outbound channel delivery still depends on credentials being visible to
+  the running process.
+- Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` for outbound alerts
+  and `SLACK_SIGNING_SECRET` plus a public Slack App interactivity URL for live
+  approve/reject buttons. WhatsApp uses Twilio Sandbox credentials only for the
+  hackathon demo. Missing credentials are acceptable only when the presenter
+  clearly says the result is `MOCK_SENT` or a signed local harness proof.
 - Final rehearsal gate: the whole team must run the three-minute pitch at least
   twice, use the timing table in `docs/north-star-demo-narrative.md`, confirm the
   backup recorded/mock path, and assign who speaks for Salesforce, Agentforce,

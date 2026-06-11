@@ -148,19 +148,21 @@ execute actions.
 Outbound action channels execute approved `Action` records. They require a
 business manager approval unless the demo clearly marks them as local mocks.
 
-| Channel                     | Best use                                                        | Current demo state                                            |
-| --------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------- |
-| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake          | Target flow; use Twilio Sandbox or seeded fixture as fallback |
-| Salesforce command center   | Manager review, approval, command-center visibility             | Active platform surface                                       |
-| Salesforce/manual demo form | Reliable fallback for entering a complaint or operations signal | Target fallback screen or seeded event                        |
-| Slack                       | Internal staff and manager coordination                         | Live outbound delivery works when webhook is configured       |
-| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement        | Live outbound delivery works through Twilio Sandbox           |
-| Email                       | Supplier, vendor, insurer, or formal customer follow-up         | Protected mock action exists; live delivery is not configured |
+| Channel                     | Best use                                                 | Current demo state                                                         |
+| --------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | Twilio Sandbox is the hackathon path; local mapper and harness proof exist |
+| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                    |
+| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                                 |
+| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                    |
+| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live outbound delivery works through Twilio Sandbox                        |
+| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured              |
 
 Recommended hackathon stance:
 
 - WhatsApp should be the customer-facing intake story.
 - Slack should be the internal worker and manager coordination story.
+- Slack approve/reject buttons should be the manager approval story when the
+  Slack App interactivity Request URL is configured.
 - WhatsApp outbound may be used for urgent internal mobile alerts in the demo.
 - Customer-facing WhatsApp replies should be approved, privacy-safe, and
   template/consent-aware.
@@ -174,8 +176,8 @@ Use this as the judge explanation for "how does a complaint actually enter and
 become action?"
 
 1. A customer, patient, visitor, staff member, or system sends a signal.
-   Examples: WhatsApp complaint, Salesforce intake form, queue spike, low stock
-   event, lab delay, billing issue, or room readiness issue.
+   Examples: WhatsApp complaint, command-center review note, queue spike, low
+   stock event, lab delay, billing issue, or room readiness issue.
 2. MuleSoft or Salesforce writes the signal as source-backed evidence.
    North Star stores the message, timestamp, source channel, synthetic alias,
    affected department, resource, partner, and correlation ID.
@@ -242,8 +244,9 @@ alias, hashes the raw message, classifies complaint types, adds follow-up
 questions, adds root-cause hypotheses, and sends the result through
 `INGEST_EVENT`.
 
-The live public webhook is still a remaining integration task. Until that is
-hosted, use the runtime mapper or seeded event as the reliable demo fallback.
+The live public webhook is still a final rehearsal configuration task. Until
+that endpoint is hosted, use the runtime mapper and harness proof as the
+reliable demo fallback.
 
 ## Key Demo IDs
 
@@ -293,7 +296,9 @@ Slack:
 
 ```powershell
 [Environment]::SetEnvironmentVariable("SLACK_WEBHOOK_URL", "<slack-webhook-url>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_SIGNING_SECRET", "<slack-signing-secret>", "User")
 $env:SLACK_WEBHOOK_URL = [Environment]::GetEnvironmentVariable("SLACK_WEBHOOK_URL", "User")
+$env:SLACK_SIGNING_SECRET = [Environment]::GetEnvironmentVariable("SLACK_SIGNING_SECRET", "User")
 ```
 
 WhatsApp through Twilio Sandbox:
@@ -311,7 +316,8 @@ $env:TWILIO_WHATSAPP_TO = [Environment]::GetEnvironmentVariable("TWILIO_WHATSAPP
 ```
 
 Never commit Twilio recovery codes, Account SID plus Auth Token pairs, Slack
-webhook URLs, real phone numbers, or screenshots that expose secrets.
+webhook URLs, Slack signing secrets, real phone numbers, or screenshots that
+expose secrets.
 
 ## Live Alert Text
 
@@ -347,6 +353,7 @@ Use these before demo rehearsal:
 
 ```powershell
 $env:SLACK_WEBHOOK_URL = [Environment]::GetEnvironmentVariable("SLACK_WEBHOOK_URL", "User")
+$env:SLACK_SIGNING_SECRET = [Environment]::GetEnvironmentVariable("SLACK_SIGNING_SECRET", "User")
 $env:TWILIO_ACCOUNT_SID = [Environment]::GetEnvironmentVariable("TWILIO_ACCOUNT_SID", "User")
 $env:TWILIO_AUTH_TOKEN = [Environment]::GetEnvironmentVariable("TWILIO_AUTH_TOKEN", "User")
 $env:TWILIO_WHATSAPP_FROM = [Environment]::GetEnvironmentVariable("TWILIO_WHATSAPP_FROM", "User")
@@ -359,16 +366,19 @@ npm run demo:run -- --target-org hfs-dev --output artifacts\demo-harness-result-
 What this proves:
 
 - `npm run check:mulesoft` proves the event intake, approved action execution,
-  Slack/WhatsApp mocks, live-provider adapter paths, and inbound WhatsApp mapper
-  tests.
+  Slack/WhatsApp mocks, signed Slack approval handling, live-provider adapter
+  paths, protected vendor email queue, and inbound WhatsApp mapper tests.
 - `npm run demo:run` proves the connected Salesforce path, manager approval,
-  outbound Slack, outbound WhatsApp, actions, outcomes, and clinical refusal.
+  Twilio intake harness proof, Slack approval-gate proof, outbound Slack,
+  outbound WhatsApp, protected vendor email queue, actions, outcomes, and
+  clinical refusal.
 
 What it does not prove yet:
 
 - a public Twilio webhook receiving live customer messages from the internet;
 - an in-command-center form where a judge types a fresh complaint;
-- interactive approval buttons inside Slack or WhatsApp.
+- live Slack button clicks unless the Slack App Interactivity Request URL is
+  configured to reach the runtime endpoint.
 
 ## Salesforce Org
 
@@ -393,32 +403,28 @@ The live channel demo is ready when the harness output shows:
 - `SEND_SLACK_ALERT.provider = slack-webhook`
 - `SEND_WHATSAPP_ALERT.status = SENT`
 - `SEND_WHATSAPP_ALERT.provider = twilio-whatsapp`
+- `SEND_VENDOR_EMAIL.status = QUEUED`
 - `workItemStatus = COMPLETED`
-- `actionCount = 10`
-- `outcomeCount = 11`
+- `actionCount >= 11`
+- `outcomeCount >= 12`
 - `CLINICAL_DECISION_REFUSED`
 
-This proves approved outbound delivery. It does not prove live inbound customer
-complaint intake unless the Twilio inbound webhook or Salesforce intake fallback
-has also been implemented and tested.
+This proves approved outbound delivery plus local signed approval and Twilio
+intake harness proof. It does not prove a public Twilio webhook receiving live
+customer messages unless that Request URL has also been hosted and tested.
 
 ## Remaining Build Tasks
 
 Highest-value tasks still open:
 
-1. Host or simulate the live Twilio inbound webhook end to end, not only the
-   deterministic runtime mapper.
-2. Add a Salesforce command-center intake fallback so a judge can type a
-   complaint during the demo.
-3. Trigger or request Agentforce recommendation generation from the newly
-   stored inbound complaint evidence.
-4. Display inbound complaint follow-up questions, root-cause hypotheses, and
-   missing evidence in the command center.
-5. Add manager approval deep links or buttons for Slack/WhatsApp only if Slack
-   interactivity or WhatsApp templates are configured safely.
-6. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
+1. Host the public Twilio inbound webhook end to end for final rehearsal; the
+   deterministic runtime mapper and harness proof already exist.
+2. Configure Slack App Interactivity with a public Request URL if the live demo
+   should use real Slack button clicks; otherwise use the signed harness proof
+   and Salesforce command-center approval fallback.
+3. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
-7. Add cross-sector cards showing how the same global primitives map to
+4. Add cross-sector cards showing how the same global primitives map to
    airport, hotel, banking, supermarket, and cruise operations.
 
 ## Team Ownership

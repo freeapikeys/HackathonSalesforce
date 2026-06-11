@@ -109,6 +109,10 @@ needs, and affected primitives.
 - Slack can use `SLACK_WEBHOOK_URL`. WhatsApp can use Twilio Sandbox or a
   WhatsApp-enabled Twilio sender through `TWILIO_ACCOUNT_SID`,
   `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, and `TWILIO_WHATSAPP_TO`.
+- Slack approval buttons are a separate interaction path from the incoming
+  webhook. Signed interactions require `SLACK_SIGNING_SECRET`, timestamp and
+  signature validation, replay rejection, and a pending approval before the
+  decision can be recorded.
 - Vendor email notification is implemented as protected mock action
   `SEND_VENDOR_EMAIL`; do not claim live email delivery unless an Anypoint,
   SMTP, or email-provider connector is configured and tested.
