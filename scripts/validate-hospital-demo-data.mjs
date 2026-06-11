@@ -2,22 +2,29 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
+const canonicalDataDir = path.join("data", "hospital");
 
 const dataFiles = [
-  "master_data.json",
-  "warehouse_inventory.json",
-  "inventory_positions.json",
-  "product_batches.json",
-  "complaints.json",
-  "complaint_clusters.json",
-  "queue_pressure.json",
-  "sales_data.json",
-  "supplier_responses.json",
-  "task_templates.json",
-  "channel_aliases.json",
-  "recommendation_cases.json",
-  "event_stream.json",
-  "promotions.json"
+  { canonical: "master_data.json", mirror: "master_data.json" },
+  { canonical: "resources.json", mirror: "warehouse_inventory.json" },
+  { canonical: "supply_positions.json", mirror: "inventory_positions.json" },
+  { canonical: "supply_batches.json", mirror: "product_batches.json" },
+  { canonical: "complaints.json", mirror: "complaints.json" },
+  { canonical: "complaint_clusters.json", mirror: "complaint_clusters.json" },
+  { canonical: "capacity_pressure.json", mirror: "queue_pressure.json" },
+  { canonical: "financial_cases.json", mirror: "sales_data.json" },
+  { canonical: "partner_responses.json", mirror: "supplier_responses.json" },
+  { canonical: "task_templates.json", mirror: "task_templates.json" },
+  { canonical: "channel_aliases.json", mirror: "channel_aliases.json" },
+  {
+    canonical: "recommendation_cases.json",
+    mirror: "recommendation_cases.json"
+  },
+  { canonical: "event_stream.json", mirror: "event_stream.json" },
+  {
+    canonical: "service_recovery_options.json",
+    mirror: "promotions.json"
+  }
 ];
 
 const forbiddenKeys = [
@@ -91,41 +98,44 @@ function assertNoForbiddenPersonalData(fileName, value) {
   });
 }
 
-const rootData = Object.fromEntries(
-  dataFiles.map((fileName) => [fileName, readJson(fileName)])
+const hospitalData = Object.fromEntries(
+  dataFiles.map(({ canonical }) => [
+    canonical,
+    readJson(path.join(canonicalDataDir, canonical))
+  ])
 );
 const syntheticData = Object.fromEntries(
-  dataFiles.map((fileName) => [
-    fileName,
-    readJson(path.join("synthetic_data", fileName))
+  dataFiles.map(({ canonical, mirror }) => [
+    canonical,
+    readJson(path.join("synthetic_data", mirror))
   ])
 );
 
-for (const fileName of dataFiles) {
-  assertNoForbiddenPersonalData(fileName, rootData[fileName]);
-  assertNoForbiddenPersonalData(
-    path.join("synthetic_data", fileName),
-    syntheticData[fileName]
-  );
+for (const { canonical, mirror } of dataFiles) {
+  const canonicalPath = path.join(canonicalDataDir, canonical);
+  const mirrorPath = path.join("synthetic_data", mirror);
+
+  assertNoForbiddenPersonalData(canonicalPath, hospitalData[canonical]);
+  assertNoForbiddenPersonalData(mirrorPath, syntheticData[canonical]);
   assert(
-    JSON.stringify(rootData[fileName]) ===
-      JSON.stringify(syntheticData[fileName]),
-    `${fileName} and synthetic_data/${fileName} are not identical`
+    JSON.stringify(hospitalData[canonical]) ===
+      JSON.stringify(syntheticData[canonical]),
+    `${canonicalPath} and ${mirrorPath} are not identical`
   );
 }
 
-const masterData = rootData["master_data.json"];
-const resources = rootData["warehouse_inventory.json"].resources;
-const supplyPositions = rootData["inventory_positions.json"].supplyPositions;
-const complaints = rootData["complaints.json"];
-const complaintClusters = rootData["complaint_clusters.json"];
-const queuePressure = rootData["queue_pressure.json"];
-const financialCases = rootData["sales_data.json"].financialCases;
-const partnerResponses = rootData["supplier_responses.json"];
-const taskTemplates = rootData["task_templates.json"];
-const channelAliases = rootData["channel_aliases.json"];
-const recommendationCases = rootData["recommendation_cases.json"];
-const eventStream = rootData["event_stream.json"];
+const masterData = hospitalData["master_data.json"];
+const resources = hospitalData["resources.json"].resources;
+const supplyPositions = hospitalData["supply_positions.json"].supplyPositions;
+const complaints = hospitalData["complaints.json"];
+const complaintClusters = hospitalData["complaint_clusters.json"];
+const queuePressure = hospitalData["capacity_pressure.json"];
+const financialCases = hospitalData["financial_cases.json"].financialCases;
+const partnerResponses = hospitalData["partner_responses.json"];
+const taskTemplates = hospitalData["task_templates.json"];
+const channelAliases = hospitalData["channel_aliases.json"];
+const recommendationCases = hospitalData["recommendation_cases.json"];
+const eventStream = hospitalData["event_stream.json"];
 const requiredComplaintTypes = new Set([
   "wait_time",
   "room_readiness",
@@ -201,9 +211,14 @@ countBetween("channel recipient alias", channelAliases.length, 12, 16);
 countBetween("expected recommendation", recommendationCases.length, 12, 15);
 countBetween("hospital event fixture", eventStream.length, 18, 24);
 
-const resourceTypes = new Set(resources.map((resource) => resource.resourceType));
+const resourceTypes = new Set(
+  resources.map((resource) => resource.resourceType)
+);
 for (const resourceType of requiredResourceTypes) {
-  assert(resourceTypes.has(resourceType), `Missing resource type ${resourceType}`);
+  assert(
+    resourceTypes.has(resourceType),
+    `Missing resource type ${resourceType}`
+  );
 }
 
 const partnerTypes = new Set(
@@ -227,7 +242,10 @@ const financialCaseTypes = new Set(
   financialCases.map((financialCase) => financialCase.caseType)
 );
 for (const caseType of requiredFinancialCaseTypes) {
-  assert(financialCaseTypes.has(caseType), `Missing financial case ${caseType}`);
+  assert(
+    financialCaseTypes.has(caseType),
+    `Missing financial case ${caseType}`
+  );
 }
 
 const departmentIds = new Set(
@@ -235,7 +253,9 @@ const departmentIds = new Set(
 );
 const locationIds = new Set(masterData.locations.map((l) => l.locationId));
 const resourceIds = new Set(resources.map((r) => r.resourceId));
-const partnerIds = new Set(masterData.partners.map((partner) => partner.partnerId));
+const partnerIds = new Set(
+  masterData.partners.map((partner) => partner.partnerId)
+);
 const customerAliasIds = new Set(
   masterData.customerAliases.map((alias) => alias.customerAliasId)
 );
@@ -245,7 +265,7 @@ const complaintIds = new Set(
 const issueIds = new Set([
   ...complaintClusters.map((cluster) => cluster.clusterId),
   ...financialCases.map((financialCase) => financialCase.caseId),
-  ...rootData["product_batches.json"].supplyBatches.map(
+  ...hospitalData["supply_batches.json"].supplyBatches.map(
     (batch) => batch.batchId
   )
 ]);
@@ -361,7 +381,10 @@ for (const financialCase of financialCases) {
     partnerIds.has(financialCase.relatedPartnerId),
     `${financialCase.caseId} has unknown related partner`
   );
-  assert(financialCase.evidenceId, `${financialCase.caseId} is missing evidenceId`);
+  assert(
+    financialCase.evidenceId,
+    `${financialCase.caseId} is missing evidenceId`
+  );
 }
 
 for (const response of partnerResponses) {

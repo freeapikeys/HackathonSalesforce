@@ -2,17 +2,18 @@
 
 This folder is the human and agent entry point for demo data.
 
-The actual committed hospital demo data still lives in two places because the
-existing validators expect both:
+The canonical committed hospital demo data lives under `hospital/`.
 
-- root JSON files such as `../master_data.json`, `../complaints.json`, and
-  `../warehouse_inventory.json`;
-- mirrored copies under `../synthetic_data/` for teammates and agents that look
-  for a dedicated synthetic data folder.
+The older `../synthetic_data/` folder remains as a compatibility mirror for
+teammate prompts and agents that still look there. The validator checks that the
+canonical files and mirror files stay identical.
 
-Do not move the root JSON files unless `scripts/validate-hospital-demo-data.mjs`
-is updated at the same time. That validator proves root and `synthetic_data/`
-copies are identical, synthetic, and safe for the hospital demo.
+The old root JSON files were active hospital fixtures, not obsolete supermarket
+fixtures, but they have been moved out of the repository root so the project
+does not look like it is still organized around the old prototype.
+
+Do not edit only one copy. Update the canonical `hospital/` file first and keep
+the `../synthetic_data/` mirror in sync, then run the validators.
 
 Use `hospital-demo-data-manifest.json` as the quick index for what each data
 file contains.

@@ -1,7 +1,6 @@
 {
   "profile": "north-star-private-hospital-operations",
   "businessDate": "2026-06-13",
-  "legacyFileName": "sales_data.json",
   "financialCases": [
     {
       "caseId": "BILL-HOS-001",

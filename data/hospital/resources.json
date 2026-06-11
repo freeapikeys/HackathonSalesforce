@@ -1,8 +1,7 @@
 {
   "profile": "north-star-private-hospital-operations",
   "businessDate": "2026-06-13",
-  "legacyFileName": "warehouse_inventory.json",
-  "note": "Hospital resource inventory. The file name is legacy; records use global Resource primitives.",
+  "note": "Hospital resource inventory using global Resource primitives.",
   "resources": [
     {
       "resourceId": "RESOURCE-HOS-001",

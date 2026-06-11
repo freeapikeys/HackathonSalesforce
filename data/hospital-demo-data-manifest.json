@@ -1,7 +1,7 @@
 {
   "name": "North Star private hospital demo data",
-  "sourceOfTruth": "root JSON files",
-  "mirror": "synthetic_data",
+  "sourceOfTruth": "data/hospital",
+  "mirror": "synthetic_data legacy compatibility copies",
   "safety": {
     "mode": "synthetic_demo_only",
     "realPatientData": false,
@@ -11,7 +11,7 @@
   "validation": ["npm run check:demo-data", "npm run check:fixture-language"],
   "files": [
     {
-      "path": "master_data.json",
+      "path": "data/hospital/master_data.json",
       "mirrorPath": "synthetic_data/master_data.json",
       "contains": [
         "hospital departments",
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "path": "warehouse_inventory.json",
+      "path": "data/hospital/resources.json",
       "mirrorPath": "synthetic_data/warehouse_inventory.json",
       "contains": [
         "hospital resources",
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "path": "complaints.json",
+      "path": "data/hospital/complaints.json",
       "mirrorPath": "synthetic_data/complaints.json",
       "contains": [
         "synthetic patient and visitor complaints",
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "path": "complaint_clusters.json",
+      "path": "data/hospital/complaint_clusters.json",
       "mirrorPath": "synthetic_data/complaint_clusters.json",
       "contains": [
         "clustered complaints",
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "path": "queue_pressure.json",
+      "path": "data/hospital/capacity_pressure.json",
       "mirrorPath": "synthetic_data/queue_pressure.json",
       "contains": [
         "queue pressure",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "path": "inventory_positions.json",
+      "path": "data/hospital/supply_positions.json",
       "mirrorPath": "synthetic_data/inventory_positions.json",
       "contains": [
         "pharmacy and supply positions",
@@ -75,7 +75,7 @@
       ]
     },
     {
-      "path": "sales_data.json",
+      "path": "data/hospital/financial_cases.json",
       "mirrorPath": "synthetic_data/sales_data.json",
       "contains": [
         "billing cases",
@@ -86,7 +86,7 @@
       ]
     },
     {
-      "path": "supplier_responses.json",
+      "path": "data/hospital/partner_responses.json",
       "mirrorPath": "synthetic_data/supplier_responses.json",
       "contains": [
         "partner responses",
@@ -95,7 +95,7 @@
       ]
     },
     {
-      "path": "task_templates.json",
+      "path": "data/hospital/task_templates.json",
       "mirrorPath": "synthetic_data/task_templates.json",
       "contains": [
         "approved task templates",
@@ -105,7 +105,7 @@
       ]
     },
     {
-      "path": "channel_aliases.json",
+      "path": "data/hospital/channel_aliases.json",
       "mirrorPath": "synthetic_data/channel_aliases.json",
       "contains": [
         "Slack role aliases",
@@ -114,7 +114,7 @@
       ]
     },
     {
-      "path": "recommendation_cases.json",
+      "path": "data/hospital/recommendation_cases.json",
       "mirrorPath": "synthetic_data/recommendation_cases.json",
       "contains": [
         "expected Agentforce recommendation cases",
@@ -123,7 +123,7 @@
       ]
     },
     {
-      "path": "event_stream.json",
+      "path": "data/hospital/event_stream.json",
       "mirrorPath": "synthetic_data/event_stream.json",
       "contains": [
         "hospital event summaries",
@@ -134,20 +134,14 @@
       ]
     },
     {
-      "path": "product_batches.json",
+      "path": "data/hospital/supply_batches.json",
       "mirrorPath": "synthetic_data/product_batches.json",
-      "contains": [
-        "hospital supply batches",
-        "legacy filename retained for compatibility"
-      ]
+      "contains": ["hospital supply batches"]
     },
     {
-      "path": "promotions.json",
+      "path": "data/hospital/service_recovery_options.json",
       "mirrorPath": "synthetic_data/promotions.json",
-      "contains": [
-        "service recovery options",
-        "legacy filename retained for compatibility"
-      ]
+      "contains": ["service recovery options"]
     }
   ]
 }

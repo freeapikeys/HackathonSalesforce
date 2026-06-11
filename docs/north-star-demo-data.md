@@ -25,14 +25,13 @@ make diagnosis, treatment, dosage, triage, or clinical priority decisions.
 
 ## Committed Synthetic Data Files
 
-The full fake-data inventory is committed in the root JSON files and mirrored
-under `synthetic_data/` for teammates who still use that folder. The files are
-hospital/global-primitive data even when a legacy filename remains from the
-older retail prototype.
+The full fake-data inventory is committed under `data/hospital/`. The older
+`synthetic_data/` folder remains as a compatibility mirror for teammates or
+agents that still use that path. The validator checks both copies so they do
+not drift.
 
 For a quick agent-friendly index, use
-`data/hospital-demo-data-manifest.json`. Do not move the root JSON files unless
-the data validator is updated at the same time.
+`data/hospital-demo-data-manifest.json`.
 
 Run:
 
@@ -42,26 +41,26 @@ npm run check:demo-data
 
 The validator proves:
 
-| Data surface                  | Current count | File                                               |
-| ----------------------------- | ------------- | -------------------------------------------------- |
-| Departments/service areas     | 10            | `master_data.json`                                 |
-| Locations                     | 24            | `master_data.json`                                 |
-| Resource records              | 90            | `warehouse_inventory.json`                         |
-| Synthetic customer aliases    | 50            | `master_data.json`                                 |
-| Staff role aliases            | 24            | `master_data.json`                                 |
-| Partner/vendor aliases        | 10            | `master_data.json`                                 |
-| Complaint records             | 60            | `complaints.json`                                  |
-| Complaint clusters            | 9             | `complaint_clusters.json`                          |
-| Queue/capacity records        | 72            | `queue_pressure.json`                              |
-| Pharmacy/supply positions     | 36            | `inventory_positions.json`                         |
-| Billing/insurance cases       | 24            | `sales_data.json`                                  |
-| Partner responses             | 14            | `supplier_responses.json`                          |
-| Staff task templates          | 22            | `task_templates.json`                              |
-| Channel recipient aliases     | 14            | `channel_aliases.json`                             |
-| Expected recommendation cases | 15            | `recommendation_cases.json`                        |
-| Hospital event summaries      | 20            | `event_stream.json`                                |
-| Supply batches                | 24            | `product_batches.json`                             |
-| Service recovery options      | 12            | `promotions.json` legacy filename, hospital values |
+| Data surface                  | Current count | File                                          |
+| ----------------------------- | ------------- | --------------------------------------------- |
+| Departments/service areas     | 10            | `data/hospital/master_data.json`              |
+| Locations                     | 24            | `data/hospital/master_data.json`              |
+| Resource records              | 90            | `data/hospital/resources.json`                |
+| Synthetic customer aliases    | 50            | `data/hospital/master_data.json`              |
+| Staff role aliases            | 24            | `data/hospital/master_data.json`              |
+| Partner/vendor aliases        | 10            | `data/hospital/master_data.json`              |
+| Complaint records             | 60            | `data/hospital/complaints.json`               |
+| Complaint clusters            | 9             | `data/hospital/complaint_clusters.json`       |
+| Queue/capacity records        | 72            | `data/hospital/capacity_pressure.json`        |
+| Pharmacy/supply positions     | 36            | `data/hospital/supply_positions.json`         |
+| Billing/insurance cases       | 24            | `data/hospital/financial_cases.json`          |
+| Partner responses             | 14            | `data/hospital/partner_responses.json`        |
+| Staff task templates          | 22            | `data/hospital/task_templates.json`           |
+| Channel recipient aliases     | 14            | `data/hospital/channel_aliases.json`          |
+| Expected recommendation cases | 15            | `data/hospital/recommendation_cases.json`     |
+| Hospital event summaries      | 20            | `data/hospital/event_stream.json`             |
+| Supply batches                | 24            | `data/hospital/supply_batches.json`           |
+| Service recovery options      | 12            | `data/hospital/service_recovery_options.json` |
 
 ## Fixture IDs
 

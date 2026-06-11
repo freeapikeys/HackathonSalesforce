@@ -1,7 +1,6 @@
 {
   "profile": "north-star-private-hospital-operations",
   "businessDate": "2026-06-13",
-  "legacyFileName": "product_batches.json",
   "supplyBatches": [
     {
       "batchId": "BATCH-HOS-SUPPLY-001",

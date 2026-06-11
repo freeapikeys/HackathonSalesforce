@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
+const canonicalHospitalDataDir = path.join("data", "hospital");
 
 const forbiddenRetailTerms = [
   /\bsupermarket\b/i,
@@ -16,20 +17,26 @@ const forbiddenRetailTerms = [
 ];
 
 const activeHospitalDataFiles = [
-  "master_data.json",
-  "warehouse_inventory.json",
-  "inventory_positions.json",
-  "product_batches.json",
-  "complaints.json",
-  "complaint_clusters.json",
-  "queue_pressure.json",
-  "sales_data.json",
-  "supplier_responses.json",
-  "task_templates.json",
-  "channel_aliases.json",
-  "recommendation_cases.json",
-  "event_stream.json",
-  "promotions.json"
+  { canonical: "master_data.json", mirror: "master_data.json" },
+  { canonical: "resources.json", mirror: "warehouse_inventory.json" },
+  { canonical: "supply_positions.json", mirror: "inventory_positions.json" },
+  { canonical: "supply_batches.json", mirror: "product_batches.json" },
+  { canonical: "complaints.json", mirror: "complaints.json" },
+  { canonical: "complaint_clusters.json", mirror: "complaint_clusters.json" },
+  { canonical: "capacity_pressure.json", mirror: "queue_pressure.json" },
+  { canonical: "financial_cases.json", mirror: "sales_data.json" },
+  { canonical: "partner_responses.json", mirror: "supplier_responses.json" },
+  { canonical: "task_templates.json", mirror: "task_templates.json" },
+  { canonical: "channel_aliases.json", mirror: "channel_aliases.json" },
+  {
+    canonical: "recommendation_cases.json",
+    mirror: "recommendation_cases.json"
+  },
+  { canonical: "event_stream.json", mirror: "event_stream.json" },
+  {
+    canonical: "service_recovery_options.json",
+    mirror: "promotions.json"
+  }
 ];
 
 const activeLwcFiles = [
@@ -103,11 +110,13 @@ function assertNoForbiddenIdentifiers(relativePath) {
   }
 }
 
-for (const fileName of activeHospitalDataFiles) {
-  const rootText = read(fileName);
-  const syntheticText = read(path.join("synthetic_data", fileName));
-  assertNoForbiddenTerms(fileName, rootText);
-  assertNoForbiddenTerms(path.join("synthetic_data", fileName), syntheticText);
+for (const { canonical, mirror } of activeHospitalDataFiles) {
+  const canonicalPath = path.join(canonicalHospitalDataDir, canonical);
+  const mirrorPath = path.join("synthetic_data", mirror);
+  const canonicalText = read(canonicalPath);
+  const syntheticText = read(mirrorPath);
+  assertNoForbiddenTerms(canonicalPath, canonicalText);
+  assertNoForbiddenTerms(mirrorPath, syntheticText);
 }
 
 for (const relativePath of activeLwcFiles) {

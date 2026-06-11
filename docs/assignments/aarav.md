@@ -102,30 +102,36 @@ summaries are enough for the hackathon.
 ## Current Completion Evidence
 
 The committed hospital data inventory now satisfies the target ranges above
-through the root JSON files and matching `synthetic_data/` copies:
+through canonical `data/hospital/` files and matching `synthetic_data/`
+compatibility copies:
 
-- `master_data.json`: hospital campus, 10 departments, 24 locations, 50
-  customer aliases, 24 staff role aliases, and 10 partners.
-- `warehouse_inventory.json`: 90 hospital resources across bed, room, queue,
-  supply, equipment, service counter, staff pool, partner slot, support asset,
-  and approval queue resource types.
-- `complaints.json`: 60 complaint records with synthetic aliases, departments,
-  locations, resources or missing-resource reasons, and evidence IDs.
-- `complaint_clusters.json`: 9 complaint clusters with source complaint IDs.
-- `queue_pressure.json`: 72 capacity and queue pressure records.
-- `inventory_positions.json`: 36 pharmacy/supply positions.
-- `sales_data.json`: 24 billing and insurance cases.
-- `supplier_responses.json`: 14 partner response records.
-- `task_templates.json`: 22 task templates.
-- `channel_aliases.json`: 14 Slack/WhatsApp role aliases.
-- `recommendation_cases.json`: 15 expected recommendation cases.
-- `event_stream.json`: 20 hospital event summaries, including duplicate,
-  malformed, late, out-of-order, idempotency-conflict, invalid-hash, and
-  clinical-refusal cases.
+- `data/hospital/master_data.json`: hospital campus, 10 departments, 24
+  locations, 50 customer aliases, 24 staff role aliases, and 10 partners.
+- `data/hospital/resources.json`: 90 hospital resources across bed, room,
+  queue, supply, equipment, service counter, staff pool, partner slot, support
+  asset, and approval queue resource types.
+- `data/hospital/complaints.json`: 60 complaint records with synthetic aliases,
+  departments, locations, resources or missing-resource reasons, and evidence
+  IDs.
+- `data/hospital/complaint_clusters.json`: 9 complaint clusters with source
+  complaint IDs.
+- `data/hospital/capacity_pressure.json`: 72 capacity and queue pressure
+  records.
+- `data/hospital/supply_positions.json`: 36 pharmacy/supply positions.
+- `data/hospital/financial_cases.json`: 24 billing and insurance cases.
+- `data/hospital/partner_responses.json`: 14 partner response records.
+- `data/hospital/task_templates.json`: 22 task templates.
+- `data/hospital/channel_aliases.json`: 14 Slack/WhatsApp role aliases.
+- `data/hospital/recommendation_cases.json`: 15 expected recommendation cases.
+- `data/hospital/event_stream.json`: 20 hospital event summaries, including
+  duplicate, malformed, late, out-of-order, idempotency-conflict, invalid-hash,
+  and clinical-refusal cases.
+- `data/hospital/supply_batches.json`: 24 hospital supply batches.
+- `data/hospital/service_recovery_options.json`: 12 service recovery options.
 
-Run `npm run check:demo-data` to verify counts, root/synthetic copy parity,
-evidence links, role aliases, approval flags, and absence of personal contact
-or clinical decision data.
+Run `npm run check:demo-data` to verify counts, canonical/synthetic copy
+parity, evidence links, role aliases, approval flags, and absence of personal
+contact or clinical decision data.
 
 ## Required Departments And Risks
 
