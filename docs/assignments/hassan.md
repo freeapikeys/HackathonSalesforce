@@ -162,7 +162,7 @@ Expected behavior:
 
 - [x] Run direct MuleSoft checks when WhatsApp action behavior changes.
 - [x] Run `npm run test:unit` when LWC voice or channel UI changes.
-- [ ] Run `npm run check:agentforce` when Agentforce fixtures or actions
+- [x] Run `npm run check:agentforce` when Agentforce fixtures or actions
       change.
 - [x] Add or update tests for approved WhatsApp execution, mock WhatsApp
       fallback, missing approval denial, and malformed payload rejection.

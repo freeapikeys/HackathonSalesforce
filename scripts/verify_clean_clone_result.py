@@ -36,9 +36,9 @@ REQUIRED_STEPS = [
 FINAL_COUNT_MINIMUMS = {
     "HFS_Action__c": 7,
     "HFS_Evidence__c": 7,
-    "HFS_Evaluation__c": 2,
-    "HFS_Event__c": 3,
-    "HFS_Outcome__c": 2,
+    "HFS_Evaluation__c": 8,
+    "HFS_Event__c": 9,
+    "HFS_Outcome__c": 8,
     "HFS_Recommendation__c": 1,
     "HFS_Work_Item__c": 1,
 }
@@ -76,11 +76,23 @@ REQUIRED_FINAL_ACTION_TYPES = {
     "SEND_WHATSAPP_ALERT",
 }
 REQUIRED_FINAL_OUTCOME_TYPES = {
+    "BILLING_REVIEW_OPENED",
+    "COMPLAINT_CONTAINED",
+    "DISCHARGE_ROOMS_RELEASED",
+    "LAB_PARTNER_SLA_ESCALATED",
+    "PHARMACY_STOCKOUT_AVOIDED",
     "SLACK_ALERT_DELIVERY",
+    "WAIT_TIME_REDUCED",
     "WHATSAPP_ALERT_DELIVERY",
 }
 REQUIRED_FINAL_OUTCOME_METRICS = {
+    "billing_issue_routed",
+    "complaint_contained",
+    "outpatient_wait_time_reduced_minutes",
+    "partner_sla_escalated",
+    "rooms_released",
     "slack_alert_delivery_success",
+    "stockout_avoided",
     "whatsapp_alert_delivery_success",
 }
 SENSITIVE_KEYS = {
@@ -311,17 +323,36 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         "The final governed context is missing task or channel actions",
     )
     require(
+        integer(
+            outcome.get("executedTaskActionCount", 0),
+            "executed task action count",
+        )
+        >= 5
+        and integer(
+            outcome.get("businessOutcomeCount", 0),
+            "business outcome count",
+        )
+        >= 6
+        and integer(outcome.get("outcomeCount", 0), "outcome count") >= 8
+        and integer(
+            outcome.get("evaluationCount", 0),
+            "evaluation count",
+        )
+        >= 8,
+        "The final governed context is missing business outcomes or evaluations",
+    )
+    require(
         post_outcome_agentforce.get("outcomeContextCovered") is True
         and integer(
             post_outcome_agentforce.get("outcomeRecordCount", 0),
             "Agentforce outcome record count",
         )
-        >= 2
+        >= 8
         and integer(
             post_outcome_agentforce.get("metricCount", 0),
             "Agentforce metric count",
         )
-        >= 2,
+        >= 8,
         "Agentforce did not include outcome and metric context after write-back",
     )
     require(
@@ -378,12 +409,12 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             apex_final_context.get("outcomeCount", 0),
             "Final Apex outcome count",
         )
-        >= 2
+        >= 8
         and integer(
             apex_final_context.get("evaluationCount", 0),
             "Final Apex evaluation count",
         )
-        >= 2,
+        >= 8,
         "Final Apex context is missing recommendation, approval, action, "
         "outcome, or evaluation records",
     )
@@ -431,6 +462,8 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             "executedChannelActionCount": outcome[
                 "executedChannelActionCount"
             ],
+            "executedTaskActionCount": outcome["executedTaskActionCount"],
+            "businessOutcomeCount": outcome["businessOutcomeCount"],
             "postOutcomeAgentforce": post_outcome_agentforce[
                 "outcomeContextCovered"
             ],

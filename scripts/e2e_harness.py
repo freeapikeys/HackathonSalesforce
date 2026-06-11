@@ -79,6 +79,63 @@ HOSPITAL_TASK_ACTIONS = [
         "targetEntityKey": "PROCESS-BILLING-INSURANCE-REVIEW",
     },
 ]
+HOSPITAL_TASK_OUTCOME_TEMPLATES = {
+    "CREATE_PATIENT_SERVICE_TASK": {
+        "outcomeType": "WAIT_TIME_REDUCED",
+        "metricKey": "outpatient_wait_time_reduced_minutes",
+        "metricValue": 18,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:patient-service-task",
+        "summary": (
+            "Patient-service task acknowledged and outpatient wait time "
+            "reduced by 18 minutes."
+        ),
+    },
+    "REQUEST_BED_CLEANING": {
+        "outcomeType": "DISCHARGE_ROOMS_RELEASED",
+        "metricKey": "rooms_released",
+        "metricValue": 3,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:bed-cleaning-task",
+        "summary": (
+            "Discharge-room cleaning task acknowledged and three rooms "
+            "released for operations use."
+        ),
+    },
+    "CREATE_PHARMACY_RESTOCK_REQUEST": {
+        "outcomeType": "PHARMACY_STOCKOUT_AVOIDED",
+        "metricKey": "stockout_avoided",
+        "metricValue": 1,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:pharmacy-restock-task",
+        "summary": (
+            "Pharmacy restock task acknowledged and the critical-stockout "
+            "risk was avoided."
+        ),
+    },
+    "ESCALATE_LAB_VENDOR_CASE": {
+        "outcomeType": "LAB_PARTNER_SLA_ESCALATED",
+        "metricKey": "partner_sla_escalated",
+        "metricValue": 1,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:lab-vendor-task",
+        "summary": (
+            "Lab vendor escalation task acknowledged and SLA follow-up "
+            "started."
+        ),
+    },
+    "OPEN_BILLING_REVIEW": {
+        "outcomeType": "BILLING_REVIEW_OPENED",
+        "metricKey": "billing_issue_routed",
+        "metricValue": 1,
+        "sourceSystem": "salesforce-task",
+        "sourceUri": "urn:hfs:source:hospital:billing-review-task",
+        "summary": (
+            "Billing review task acknowledged and duplicate invoice/insurer "
+            "follow-up routed."
+        ),
+    },
+}
 HOSPITAL_APPROVAL_POLICY_KEY = "north-star-hospital-manager-approval-v1"
 CLINICAL_DECISION_REFUSED = "CLINICAL_DECISION_REFUSED"
 
@@ -1032,13 +1089,15 @@ System.debug(
         )
         payload_json = json.dumps(outcome, separators=(",", ":"), sort_keys=True)
         identifiers = self.config["identifiers"]
-        evaluation_key = (
-            identifiers["evaluationExternalKey"]
-            if index == 1
-            else identifiers["whatsappEvaluationExternalKey"]
-        )
+        evaluation_key = channel_outcome.get("evaluationExternalKey")
+        if not evaluation_key:
+            evaluation_key = (
+                identifiers["evaluationExternalKey"]
+                if index == 1
+                else identifiers["whatsappEvaluationExternalKey"]
+            )
         event_external_key = f"event-demo-outcome-{index:03d}"
-        source_uri = (
+        source_uri = channel_outcome.get("sourceUri") or (
             "urn:hfs:source:hospital:whatsapp-alert"
             if channel_outcome["actionType"] == HOSPITAL_WHATSAPP_ACTION_TYPE
             else "urn:hfs:source:hospital:slack-alert"
@@ -1111,13 +1170,93 @@ System.debug(
 """
         return self.run_apex_source(script, "HFS_CP3_CAPTURED_OUTCOME")
 
+    def build_task_outcomes(
+        self,
+        action: dict[str, Any],
+    ) -> list[dict[str, Any]]:
+        observed_at = timestamp()
+        outcomes = []
+        for task_action in action.get("taskActions") or []:
+            template = HOSPITAL_TASK_OUTCOME_TEMPLATES.get(
+                task_action["actionType"]
+            )
+            if template is None:
+                raise HarnessFailure(
+                    "No business outcome template exists for "
+                    f"{task_action['actionType']}."
+                )
+            templates = [template]
+            if task_action["actionType"] == "CREATE_PATIENT_SERVICE_TASK":
+                templates.append(
+                    {
+                        "outcomeType": "COMPLAINT_CONTAINED",
+                        "metricKey": "complaint_contained",
+                        "metricValue": 1,
+                        "sourceSystem": "salesforce-task",
+                        "sourceUri": (
+                            "urn:hfs:source:hospital:"
+                            "patient-service-recovery"
+                        ),
+                        "summary": (
+                            "Patient complaint cluster contained through "
+                            "approved service-recovery coordination."
+                        ),
+                    }
+                )
+            for template_index, outcome_template in enumerate(templates):
+                suffix = (
+                    ""
+                    if template_index == 0
+                    else f"-{outcome_template['metricKey'].replace('_', '-')}"
+                )
+                external_key = (
+                    f"outcome-{task_action['actionExternalKey']}{suffix}"
+                )
+                source_record_id = (
+                    "mock-task-outcome-"
+                    f"{task_action['actionExternalKey'].removeprefix('action-')}"
+                    f"{suffix}"
+                )
+                outcomes.append(
+                    {
+                        "channel": "task",
+                        "actionType": task_action["actionType"],
+                        "actionId": task_action["actionId"],
+                        "sourceUri": outcome_template["sourceUri"],
+                        "evaluationExternalKey": f"evaluation-{external_key}",
+                        "outcome": {
+                            "contractVersion": "1.0.0",
+                            "tenantKey": self.config["tenantKey"],
+                            "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
+                            "correlationId": self.config["correlationId"],
+                            "externalKey": external_key,
+                            "idempotencyKey": f"{external_key}-v1",
+                            "actionId": task_action["actionId"],
+                            "sourceEventId": f"event-{source_record_id}",
+                            "sourceRecordId": source_record_id,
+                            "sourceSystem": outcome_template["sourceSystem"],
+                            "outcomeType": outcome_template["outcomeType"],
+                            "status": "SUCCESS",
+                            "observedAt": observed_at,
+                            "summary": outcome_template["summary"],
+                            "metricKey": outcome_template["metricKey"],
+                            "metricValue": outcome_template["metricValue"],
+                        },
+                    },
+                )
+        return outcomes
+
     def verify_lightning_after_outcomes(
         self,
         source: dict[str, Any],
         expected_channel_count: int,
         expected_task_count: int,
+        expected_business_outcome_count: int,
     ) -> dict[str, Any]:
         expected_action_count = expected_channel_count + expected_task_count
+        expected_outcome_count = (
+            expected_channel_count + expected_business_outcome_count
+        )
         script = f"""
 HFS_ContextRequest contextRequest = new HFS_ContextRequest();
 contextRequest.contractVersion = HFS_ServiceContract.VERSION;
@@ -1132,26 +1271,33 @@ HFS_CommandCenterResponse commandCenter =
 System.assertEquals(0, commandCenter.context.errors.size());
 System.assertEquals('COMPLETED', commandCenter.context.workItem.status);
 System.assertEquals({expected_action_count}, commandCenter.context.actions.size());
-System.assertEquals({expected_channel_count}, commandCenter.context.outcomes.size());
-System.assertEquals({expected_channel_count}, commandCenter.context.evaluations.size());
+System.assertEquals({expected_outcome_count}, commandCenter.context.outcomes.size());
+System.assertEquals({expected_outcome_count}, commandCenter.context.evaluations.size());
 Set<String> actionTypes = new Set<String>();
-Integer executedActions = 0;
+Integer executedChannelActions = 0;
+Integer executedTaskActions = 0;
 Integer pendingTaskActions = 0;
 for (HFS_ContextItem item : commandCenter.context.actions) {{
   actionTypes.add(item.recordType);
-  if (item.status == 'EXECUTED') {{
-    executedActions++;
+  Boolean isChannelAction =
+    item.recordType == '{HOSPITAL_SLACK_ACTION_TYPE}' ||
+    item.recordType == '{HOSPITAL_WHATSAPP_ACTION_TYPE}';
+  if (item.status == 'EXECUTED' && isChannelAction) {{
+    executedChannelActions++;
+  }}
+  if (item.status == 'EXECUTED' && !isChannelAction) {{
+    executedTaskActions++;
   }}
   if (
     item.status == 'PENDING' &&
-    item.recordType != '{HOSPITAL_SLACK_ACTION_TYPE}' &&
-    item.recordType != '{HOSPITAL_WHATSAPP_ACTION_TYPE}'
+    !isChannelAction
   ) {{
     pendingTaskActions++;
   }}
 }}
-System.assertEquals({expected_channel_count}, executedActions);
-System.assertEquals({expected_task_count}, pendingTaskActions);
+System.assertEquals({expected_channel_count}, executedChannelActions);
+System.assertEquals({expected_task_count}, executedTaskActions);
+System.assertEquals(0, pendingTaskActions);
 System.assertEquals(true, actionTypes.contains('{HOSPITAL_SLACK_ACTION_TYPE}'));
 System.assertEquals(
   true,
@@ -1168,8 +1314,10 @@ Map<String, Object> result = new Map<String, Object>{{
   'workItemStatus' => commandCenter.context.workItem.status,
   'actionStatus' => 'EXECUTED',
   'actionCount' => commandCenter.context.actions.size(),
-  'taskActionCount' => pendingTaskActions,
-  'executedChannelActionCount' => executedActions,
+  'taskActionCount' => {expected_task_count},
+  'pendingTaskActionCount' => pendingTaskActions,
+  'executedTaskActionCount' => executedTaskActions,
+  'executedChannelActionCount' => executedChannelActions,
   'outcomeCount' => commandCenter.context.outcomes.size(),
   'evaluationCount' => commandCenter.context.evaluations.size(),
   'actionTypes' => new List<String>(actionTypes),
@@ -1201,19 +1349,26 @@ System.debug(
                 ),
             }
         ]
+        task_outcomes = self.build_task_outcomes(action)
+        capturable_outcomes = channel_outcomes + task_outcomes
         captured = [
             self.capture_single_outcome(source, channel_outcome, index)
-            for index, channel_outcome in enumerate(channel_outcomes, start=1)
+            for index, channel_outcome in enumerate(
+                capturable_outcomes,
+                start=1,
+            )
         ]
         verification = self.verify_lightning_after_outcomes(
             source,
             len(channel_outcomes),
             len(action.get("taskActions") or []),
+            len(task_outcomes),
         )
         return {
             **verification,
             "outcomeStatus": "SUCCESS",
             "capturedOutcomes": captured,
+            "businessOutcomeCount": len(task_outcomes),
             "channelDeliveries": {
                 channel_outcome["actionType"]: channel_outcome.get(
                     "delivery",
@@ -1312,15 +1467,30 @@ for (HFS_ContextItem item : context.outcomes) {{
   outcomeTypes.add(item.recordType);
   outcomeMetricKeys.add(item.metricKey);
 }}
-System.assert(context.outcomes.size() >= 2);
-System.assert(context.evaluations.size() >= 2);
+System.assert(context.outcomes.size() >= 8);
+System.assert(context.evaluations.size() >= 8);
 System.assertEquals(true, outcomeTypes.contains('SLACK_ALERT_DELIVERY'));
 System.assertEquals(true, outcomeTypes.contains('WHATSAPP_ALERT_DELIVERY'));
+System.assertEquals(true, outcomeTypes.contains('WAIT_TIME_REDUCED'));
+System.assertEquals(true, outcomeTypes.contains('COMPLAINT_CONTAINED'));
+System.assertEquals(true, outcomeTypes.contains('DISCHARGE_ROOMS_RELEASED'));
+System.assertEquals(true, outcomeTypes.contains('PHARMACY_STOCKOUT_AVOIDED'));
+System.assertEquals(true, outcomeTypes.contains('LAB_PARTNER_SLA_ESCALATED'));
+System.assertEquals(true, outcomeTypes.contains('BILLING_REVIEW_OPENED'));
 System.assertEquals(true, outcomeMetricKeys.contains('slack_alert_delivery_success'));
 System.assertEquals(
   true,
   outcomeMetricKeys.contains('whatsapp_alert_delivery_success')
 );
+System.assertEquals(
+  true,
+  outcomeMetricKeys.contains('outpatient_wait_time_reduced_minutes')
+);
+System.assertEquals(true, outcomeMetricKeys.contains('complaint_contained'));
+System.assertEquals(true, outcomeMetricKeys.contains('rooms_released'));
+System.assertEquals(true, outcomeMetricKeys.contains('stockout_avoided'));
+System.assertEquals(true, outcomeMetricKeys.contains('partner_sla_escalated'));
+System.assertEquals(true, outcomeMetricKeys.contains('billing_issue_routed'));
 System.assertEquals(1, context.recommendations.size());
 System.assertEquals(1, context.approvals.size());
 
@@ -1376,7 +1546,7 @@ System.assertEquals(
   (Boolean) outcomeCoverage.get('applies'),
   result.responseJson
 );
-System.assert(((List<Object>) outcomeCoverage.get('recordIds')).size() >= 2);
+System.assert(((List<Object>) outcomeCoverage.get('recordIds')).size() >= 8);
 Map<String, Object> recordsByPrimitive =
   (Map<String, Object>) coverage.get('recordIdsByPrimitive');
 System.assert(
@@ -1384,7 +1554,7 @@ System.assert(
   result.responseJson
 );
 System.assert(
-  ((List<Object>) recordsByPrimitive.get('metrics')).size() >= 2,
+  ((List<Object>) recordsByPrimitive.get('metrics')).size() >= 8,
   result.responseJson
 );
 Map<String, Object> output = new Map<String, Object>{{

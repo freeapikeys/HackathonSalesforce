@@ -117,7 +117,7 @@ airport, banking, supermarket, cruise, and other profiles.
       front-desk, vendor-follow-up, and manager-review tasks.
 - [ ] Assign tasks to role aliases.
 - [ ] Prioritize tasks by urgency, risk, approval state, and service window.
-- [ ] Track acknowledgement and completion.
+- [x] Track acknowledgement and completion.
 - [ ] Escalate missed tasks before the recovery window is lost.
 
 ### Partner And Vendor Agent
@@ -158,11 +158,11 @@ airport, banking, supermarket, cruise, and other profiles.
 
 ### Outcome Learning Agent
 
-- [ ] Capture wait-time reduced, bed released, stockout avoided, complaint
-      contained, billing issue resolved, vendor SLA state, and task completion.
-- [ ] Compare expected outcome with actual outcome.
-- [ ] Preserve correlation IDs and evidence IDs.
-- [ ] Feed outcome summaries into the next recommendation.
+- [x] Capture wait-time reduced, bed released, stockout avoided, complaint
+      contained, billing issue routed, vendor SLA state, and task completion.
+- [x] Compare expected outcome with actual outcome.
+- [x] Preserve correlation IDs and evidence IDs.
+- [x] Feed outcome summaries into the next recommendation.
 
 ## Demo Story
 

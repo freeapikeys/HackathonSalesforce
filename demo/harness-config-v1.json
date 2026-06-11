@@ -18,7 +18,7 @@
     "HFS_Evaluation__c": 0
   },
   "connectedExpectedCounts": {
-    "HFS_Event__c": 3,
+    "HFS_Event__c": 9,
     "HFS_Entity__c": 7,
     "HFS_Event_Participant__c": 7,
     "HFS_Relationship__c": 6,
@@ -29,8 +29,8 @@
     "HFS_Recommendation__c": 1,
     "HFS_Approval__c": 1,
     "HFS_Action__c": 7,
-    "HFS_Outcome__c": 2,
-    "HFS_Evaluation__c": 2
+    "HFS_Outcome__c": 8,
+    "HFS_Evaluation__c": 8
   },
   "identifiers": {
     "workItemExternalKey": "work-north-star-hospital-surge-001",

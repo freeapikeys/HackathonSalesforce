@@ -31,7 +31,8 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 10. prove MuleSoft refuses an unregistered approval;
 11. execute approved Slack and WhatsApp-style mock write-backs and preserve
     correlation;
-12. ingest the resulting source events and capture the outcomes in Salesforce;
+12. ingest the resulting source events and capture two channel-delivery
+    outcomes plus six business outcomes in Salesforce;
 13. evaluate the defined outcomes;
 14. refresh the Lightning controller and verify completed state;
 15. re-read Agentforce recommendation context and prove outcome and metric
@@ -52,9 +53,9 @@ North Star hospital assertions:
   approved Salesforce action records;
 - Slack and WhatsApp-style internal alerts are recorded after approved
   execution;
-- outcome metrics include wait time reduced, bed released, stockout avoided,
-  complaint contained, billing issue resolved, vendor SLA, and staff task
-  completion.
+- outcome metrics include wait time reduced, complaint contained, rooms
+  released, stockout avoided, billing issue routed, vendor SLA escalated, and
+  channel delivery.
 
 ## Commands
 
@@ -118,13 +119,13 @@ The connected report must show:
 - `externalActionExecuted = false` for Agentforce;
 - `INVALID_STATE` before human approval in Salesforce;
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
-- five approved task action records, two approved channel actions, two
-  correlated outcomes, and two evaluations;
+- five approved task action records, two approved channel actions, eight
+  correlated outcomes, and eight evaluations;
 - direct Apex final context includes the global primitive records, hospital
   evidence types, approved action types, Slack/WhatsApp-style delivery outcomes,
-  and delivery metric keys;
-- final channel action statuses `EXECUTED`, task action statuses `PENDING`, and
-  work item status `COMPLETED`;
+  business outcomes, and metric keys;
+- final channel action statuses `EXECUTED`, task action statuses `EXECUTED`,
+  and work item status `COMPLETED`;
 - Lightning controller permissions and refreshed final context.
 
 ## Failure Behavior

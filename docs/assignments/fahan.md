@@ -133,12 +133,12 @@ treatment details, phone numbers, or unsupported model claims.
 
 ## Testing Checklist
 
-- [ ] Run `npm run check:mulesoft`.
+- [x] Run `npm run check:mulesoft`.
 - [x] Run `npm run check:project` if Salesforce metadata or generated examples
       are touched.
 - [x] Add or update MuleSoft tests for hospital Slack examples if the contract
       changes.
-- [ ] Confirm no credential values, real patient data, phone numbers, emails,
+- [x] Confirm no credential values, real patient data, phone numbers, emails,
       medical records, or local machine paths appear in `git diff`.
 
 ## Demo Acceptance

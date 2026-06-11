@@ -173,8 +173,8 @@ Correct behavior:
 ## Testing Checklist
 
 - [x] Run `npm run check:agentforce`.
-- [ ] Run `npm run check:models` if model gateway fixtures change.
-- [ ] Run `npm run check:project` if Apex metadata or classes change.
+- [x] Run `npm run check:models` if model gateway fixtures change.
+- [x] Run `npm run check:project` if Apex metadata or classes change.
 - [x] Add or update tests for evidence citation, fact versus inference
       separation, partner caution, missing evidence, refusal to execute
       protected actions directly, and clinical-decision refusal.
