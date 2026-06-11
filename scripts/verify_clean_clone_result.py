@@ -75,6 +75,28 @@ REQUIRED_FINAL_ACTION_TYPES = {
     "SEND_SLACK_ALERT",
     "SEND_WHATSAPP_ALERT",
 }
+REQUIRED_TASK_ROUTING = {
+    "CREATE_PATIENT_SERVICE_TASK": {
+        "ownerRoleAlias": "role:patient-experience-lead",
+        "escalationRoleAlias": "role:operations-manager",
+    },
+    "REQUEST_BED_CLEANING": {
+        "ownerRoleAlias": "role:bed-manager",
+        "escalationRoleAlias": "role:operations-manager",
+    },
+    "CREATE_PHARMACY_RESTOCK_REQUEST": {
+        "ownerRoleAlias": "role:pharmacy-lead",
+        "escalationRoleAlias": "role:duty-manager",
+    },
+    "ESCALATE_LAB_VENDOR_CASE": {
+        "ownerRoleAlias": "role:lab-coordination-lead",
+        "escalationRoleAlias": "role:partner-manager",
+    },
+    "OPEN_BILLING_REVIEW": {
+        "ownerRoleAlias": "role:billing-supervisor",
+        "escalationRoleAlias": "role:finance-manager",
+    },
+}
 REQUIRED_FINAL_OUTCOME_TYPES = {
     "BILLING_REVIEW_OPENED",
     "COMPLAINT_CONTAINED",
@@ -127,6 +149,69 @@ def require_subset(value: Any, required: set[str], name: str) -> set[str]:
     missing = sorted(required - actual)
     require(not missing, f"{name} is missing: {', '.join(missing)}")
     return actual
+
+
+def validate_task_routing(actions: dict[str, Any]) -> dict[str, int]:
+    task_actions = actions.get("taskActions")
+    require(isinstance(task_actions, list), "Task actions must be a list")
+    by_type = {
+        str(action.get("actionType")): action
+        for action in task_actions
+        if isinstance(action, dict)
+    }
+    missing = sorted(set(REQUIRED_TASK_ROUTING) - set(by_type))
+    require(not missing, f"Task routing is missing: {', '.join(missing)}")
+
+    priority_ranks: list[int] = []
+    for action_type, expected in REQUIRED_TASK_ROUTING.items():
+        action = by_type[action_type]
+        require(
+            action.get("ownerRoleAlias") == expected["ownerRoleAlias"],
+            f"{action_type} has the wrong owner role alias",
+        )
+        require(
+            action.get("escalationRoleAlias")
+            == expected["escalationRoleAlias"],
+            f"{action_type} has the wrong escalation role alias",
+        )
+        priority_rank = integer(
+            action.get("priorityRank"),
+            f"{action_type} priority rank",
+        )
+        service_window = integer(
+            action.get("serviceWindowMinutes"),
+            f"{action_type} service window",
+        )
+        escalation_window = integer(
+            action.get("missedEscalationMinutes"),
+            f"{action_type} missed escalation window",
+        )
+        require(
+            priority_rank > 0,
+            f"{action_type} priority rank must be positive",
+        )
+        require(
+            0 < escalation_window < service_window,
+            f"{action_type} must escalate before the service window is lost",
+        )
+        require(
+            action.get("approvalRequired") is True
+            and action.get("escalatesBeforeWindowLoss") is True
+            and bool(action.get("urgency"))
+            and bool(action.get("riskClass")),
+            f"{action_type} is missing governed routing metadata",
+        )
+        priority_ranks.append(priority_rank)
+
+    require(
+        sorted(priority_ranks) == list(range(1, len(REQUIRED_TASK_ROUTING) + 1)),
+        "Task priority ranks must be deterministic and complete",
+    )
+    return {
+        "taskRoutingCount": len(REQUIRED_TASK_ROUTING),
+        "highestPriorityRank": min(priority_ranks),
+        "lowestPriorityRank": max(priority_ranks),
+    }
 
 
 def normalize_repository(repository: str) -> str:
@@ -287,6 +372,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         action.get("blockedErrorCode") == "INVALID_STATE",
         "Salesforce did not block the pre-approval action",
     )
+    task_routing = validate_task_routing(action)
     require(
         mulesoft.get("blockedStatus") == 403
         and mulesoft.get("blockedErrorCode") == "PERMISSION_DENIED",
@@ -464,6 +550,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             ],
             "executedTaskActionCount": outcome["executedTaskActionCount"],
             "businessOutcomeCount": outcome["businessOutcomeCount"],
+            **task_routing,
             "postOutcomeAgentforce": post_outcome_agentforce[
                 "outcomeContextCovered"
             ],

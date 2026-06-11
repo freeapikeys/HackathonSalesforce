@@ -115,10 +115,10 @@ airport, banking, supermarket, cruise, and other profiles.
 
 - [ ] Create patient-service, room-cleaning, porter, pharmacy, billing,
       front-desk, vendor-follow-up, and manager-review tasks.
-- [ ] Assign tasks to role aliases.
-- [ ] Prioritize tasks by urgency, risk, approval state, and service window.
+- [x] Assign tasks to role aliases.
+- [x] Prioritize tasks by urgency, risk, approval state, and service window.
 - [x] Track acknowledgement and completion.
-- [ ] Escalate missed tasks before the recovery window is lost.
+- [x] Escalate missed tasks before the recovery window is lost.
 
 ### Partner And Vendor Agent
 

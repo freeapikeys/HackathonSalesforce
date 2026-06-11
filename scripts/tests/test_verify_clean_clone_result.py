@@ -69,7 +69,71 @@ def passing_demo():
                 "errorCode": "CLINICAL_DECISION_REFUSED",
                 "storedRecommendationCount": 0,
             },
-            "action": {"blockedErrorCode": "INVALID_STATE"},
+            "action": {
+                "blockedErrorCode": "INVALID_STATE",
+                "taskActions": [
+                    {
+                        "actionType": "CREATE_PATIENT_SERVICE_TASK",
+                        "ownerRoleAlias": "role:patient-experience-lead",
+                        "escalationRoleAlias": "role:operations-manager",
+                        "priorityRank": 1,
+                        "urgency": "HIGH",
+                        "riskClass": "PATIENT_TRUST",
+                        "serviceWindowMinutes": 20,
+                        "missedEscalationMinutes": 10,
+                        "approvalRequired": True,
+                        "escalatesBeforeWindowLoss": True,
+                    },
+                    {
+                        "actionType": "REQUEST_BED_CLEANING",
+                        "ownerRoleAlias": "role:bed-manager",
+                        "escalationRoleAlias": "role:operations-manager",
+                        "priorityRank": 2,
+                        "urgency": "HIGH",
+                        "riskClass": "CAPACITY",
+                        "serviceWindowMinutes": 30,
+                        "missedEscalationMinutes": 15,
+                        "approvalRequired": True,
+                        "escalatesBeforeWindowLoss": True,
+                    },
+                    {
+                        "actionType": "CREATE_PHARMACY_RESTOCK_REQUEST",
+                        "ownerRoleAlias": "role:pharmacy-lead",
+                        "escalationRoleAlias": "role:duty-manager",
+                        "priorityRank": 3,
+                        "urgency": "MEDIUM_HIGH",
+                        "riskClass": "STOCK",
+                        "serviceWindowMinutes": 45,
+                        "missedEscalationMinutes": 25,
+                        "approvalRequired": True,
+                        "escalatesBeforeWindowLoss": True,
+                    },
+                    {
+                        "actionType": "ESCALATE_LAB_VENDOR_CASE",
+                        "ownerRoleAlias": "role:lab-coordination-lead",
+                        "escalationRoleAlias": "role:partner-manager",
+                        "priorityRank": 4,
+                        "urgency": "MEDIUM_HIGH",
+                        "riskClass": "PARTNER_SLA",
+                        "serviceWindowMinutes": 20,
+                        "missedEscalationMinutes": 10,
+                        "approvalRequired": True,
+                        "escalatesBeforeWindowLoss": True,
+                    },
+                    {
+                        "actionType": "OPEN_BILLING_REVIEW",
+                        "ownerRoleAlias": "role:billing-supervisor",
+                        "escalationRoleAlias": "role:finance-manager",
+                        "priorityRank": 5,
+                        "urgency": "MEDIUM",
+                        "riskClass": "FINANCIAL_EXPOSURE",
+                        "serviceWindowMinutes": 60,
+                        "missedEscalationMinutes": 30,
+                        "approvalRequired": True,
+                        "escalatesBeforeWindowLoss": True,
+                    },
+                ],
+            },
             "mulesoft": {
                 "blockedStatus": 403,
                 "blockedErrorCode": "PERMISSION_DENIED",
@@ -205,6 +269,18 @@ class CleanCloneResultTest(unittest.TestCase):
         with self.assertRaisesRegex(
             verify.VerificationError,
             "pre-approval action",
+        ):
+            verify.validate_demo(report)
+
+    def test_rejects_wrong_task_owner_alias(self):
+        report = passing_demo()
+        report["details"]["action"]["taskActions"][0][
+            "ownerRoleAlias"
+        ] = "role:wrong-owner"
+
+        with self.assertRaisesRegex(
+            verify.VerificationError,
+            "wrong owner role alias",
         ):
             verify.validate_demo(report)
 

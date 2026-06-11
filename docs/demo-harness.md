@@ -51,6 +51,9 @@ North Star hospital assertions:
 - manager approval is required before protected write-back;
 - service, bed-cleaning, pharmacy, lab, and billing task actions are mapped to
   approved Salesforce action records;
+- task action results preserve owner role alias, escalation role alias,
+  priority rank, urgency, risk class, approval requirement, service window, and
+  missed-task escalation window;
 - Slack and WhatsApp-style internal alerts are recorded after approved
   execution;
 - outcome metrics include wait time reduced, complaint contained, rooms
@@ -121,6 +124,9 @@ The connected report must show:
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
 - five approved task action records, two approved channel actions, eight
   correlated outcomes, and eight evaluations;
+- task routing includes the required owner aliases, escalation aliases,
+  deterministic priority ranks, approval requirement, service windows, and
+  missed-task escalation windows before service-window loss;
 - direct Apex final context includes the global primitive records, hospital
   evidence types, approved action types, Slack/WhatsApp-style delivery outcomes,
   business outcomes, and metric keys;

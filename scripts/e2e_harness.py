@@ -57,26 +57,61 @@ HOSPITAL_TASK_ACTIONS = [
         "key": "action-north-star-hospital-task-service-001",
         "actionType": "CREATE_PATIENT_SERVICE_TASK",
         "targetEntityKey": "DEPT-OUTPATIENT-RECEPTION",
+        "ownerRoleAlias": "role:patient-experience-lead",
+        "escalationRoleAlias": "role:operations-manager",
+        "priorityRank": 1,
+        "urgency": "HIGH",
+        "riskClass": "PATIENT_TRUST",
+        "serviceWindowMinutes": 20,
+        "missedEscalationMinutes": 10,
     },
     {
         "key": "action-north-star-hospital-task-bed-cleaning-001",
         "actionType": "REQUEST_BED_CLEANING",
         "targetEntityKey": "RESOURCE-WARD-A3-DISCHARGE-ROOMS",
+        "ownerRoleAlias": "role:bed-manager",
+        "escalationRoleAlias": "role:operations-manager",
+        "priorityRank": 2,
+        "urgency": "HIGH",
+        "riskClass": "CAPACITY",
+        "serviceWindowMinutes": 30,
+        "missedEscalationMinutes": 15,
     },
     {
         "key": "action-north-star-hospital-task-pharmacy-001",
         "actionType": "CREATE_PHARMACY_RESTOCK_REQUEST",
         "targetEntityKey": "RESOURCE-PHARMACY-IV-KITS",
+        "ownerRoleAlias": "role:pharmacy-lead",
+        "escalationRoleAlias": "role:duty-manager",
+        "priorityRank": 3,
+        "urgency": "MEDIUM_HIGH",
+        "riskClass": "STOCK",
+        "serviceWindowMinutes": 45,
+        "missedEscalationMinutes": 25,
     },
     {
         "key": "action-north-star-hospital-task-lab-001",
         "actionType": "ESCALATE_LAB_VENDOR_CASE",
         "targetEntityKey": "PARTNER-ISLAND-DIAGNOSTICS",
+        "ownerRoleAlias": "role:lab-coordination-lead",
+        "escalationRoleAlias": "role:partner-manager",
+        "priorityRank": 4,
+        "urgency": "MEDIUM_HIGH",
+        "riskClass": "PARTNER_SLA",
+        "serviceWindowMinutes": 20,
+        "missedEscalationMinutes": 10,
     },
     {
         "key": "action-north-star-hospital-task-billing-001",
         "actionType": "OPEN_BILLING_REVIEW",
         "targetEntityKey": "PROCESS-BILLING-INSURANCE-REVIEW",
+        "ownerRoleAlias": "role:billing-supervisor",
+        "escalationRoleAlias": "role:finance-manager",
+        "priorityRank": 5,
+        "urgency": "MEDIUM",
+        "riskClass": "FINANCIAL_EXPOSURE",
+        "serviceWindowMinutes": 60,
+        "missedEscalationMinutes": 30,
     },
 ]
 HOSPITAL_TASK_OUTCOME_TEMPLATES = {
@@ -761,6 +796,13 @@ System.debug(
             ]
             task_key = task["key"]
             task_type = task["actionType"]
+            owner_role_alias = task["ownerRoleAlias"]
+            escalation_role_alias = task["escalationRoleAlias"]
+            priority_rank = task["priorityRank"]
+            urgency = task["urgency"]
+            risk_class = task["riskClass"]
+            service_window_minutes = task["serviceWindowMinutes"]
+            missed_escalation_minutes = task["missedEscalationMinutes"]
             task_blocks.append(
                 f"""
 HFS_ActionCommand {command_name} = new HFS_ActionCommand();
@@ -793,7 +835,16 @@ System.assertEquals('PENDING', {result_name}.status);
     'actionStatus' => {result_name}.status,
     'actionExternalKey' => {command_name}.externalKey,
     'actionIdempotencyKey' => {command_name}.idempotencyKey,
-    'targetEntityId' => {command_name}.targetEntityId
+    'targetEntityId' => {command_name}.targetEntityId,
+    'ownerRoleAlias' => '{apex_string(owner_role_alias)}',
+    'escalationRoleAlias' => '{apex_string(escalation_role_alias)}',
+    'priorityRank' => {priority_rank},
+    'urgency' => '{apex_string(urgency)}',
+    'riskClass' => '{apex_string(risk_class)}',
+    'serviceWindowMinutes' => {service_window_minutes},
+    'missedEscalationMinutes' => {missed_escalation_minutes},
+    'approvalRequired' => true,
+    'escalatesBeforeWindowLoss' => true
   }}"""
             )
         task_action_script = "\n".join(task_blocks)

@@ -115,6 +115,9 @@ Evidence validation fails unless all of these are true:
 - approved WhatsApp-style delivery is recorded as `SENT` or honest `MOCK_SENT`;
 - five task action records and two channel actions are `EXECUTED` in the final
   Salesforce context;
+- the five task actions include required owner role aliases, escalation role
+  aliases, deterministic priority ranks, approval requirement, service windows,
+  and missed-task escalation windows that occur before service-window loss;
 - direct Apex final context includes the customer alias, department/location,
   resources, partner, process, hospital evidence types, approved actions,
   delivery outcomes, business outcomes, and metric keys;
