@@ -30,6 +30,10 @@ under `synthetic_data/` for teammates who still use that folder. The files are
 hospital/global-primitive data even when a legacy filename remains from the
 older retail prototype.
 
+For a quick agent-friendly index, use
+`data/hospital-demo-data-manifest.json`. Do not move the root JSON files unless
+the data validator is updated at the same time.
+
 Run:
 
 ```bash

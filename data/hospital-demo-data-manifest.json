@@ -1,0 +1,153 @@
+{
+  "name": "North Star private hospital demo data",
+  "sourceOfTruth": "root JSON files",
+  "mirror": "synthetic_data",
+  "safety": {
+    "mode": "synthetic_demo_only",
+    "realPatientData": false,
+    "clinicalDecisionData": false,
+    "credentialData": false
+  },
+  "validation": ["npm run check:demo-data", "npm run check:fixture-language"],
+  "files": [
+    {
+      "path": "master_data.json",
+      "mirrorPath": "synthetic_data/master_data.json",
+      "contains": [
+        "hospital departments",
+        "locations",
+        "synthetic customer aliases",
+        "staff role aliases",
+        "partner aliases"
+      ]
+    },
+    {
+      "path": "warehouse_inventory.json",
+      "mirrorPath": "synthetic_data/warehouse_inventory.json",
+      "contains": [
+        "hospital resources",
+        "beds",
+        "rooms",
+        "queues",
+        "staff pools",
+        "supplies",
+        "equipment"
+      ]
+    },
+    {
+      "path": "complaints.json",
+      "mirrorPath": "synthetic_data/complaints.json",
+      "contains": [
+        "synthetic patient and visitor complaints",
+        "complaint types",
+        "linked departments",
+        "linked resources",
+        "evidence IDs"
+      ]
+    },
+    {
+      "path": "complaint_clusters.json",
+      "mirrorPath": "synthetic_data/complaint_clusters.json",
+      "contains": [
+        "clustered complaints",
+        "dominant issue types",
+        "source complaint IDs",
+        "evidence IDs"
+      ]
+    },
+    {
+      "path": "queue_pressure.json",
+      "mirrorPath": "synthetic_data/queue_pressure.json",
+      "contains": [
+        "queue pressure",
+        "capacity records",
+        "staff coverage signals"
+      ]
+    },
+    {
+      "path": "inventory_positions.json",
+      "mirrorPath": "synthetic_data/inventory_positions.json",
+      "contains": [
+        "pharmacy and supply positions",
+        "stock cover",
+        "usage",
+        "lead-time risk"
+      ]
+    },
+    {
+      "path": "sales_data.json",
+      "mirrorPath": "synthetic_data/sales_data.json",
+      "contains": [
+        "billing cases",
+        "insurance cases",
+        "refund requests",
+        "payment failures",
+        "revenue risk"
+      ]
+    },
+    {
+      "path": "supplier_responses.json",
+      "mirrorPath": "synthetic_data/supplier_responses.json",
+      "contains": [
+        "partner responses",
+        "vendor SLA signals",
+        "recommendation-changing evidence"
+      ]
+    },
+    {
+      "path": "task_templates.json",
+      "mirrorPath": "synthetic_data/task_templates.json",
+      "contains": [
+        "approved task templates",
+        "owner role aliases",
+        "service windows",
+        "escalation windows"
+      ]
+    },
+    {
+      "path": "channel_aliases.json",
+      "mirrorPath": "synthetic_data/channel_aliases.json",
+      "contains": [
+        "Slack role aliases",
+        "WhatsApp-style role aliases",
+        "privacy-safe internal targets"
+      ]
+    },
+    {
+      "path": "recommendation_cases.json",
+      "mirrorPath": "synthetic_data/recommendation_cases.json",
+      "contains": [
+        "expected Agentforce recommendation cases",
+        "approval requirements",
+        "refusal boundaries"
+      ]
+    },
+    {
+      "path": "event_stream.json",
+      "mirrorPath": "synthetic_data/event_stream.json",
+      "contains": [
+        "hospital event summaries",
+        "late events",
+        "duplicate events",
+        "malformed events",
+        "clinical refusal event"
+      ]
+    },
+    {
+      "path": "product_batches.json",
+      "mirrorPath": "synthetic_data/product_batches.json",
+      "contains": [
+        "hospital supply batches",
+        "legacy filename retained for compatibility"
+      ]
+    },
+    {
+      "path": "promotions.json",
+      "mirrorPath": "synthetic_data/promotions.json",
+      "contains": [
+        "service recovery options",
+        "legacy filename retained for compatibility"
+      ]
+    }
+  ]
+}
