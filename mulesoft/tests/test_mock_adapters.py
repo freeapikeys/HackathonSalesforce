@@ -160,6 +160,55 @@ class MockAdapterTest(unittest.TestCase):
         )
         self.assertEqual(1, len(response.body["evidence"]))
 
+    def test_twilio_whatsapp_complaint_maps_to_safe_event_intake(self) -> None:
+        response = self.api.ingest_twilio_whatsapp(
+            {
+                "MessageSid": "SM00000000000000000000000000000001",
+                "From": "whatsapp:+23055550123",
+                "To": "whatsapp:+14155238886",
+                "Body": (
+                    "I waited one hour, the pharmacy said there is no stock, "
+                    "and my invoice looks duplicated."
+                ),
+            },
+            observed_at="2026-06-13T08:45:00Z",
+        )
+
+        self.assertEqual(202, response.status)
+        self.assertEqual("ACCEPTED", response.body["intakeResult"])
+        event = next(iter(self.api.source_adapter.events.values()))
+        attributes = event["data"]["attributes"]
+        self.assertEqual("urn:hfs:source:twilio-whatsapp", event["source"])
+        self.assertEqual("whatsapp-inbound", attributes["sourceChannel"])
+        self.assertEqual("NO_ACTION_EXECUTED", attributes["protectedActionState"])
+        self.assertEqual(False, attributes["messageBodyStored"])
+        self.assertIn("wait_time", attributes["complaintTypes"])
+        self.assertIn("pharmacy_delay", attributes["complaintTypes"])
+        self.assertIn("billing", attributes["complaintTypes"])
+        self.assertGreaterEqual(len(attributes["followUpQuestions"]), 5)
+        self.assertGreaterEqual(len(attributes["rootCauseHypotheses"]), 3)
+        self.assertIn("Recommendation", attributes["affectedPrimitives"])
+        serialized_event = str(event)
+        self.assertNotIn("+23055550123", serialized_event)
+        self.assertNotIn("I waited one hour", serialized_event)
+
+    def test_twilio_whatsapp_complaint_requires_body(self) -> None:
+        response = self.api.ingest_twilio_whatsapp(
+            {
+                "MessageSid": "SM00000000000000000000000000000002",
+                "From": "whatsapp:+23055550123",
+                "Body": "",
+            }
+        )
+
+        self.assertEqual(422, response.status)
+        self.assertEqual(
+            "VALIDATION_FAILED",
+            response.body["errors"][0]["code"],
+        )
+        self.assertEqual("Body", response.body["errors"][0]["fieldName"])
+        self.assertEqual(0, len(self.api.source_adapter.events))
+
     def test_event_content_hash_is_enforced_before_preservation(self) -> None:
         example = self.contract.examples["operations"]["ingestEvent"]["request"]
         body = deepcopy(example["value"])
@@ -373,6 +422,7 @@ class MockAdapterTest(unittest.TestCase):
             "REQUEST_INSURANCE_FOLLOWUP",
             "SEND_SLACK_ALERT",
             "SEND_WHATSAPP_ALERT",
+            "SEND_VENDOR_EMAIL",
             "CAPTURE_HOSPITAL_OUTCOME",
         ]
 
@@ -399,6 +449,17 @@ class MockAdapterTest(unittest.TestCase):
                     "targetChannel": "wa-role-pharmacy-lead",
                     "messageTitle": "North Star pharmacy restock",
                     "messageBody": f"North Star hospital action {action_type}",
+                    "evidenceIds": ["evidence-hospital-001"],
+                    "sourceRecommendationId": body["recommendationId"],
+                }
+            elif action_type == "SEND_VENDOR_EMAIL":
+                body["sourceSystem"] = "email"
+                body["payload"] = {
+                    "targetRole": "Vendor Coordinator",
+                    "targetChannel": "email-role-vendor-coordinator",
+                    "messageTitle": "Hospital stock follow-up",
+                    "messageBody": f"North Star hospital action {action_type}",
+                    "supplierAlias": "partner-pharmacy-supplier",
                     "evidenceIds": ["evidence-hospital-001"],
                     "sourceRecommendationId": body["recommendationId"],
                 }
@@ -448,6 +509,14 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(
             "QUEUED",
             delivery_by_type["REQUEST_BED_CLEANING"]["status"],
+        )
+        self.assertEqual(
+            "QUEUED",
+            delivery_by_type["SEND_VENDOR_EMAIL"]["status"],
+        )
+        self.assertEqual(
+            "vendor_email_queued",
+            delivery_by_type["SEND_VENDOR_EMAIL"]["metricKey"],
         )
         self.assertEqual(
             "hospital_action_queued",

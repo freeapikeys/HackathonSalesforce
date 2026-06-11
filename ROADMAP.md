@@ -297,6 +297,11 @@ file before editing.
 - [x] Agentforce fixtures include a denied-action scenario.
 - [x] Agentforce fixtures include a changed-recommendation scenario.
 - [x] Model gateway uses global/hospital profile names, not retail-only names.
+- [x] Document optional specialist skills that support the 10 agents without
+      creating a separate architecture.
+- [ ] Show the agent handoff trace in the command center: which agent found
+      facts, which agent inferred risk, which agent required approval, and
+      which agent executed or measured the outcome.
 
 ### 7. MuleSoft And Channel Mocks
 
@@ -308,6 +313,7 @@ file before editing.
 - [x] Mock `REQUEST_INSURANCE_FOLLOWUP`.
 - [x] Mock `SEND_SLACK_ALERT`.
 - [x] Mock `SEND_WHATSAPP_ALERT`.
+- [x] Mock `SEND_VENDOR_EMAIL` as an approved protected vendor/supplier follow-up.
 - [x] Mock `CAPTURE_HOSPITAL_OUTCOME`.
 - [x] Unapproved execution returns denial.
 - [x] Approved execution returns queued or success response with correlation.
@@ -332,29 +338,60 @@ file before editing.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as either urgent internal mobile alert or
       approved customer acknowledgement.
-- [x] Document email as a future protected action adapter, not a current live
-      capability.
+- [x] Document email as a protected mock action for vendor/supplier follow-up,
+      not a current live email capability.
 - [x] Verify live outbound Slack delivery when `SLACK_WEBHOOK_URL` is
       configured.
 - [x] Verify live outbound WhatsApp delivery when Twilio Sandbox credentials are
       configured.
-- [ ] Implement or simulate a Twilio inbound WhatsApp webhook that maps customer
+- [x] Implement or simulate a Twilio inbound WhatsApp webhook that maps customer
       complaint text to `INGEST_EVENT`.
 - [ ] Add a Salesforce command-center complaint/signal intake fallback for demo
       reliability.
-- [ ] Convert inbound complaint text into a synthetic customer alias, source
+- [x] Convert inbound complaint text into a synthetic customer alias, source
       channel, timestamp, department/resource hints, correlation ID, and
       evidence ID.
+- [x] Add deterministic follow-up questions, root-cause hypotheses,
+      next-evidence needs, and affected primitives for inbound complaints.
+- [x] Ensure inbound WhatsApp mapping does not store raw phone number or raw
+      complaint text in the preserved demo event.
 - [ ] Trigger or request an Agentforce recommendation from the newly stored
       intake evidence.
 - [ ] Show the manager approval step before Slack, WhatsApp, vendor, pharmacy,
       billing, refund, email, or customer-facing response execution.
-- [ ] Add optional email/vendor notification only behind the protected action
-      boundary if time remains.
+- [x] Add protected mock email/vendor notification behind the protected action
+      boundary.
+- [ ] Add live email/vendor delivery only if Anypoint/SMTP credentials are
+      configured safely outside Git.
+- [ ] Add Slack/WhatsApp approval deep links or buttons only if the team can
+      configure Slack interactivity or WhatsApp approved templates safely.
 - [ ] Add a demo script beat: WhatsApp complaint enters, Salesforce stores
       evidence, agents create an action plan, manager approves, Slack alerts
       staff, WhatsApp sends approved reply or internal mobile alert, outcomes
       update.
+
+### 7B. Deep Resolution Differentiator
+
+This is how North Star should beat a normal assistant that only apologizes or
+notifies a manager.
+
+- [x] Define the deeper investigation pattern: classify, ask follow-up
+      questions, find affected resources, estimate risk, require approval,
+      execute, and measure outcome.
+- [x] Add deterministic root-cause hypotheses to inbound complaint intake.
+- [x] Add next-evidence needs so agents ask for the missing operational facts
+      instead of guessing.
+- [ ] Display follow-up questions and missing evidence in the command center
+      when an inbound complaint starts the case.
+- [ ] Add a demo scenario where one complaint expands into at least four
+      affected functions: patient trust, capacity, inventory, billing, and
+      communication.
+- [ ] Add an outcome comparison showing what changed after the actions, not
+      just that messages were sent.
+- [ ] Add cross-sector explanation cards mapping the same issue to airport,
+      hotel, banking, supermarket, and cruise equivalents.
+- [ ] Add a "why this is deeper than a chatbot" pitch beat with evidence,
+      approval, protected actions, and outcome learning.
 
 ### 8. Voice Mode
 

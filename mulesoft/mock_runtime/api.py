@@ -7,13 +7,14 @@ import os
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, Callable
 
 from .contract import ContractValidationError, IntegrationContract
-from .intake import EventIntakeClassifier, IntakeDecision
+from .intake import EventIntakeClassifier, IntakeDecision, content_hash
 
 CONTRACT_VERSION = "1.0.0"
 USE_ENV_SLACK_WEBHOOK = object()
@@ -312,6 +313,7 @@ class MockWriteBackAdapter:
             "REQUEST_INSURANCE_FOLLOWUP",
             "SEND_SLACK_ALERT",
             "SEND_WHATSAPP_ALERT",
+            "SEND_VENDOR_EMAIL",
             "CAPTURE_HOSPITAL_OUTCOME",
         }
     )
@@ -474,6 +476,17 @@ class MockWriteBackAdapter:
                 if not provider
                 else "Approved WhatsApp alert was sent.",
                 "metricKey": "whatsapp_alert_recorded",
+                "metricValue": 1,
+            }
+        if action_type == "SEND_VENDOR_EMAIL":
+            return {
+                "channel": "EMAIL_MOCK",
+                "targetRole": payload.get("targetRole", "Vendor Coordinator"),
+                "messageBody": payload.get("messageBody", ""),
+                "status": "QUEUED",
+                "fallbackReason": None,
+                "summary": "Approved vendor email was queued in protected mock mode.",
+                "metricKey": "vendor_email_queued",
                 "metricValue": 1,
             }
         if action_type in self.HOSPITAL_ACTION_TYPES:
@@ -764,6 +777,253 @@ class MockIntegrationApi:
     @property
     def outcomes(self) -> dict[str, dict[str, Any]]:
         return self.outcome_adapter.outcomes
+
+    def ingest_twilio_whatsapp(
+        self,
+        twilio_payload: dict[str, Any],
+        *,
+        tenant_key: str = "demo-mauritius",
+        observed_at: str | None = None,
+        source_sequence: int = 10_000,
+    ) -> MockHttpResponse:
+        """Map an inbound Twilio WhatsApp webhook into governed event intake.
+
+        The demo stores only a synthetic customer alias and a body hash, not
+        the customer's phone number or raw message text.
+        """
+
+        observed = observed_at or timestamp()
+        message_sid = str(
+            twilio_payload.get("MessageSid")
+            or twilio_payload.get("SmsMessageSid")
+            or ""
+        ).strip()
+        body = str(twilio_payload.get("Body") or "").strip()
+        from_number = str(twilio_payload.get("From") or "").strip()
+
+        correlation_id = str(
+            uuid.uuid5(
+                uuid.NAMESPACE_URL,
+                f"north-star:twilio-whatsapp:{tenant_key}:{message_sid or body}",
+            )
+        )
+        headers = {
+            "X-Tenant-Id": tenant_key,
+            "X-Correlation-Id": correlation_id,
+            "X-Idempotency-Key": f"twilio-whatsapp-{message_sid or 'missing'}-v1",
+        }
+        error_body = {
+            "hfstenantid": tenant_key,
+            "hfscorrelationid": correlation_id,
+            "hfsidempotencykey": headers["X-Idempotency-Key"],
+        }
+
+        if not message_sid:
+            return self._common_error(
+                operation="INGEST_EVENT",
+                headers=headers,
+                body=error_body,
+                status=422,
+                code="VALIDATION_FAILED",
+                message="Twilio inbound WhatsApp payload is missing MessageSid.",
+                field_name="MessageSid",
+            )
+        if not body:
+            return self._common_error(
+                operation="INGEST_EVENT",
+                headers=headers,
+                body=error_body,
+                status=422,
+                code="VALIDATION_FAILED",
+                message="Twilio inbound WhatsApp payload is missing Body.",
+                field_name="Body",
+            )
+
+        customer_alias = self._customer_alias(from_number or message_sid)
+        analysis = self._analyze_inbound_complaint(body)
+        event_data = {
+            "recordtype": "Issue",
+            "operation": "OPEN",
+            "businesskey": f"whatsapp-complaint-{message_sid.lower()}",
+            "effectiveat": observed,
+            "attributes": {
+                "profile": "private-hospital",
+                "primitive": "Signal",
+                "module": "Complaint and trust",
+                "sourceChannel": "whatsapp-inbound",
+                "sourceSystem": "twilio-whatsapp",
+                "sourceRecordId": message_sid,
+                "customerAlias": customer_alias,
+                "messageBodyStored": False,
+                "messageBodyHash": "sha256:"
+                + hashlib.sha256(body.encode("utf-8")).hexdigest(),
+                "messageLength": len(body),
+                "departmentHint": analysis["departmentHint"],
+                "resourceHint": analysis["resourceHint"],
+                "complaintTypes": analysis["complaintTypes"],
+                "severity": analysis["severity"],
+                "safeSummary": analysis["safeSummary"],
+                "followUpQuestions": analysis["followUpQuestions"],
+                "rootCauseHypotheses": analysis["rootCauseHypotheses"],
+                "nextEvidenceNeeded": analysis["nextEvidenceNeeded"],
+                "affectedPrimitives": analysis["affectedPrimitives"],
+                "requiresManagerApprovalBeforeCustomerReply": True,
+                "protectedActionState": "NO_ACTION_EXECUTED",
+            },
+            "assertions": [
+                {
+                    "conflictkey": f"complaint:{customer_alias}",
+                    "predicate": "customer_complaint_received",
+                    "value": True,
+                }
+            ],
+        }
+        event = {
+            "specversion": "1.0",
+            "id": str(
+                uuid.uuid5(
+                    uuid.NAMESPACE_URL,
+                    f"north-star:event:twilio-whatsapp:{tenant_key}:{message_sid}",
+                )
+            ),
+            "source": "urn:hfs:source:twilio-whatsapp",
+            "type": (
+                "io.github.freeapikeys.hfs.hospital."
+                "patientcomplaint.received.v1"
+            ),
+            "subject": f"customer:{customer_alias}",
+            "time": observed,
+            "datacontenttype": "application/json",
+            "dataschema": (
+                "https://freeapikeys.github.io/HackathonSalesforce/events/"
+                "event-envelope-v1.schema.json"
+            ),
+            "hfstenantid": tenant_key,
+            "hfsschemaversion": CONTRACT_VERSION,
+            "hfscorrelationid": correlation_id,
+            "hfsidempotencykey": headers["X-Idempotency-Key"],
+            "hfssourcerecordid": message_sid,
+            "hfssourcesequence": source_sequence,
+            "hfsobservedat": observed,
+            "hfscontenthash": content_hash(event_data),
+            "data": event_data,
+        }
+        return self._ingest_event(headers, event)
+
+    @staticmethod
+    def _customer_alias(value: str) -> str:
+        digest = hashlib.sha256(value.encode("utf-8")).hexdigest()[:12]
+        return f"alias-whatsapp-customer-{digest}"
+
+    @staticmethod
+    def _analyze_inbound_complaint(message: str) -> dict[str, Any]:
+        text = message.lower()
+        complaint_types: list[str] = []
+        if any(term in text for term in ("wait", "queue", "late", "hour")):
+            complaint_types.append("wait_time")
+        if any(term in text for term in ("room", "bed", "clean", "dirty")):
+            complaint_types.append("room_readiness")
+        if any(term in text for term in ("bill", "invoice", "charge", "pay")):
+            complaint_types.append("billing")
+        if any(term in text for term in ("pharmacy", "medicine", "stock", "kit")):
+            complaint_types.append("pharmacy_delay")
+        if any(term in text for term in ("food", "meal", "allergy")):
+            complaint_types.append("food")
+        if any(term in text for term in ("wheelchair", "lift", "access")):
+            complaint_types.append("accessibility")
+        if any(term in text for term in ("privacy", "private", "personal")):
+            complaint_types.append("privacy")
+        if any(term in text for term in ("unsafe", "danger", "hurt", "fall")):
+            complaint_types.append("safety")
+        if not complaint_types:
+            complaint_types.append("general_service")
+
+        if "safety" in complaint_types or "privacy" in complaint_types:
+            severity = "HIGH"
+        elif len(complaint_types) >= 3:
+            severity = "HIGH"
+        elif len(complaint_types) == 2:
+            severity = "MEDIUM"
+        else:
+            severity = "LOW"
+
+        department_hint = "Patient experience desk"
+        resource_hint = "Customer service case"
+        if "wait_time" in complaint_types:
+            department_hint = "Outpatient reception"
+            resource_hint = "Outpatient queue"
+        if "room_readiness" in complaint_types:
+            department_hint = "Inpatient discharge ward"
+            resource_hint = "Room or bed readiness"
+        if "pharmacy_delay" in complaint_types:
+            department_hint = "Pharmacy"
+            resource_hint = "Pharmacy stock or counter queue"
+        if "billing" in complaint_types:
+            department_hint = "Billing and insurance"
+            resource_hint = "Billing review case"
+
+        follow_up_questions = [
+            "Which service area were you in?",
+            "When did the issue happen?",
+            "What outcome would make this acceptable for you?",
+        ]
+        if "room_readiness" in complaint_types:
+            follow_up_questions.append("Was the issue cleanliness, room availability, or discharge timing?")
+        if "billing" in complaint_types:
+            follow_up_questions.append("Was the concern a duplicate charge, claim delay, refund, or payment issue?")
+        if "pharmacy_delay" in complaint_types:
+            follow_up_questions.append("Was the delay caused by queue time, unavailable stock, or missing approval?")
+
+        root_causes = []
+        if "wait_time" in complaint_types:
+            root_causes.append("Queue pressure or staff coverage gap may be driving the complaint.")
+        if "room_readiness" in complaint_types:
+            root_causes.append("Blocked room, cleaning, or porter delay may be affecting readiness.")
+        if "pharmacy_delay" in complaint_types:
+            root_causes.append("Low stock, counter queue, or approval delay may be affecting pharmacy service.")
+        if "billing" in complaint_types:
+            root_causes.append("Duplicate invoice, insurer delay, or payment review may be causing financial friction.")
+        if not root_causes:
+            root_causes.append("More evidence is needed before assigning the root cause.")
+
+        evidence_needed = [
+            "current queue or service-area status",
+            "related resource status",
+            "recent similar complaints",
+            "manager approval requirement",
+        ]
+        if "billing" in complaint_types:
+            evidence_needed.append("billing or insurance case status")
+        if "pharmacy_delay" in complaint_types:
+            evidence_needed.append("pharmacy stock and counter queue status")
+
+        return {
+            "complaintTypes": complaint_types,
+            "severity": severity,
+            "departmentHint": department_hint,
+            "resourceHint": resource_hint,
+            "safeSummary": (
+                "Inbound WhatsApp complaint classified as "
+                + ", ".join(complaint_types)
+                + ". Raw message text is not stored in the demo event."
+            ),
+            "followUpQuestions": follow_up_questions,
+            "rootCauseHypotheses": root_causes,
+            "nextEvidenceNeeded": evidence_needed,
+            "affectedPrimitives": [
+                "Signal",
+                "Evidence",
+                "Customer",
+                "Location",
+                "Resource",
+                "Risk",
+                "Policy",
+                "Recommendation",
+                "Approval",
+                "Action",
+                "Outcome",
+            ],
+        }
 
     def request(
         self,

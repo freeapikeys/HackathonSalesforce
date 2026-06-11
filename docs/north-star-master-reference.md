@@ -78,8 +78,21 @@ they return evidence-backed findings into one shared action plan.
 | Partner and Vendor Agent    | check lab/laundry/insurer/payment/food/maintenance status and SLA risk                      |
 | Risk and Approval Agent     | decide approval need, enforce permission, refuse clinical decisions, preserve audit         |
 | Financial Impact Agent      | estimate refund, billing, claim, voucher, payment, and revenue exposure                     |
-| Communication Agent         | prepare Slack, WhatsApp, and future email messages after approval                           |
+| Communication Agent         | prepare Slack, WhatsApp, and protected email messages after approval                        |
 | Outcome Learning Agent      | capture outcomes, compare expected vs actual, feed learning into next plan                  |
+
+Optional specialist skills can sit under those agents. They are not separate
+chatbots and they must not create a new architecture.
+
+| Specialist skill       | Plugs into              | What it adds                                                        |
+| ---------------------- | ----------------------- | ------------------------------------------------------------------- |
+| Hospital Operations    | Operations Execution    | room readiness, discharge cleaning, porter, front desk, service SLA |
+| Inventory and Capacity | Resource and Capacity   | stock days remaining, transfer option, restock urgency, queue load  |
+| Billing and Insurance  | Financial Impact        | duplicate invoice, stuck claim, refund threshold, payment issue     |
+| Vendor SLA             | Partner and Vendor      | lab, laundry, food, supplier, maintenance, and insurer follow-up    |
+| Patient Experience     | Patient Trust           | complaint follow-up questions and privacy-safe response drafts      |
+| Channel Approval UX    | Risk/Approval and Comms | Slack, WhatsApp, and email action wording after approval            |
+| Cross-Sector Mapping   | Orchestrator            | maps hospital primitives to airport, hotel, banking, and retail     |
 
 Orchestration flow:
 
@@ -142,7 +155,7 @@ business manager approval unless the demo clearly marks them as local mocks.
 | Salesforce/manual demo form | Reliable fallback for entering a complaint or operations signal | Target fallback screen or seeded event                        |
 | Slack                       | Internal staff and manager coordination                         | Live outbound delivery works when webhook is configured       |
 | WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement        | Live outbound delivery works through Twilio Sandbox           |
-| Email                       | Supplier, vendor, insurer, or formal customer follow-up         | Future protected action; not implemented in current MVP       |
+| Email                       | Supplier, vendor, insurer, or formal customer follow-up         | Protected mock action exists; live delivery is not configured |
 
 Recommended hackathon stance:
 
@@ -151,8 +164,9 @@ Recommended hackathon stance:
 - WhatsApp outbound may be used for urgent internal mobile alerts in the demo.
 - Customer-facing WhatsApp replies should be approved, privacy-safe, and
   template/consent-aware.
-- Email is useful for suppliers, insurers, vendors, or formal follow-up, but it
-  should be described as the next protected action adapter unless implemented.
+- Email is useful for suppliers, insurers, vendors, or formal follow-up. The
+  current repo has a protected mock vendor-email action; do not claim live
+  email delivery until credentials and Anypoint/SMTP delivery are configured.
 
 ## End-To-End Logic
 
@@ -182,10 +196,54 @@ become action?"
 7. MuleSoft executes only approved actions.
    Examples: Slack internal alert, WhatsApp alert, room-cleaning task, pharmacy
    restock request, lab vendor follow-up, billing review, insurer follow-up, or
-   future email/vendor action.
+   protected mock vendor email.
 8. Outcomes return to Salesforce.
    North Star records what was attempted, what happened, which provider accepted
    the message, which tasks were acknowledged, and which metrics changed.
+
+## Deep Resolution Pattern
+
+This is the main competitive differentiator. North Star should not behave like
+a chatbot that says "sorry" or "manager notified." It should expand one issue
+into the business functions it affects.
+
+For every complaint or operational signal, North Star should:
+
+1. classify the issue type;
+2. ask only the follow-up questions needed to fill missing evidence;
+3. map the issue to global primitives;
+4. identify affected resources, locations, partners, policies, approvals,
+   actions, outcomes, and metrics;
+5. form root-cause hypotheses without pretending they are facts;
+6. request the next evidence needed to confirm or reject each hypothesis;
+7. propose one manager-ready action plan;
+8. block clinical or unsupported actions;
+9. execute only approved actions;
+10. measure whether the action actually improved the situation.
+
+Example:
+
+```text
+Complaint: "I waited one hour, the pharmacy said there is no stock, and my invoice looks duplicated."
+```
+
+North Star should not only send a message. It should connect:
+
+- Patient Trust: wait-time and billing frustration;
+- Resource and Capacity: outpatient queue and pharmacy stock;
+- Financial Impact: possible duplicate invoice or insurer delay;
+- Risk and Approval: no refund or customer reply without approval;
+- Communication: Slack internal alert and approved WhatsApp response;
+- Outcome Learning: wait reduced, stockout avoided, billing review opened.
+
+The current MuleSoft runtime includes a deterministic Twilio WhatsApp intake
+mapper for this pattern. It masks the phone number, stores a synthetic customer
+alias, hashes the raw message, classifies complaint types, adds follow-up
+questions, adds root-cause hypotheses, and sends the result through
+`INGEST_EVENT`.
+
+The live public webhook is still a remaining integration task. Until that is
+hosted, use the runtime mapper or seeded event as the reliable demo fallback.
 
 ## Key Demo IDs
 
@@ -213,6 +271,7 @@ These actions require business manager approval before execution:
 
 - `SEND_SLACK_ALERT`
 - `SEND_WHATSAPP_ALERT`
+- `SEND_VENDOR_EMAIL`
 - `CREATE_PATIENT_SERVICE_TASK`
 - `REQUEST_BED_CLEANING`
 - `CREATE_PHARMACY_RESTOCK_REQUEST`
@@ -282,6 +341,35 @@ WhatsApp body:
 Please check room readiness, pharmacy stock, lab response, and billing review. North Star has linked the evidence.
 ```
 
+## Channel Test Commands
+
+Use these before demo rehearsal:
+
+```powershell
+$env:SLACK_WEBHOOK_URL = [Environment]::GetEnvironmentVariable("SLACK_WEBHOOK_URL", "User")
+$env:TWILIO_ACCOUNT_SID = [Environment]::GetEnvironmentVariable("TWILIO_ACCOUNT_SID", "User")
+$env:TWILIO_AUTH_TOKEN = [Environment]::GetEnvironmentVariable("TWILIO_AUTH_TOKEN", "User")
+$env:TWILIO_WHATSAPP_FROM = [Environment]::GetEnvironmentVariable("TWILIO_WHATSAPP_FROM", "User")
+$env:TWILIO_WHATSAPP_TO = [Environment]::GetEnvironmentVariable("TWILIO_WHATSAPP_TO", "User")
+
+npm run check:mulesoft
+npm run demo:run -- --target-org hfs-dev --output artifacts\demo-harness-result-live-channels.json
+```
+
+What this proves:
+
+- `npm run check:mulesoft` proves the event intake, approved action execution,
+  Slack/WhatsApp mocks, live-provider adapter paths, and inbound WhatsApp mapper
+  tests.
+- `npm run demo:run` proves the connected Salesforce path, manager approval,
+  outbound Slack, outbound WhatsApp, actions, outcomes, and clinical refusal.
+
+What it does not prove yet:
+
+- a public Twilio webhook receiving live customer messages from the internet;
+- an in-command-center form where a judge types a fresh complaint;
+- interactive approval buttons inside Slack or WhatsApp.
+
 ## Salesforce Org
 
 `hfs-dev` is the local Salesforce CLI alias for the connected demo org. It is
@@ -313,6 +401,25 @@ The live channel demo is ready when the harness output shows:
 This proves approved outbound delivery. It does not prove live inbound customer
 complaint intake unless the Twilio inbound webhook or Salesforce intake fallback
 has also been implemented and tested.
+
+## Remaining Build Tasks
+
+Highest-value tasks still open:
+
+1. Host or simulate the live Twilio inbound webhook end to end, not only the
+   deterministic runtime mapper.
+2. Add a Salesforce command-center intake fallback so a judge can type a
+   complaint during the demo.
+3. Trigger or request Agentforce recommendation generation from the newly
+   stored inbound complaint evidence.
+4. Display inbound complaint follow-up questions, root-cause hypotheses, and
+   missing evidence in the command center.
+5. Add manager approval deep links or buttons for Slack/WhatsApp only if Slack
+   interactivity or WhatsApp templates are configured safely.
+6. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
+   are configured safely; the repo currently has protected mock vendor email.
+7. Add cross-sector cards showing how the same global primitives map to
+   airport, hotel, banking, supermarket, and cruise operations.
 
 ## Team Ownership
 

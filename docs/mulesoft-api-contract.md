@@ -54,6 +54,7 @@ Approved mock write-backs for the private hospital demo should include:
 - `REQUEST_INSURANCE_FOLLOWUP`
 - `SEND_SLACK_ALERT`
 - `SEND_WHATSAPP_ALERT`
+- `SEND_VENDOR_EMAIL`
 - `CAPTURE_HOSPITAL_OUTCOME`
 
 The same action boundary can later support hotel, airport, banking,
@@ -83,11 +84,18 @@ Inbound WhatsApp mapping:
 4. Salesforce stores the signal and evidence.
 5. Agentforce may draft a recommendation from the new evidence.
 6. Any customer reply, Slack alert, vendor request, stock request, billing
-   review, refund, or future email action must then go through approval and
+   review, refund, or vendor email action must then go through approval and
    `EXECUTE_APPROVED_ACTION`.
 
 Inbound WhatsApp must not directly create a refund, send a vendor email, change
 stock, reply with medical advice, or decide clinical priority.
+
+The local mock runtime includes a deterministic
+`MockIntegrationApi.ingest_twilio_whatsapp(...)` adapter for the hackathon demo.
+It maps Twilio-style payloads into `INGEST_EVENT`, masks the phone number,
+stores a synthetic alias, hashes the raw message body, adds complaint
+classification, follow-up questions, root-cause hypotheses, next-evidence
+needs, and affected primitives.
 
 ## Protected Action Rules
 
@@ -101,8 +109,9 @@ stock, reply with medical advice, or decide clinical priority.
 - Slack can use `SLACK_WEBHOOK_URL`. WhatsApp can use Twilio Sandbox or a
   WhatsApp-enabled Twilio sender through `TWILIO_ACCOUNT_SID`,
   `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, and `TWILIO_WHATSAPP_TO`.
-- Email or vendor notification is a future protected adapter unless implemented
-  and tested; do not claim live email delivery in the MVP.
+- Vendor email notification is implemented as protected mock action
+  `SEND_VENDOR_EMAIL`; do not claim live email delivery unless an Anypoint,
+  SMTP, or email-provider connector is configured and tested.
 - Clinical diagnosis, treatment, dosage, triage, and clinical priority actions
   are not valid MuleSoft actions for the demo.
 

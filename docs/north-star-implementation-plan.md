@@ -140,6 +140,7 @@ Hospital mock actions behind `EXECUTE_APPROVED_ACTION`:
 - `REQUEST_INSURANCE_FOLLOWUP`;
 - `SEND_SLACK_ALERT`;
 - `SEND_WHATSAPP_ALERT`;
+- `SEND_VENDOR_EMAIL`;
 - `CAPTURE_HOSPITAL_OUTCOME`.
 
 Slack:
@@ -158,11 +159,11 @@ WhatsApp:
 
 Email:
 
-- email is not implemented in the current MVP;
-- model email as a future protected action adapter for suppliers, insurers,
-  vendors, formal customer follow-up, or manager-approved notices;
-- do not claim email delivery until a `SEND_EMAIL` or equivalent adapter exists
-  and passes tests.
+- model vendor email as protected action `SEND_VENDOR_EMAIL`;
+- the current MVP can queue a protected mock vendor/supplier email after
+  approval;
+- do not claim live email delivery until an Anypoint, SMTP, or provider-backed
+  adapter exists and passes tests.
 
 Acceptance:
 
@@ -199,7 +200,7 @@ Inbound WhatsApp flow:
 5. Agentforce drafts an action plan from the new evidence.
 6. A manager approves protected actions.
 7. MuleSoft sends approved Slack, WhatsApp, vendor, billing, stock, task, or
-   future email actions.
+   protected mock vendor-email actions.
 8. Outcomes return to Salesforce and update the command center.
 
 Acceptance:
@@ -298,22 +299,27 @@ Focused checks:
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as urgent internal mobile alert or approved
       customer acknowledgement.
-- [x] Document email as a future protected action adapter, not a current live
-      capability.
-- [ ] Add or simulate a Twilio inbound WhatsApp webhook that maps customer
+- [x] Document email as a protected mock vendor/supplier action, not a current
+      live delivery capability.
+- [x] Add or simulate a Twilio inbound WhatsApp webhook that maps customer
       complaint text to `INGEST_EVENT`.
 - [ ] Add a Salesforce complaint/signal intake screen or command-center action
       as the reliable fallback.
-- [ ] Convert inbound text into synthetic customer alias, source channel,
+- [x] Convert inbound text into synthetic customer alias, source channel,
       timestamp, department/resource hints, correlation ID, and evidence ID.
+- [x] Add root-cause hypotheses, follow-up questions, next-evidence needs, and
+      affected primitives for inbound complaint intake.
+- [x] Ensure raw phone number and raw message text are not preserved in the demo
+      event.
 - [ ] Ensure the new intake evidence can trigger or request an Agentforce
       recommendation.
 - [ ] Block customer-facing replies until manager approval and privacy-safe
       wording checks pass.
 - [ ] Add tests or harness evidence for WhatsApp complaint intake through
       recommendation, approval, Slack alert, WhatsApp response, and outcome.
-- [ ] Add optional email/vendor adapter only if time remains and it can stay
-      behind the approval boundary.
+- [x] Add protected mock email/vendor adapter behind the approval boundary.
+- [ ] Add live email/vendor delivery only if credentials and provider routing
+      can stay outside Git.
 
 ### Slack And Approved MuleSoft Execution
 

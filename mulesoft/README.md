@@ -59,6 +59,7 @@ hospital operations systems and channels:
 - billing review and insurance follow-up;
 - Slack staff alert;
 - WhatsApp-style urgent staff alert;
+- protected vendor or supplier email queue;
 - hospital outcome callback.
 
 Use real Slack or WhatsApp credentials only when they are available and safe to
@@ -92,11 +93,24 @@ For WhatsApp inbound, the intended production-shaped flow is:
 4. Salesforce stores the signal and evidence.
 5. Agentforce drafts an action plan from that evidence.
 6. Any reply, Slack alert, vendor request, billing review, stock request,
-   refund, or future email action still requires approval first.
+   refund, or vendor email action still requires approval first.
 
 Inbound WhatsApp must never directly send medical advice, decide clinical
 priority, issue refunds, email vendors, change stock, or message staff without
 the protected action boundary.
+
+The local reference runtime now includes
+`MockIntegrationApi.ingest_twilio_whatsapp(...)` for deterministic demo and
+test use. It maps a Twilio-style payload into `INGEST_EVENT`, masks the customer
+phone number, hashes the raw message body, adds follow-up questions, adds
+root-cause hypotheses, and preserves the event through the same intake
+classifier used by the Process API.
+
+Verify with:
+
+```bash
+npm run check:mulesoft
+```
 
 ## Slack Alert Path
 
@@ -150,12 +164,14 @@ secure configuration, never in Git.
 
 ## Email Path
 
-Email is not implemented in the current MVP. If added, it should be a protected
-action such as `SEND_EMAIL` or `SEND_VENDOR_EMAIL` behind
-`EXECUTE_APPROVED_ACTION`. It is most useful for suppliers, insurers, vendors,
-formal customer follow-up, and manager-approved notices. Do not claim live email
-delivery until an adapter exists, credentials are stored outside Git, and tests
-prove approval-gated execution.
+Vendor email is modeled as the protected action type `SEND_VENDOR_EMAIL` behind
+`EXECUTE_APPROVED_ACTION`. In the local reference runtime, an approved vendor
+email action records a queued protected mock delivery for suppliers, insurers,
+vendors, formal customer follow-up, or manager-approved notices.
+
+This is not live email delivery. Do not claim live email delivery until an
+Anypoint, SMTP, or email-provider connector exists, credentials are stored
+outside Git, and tests prove approval-gated execution.
 
 ## Clinical Boundary
 
