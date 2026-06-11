@@ -81,6 +81,19 @@ def main() -> int:
             citation["evidenceId"] for citation in response["citations"]
         }
         fact_ids = {fact["factId"] for fact in response["facts"]}
+        coverage = response["contextCoverage"]
+        if coverage:
+            require(
+                set(coverage["evidenceIds"]) <= citation_ids,
+                f"{name}: context coverage cites inaccessible evidence.",
+            )
+            for category_name, category in coverage[
+                "evidenceCategories"
+            ].items():
+                require(
+                    set(category["evidenceIds"]) <= citation_ids,
+                    f"{name}: {category_name} coverage cites inaccessible evidence.",
+                )
         for fact in response["facts"]:
             require(
                 set(fact["evidenceIds"]) <= citation_ids,

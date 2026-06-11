@@ -33,7 +33,12 @@ Version `1.0.0` returns separate collections for facts and inferences.
 - Every recommendation cites returned evidence, records the logical model
   profile and invocation identifier, and sets `requiresHumanApproval = true`
   when a protected action is proposed.
-- Citations preserve source event, source URI, content hash, and summary.
+- Citations preserve evidence type, source event, source URI, content hash, and
+  summary.
+- Recommendation and explanation responses include additive `contextCoverage`
+  metadata that maps returned evidence and accessible Salesforce records to
+  global primitives: customer alias, department/location, resource, partner,
+  process, recommendation, approval, action, outcome, and metric.
 - Clinical-decision requests return a refusal or blocked action, not a medical
   recommendation.
 
@@ -76,7 +81,8 @@ describe North Star operations cases, not retail-only relationship cases.
 Each action returns typed status, citation, model-invocation, approval,
 refusal, error, and external-execution fields. `responseJson` is the canonical
 serialized `1.0.0` response and preserves the complete facts, inferences,
-citations, recommendation, approval, refusal, error, and audit structure.
+citations, context coverage, recommendation, approval, refusal, error, and
+audit structure.
 
 The recommendation action returns only a normalized recommendation already
 persisted with a qualified provider-neutral model profile and invocation ID.
@@ -110,6 +116,7 @@ npm run demo:run
 ```
 
 The connected demo run invokes all three actions against the Salesforce org,
-checks that the model invocation ID survives the Agentforce boundary, and
-proves that external execution remains blocked until a separate human approval
-and MuleSoft transaction.
+checks that the model invocation ID survives the Agentforce boundary, proves
+the recommendation context includes complaint, resource, capacity, partner,
+billing, stock, staffing, and approval coverage, then proves outcome and metric
+coverage after the separate human approval and MuleSoft transaction.

@@ -151,6 +151,7 @@
       "additionalProperties": false,
       "required": [
         "evidenceId",
+        "evidenceType",
         "sourceEventId",
         "sourceUri",
         "contentHash",
@@ -162,6 +163,11 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 200
+        },
+        "evidenceType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
         },
         "sourceEventId": {
           "type": "string",
@@ -184,6 +190,234 @@
         },
         "accessible": {
           "const": true
+        }
+      }
+    },
+    "contextCategory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applies",
+        "evidenceIds",
+        "recordIds"
+      ],
+      "properties": {
+        "applies": {
+          "type": "boolean"
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 0
+        },
+        "recordIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "contextCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidenceIds",
+        "evidenceTypes",
+        "evidenceCategories",
+        "recordIdsByPrimitive"
+      ],
+      "properties": {
+        "evidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "evidenceTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "evidenceCategories": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "complaint",
+            "resource",
+            "capacity",
+            "partner",
+            "billing",
+            "stock",
+            "staffing",
+            "approval",
+            "outcome"
+          ],
+          "properties": {
+            "complaint": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "resource": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "capacity": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "partner": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "billing": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "stock": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "staffing": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "approval": {
+              "$ref": "#/$defs/contextCategory"
+            },
+            "outcome": {
+              "$ref": "#/$defs/contextCategory"
+            }
+          }
+        },
+        "recordIdsByPrimitive": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "customerAliases",
+            "departments",
+            "locations",
+            "resources",
+            "partners",
+            "processes",
+            "recommendations",
+            "approvals",
+            "actions",
+            "outcomes",
+            "metrics"
+          ],
+          "properties": {
+            "customerAliases": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "departments": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "locations": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "resources": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "partners": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "processes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "recommendations": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "approvals": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "outcomes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "uniqueItems": true
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "pattern": "^[a-z0-9][a-z0-9._-]*$"
+              },
+              "uniqueItems": true
+            }
+          }
         }
       }
     },
@@ -961,6 +1195,7 @@
         "facts",
         "inferences",
         "citations",
+        "contextCoverage",
         "recommendation",
         "approval",
         "refusal",
@@ -1013,6 +1248,16 @@
           "items": {
             "$ref": "#/$defs/citation"
           }
+        },
+        "contextCoverage": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/contextCoverage"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "recommendation": {
           "oneOf": [

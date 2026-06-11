@@ -64,13 +64,75 @@ private class HFS_AgentActionServiceTest {
       Work_Item__c = groundedWork.Id,
       Related_Entity__c = customer.Id,
       Source_Event__c = sourceEvent.Id,
-      Evidence_Type__c = 'SOURCE_EVENT',
-      Summary__c = 'The customer is waiting for a promised status update.',
+      Evidence_Type__c = 'PATIENT_COMPLAINT_CLUSTER',
+      Summary__c = 'The customer complaint cluster is waiting for a promised status update.',
       Content_Hash__c = HASH,
       Source_URI__c = 'urn:test:crm:agent-case-001',
       Captured_At__c = nowValue.addMinutes(-8)
     );
-    insert evidence;
+    insert new List<HFS_Evidence__c>{
+      evidence,
+      new HFS_Evidence__c(
+        External_Key__c = 'evidence-agent-action-capacity',
+        Tenant_Key__c = TENANT,
+        Work_Item__c = groundedWork.Id,
+        Related_Entity__c = customer.Id,
+        Source_Event__c = sourceEvent.Id,
+        Evidence_Type__c = 'RESOURCE_CAPACITY',
+        Summary__c = 'The resource queue is above capacity and customers are waiting past the service window.',
+        Content_Hash__c = 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        Source_URI__c = 'urn:test:crm:capacity',
+        Captured_At__c = nowValue.addMinutes(-7)
+      ),
+      new HFS_Evidence__c(
+        External_Key__c = 'evidence-agent-action-stock',
+        Tenant_Key__c = TENANT,
+        Work_Item__c = groundedWork.Id,
+        Related_Entity__c = customer.Id,
+        Source_Event__c = sourceEvent.Id,
+        Evidence_Type__c = 'PHARMACY_STOCK_POSITION',
+        Summary__c = 'The pharmacy stock cover is below the operational supply threshold.',
+        Content_Hash__c = 'sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+        Source_URI__c = 'urn:test:crm:stock',
+        Captured_At__c = nowValue.addMinutes(-6)
+      ),
+      new HFS_Evidence__c(
+        External_Key__c = 'evidence-agent-action-partner',
+        Tenant_Key__c = TENANT,
+        Work_Item__c = groundedWork.Id,
+        Related_Entity__c = customer.Id,
+        Source_Event__c = sourceEvent.Id,
+        Evidence_Type__c = 'PARTNER_RESPONSE_STATUS',
+        Summary__c = 'The partner lab response is late against the vendor SLA.',
+        Content_Hash__c = 'sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+        Source_URI__c = 'urn:test:crm:partner',
+        Captured_At__c = nowValue.addMinutes(-5)
+      ),
+      new HFS_Evidence__c(
+        External_Key__c = 'evidence-agent-action-billing',
+        Tenant_Key__c = TENANT,
+        Work_Item__c = groundedWork.Id,
+        Related_Entity__c = customer.Id,
+        Source_Event__c = sourceEvent.Id,
+        Evidence_Type__c = 'BILLING_AND_INSURANCE_HOLD',
+        Summary__c = 'The billing invoice and insurance claim review are still pending and require manager approval.',
+        Content_Hash__c = 'sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+        Source_URI__c = 'urn:test:crm:billing',
+        Captured_At__c = nowValue.addMinutes(-4)
+      ),
+      new HFS_Evidence__c(
+        External_Key__c = 'evidence-agent-action-staffing',
+        Tenant_Key__c = TENANT,
+        Work_Item__c = groundedWork.Id,
+        Related_Entity__c = customer.Id,
+        Source_Event__c = sourceEvent.Id,
+        Evidence_Type__c = 'STAFF_QUEUE_RISK',
+        Summary__c = 'Front-desk staff and porter coverage are short for the current queue.',
+        Content_Hash__c = 'sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+        Source_URI__c = 'urn:test:crm:staffing',
+        Captured_At__c = nowValue.addMinutes(-3)
+      )
+    };
 
     insert new HFS_Recommendation__c(
       External_Key__c = 'recommendation-agent-action-test',
@@ -102,15 +164,22 @@ private class HFS_AgentActionServiceTest {
 
     System.assertEquals('SUCCESS', result.status);
     System.assertEquals(false, result.externalActionExecuted);
-    System.assertEquals(1, result.citationEvidenceIds.size());
+    System.assertEquals(6, result.citationEvidenceIds.size());
     Map<String, Object> body = body(result);
-    System.assertEquals(1, asList(body, 'facts').size());
+    System.assertEquals(6, asList(body, 'facts').size());
     System.assertEquals(1, asList(body, 'inferences').size());
-    System.assertEquals(1, asList(body, 'citations').size());
+    System.assertEquals(6, asList(body, 'citations').size());
     Map<String, Object> citation = asMap(asList(body, 'citations')[0]);
     System.assertEquals(true, citation.get('accessible'));
+    System.assertNotEquals(null, citation.get('evidenceType'));
     Map<String, Object> inference = asMap(asList(body, 'inferences')[0]);
     System.assertEquals(1, asList(inference, 'basisFactIds').size());
+    Map<String, Object> coverage = asMap(body.get('contextCoverage'));
+    System.assertEquals(
+      true,
+      asMap(asMap(coverage.get('evidenceCategories')).get('complaint'))
+        .get('applies')
+    );
     System.assertEquals(
       false,
       asMap(body.get('audit')).get('externalActionExecuted')
@@ -140,10 +209,31 @@ private class HFS_AgentActionServiceTest {
     Map<String, Object> response = body(result);
     Map<String, Object> recommendation = asMap(response.get('recommendation'));
     System.assertEquals(true, recommendation.get('requiresHumanApproval'));
+    System.assertEquals(6, asList(recommendation, 'evidenceIds').size());
     System.assertEquals(
       'recommendation_reasoning',
       recommendation.get('modelProfile')
     );
+    Map<String, Object> coverage = asMap(response.get('contextCoverage'));
+    Map<String, Object> categories = asMap(coverage.get('evidenceCategories'));
+    for (
+      String category : new List<String>{
+        'complaint',
+        'capacity',
+        'partner',
+        'billing',
+        'stock',
+        'staffing',
+        'approval'
+      }
+    ) {
+      System.assertEquals(
+        true,
+        asMap(categories.get(category)).get('applies'),
+        category + ' coverage should be present'
+      );
+    }
+    System.assertEquals(false, asMap(categories.get('outcome')).get('applies'));
     System.assertEquals(
       result.modelInvocationId,
       asMap(response.get('audit')).get('modelInvocationId')

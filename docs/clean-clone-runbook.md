@@ -105,8 +105,9 @@ Evidence validation fails unless all of these are true:
 - the restricted model route returns `NO_QUALIFIED_DEPLOYMENT` and
   `FAILED_CLOSED`;
 - Agentforce refuses inaccessible evidence with `INACCESSIBLE_EVIDENCE`;
-- Agentforce cites evidence, preserves the model invocation ID, and does not
-  execute the external action;
+- Agentforce cites evidence, preserves the model invocation ID, covers
+  complaint, resource, capacity, partner, billing, stock, staffing, approval,
+  and post-outcome context, and does not execute the external action;
 - Salesforce rejects action logging before approval with `INVALID_STATE`;
 - MuleSoft rejects an unregistered approval with `403 PERMISSION_DENIED`;
 - MuleSoft accepts approved channel write-backs with `202 QUEUED`;
@@ -115,8 +116,9 @@ Evidence validation fails unless all of these are true:
 - five task action records remain visible in the final Salesforce context, and
   two channel actions are `EXECUTED`;
 - outcomes are `SUCCESS`, work item is `COMPLETED`, and evaluations exist;
-- final Salesforce counts include at least three events, seven actions, two
-  outcomes, two evaluations, one recommendation, and one work item.
+- final Salesforce counts include at least three events, seven evidence
+  records, seven actions, two outcomes, two evaluations, one recommendation,
+  and one work item.
 
 ## Recovery
 

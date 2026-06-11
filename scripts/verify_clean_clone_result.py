@@ -29,10 +29,12 @@ REQUIRED_STEPS = [
     "human-approval-and-action-log",
     "mulesoft-writeback",
     "outcome-and-lightning-refresh",
+    "agentforce-outcome-context",
     "verify-connected",
 ]
 FINAL_COUNT_MINIMUMS = {
     "HFS_Action__c": 7,
+    "HFS_Evidence__c": 7,
     "HFS_Evaluation__c": 2,
     "HFS_Event__c": 3,
     "HFS_Outcome__c": 2,
@@ -162,6 +164,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
     mulesoft = details.get("mulesoft") or {}
     delivery_by_type = mulesoft.get("deliveryByActionType") or {}
     outcome = details.get("outcome") or {}
+    post_outcome_agentforce = details.get("postOutcomeAgentforce") or {}
     connected = details.get("connected") or {}
     counts = connected.get("counts") or {}
 
@@ -190,6 +193,26 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         isinstance(agentforce.get("citationEvidenceIds"), list)
         and len(agentforce["citationEvidenceIds"]) > 0,
         "Agentforce explanation has no evidence citations",
+    )
+    covered_categories = set(agentforce.get("coveredCategories") or [])
+    require(
+        {
+            "complaint",
+            "resource",
+            "capacity",
+            "partner",
+            "billing",
+            "stock",
+            "staffing",
+            "approval",
+        }
+        <= covered_categories
+        and integer(
+            agentforce.get("recommendationEvidenceCount", 0),
+            "Agentforce recommendation evidence count",
+        )
+        >= 7,
+        "Agentforce recommendation is missing required hospital context coverage",
     )
     require(
         clinical_refusal.get("status") == "REFUSED"
@@ -236,6 +259,20 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         >= 2,
         "The final governed context is missing task or channel actions",
     )
+    require(
+        post_outcome_agentforce.get("outcomeContextCovered") is True
+        and integer(
+            post_outcome_agentforce.get("outcomeRecordCount", 0),
+            "Agentforce outcome record count",
+        )
+        >= 2
+        and integer(
+            post_outcome_agentforce.get("metricCount", 0),
+            "Agentforce metric count",
+        )
+        >= 2,
+        "Agentforce did not include outcome and metric context after write-back",
+    )
 
     for object_name, minimum in FINAL_COUNT_MINIMUMS.items():
         require(
@@ -260,6 +297,10 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             "restrictedModelDecision": model["restrictedDecision"],
             "restrictedModelAuditStatus": model["restrictedAuditStatus"],
             "inaccessibleEvidence": agentforce["inaccessibleRefusalCode"],
+            "agentforceCoveredCategories": sorted(covered_categories),
+            "agentforceRecommendationEvidenceCount": agentforce[
+                "recommendationEvidenceCount"
+            ],
             "clinicalDecisionRefusal": clinical_refusal["errorCode"],
             "agentforceExternalActionExecuted": agentforce[
                 "externalActionExecuted"
@@ -275,6 +316,9 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             "taskActionCount": outcome["taskActionCount"],
             "executedChannelActionCount": outcome[
                 "executedChannelActionCount"
+            ],
+            "postOutcomeAgentforce": post_outcome_agentforce[
+                "outcomeContextCovered"
             ],
             "finalActionStatus": outcome["actionStatus"],
             "finalOutcomeStatus": outcome["outcomeStatus"],

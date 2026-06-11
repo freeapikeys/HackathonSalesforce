@@ -113,9 +113,15 @@ class CommandRunner:
             text=True,
         )
         if completed.returncode != 0:
+            detail_parts = []
+            if completed.stdout.strip():
+                detail_parts.append(f"stdout: {completed.stdout.strip()[-2000:]}")
+            if completed.stderr.strip():
+                detail_parts.append(f"stderr: {completed.stderr.strip()[-2000:]}")
+            detail = f" {' '.join(detail_parts)}" if detail_parts else ""
             raise HarnessFailure(
                 f"Command failed ({' '.join(command[:3])}) "
-                f"with exit code {completed.returncode}."
+                f"with exit code {completed.returncode}.{detail}"
             )
         if "--json" not in command:
             return {"stdout": completed.stdout.strip()}
@@ -535,6 +541,42 @@ System.assertEquals(
   recommendationResult.status,
   recommendationResult.responseJson
 );
+Map<String, Object> recommendationResponse =
+  (Map<String, Object>) JSON.deserializeUntyped(
+    recommendationResult.responseJson
+  );
+Map<String, Object> recommendationBody =
+  (Map<String, Object>) recommendationResponse.get('recommendation');
+System.assert(
+  ((List<Object>) recommendationBody.get('evidenceIds')).size() >= 7,
+  recommendationResult.responseJson
+);
+Map<String, Object> recommendationCoverage =
+  (Map<String, Object>) recommendationResponse.get('contextCoverage');
+Map<String, Object> recommendationCategories =
+  (Map<String, Object>) recommendationCoverage.get('evidenceCategories');
+List<String> requiredCategories = new List<String>{{
+  'complaint',
+  'resource',
+  'capacity',
+  'partner',
+  'billing',
+  'stock',
+  'staffing',
+  'approval'
+}};
+for (String category : requiredCategories) {{
+  Map<String, Object> categoryCoverage =
+    (Map<String, Object>) recommendationCategories.get(category);
+  System.assertEquals(
+    true,
+    (Boolean) categoryCoverage.get('applies'),
+    category + ' coverage is missing'
+  );
+}}
+Map<String, Object> preOutcomeCoverage =
+  (Map<String, Object>) recommendationCategories.get('outcome');
+System.assertEquals(false, (Boolean) preOutcomeCoverage.get('applies'));
 
 HFS_AgentActionRequest approvalRequest = new HFS_AgentActionRequest();
 approvalRequest.contractVersion = HFS_ServiceContract.VERSION;
@@ -557,6 +599,9 @@ Map<String, Object> result = new Map<String, Object>{{
   'inaccessibleStatus' => inaccessible.status,
   'inaccessibleRefusalCode' => inaccessible.refusalCode,
   'recommendationStatus' => recommendationResult.status,
+  'recommendationEvidenceCount' =>
+    ((List<Object>) recommendationBody.get('evidenceIds')).size(),
+  'coveredCategories' => requiredCategories,
   'modelInvocationId' => recommendationResult.modelInvocationId,
   'approvalStatus' => approvalResult.status,
   'approvalId' => approvalResult.approvalId,
@@ -1178,6 +1223,68 @@ System.debug(
             },
         }
 
+    def verify_agentforce_after_outcomes(
+        self,
+        source: dict[str, Any],
+        model: dict[str, Any],
+    ) -> dict[str, Any]:
+        script = f"""
+HFS_AgentActionRequest request = new HFS_AgentActionRequest();
+request.contractVersion = HFS_ServiceContract.VERSION;
+request.action = HFS_AgentActionService.RECOMMEND;
+request.tenantKey = '{apex_string(self.config["tenantKey"])}';
+request.correlationId = '{apex_string(self.config["correlationId"])}';
+request.purpose = '{HOSPITAL_PURPOSE}';
+request.workItemId = '{apex_string(source["workItemId"])}';
+request.modelProfile = '{apex_string(model["profileKey"])}';
+HFS_AgentActionResult result = HFS_AgentRecommendationAction.invoke(
+  new List<HFS_AgentActionRequest>{{ request }}
+)[0];
+System.assertEquals('SUCCESS', result.status, result.responseJson);
+Map<String, Object> response =
+  (Map<String, Object>) JSON.deserializeUntyped(result.responseJson);
+Map<String, Object> coverage =
+  (Map<String, Object>) response.get('contextCoverage');
+Map<String, Object> categories =
+  (Map<String, Object>) coverage.get('evidenceCategories');
+Map<String, Object> outcomeCoverage =
+  (Map<String, Object>) categories.get('outcome');
+System.assertEquals(
+  true,
+  (Boolean) outcomeCoverage.get('applies'),
+  result.responseJson
+);
+System.assert(((List<Object>) outcomeCoverage.get('recordIds')).size() >= 2);
+Map<String, Object> recordsByPrimitive =
+  (Map<String, Object>) coverage.get('recordIdsByPrimitive');
+System.assert(
+  ((List<Object>) recordsByPrimitive.get('actions')).size() >= 7,
+  result.responseJson
+);
+System.assert(
+  ((List<Object>) recordsByPrimitive.get('metrics')).size() >= 2,
+  result.responseJson
+);
+Map<String, Object> output = new Map<String, Object>{{
+  'status' => result.status,
+  'outcomeContextCovered' => (Boolean) outcomeCoverage.get('applies'),
+  'outcomeRecordCount' =>
+    ((List<Object>) outcomeCoverage.get('recordIds')).size(),
+  'actionRecordCount' =>
+    ((List<Object>) recordsByPrimitive.get('actions')).size(),
+  'metricCount' =>
+    ((List<Object>) recordsByPrimitive.get('metrics')).size()
+}};
+System.debug(
+  'HFS_CP3_AGENTFORCE_OUTCOME_CONTEXT:' +
+  EncodingUtil.base64Encode(Blob.valueOf(JSON.serialize(output)))
+);
+"""
+        return self.run_apex_source(
+            script,
+            "HFS_CP3_AGENTFORCE_OUTCOME_CONTEXT",
+        )
+
     def verify_connected(self) -> dict[str, Any]:
         identifiers = self.config["identifiers"]
         return {
@@ -1334,6 +1441,10 @@ System.debug(
                 "outcome-and-lightning-refresh",
                 lambda: self.capture_outcome(source, action, mulesoft),
             )
+            post_outcome_agentforce = self.step(
+                "agentforce-outcome-context",
+                lambda: self.verify_agentforce_after_outcomes(source, model),
+            )
             connected = self.step(
                 "verify-connected",
                 self.verify_connected,
@@ -1354,6 +1465,7 @@ System.debug(
                     if key != "outcome"
                 },
                 "outcome": outcome,
+                "postOutcomeAgentforce": post_outcome_agentforce,
                 "connected": connected,
             }
         if command == "verify":

@@ -282,7 +282,7 @@ file before editing.
 - [x] Define/update Financial Impact topic.
 - [x] Define/update Communication topic.
 - [x] Define/update Outcome Learning topic.
-- [ ] Recommendation request includes complaint, resource, capacity, partner,
+- [x] Recommendation request includes complaint, resource, capacity, partner,
       billing, stock, staffing, approval, and outcome evidence.
 - [x] Recommendation response separates facts, inferences, assumptions, missing
       evidence, recommended actions, blocked actions, approval requirements,

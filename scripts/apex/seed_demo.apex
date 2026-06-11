@@ -314,6 +314,18 @@ HFS_Evidence__c billingEvidence = new HFS_Evidence__c(
   Source_URI__c = 'urn:hfs:source:hospital:billing',
   Captured_At__c = baseTime.addMinutes(30)
 );
+HFS_Evidence__c staffingEvidence = new HFS_Evidence__c(
+  External_Key__c = 'evidence-staffing-hospital-001',
+  Tenant_Key__c = tenantKey,
+  Work_Item__c = workItem.Id,
+  Related_Entity__c = outpatientReception.Id,
+  Source_Event__c = sourceEvent.Id,
+  Evidence_Type__c = 'STAFF_QUEUE_RISK',
+  Summary__c = 'Two front-desk staff are unavailable, porter coverage is delayed, and the outpatient queue needs role-owned task coordination.',
+  Content_Hash__c = 'sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff',
+  Source_URI__c = 'urn:hfs:source:hospital:staffing',
+  Captured_At__c = baseTime.addMinutes(32)
+);
 HFS_Evidence__c clinicalBoundaryEvidence = new HFS_Evidence__c(
   External_Key__c = 'evidence-clinical-refusal-hospital-001',
   Tenant_Key__c = tenantKey,
@@ -332,6 +344,7 @@ insert new List<HFS_Evidence__c>{
   pharmacyEvidence,
   partnerEvidence,
   billingEvidence,
+  staffingEvidence,
   clinicalBoundaryEvidence
 };
 
@@ -344,7 +357,7 @@ HFS_Recommendation__c recommendation = new HFS_Recommendation__c(
   Status__c = 'PENDING_APPROVAL',
   Recommendation_Type__c = 'NORTH_STAR_HOSPITAL_RECOVERY_PLAN',
   Proposed_Action_Type__c = 'APPROVE_HOSPITAL_RECOVERY_ACTIONS',
-  Rationale__c = 'Facts: patient complaints are clustered, discharge rooms are blocked, pharmacy stock cover is below threshold, lab acknowledgement is late, and billing/insurance reviews are stalled. Inference: one approved operations recovery plan should coordinate room cleaning, porter movement, pharmacy restock or transfer, lab escalation, billing review, internal Slack and WhatsApp alerts, and outcome tracking. North Star refuses clinical diagnosis, treatment, dosage, triage, or clinical priority decisions.',
+  Rationale__c = 'Facts: patient complaints are clustered, discharge rooms are blocked, pharmacy stock cover is below threshold, lab acknowledgement is late, billing/insurance reviews are stalled, and staffing coverage is short. Inference: one approved operations recovery plan should coordinate room cleaning, porter movement, pharmacy restock or transfer, lab escalation, billing review, internal Slack and WhatsApp alerts, and outcome tracking. North Star refuses clinical diagnosis, treatment, dosage, triage, or clinical priority decisions.',
   Confidence__c = 0.88,
   Model_Profile__c = 'north-star-hospital-operations',
   Model_Invocation_Id__c = 'model-invocation-north-star-hospital-001',

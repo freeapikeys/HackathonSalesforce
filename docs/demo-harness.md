@@ -21,17 +21,21 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 2. prove a restricted model route fails closed;
 3. persist the normalized recommendation with its model invocation ID;
 4. read grounded citations and the recommendation through Agentforce actions;
-5. create a pending human approval through Agentforce;
-6. prove a clinical treatment-priority request is refused before storage;
-7. prove Salesforce refuses action logging before approval;
-8. record the human approval and log five pending operational task actions plus
+5. prove the Agentforce recommendation includes complaint, resource, capacity,
+   partner, billing, stock, staffing, and approval context coverage;
+6. create a pending human approval through Agentforce;
+7. prove a clinical treatment-priority request is refused before storage;
+8. prove Salesforce refuses action logging before approval;
+9. record the human approval and log five pending operational task actions plus
    pending Slack and WhatsApp-style channel actions;
-9. prove MuleSoft refuses an unregistered approval;
-10. execute approved Slack and WhatsApp-style mock write-backs and preserve
+10. prove MuleSoft refuses an unregistered approval;
+11. execute approved Slack and WhatsApp-style mock write-backs and preserve
     correlation;
-11. ingest the resulting source events and capture the outcomes in Salesforce;
-12. evaluate the defined outcomes;
-13. refresh the Lightning controller and verify completed state.
+12. ingest the resulting source events and capture the outcomes in Salesforce;
+13. evaluate the defined outcomes;
+14. refresh the Lightning controller and verify completed state;
+15. re-read Agentforce recommendation context and prove outcome and metric
+    coverage are now present.
 
 North Star hospital assertions:
 
@@ -105,6 +109,8 @@ The connected report must show:
 - `NO_QUALIFIED_DEPLOYMENT` and `FAILED_CLOSED` for restricted model data;
 - `INACCESSIBLE_EVIDENCE` for a transient work item with no evidence;
 - Agentforce citations and the same model invocation ID that was persisted;
+- Agentforce recommendation coverage includes complaint, resource, capacity,
+  partner, billing, stock, staffing, approval, and post-outcome context;
 - `CLINICAL_DECISION_REFUSED` with zero stored clinical recommendations;
 - `externalActionExecuted = false` for Agentforce;
 - `INVALID_STATE` before human approval in Salesforce;

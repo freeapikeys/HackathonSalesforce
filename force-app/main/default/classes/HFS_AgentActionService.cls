@@ -108,6 +108,7 @@ public with sharing class HFS_AgentActionService {
       Map<String, Object> response = baseResponse(request, EXPLAIN);
       response.put('facts', grounding.facts);
       response.put('citations', grounding.citations);
+      response.put('contextCoverage', contextCoverage(context, grounding));
 
       HFS_ContextItem recommendation = firstQualifiedRecommendation(
         context.recommendations,
@@ -186,13 +187,14 @@ public with sharing class HFS_AgentActionService {
       Map<String, Object> response = baseResponse(request, RECOMMEND);
       response.put('facts', grounding.facts);
       response.put('citations', grounding.citations);
+      response.put('contextCoverage', contextCoverage(context, grounding));
       response.put(
         'inferences',
         new List<Object>{
           inference(
             'inference-recommendation-rationale',
             recommendation.summary,
-            new List<String>{ basisFactId },
+            grounding.factIds,
             recommendation.confidence
           )
         }
@@ -204,7 +206,7 @@ public with sharing class HFS_AgentActionService {
           'proposedActionType' => recommendation.proposedActionType,
           'rationale' => recommendation.summary,
           'confidence' => recommendation.confidence,
-          'evidenceIds' => new List<String>{ recommendation.primaryEvidenceId },
+          'evidenceIds' => grounding.evidenceIds,
           'modelProfile' => recommendation.modelProfile,
           'modelInvocationId' => recommendation.modelInvocationId,
           'requiresHumanApproval' => true
@@ -416,9 +418,23 @@ public with sharing class HFS_AgentActionService {
       sequence++;
       String factId = 'fact-' + String.valueOf(sequence);
       result.factByEvidenceId.put(citationValue.evidenceId, factId);
+      result.factIds.add(factId);
+      result.evidenceIds.add(citationValue.evidenceId);
+      if (!String.isBlank(citationValue.evidenceType)) {
+        result.evidenceTypes.add(citationValue.evidenceType);
+      }
+      String coverageText =
+        (citationValue.evidenceType == null ? '' : citationValue.evidenceType) +
+        ' ' +
+        citationValue.summary +
+        ' ' +
+        citationValue.sourceUri;
+      result.coverageText += ' ' + coverageText.toLowerCase();
+      indexEvidenceCategory(result, citationValue.evidenceId, coverageText);
       result.citations.add(
         new Map<String, Object>{
           'evidenceId' => citationValue.evidenceId,
+          'evidenceType' => citationValue.evidenceType,
           'sourceEventId' => citationValue.sourceEventId,
           'sourceUri' => citationValue.sourceUri,
           'contentHash' => citationValue.contentHash,
@@ -434,6 +450,269 @@ public with sharing class HFS_AgentActionService {
         }
       );
     }
+    return result;
+  }
+
+  private static Map<String, Object> contextCoverage(
+    HFS_ContextResponse context,
+    Grounding grounding
+  ) {
+    List<String> customerAliases = itemIdsByType(
+      context.entities,
+      new Set<String>{ 'CUSTOMER_ALIAS' }
+    );
+    List<String> locations = itemIdsByType(
+      context.entities,
+      new Set<String>{ 'LOCATION' }
+    );
+    List<String> resources = itemIdsByType(
+      context.entities,
+      new Set<String>{ 'RESOURCE' }
+    );
+    List<String> partners = itemIdsByType(
+      context.entities,
+      new Set<String>{ 'PARTNER', 'SUPPLIER' }
+    );
+    List<String> processes = itemIdsByType(
+      context.entities,
+      new Set<String>{ 'PROCESS' }
+    );
+    List<String> approvals = itemIds(context.approvals);
+    List<String> actions = itemIds(context.actions);
+    List<String> outcomes = itemIds(context.outcomes);
+    List<String> metricKeys = metricKeys(context.outcomes);
+
+    Map<String, Object> categories = new Map<String, Object>{
+      'complaint' => evidenceCategory(grounding, 'complaint'),
+      'resource' => mergeCategory(
+        evidenceCategory(grounding, 'resource'),
+        resources
+      ),
+      'capacity' => mergeCategory(
+        evidenceCategory(grounding, 'capacity'),
+        resources
+      ),
+      'partner' => mergeCategory(
+        evidenceCategory(grounding, 'partner'),
+        partners
+      ),
+      'billing' => mergeCategory(
+        evidenceCategory(grounding, 'billing'),
+        processes
+      ),
+      'stock' => mergeCategory(evidenceCategory(grounding, 'stock'), resources),
+      'staffing' => evidenceCategory(grounding, 'staffing'),
+      'approval' => mergeCategory(
+        evidenceCategory(grounding, 'approval'),
+        approvals
+      ),
+      'outcome' => recordCategory(outcomes)
+    };
+
+    return new Map<String, Object>{
+      'evidenceIds' => grounding.evidenceIds,
+      'evidenceTypes' => sortedStrings(grounding.evidenceTypes),
+      'evidenceCategories' => categories,
+      'recordIdsByPrimitive' => new Map<String, Object>{
+        'customerAliases' => customerAliases,
+        'departments' => locations,
+        'locations' => locations,
+        'resources' => resources,
+        'partners' => partners,
+        'processes' => processes,
+        'recommendations' => itemIds(context.recommendations),
+        'approvals' => approvals,
+        'actions' => actions,
+        'outcomes' => outcomes,
+        'metrics' => metricKeys
+      }
+    };
+  }
+
+  private static void indexEvidenceCategory(
+    Grounding grounding,
+    String evidenceId,
+    String rawText
+  ) {
+    String text = rawText == null ? '' : rawText.toLowerCase();
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'complaint',
+      containsAny(text, new List<String>{ 'complaint' })
+    );
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'resource',
+      containsAny(
+        text,
+        new List<String>{ 'resource', 'room', 'bed', 'equipment', 'queue' }
+      )
+    );
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'capacity',
+      containsAny(
+        text,
+        new List<String>{ 'capacity', 'blocked', 'queue', 'wait' }
+      )
+    );
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'partner',
+      containsAny(
+        text,
+        new List<String>{ 'partner', 'vendor', 'lab', 'supplier' }
+      )
+    );
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'billing',
+      containsAny(
+        text,
+        new List<String>{
+          'billing',
+          'invoice',
+          'insurer',
+          'insurance',
+          'claim'
+        }
+      )
+    );
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'stock',
+      containsAny(text, new List<String>{ 'stock', 'pharmacy', 'supply' })
+    );
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'staffing',
+      containsAny(text, new List<String>{ 'staff', 'porter', 'front-desk' })
+    );
+    addEvidenceCategory(
+      grounding,
+      evidenceId,
+      'approval',
+      containsAny(
+        text,
+        new List<String>{ 'approval', 'approve', 'manager', 'protected action' }
+      )
+    );
+  }
+
+  private static void addEvidenceCategory(
+    Grounding grounding,
+    String evidenceId,
+    String category,
+    Boolean applies
+  ) {
+    if (!applies) {
+      return;
+    }
+    if (!grounding.evidenceIdsByCategory.containsKey(category)) {
+      grounding.evidenceIdsByCategory.put(category, new List<String>());
+    }
+    grounding.evidenceIdsByCategory.get(category).add(evidenceId);
+  }
+
+  private static Boolean containsAny(String text, List<String> needles) {
+    for (String needle : needles) {
+      if (text.contains(needle)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static Map<String, Object> evidenceCategory(
+    Grounding grounding,
+    String category
+  ) {
+    List<String> evidenceIds = grounding.evidenceIdsByCategory.get(category);
+    if (evidenceIds == null) {
+      evidenceIds = new List<String>();
+    }
+    return new Map<String, Object>{
+      'applies' => !evidenceIds.isEmpty(),
+      'evidenceIds' => evidenceIds,
+      'recordIds' => new List<String>()
+    };
+  }
+
+  private static Map<String, Object> mergeCategory(
+    Map<String, Object> category,
+    List<String> recordIds
+  ) {
+    category.put('recordIds', recordIds);
+    category.put(
+      'applies',
+      ((Boolean) category.get('applies')) || !recordIds.isEmpty()
+    );
+    return category;
+  }
+
+  private static Map<String, Object> recordCategory(List<String> recordIds) {
+    return new Map<String, Object>{
+      'applies' => !recordIds.isEmpty(),
+      'evidenceIds' => new List<String>(),
+      'recordIds' => recordIds
+    };
+  }
+
+  private static List<String> itemIds(List<HFS_ContextItem> items) {
+    List<String> result = new List<String>();
+    if (items == null) {
+      return result;
+    }
+    for (HFS_ContextItem itemValue : items) {
+      if (itemValue != null && !String.isBlank(itemValue.recordId)) {
+        result.add(itemValue.recordId);
+      }
+    }
+    return result;
+  }
+
+  private static List<String> itemIdsByType(
+    List<HFS_ContextItem> items,
+    Set<String> recordTypes
+  ) {
+    List<String> result = new List<String>();
+    if (items == null) {
+      return result;
+    }
+    for (HFS_ContextItem itemValue : items) {
+      if (
+        itemValue != null &&
+        recordTypes.contains(itemValue.recordType) &&
+        !String.isBlank(itemValue.recordId)
+      ) {
+        result.add(itemValue.recordId);
+      }
+    }
+    return result;
+  }
+
+  private static List<String> metricKeys(List<HFS_ContextItem> outcomes) {
+    Set<String> result = new Set<String>();
+    if (outcomes != null) {
+      for (HFS_ContextItem outcome : outcomes) {
+        if (outcome != null && !String.isBlank(outcome.metricKey)) {
+          result.add(outcome.metricKey);
+        }
+      }
+    }
+    return sortedStrings(result);
+  }
+
+  private static List<String> sortedStrings(Set<String> values) {
+    List<String> result = new List<String>(values);
+    result.sort();
     return result;
   }
 
@@ -600,6 +879,7 @@ public with sharing class HFS_AgentActionService {
       'facts' => new List<Object>(),
       'inferences' => new List<Object>(),
       'citations' => new List<Object>(),
+      'contextCoverage' => null,
       'recommendation' => null,
       'approval' => null,
       'refusal' => null,
@@ -705,5 +985,10 @@ public with sharing class HFS_AgentActionService {
     private List<Object> facts = new List<Object>();
     private List<Object> citations = new List<Object>();
     private Map<String, String> factByEvidenceId = new Map<String, String>();
+    private List<String> factIds = new List<String>();
+    private List<String> evidenceIds = new List<String>();
+    private Set<String> evidenceTypes = new Set<String>();
+    private String coverageText = '';
+    private Map<String, List<String>> evidenceIdsByCategory = new Map<String, List<String>>();
   }
 }

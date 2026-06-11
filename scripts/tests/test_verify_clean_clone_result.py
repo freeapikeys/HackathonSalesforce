@@ -48,6 +48,17 @@ def passing_demo():
             },
             "agentforce": {
                 "citationEvidenceIds": ["evidence-001"],
+                "coveredCategories": [
+                    "complaint",
+                    "resource",
+                    "capacity",
+                    "partner",
+                    "billing",
+                    "stock",
+                    "staffing",
+                    "approval",
+                ],
+                "recommendationEvidenceCount": 7,
                 "externalActionExecuted": False,
                 "inaccessibleStatus": "REFUSED",
                 "inaccessibleRefusalCode": "INACCESSIBLE_EVIDENCE",
@@ -81,6 +92,12 @@ def passing_demo():
                 "outcomeStatus": "SUCCESS",
                 "taskActionCount": 5,
                 "workItemStatus": "COMPLETED",
+            },
+            "postOutcomeAgentforce": {
+                "outcomeContextCovered": True,
+                "outcomeRecordCount": 2,
+                "actionRecordCount": 7,
+                "metricCount": 2,
             },
             "connected": {
                 "counts": dict(verify.FINAL_COUNT_MINIMUMS),

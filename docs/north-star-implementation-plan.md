@@ -112,8 +112,9 @@ message actions.
 
 Acceptance:
 
-- recommendations cite complaint, capacity, vendor, billing, staff, stock, and
-  outcome evidence;
+- recommendations cite complaint, resource, capacity, vendor, billing, staff,
+  stock, approval, and post-write-back outcome context through structured
+  `contextCoverage`;
 - facts, inference, assumptions, missing evidence, recommended actions,
   blocked clinical actions, approval requirements, and expected outcomes are
   separated;

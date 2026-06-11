@@ -81,6 +81,7 @@ private class HFS_ServiceContractTest {
       HFS_EvidenceCitation.class
     );
     System.assertEquals(citation.contentHash, copiedCitation.contentHash);
+    System.assertEquals(citation.evidenceType, copiedCitation.evidenceType);
 
     HFS_ServiceError error = errorFixture();
     HFS_ServiceError copiedError = (HFS_ServiceError) roundTrip(
@@ -338,6 +339,7 @@ private class HFS_ServiceContractTest {
   private static HFS_EvidenceCitation citationFixture() {
     HFS_EvidenceCitation citation = new HFS_EvidenceCitation();
     citation.evidenceId = 'evidence-001';
+    citation.evidenceType = 'SOURCE_EVENT';
     citation.sourceEventId = 'event-001';
     citation.sourceUri = 'urn:hfs:source:crm';
     citation.contentHash = 'sha256:fixture';

@@ -1339,6 +1339,7 @@ public with sharing class HFS_ContextAssembler {
   private static HFS_EvidenceCitation citation(HFS_Evidence__c recordValue) {
     HFS_EvidenceCitation result = new HFS_EvidenceCitation();
     result.evidenceId = String.valueOf(recordValue.Id);
+    result.evidenceType = recordValue.Evidence_Type__c;
     result.sourceEventId = stringId(recordValue.Source_Event__c);
     result.sourceUri = recordValue.Source_URI__c;
     result.contentHash = recordValue.Content_Hash__c;

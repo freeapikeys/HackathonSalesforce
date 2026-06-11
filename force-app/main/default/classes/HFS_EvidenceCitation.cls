@@ -3,6 +3,9 @@ public class HFS_EvidenceCitation {
   public String evidenceId { get; set; }
 
   @AuraEnabled
+  public String evidenceType { get; set; }
+
+  @AuraEnabled
   public String sourceEventId { get; set; }
 
   @AuraEnabled

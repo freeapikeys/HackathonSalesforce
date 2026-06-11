@@ -166,6 +166,7 @@ def schema() -> dict[str, Any]:
                 "additionalProperties": False,
                 "required": [
                     "evidenceId",
+                    "evidenceType",
                     "sourceEventId",
                     "sourceUri",
                     "contentHash",
@@ -174,6 +175,7 @@ def schema() -> dict[str, Any]:
                 ],
                 "properties": {
                     "evidenceId": identifier,
+                    "evidenceType": string(100),
                     "sourceEventId": identifier,
                     "sourceUri": string(500),
                     "contentHash": {
@@ -182,6 +184,139 @@ def schema() -> dict[str, Any]:
                     },
                     "summary": string(2000),
                     "accessible": {"const": True},
+                },
+            },
+            "contextCategory": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["applies", "evidenceIds", "recordIds"],
+                "properties": {
+                    "applies": {"type": "boolean"},
+                    "evidenceIds": evidence_id_list(min_items=0),
+                    "recordIds": {
+                        "type": "array",
+                        "items": identifier,
+                        "uniqueItems": True,
+                    },
+                },
+            },
+            "contextCoverage": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": [
+                    "evidenceIds",
+                    "evidenceTypes",
+                    "evidenceCategories",
+                    "recordIdsByPrimitive",
+                ],
+                "properties": {
+                    "evidenceIds": evidence_id_list(min_items=1),
+                    "evidenceTypes": {
+                        "type": "array",
+                        "items": string(100),
+                        "minItems": 1,
+                        "uniqueItems": True,
+                    },
+                    "evidenceCategories": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": [
+                            "complaint",
+                            "resource",
+                            "capacity",
+                            "partner",
+                            "billing",
+                            "stock",
+                            "staffing",
+                            "approval",
+                            "outcome",
+                        ],
+                        "properties": {
+                            "complaint": {"$ref": "#/$defs/contextCategory"},
+                            "resource": {"$ref": "#/$defs/contextCategory"},
+                            "capacity": {"$ref": "#/$defs/contextCategory"},
+                            "partner": {"$ref": "#/$defs/contextCategory"},
+                            "billing": {"$ref": "#/$defs/contextCategory"},
+                            "stock": {"$ref": "#/$defs/contextCategory"},
+                            "staffing": {"$ref": "#/$defs/contextCategory"},
+                            "approval": {"$ref": "#/$defs/contextCategory"},
+                            "outcome": {"$ref": "#/$defs/contextCategory"},
+                        },
+                    },
+                    "recordIdsByPrimitive": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": [
+                            "customerAliases",
+                            "departments",
+                            "locations",
+                            "resources",
+                            "partners",
+                            "processes",
+                            "recommendations",
+                            "approvals",
+                            "actions",
+                            "outcomes",
+                            "metrics",
+                        ],
+                        "properties": {
+                            "customerAliases": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "departments": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "locations": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "resources": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "partners": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "processes": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "recommendations": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "approvals": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "actions": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "outcomes": {
+                                "type": "array",
+                                "items": identifier,
+                                "uniqueItems": True,
+                            },
+                            "metrics": {
+                                "type": "array",
+                                "items": key,
+                                "uniqueItems": True,
+                            },
+                        },
+                    },
                 },
             },
             "fact": {
@@ -612,6 +747,7 @@ def schema() -> dict[str, Any]:
                     "facts",
                     "inferences",
                     "citations",
+                    "contextCoverage",
                     "recommendation",
                     "approval",
                     "refusal",
@@ -643,6 +779,9 @@ def schema() -> dict[str, Any]:
                         "type": "array",
                         "items": {"$ref": "#/$defs/citation"},
                     },
+                    "contextCoverage": nullable(
+                        "#/$defs/contextCoverage"
+                    ),
                     "recommendation": nullable("#/$defs/recommendation"),
                     "approval": nullable("#/$defs/approval"),
                     "refusal": nullable("#/$defs/refusal"),
@@ -707,6 +846,7 @@ def response(action: str, status: str) -> dict[str, Any]:
         "facts": [],
         "inferences": [],
         "citations": [],
+        "contextCoverage": None,
         "recommendation": None,
         "approval": None,
         "refusal": None,
@@ -720,14 +860,81 @@ def citation(
     summary: str,
     suffix: str,
     content_hash: str,
+    evidence_type: str = "SOURCE_EVENT",
 ) -> dict[str, Any]:
     return {
         "evidenceId": evidence_id,
+        "evidenceType": evidence_type,
         "sourceEventId": "a09000000000001AAA",
         "sourceUri": f"urn:hfs:source:{suffix}",
         "contentHash": content_hash,
         "summary": summary,
         "accessible": True,
+    }
+
+
+def coverage_category(
+    evidence_ids: list[str] | None = None,
+    record_ids: list[str] | None = None,
+) -> dict[str, Any]:
+    safe_evidence_ids = evidence_ids or []
+    safe_record_ids = record_ids or []
+    return {
+        "applies": bool(safe_evidence_ids or safe_record_ids),
+        "evidenceIds": safe_evidence_ids,
+        "recordIds": safe_record_ids,
+    }
+
+
+def context_coverage(
+    citations: list[dict[str, Any]],
+    evidence_categories: dict[str, list[str]],
+    records_by_primitive: dict[str, list[str]] | None = None,
+) -> dict[str, Any]:
+    records = {
+        "customerAliases": [],
+        "departments": [],
+        "locations": [],
+        "resources": [],
+        "partners": [],
+        "processes": [],
+        "recommendations": [],
+        "approvals": [],
+        "actions": [],
+        "outcomes": [],
+        "metrics": [],
+        **(records_by_primitive or {}),
+    }
+    categories = {
+        "complaint": coverage_category(evidence_categories.get("complaint")),
+        "resource": coverage_category(
+            evidence_categories.get("resource"), records["resources"]
+        ),
+        "capacity": coverage_category(
+            evidence_categories.get("capacity"), records["resources"]
+        ),
+        "partner": coverage_category(
+            evidence_categories.get("partner"), records["partners"]
+        ),
+        "billing": coverage_category(
+            evidence_categories.get("billing"), records["processes"]
+        ),
+        "stock": coverage_category(
+            evidence_categories.get("stock"), records["resources"]
+        ),
+        "staffing": coverage_category(evidence_categories.get("staffing")),
+        "approval": coverage_category(
+            evidence_categories.get("approval"), records["approvals"]
+        ),
+        "outcome": coverage_category(record_ids=records["outcomes"]),
+    }
+    return {
+        "evidenceIds": [value["evidenceId"] for value in citations],
+        "evidenceTypes": sorted(
+            {value["evidenceType"] for value in citations}
+        ),
+        "evidenceCategories": categories,
+        "recordIdsByPrimitive": records,
     }
 
 
@@ -1483,36 +1690,49 @@ def fixtures() -> dict[str, Any]:
         "Eleven synthetic patient and visitor complaints mention wait time, room readiness, billing delay, and pharmacy delay in the morning surge window.",
         "hospital:complaints",
         "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
+        "PATIENT_COMPLAINT_CLUSTER",
     )
     hospital_capacity = citation(
         "a06000000000022AAA",
         "Ward A3 has eighteen discharge rooms, six ready rooms, seven blocked rooms, a seventy-four minute outpatient queue wait against a thirty-five minute target, and four of six front-desk support staff available.",
         "hospital:capacity",
         "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
+        "RESOURCE_CAPACITY",
     )
     hospital_pharmacy = citation(
         "a06000000000023AAA",
         "Pharmacy IV kit cover is 2.4 hours against a four-hour operational threshold before the afternoon demand window.",
         "hospital:pharmacy",
         "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
+        "PHARMACY_STOCK_POSITION",
     )
     hospital_partner = citation(
         "a06000000000024AAA",
         "Island Diagnostics is forty-two minutes over the routine acknowledgement SLA; a second courier route is available after approval.",
         "hospital:partner",
         "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
+        "PARTNER_RESPONSE_STATUS",
     )
     hospital_billing = citation(
         "a06000000000025AAA",
         "Three duplicate invoice reviews and two insurer follow-ups are open; refunds or compensation need manager approval.",
         "hospital:billing",
         "sha256:1b7c5f38159d8e86f0a1e9e00f27acfc4f9657cdcfb30fc4a7c383563e826355",
+        "BILLING_AND_INSURANCE_HOLD",
+    )
+    hospital_staffing = citation(
+        "a06000000000026AAA",
+        "Two front-desk staff are unavailable, porter coverage is delayed, and the outpatient queue needs role-owned task coordination.",
+        "hospital:staffing",
+        "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "STAFF_QUEUE_RISK",
     )
     hospital_clinical = citation(
-        "a06000000000026AAA",
+        "a06000000000027AAA",
         "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
         "hospital:clinical-boundary",
         "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
+        "CLINICAL_DECISION_REFUSAL",
     )
 
     hospital_request = base_request("DRAFT_RELATIONSHIP_RECOMMENDATION")
@@ -1528,6 +1748,7 @@ def fixtures() -> dict[str, Any]:
         hospital_pharmacy,
         hospital_partner,
         hospital_billing,
+        hospital_staffing,
         hospital_clinical,
     ]
     hospital_response["facts"] = [
@@ -1557,6 +1778,11 @@ def fixtures() -> dict[str, Any]:
             "evidenceIds": [hospital_billing["evidenceId"]],
         },
         {
+            "factId": "fact-hospital-staffing",
+            "statement": hospital_staffing["summary"],
+            "evidenceIds": [hospital_staffing["evidenceId"]],
+        },
+        {
             "factId": "fact-hospital-clinical-refusal",
             "statement": hospital_clinical["summary"],
             "evidenceIds": [hospital_clinical["evidenceId"]],
@@ -1581,10 +1807,37 @@ def fixtures() -> dict[str, Any]:
                 "fact-hospital-pharmacy",
                 "fact-hospital-partner",
                 "fact-hospital-billing",
+                "fact-hospital-staffing",
             ],
             "confidence": 0.88,
         },
     ]
+    hospital_response["contextCoverage"] = context_coverage(
+        hospital_response["citations"],
+        {
+            "complaint": [hospital_complaint["evidenceId"]],
+            "resource": [hospital_capacity["evidenceId"]],
+            "capacity": [hospital_capacity["evidenceId"]],
+            "partner": [hospital_partner["evidenceId"]],
+            "billing": [hospital_billing["evidenceId"]],
+            "stock": [hospital_pharmacy["evidenceId"]],
+            "staffing": [hospital_staffing["evidenceId"]],
+            "approval": [
+                hospital_partner["evidenceId"],
+                hospital_billing["evidenceId"],
+            ],
+        },
+        {
+            "customerAliases": ["a01000000000007AAA"],
+            "departments": ["a01000000000002AAA"],
+            "locations": ["a01000000000002AAA"],
+            "resources": ["a01000000000003AAA", "a01000000000004AAA"],
+            "partners": ["a01000000000005AAA"],
+            "processes": ["a01000000000006AAA"],
+            "recommendations": ["a07000000000021AAA"],
+            "approvals": ["a08000000000021AAA"],
+        },
+    )
     hospital_response["recommendation"] = {
         "recommendationType": "NORTH_STAR_HOSPITAL_RECOVERY_PLAN",
         "proposedActionType": "APPROVE_HOSPITAL_RECOVERY_ACTIONS",
@@ -1602,6 +1855,7 @@ def fixtures() -> dict[str, Any]:
             hospital_pharmacy["evidenceId"],
             hospital_partner["evidenceId"],
             hospital_billing["evidenceId"],
+            hospital_staffing["evidenceId"],
             hospital_clinical["evidenceId"],
         ],
         "modelProfile": HOSPITAL_MODEL_PROFILE,

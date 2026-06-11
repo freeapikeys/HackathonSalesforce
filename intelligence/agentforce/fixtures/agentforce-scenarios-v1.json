@@ -112,6 +112,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000001AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:inventory",
             "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
@@ -120,6 +121,7 @@
           },
           {
             "evidenceId": "a06000000000002AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:complaints",
             "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
@@ -128,6 +130,7 @@
           },
           {
             "evidenceId": "a06000000000003AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:supplier",
             "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
@@ -136,6 +139,7 @@
           },
           {
             "evidenceId": "a06000000000004AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:roster",
             "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
@@ -144,6 +148,7 @@
           },
           {
             "evidenceId": "a06000000000005AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:expiry",
             "contentHash": "sha256:9b7c6068af1620f1bc46f5ba418dc983d1d73f2b1f9892718b58a9708a924c4a",
@@ -152,6 +157,7 @@
           },
           {
             "evidenceId": "a06000000000006AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:promotion",
             "contentHash": "sha256:b832255db1ee6b95f3a5ba91d39da05a0839c32bc7b1cfb7d7c32868a5ead507",
@@ -159,6 +165,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": null,
         "approval": null,
         "refusal": null,
@@ -256,6 +263,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000001AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:inventory",
             "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
@@ -264,6 +272,7 @@
           },
           {
             "evidenceId": "a06000000000002AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:complaints",
             "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
@@ -272,6 +281,7 @@
           },
           {
             "evidenceId": "a06000000000003AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:supplier",
             "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
@@ -280,6 +290,7 @@
           },
           {
             "evidenceId": "a06000000000004AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:roster",
             "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
@@ -288,6 +299,7 @@
           },
           {
             "evidenceId": "a06000000000005AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:expiry",
             "contentHash": "sha256:9b7c6068af1620f1bc46f5ba418dc983d1d73f2b1f9892718b58a9708a924c4a",
@@ -296,6 +308,7 @@
           },
           {
             "evidenceId": "a06000000000006AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:promotion",
             "contentHash": "sha256:b832255db1ee6b95f3a5ba91d39da05a0839c32bc7b1cfb7d7c32868a5ead507",
@@ -303,6 +316,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "PROACTIVE_RELATIONSHIP_UPDATE",
           "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
@@ -357,6 +371,7 @@
         "facts": [],
         "inferences": [],
         "citations": [],
+        "contextCoverage": null,
         "recommendation": null,
         "approval": {
           "approvalId": "a08000000000001AAA",
@@ -401,6 +416,7 @@
         "facts": [],
         "inferences": [],
         "citations": [],
+        "contextCoverage": null,
         "recommendation": null,
         "approval": null,
         "refusal": {
@@ -444,6 +460,7 @@
         "facts": [],
         "inferences": [],
         "citations": [],
+        "contextCoverage": null,
         "recommendation": null,
         "approval": null,
         "refusal": {
@@ -487,6 +504,7 @@
         "facts": [],
         "inferences": [],
         "citations": [],
+        "contextCoverage": null,
         "recommendation": null,
         "approval": null,
         "refusal": {
@@ -530,6 +548,7 @@
         "facts": [],
         "inferences": [],
         "citations": [],
+        "contextCoverage": null,
         "recommendation": null,
         "approval": null,
         "refusal": null,
@@ -632,6 +651,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000001AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:inventory",
             "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
@@ -640,6 +660,7 @@
           },
           {
             "evidenceId": "a06000000000002AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:complaints",
             "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
@@ -648,6 +669,7 @@
           },
           {
             "evidenceId": "a06000000000003AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:supplier",
             "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
@@ -656,6 +678,7 @@
           },
           {
             "evidenceId": "a06000000000004AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:roster",
             "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
@@ -664,6 +687,7 @@
           },
           {
             "evidenceId": "a06000000000005AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:expiry",
             "contentHash": "sha256:9b7c6068af1620f1bc46f5ba418dc983d1d73f2b1f9892718b58a9708a924c4a",
@@ -672,6 +696,7 @@
           },
           {
             "evidenceId": "a06000000000006AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:promotion",
             "contentHash": "sha256:b832255db1ee6b95f3a5ba91d39da05a0839c32bc7b1cfb7d7c32868a5ead507",
@@ -679,6 +704,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "NORTH_STAR_RETAIL_RECOVERY_PLAN_UPDATED",
           "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
@@ -783,6 +809,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000007AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:inventory",
             "contentHash": "sha256:e7001d9e919341eaba989a6c0a17a4e1f5db506cfe108a83dd22fe31adeb868a",
@@ -791,6 +818,7 @@
           },
           {
             "evidenceId": "a06000000000008AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:expiry",
             "contentHash": "sha256:f1e55a20be4552200825805f52383889e7f469ff717965ca279b52c572564b84",
@@ -799,6 +827,7 @@
           },
           {
             "evidenceId": "a06000000000009AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:complaints",
             "contentHash": "sha256:1d5ded791652aeb621acfc5b739a86ff74b40e00d65e5b8d5229dda54f0dd2ca",
@@ -807,6 +836,7 @@
           },
           {
             "evidenceId": "a06000000000010AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:supplier",
             "contentHash": "sha256:8157415f9c79fbf265e414509a2d2cec7980c1eaab6e50368652a329e4c6b41b",
@@ -814,6 +844,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_CAUTIONED_INVENTORY_ACTIONS",
@@ -965,6 +996,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000011AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:inventory",
             "contentHash": "sha256:23aadc88bcfab1ecb40f0fcee22877c6b64ddf88507d5062b26cd42cdd7b50f1",
@@ -973,6 +1005,7 @@
           },
           {
             "evidenceId": "a06000000000012AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:supplier",
             "contentHash": "sha256:6f77a1e864a7ca662ac99665e3a455d86f60b1ed8aba0f2c25f9ccb157c0ea19",
@@ -981,6 +1014,7 @@
           },
           {
             "evidenceId": "a06000000000013AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:complaints",
             "contentHash": "sha256:b14d6c426e221865ce89856fb2a242118e66784260b451e1b64d3948ae3e063c",
@@ -988,6 +1022,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_STOCKOUT_RECOVERY_ACTIONS",
@@ -1109,6 +1144,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000017AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:inventory",
             "contentHash": "sha256:04fd86dbfb57c682e85088792cf719069ac7e45c145ae321a4b077a826996377",
@@ -1117,6 +1153,7 @@
           },
           {
             "evidenceId": "a06000000000018AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:expiry",
             "contentHash": "sha256:5466d16857f7d66c57e643b788066d89a2895cd42a7c8f5d02ef0febfda3c26a",
@@ -1125,6 +1162,7 @@
           },
           {
             "evidenceId": "a06000000000019AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:complaints",
             "contentHash": "sha256:9456a7e0eac8b63f9abb1ed32c3f07a14f0b5b1b84f3ae72737305dcaf33e3cb",
@@ -1132,6 +1170,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_MARKDOWN_AND_ROTATION_ACTIONS",
@@ -1261,6 +1300,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000014AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:inventory",
             "contentHash": "sha256:f4176a674dc5aaa8b4058f9f586e8041917b49e2aea6a4a30648db852efcc885",
@@ -1269,6 +1309,7 @@
           },
           {
             "evidenceId": "a06000000000015AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:shelf-space",
             "contentHash": "sha256:a1c0efa24bb52b277547ec3644dd68c78d28a13460b41b264604c2be1a1de7af",
@@ -1277,6 +1318,7 @@
           },
           {
             "evidenceId": "a06000000000016AAA",
+            "evidenceType": "SOURCE_EVENT",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:retail:supplier",
             "contentHash": "sha256:9e0aa4519910c535a12fa1a193c33b6134f5643ca3fd33339c56e5aa053317c8",
@@ -1284,6 +1326,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_OVERSTOCK_REBALANCING_ACTIONS",
@@ -1403,10 +1446,17 @@
             ]
           },
           {
+            "factId": "fact-hospital-staffing",
+            "statement": "Two front-desk staff are unavailable, porter coverage is delayed, and the outpatient queue needs role-owned task coordination.",
+            "evidenceIds": [
+              "a06000000000026AAA"
+            ]
+          },
+          {
             "factId": "fact-hospital-clinical-refusal",
             "statement": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
             "evidenceIds": [
-              "a06000000000026AAA"
+              "a06000000000027AAA"
             ]
           }
         ],
@@ -1428,7 +1478,8 @@
               "fact-hospital-capacity",
               "fact-hospital-pharmacy",
               "fact-hospital-partner",
-              "fact-hospital-billing"
+              "fact-hospital-billing",
+              "fact-hospital-staffing"
             ],
             "confidence": 0.88
           }
@@ -1436,6 +1487,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000021AAA",
+            "evidenceType": "PATIENT_COMPLAINT_CLUSTER",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:complaints",
             "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
@@ -1444,6 +1496,7 @@
           },
           {
             "evidenceId": "a06000000000022AAA",
+            "evidenceType": "RESOURCE_CAPACITY",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:capacity",
             "contentHash": "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb",
@@ -1452,6 +1505,7 @@
           },
           {
             "evidenceId": "a06000000000023AAA",
+            "evidenceType": "PHARMACY_STOCK_POSITION",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:pharmacy",
             "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
@@ -1460,6 +1514,7 @@
           },
           {
             "evidenceId": "a06000000000024AAA",
+            "evidenceType": "PARTNER_RESPONSE_STATUS",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:partner",
             "contentHash": "sha256:f42d186a12981c8c7a25b7be50f5f95541e4323f83f3f3c65de8e20717b5e6ea",
@@ -1468,6 +1523,7 @@
           },
           {
             "evidenceId": "a06000000000025AAA",
+            "evidenceType": "BILLING_AND_INSURANCE_HOLD",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:billing",
             "contentHash": "sha256:1b7c5f38159d8e86f0a1e9e00f27acfc4f9657cdcfb30fc4a7c383563e826355",
@@ -1476,6 +1532,16 @@
           },
           {
             "evidenceId": "a06000000000026AAA",
+            "evidenceType": "STAFF_QUEUE_RISK",
+            "sourceEventId": "a09000000000001AAA",
+            "sourceUri": "urn:hfs:source:hospital:staffing",
+            "contentHash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "summary": "Two front-desk staff are unavailable, porter coverage is delayed, and the outpatient queue needs role-owned task coordination.",
+            "accessible": true
+          },
+          {
+            "evidenceId": "a06000000000027AAA",
+            "evidenceType": "CLINICAL_DECISION_REFUSAL",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:clinical-boundary",
             "contentHash": "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
@@ -1483,6 +1549,135 @@
             "accessible": true
           }
         ],
+        "contextCoverage": {
+          "evidenceIds": [
+            "a06000000000021AAA",
+            "a06000000000022AAA",
+            "a06000000000023AAA",
+            "a06000000000024AAA",
+            "a06000000000025AAA",
+            "a06000000000026AAA",
+            "a06000000000027AAA"
+          ],
+          "evidenceTypes": [
+            "BILLING_AND_INSURANCE_HOLD",
+            "CLINICAL_DECISION_REFUSAL",
+            "PARTNER_RESPONSE_STATUS",
+            "PATIENT_COMPLAINT_CLUSTER",
+            "PHARMACY_STOCK_POSITION",
+            "RESOURCE_CAPACITY",
+            "STAFF_QUEUE_RISK"
+          ],
+          "evidenceCategories": {
+            "complaint": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000021AAA"
+              ],
+              "recordIds": []
+            },
+            "resource": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000022AAA"
+              ],
+              "recordIds": [
+                "a01000000000003AAA",
+                "a01000000000004AAA"
+              ]
+            },
+            "capacity": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000022AAA"
+              ],
+              "recordIds": [
+                "a01000000000003AAA",
+                "a01000000000004AAA"
+              ]
+            },
+            "partner": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000024AAA"
+              ],
+              "recordIds": [
+                "a01000000000005AAA"
+              ]
+            },
+            "billing": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000025AAA"
+              ],
+              "recordIds": [
+                "a01000000000006AAA"
+              ]
+            },
+            "stock": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000023AAA"
+              ],
+              "recordIds": [
+                "a01000000000003AAA",
+                "a01000000000004AAA"
+              ]
+            },
+            "staffing": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000026AAA"
+              ],
+              "recordIds": []
+            },
+            "approval": {
+              "applies": true,
+              "evidenceIds": [
+                "a06000000000024AAA",
+                "a06000000000025AAA"
+              ],
+              "recordIds": [
+                "a08000000000021AAA"
+              ]
+            },
+            "outcome": {
+              "applies": false,
+              "evidenceIds": [],
+              "recordIds": []
+            }
+          },
+          "recordIdsByPrimitive": {
+            "customerAliases": [
+              "a01000000000007AAA"
+            ],
+            "departments": [
+              "a01000000000002AAA"
+            ],
+            "locations": [
+              "a01000000000002AAA"
+            ],
+            "resources": [
+              "a01000000000003AAA",
+              "a01000000000004AAA"
+            ],
+            "partners": [
+              "a01000000000005AAA"
+            ],
+            "processes": [
+              "a01000000000006AAA"
+            ],
+            "recommendations": [
+              "a07000000000021AAA"
+            ],
+            "approvals": [
+              "a08000000000021AAA"
+            ],
+            "actions": [],
+            "outcomes": [],
+            "metrics": []
+          }
+        },
         "recommendation": {
           "recommendationType": "NORTH_STAR_HOSPITAL_RECOVERY_PLAN",
           "proposedActionType": "APPROVE_HOSPITAL_RECOVERY_ACTIONS",
@@ -1494,7 +1689,8 @@
             "a06000000000023AAA",
             "a06000000000024AAA",
             "a06000000000025AAA",
-            "a06000000000026AAA"
+            "a06000000000026AAA",
+            "a06000000000027AAA"
           ],
           "modelProfile": "hospital_recovery_reasoning",
           "modelInvocationId": "model-invocation-agentforce-hospital-001",
@@ -1616,7 +1812,7 @@
                 "actionType": "CLINICAL_TRIAGE_DECISION",
                 "reason": "North Star cannot decide diagnosis, treatment, dosage, triage, or clinical priority.",
                 "evidenceIds": [
-                  "a06000000000026AAA"
+                  "a06000000000027AAA"
                 ]
               }
             ],
@@ -1631,7 +1827,7 @@
               "applies": true,
               "statement": "Clinical decisions are refused and routed to clinician review; only operations coordination is recommended.",
               "evidenceIds": [
-                "a06000000000026AAA"
+                "a06000000000027AAA"
               ]
             },
             "expectedOutcomes": [
@@ -1735,6 +1931,7 @@
         "citations": [
           {
             "evidenceId": "a06000000000021AAA",
+            "evidenceType": "PATIENT_COMPLAINT_CLUSTER",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:complaints",
             "contentHash": "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f",
@@ -1743,6 +1940,7 @@
           },
           {
             "evidenceId": "a06000000000023AAA",
+            "evidenceType": "PHARMACY_STOCK_POSITION",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:pharmacy",
             "contentHash": "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588",
@@ -1750,6 +1948,7 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "NORTH_STAR_HOSPITAL_CAUTIONED_PLAN",
           "proposedActionType": "REQUEST_MISSING_CAPACITY_EVIDENCE",
@@ -1868,7 +2067,7 @@
             "factId": "fact-clinical-refusal",
             "statement": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
             "evidenceIds": [
-              "a06000000000026AAA"
+              "a06000000000027AAA"
             ]
           }
         ],
@@ -1884,7 +2083,8 @@
         ],
         "citations": [
           {
-            "evidenceId": "a06000000000026AAA",
+            "evidenceId": "a06000000000027AAA",
+            "evidenceType": "CLINICAL_DECISION_REFUSAL",
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:clinical-boundary",
             "contentHash": "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
@@ -1892,13 +2092,14 @@
             "accessible": true
           }
         ],
+        "contextCoverage": null,
         "recommendation": {
           "recommendationType": "NORTH_STAR_CLINICAL_DECISION_REFUSAL",
           "proposedActionType": "ROUTE_TO_CLINICIAN_REVIEW",
           "rationale": "Refuse the clinical priority decision. North Star may coordinate non-clinical queue, room, staff, and communication tasks, but must route treatment priority to a clinician.",
           "confidence": 0.99,
           "evidenceIds": [
-            "a06000000000026AAA"
+            "a06000000000027AAA"
           ],
           "modelProfile": "hospital_recovery_reasoning",
           "modelInvocationId": "model-invocation-agentforce-hospital-003",
@@ -1917,7 +2118,7 @@
                 "actionType": "ROUTE_TO_CLINICIAN_REVIEW",
                 "statement": "Route the clinical-priority request to a clinician or clinical manager.",
                 "evidenceIds": [
-                  "a06000000000026AAA"
+                  "a06000000000027AAA"
                 ],
                 "requiresHumanApproval": true
               }
@@ -1927,7 +2128,7 @@
                 "actionType": "DECIDE_TREATMENT_PRIORITY",
                 "reason": "Automated diagnosis, treatment, dosage, triage, or clinical-priority decisions are out of scope.",
                 "evidenceIds": [
-                  "a06000000000026AAA"
+                  "a06000000000027AAA"
                 ]
               }
             ],
@@ -1940,7 +2141,7 @@
               "applies": true,
               "statement": "North Star refuses clinical priority decisions and routes to human clinical review.",
               "evidenceIds": [
-                "a06000000000026AAA"
+                "a06000000000027AAA"
               ]
             },
             "expectedOutcomes": [
@@ -1949,7 +2150,7 @@
                 "target": "Route the clinical-priority request to a clinician without automated treatment prioritization.",
                 "timeWindow": "Immediately",
                 "evidenceIds": [
-                  "a06000000000026AAA"
+                  "a06000000000027AAA"
                 ]
               }
             ],

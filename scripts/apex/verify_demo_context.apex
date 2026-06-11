@@ -25,7 +25,7 @@ System.assertEquals(
 );
 System.assertEquals(7, context.entities.size());
 System.assertEquals(6, context.relationships.size());
-System.assertEquals(6, context.evidence.size());
+System.assertEquals(7, context.evidence.size());
 System.assertEquals(1, context.recommendations.size());
 System.assertEquals(1, context.approvals.size());
 System.assertEquals('PENDING', context.approvals[0].status);
