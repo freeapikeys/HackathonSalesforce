@@ -15,16 +15,16 @@ const caseState = {
   },
   serviceDeadline: "2026-06-06T11:15:00Z",
   nextUpdateDue: "2026-06-06T10:00:00Z",
-  productContext: {
-    store: "North Star Private Hospital",
-    product: "Morning outpatient and discharge flow",
+  operationsContext: {
+    organization: "North Star Private Hospital",
+    resource: "Morning outpatient and discharge flow",
     category: "Hospital operations",
-    batch: "BED-BLOCK-A3 / PHARM-IV-KIT-LOW",
-    supplier: "Island Diagnostics Lab",
-    promotion: "Morning surge recovery",
-    shelfArea: "Outpatient reception, Ward A3, Pharmacy"
+    operationalFocus: "BED-BLOCK-A3 / PHARM-IV-KIT-LOW",
+    partner: "Island Diagnostics Lab",
+    recoveryWindow: "Morning surge recovery",
+    serviceAreas: "Outpatient reception, Ward A3, Pharmacy"
   },
-  stock: [
+  resourcePositions: [
     { id: "resource-beds", label: "Ready beds", value: "6 of 18" },
     { id: "resource-rooms", label: "Blocked rooms", value: "7 rooms" },
     { id: "resource-queue", label: "Queue wait", value: "74 min" },
@@ -45,17 +45,17 @@ const caseState = {
   complaintCluster: {
     type: "Wait time, room readiness, billing, pharmacy delay",
     count: 11,
-    product: "Outpatient and discharge experience",
-    batch: "Morning surge window",
-    supplier: "Island Diagnostics Lab",
+    resource: "Outpatient and discharge experience",
+    operationalFocus: "Morning surge window",
+    partner: "Island Diagnostics Lab",
     window: "08:45-09:18"
   },
-  supplierResponse: {
+  partnerResponse: {
     status: "Lab escalation pending",
-    leadTime: "42 minutes over SLA",
-    replacement: "Second courier route available",
-    creditNote: "Not applicable",
-    qualityIssue: "Operational SLA delay, not clinical interpretation"
+    responseDelay: "42 minutes over SLA",
+    recoveryOption: "Second courier route available",
+    financialImpact: "Not applicable",
+    boundary: "Operational SLA delay, not clinical interpretation"
   },
   orchestrationConflicts: [
     {
@@ -103,8 +103,8 @@ const caseState = {
       evidence: "evidence-capacity-hospital-001"
     }
   ],
-  storeExecution: {
-    cashierRecommendation:
+  operationsExecution: {
+    primaryRecommendation:
       "Move one front-desk staff member to outpatient check-in, dispatch cleaning and porter tasks, and open billing review after manager approval.",
     tasks: [
       {

@@ -225,13 +225,13 @@ Rules:
 
 Focused checks:
 
-| Surface                  | Minimum focused checks                                                                                                               |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Salesforce core          | `npm run check:project`, Apex tests for recommendation, approval, evidence, action, and outcome behavior                             |
-| Agentforce contracts     | `npm run check:agentforce`, refusal checks, evidence citation checks                                                                 |
-| MuleSoft and channels    | `npm run check:mulesoft`, approved action execution path, denied path, channel fixtures                                              |
-| Lightning command center | LWC unit tests, UI mock fixture render, ready/restricted/denied/error/approval states                                                |
-| Event and data fixtures  | `npm run check:demo-data`, fixture schema validation, malformed/late/duplicate/out-of-order examples, expected recommendation review |
+| Surface                  | Minimum focused checks                                                                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Salesforce core          | `npm run check:project`, Apex tests for recommendation, approval, evidence, action, and outcome behavior                                                               |
+| Agentforce contracts     | `npm run check:agentforce`, refusal checks, evidence citation checks                                                                                                   |
+| MuleSoft and channels    | `npm run check:mulesoft`, approved action execution path, denied path, channel fixtures                                                                                |
+| Lightning command center | LWC unit tests, UI mock fixture render, ready/restricted/denied/error/approval states                                                                                  |
+| Event and data fixtures  | `npm run check:demo-data`, `npm run check:fixture-language`, fixture schema validation, malformed/late/duplicate/out-of-order examples, expected recommendation review |
 
 ## Build Checklist
 
@@ -317,6 +317,7 @@ Run before final demo rehearsal:
 npm run check:project
 npm run check:events
 npm run check:demo-data
+npm run check:fixture-language
 npm run check:mulesoft
 npm run check:models
 npm run check:agentforce

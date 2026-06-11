@@ -7,10 +7,11 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "npm run check:project && npm run check:ontology && npm run check:events && npm run check:demo-data && npm run check:mulesoft && npm run check:models && npm run check:agentforce && npm run check:metadata && npm run check:harness && npm run prettier:verify && npm run lint && npm run test:unit",
+    "check": "npm run check:project && npm run check:ontology && npm run check:events && npm run check:demo-data && npm run check:fixture-language && npm run check:mulesoft && npm run check:models && npm run check:agentforce && npm run check:metadata && npm run check:harness && npm run prettier:verify && npm run lint && npm run test:unit",
     "check:agentforce": "node scripts/run-python-task.mjs agentforce",
     "check:demo-data": "node scripts/validate-hospital-demo-data.mjs",
     "check:events": "node scripts/run-python-task.mjs events",
+    "check:fixture-language": "node scripts/validate-fixture-language.mjs",
     "check:metadata": "node scripts/run-python-task.mjs metadata",
     "check:models": "node scripts/run-python-task.mjs models",
     "check:mulesoft": "node scripts/run-python-task.mjs mulesoft",

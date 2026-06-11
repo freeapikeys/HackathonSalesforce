@@ -234,7 +234,7 @@ file before editing.
 - [x] Define billing and insurance facts for duplicate invoice, stuck claim,
       refund request, payment issue, and approval threshold.
 - [x] Define expected outcome metrics for the demo.
-- [ ] Ensure every fixture uses global primitive language where possible.
+- [x] Ensure every fixture uses global primitive language where possible.
 
 ### 4. Hospital Event Fixtures
 

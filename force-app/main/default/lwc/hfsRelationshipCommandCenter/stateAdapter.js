@@ -162,28 +162,28 @@ export function mapCommandCenterPayload(payload, purpose) {
       },
       serviceDeadline: workItem.dueAt,
       nextUpdateDue: workItem.dueAt,
-      productContext: {
-        store: entityLabel(
+      operationsContext: {
+        organization: entityLabel(
           entityById,
           relationship.subjectEntityId,
           "Accessible organization"
         ),
-        product: entityLabel(
+        resource: entityLabel(
           entityById,
           workItem.subjectEntityId,
           "Accessible resource"
         ),
         category: "Operations",
-        batch: "Not recorded",
-        supplier: entityLabel(
+        operationalFocus: "Not recorded",
+        partner: entityLabel(
           entityById,
           relationship.objectEntityId,
           "Accessible partner"
         ),
-        promotion: "Not recorded",
-        shelfArea: "Not recorded"
+        recoveryWindow: "Not recorded",
+        serviceAreas: "Not recorded"
       },
-      stock: [],
+      resourcePositions: [],
       riskPulses: [
         { id: "risk-complaint", label: "Complaint", status: "Review" },
         { id: "risk-capacity", label: "Capacity", status: "Review" },
@@ -198,24 +198,24 @@ export function mapCommandCenterPayload(payload, purpose) {
       complaintCluster: {
         type: "Not recorded",
         count: 0,
-        product: entityLabel(
+        resource: entityLabel(
           entityById,
           workItem.subjectEntityId,
           "Accessible resource"
         ),
-        batch: "Not recorded",
-        supplier: "Not recorded",
+        operationalFocus: "Not recorded",
+        partner: "Not recorded",
         window: "Not recorded"
       },
-      supplierResponse: {
+      partnerResponse: {
         status: "Not recorded",
-        leadTime: "Not recorded",
-        replacement: "Not recorded",
-        creditNote: "Not recorded",
-        qualityIssue: "Not recorded"
+        responseDelay: "Not recorded",
+        recoveryOption: "Not recorded",
+        financialImpact: "Not recorded",
+        boundary: "Not recorded"
       },
-      storeExecution: {
-        cashierRecommendation: taskActions.length
+      operationsExecution: {
+        primaryRecommendation: taskActions.length
           ? "Approved Salesforce action records map the recovery plan into role-owned operations tasks."
           : "No operations task action records have been logged yet.",
         tasks: taskActions.map((action, index) =>
