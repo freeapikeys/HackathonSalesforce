@@ -1187,10 +1187,10 @@ def build_examples() -> dict[str, Any]:
         "payload": {
             "targetRole": "Operations Manager",
             "targetChannel": "#north-star-demo",
-            "messageTitle": "Hospital operations surge recovery",
+            "messageTitle": "Hospital operations update",
             "messageBody": (
-                "Coordinate room cleaning, pharmacy restock, lab escalation, "
-                "billing review, and privacy-safe internal updates."
+                "Please check room cleaning, pharmacy stock, lab delay, and "
+                "billing review. North Star has linked the evidence."
             ),
             "evidenceIds": [
                 "hospital-complaint-cluster-001",

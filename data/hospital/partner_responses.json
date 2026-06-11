@@ -42,7 +42,7 @@
     "relatedIssueId": "CLUSTER-HOS-004",
     "receivedAt": "2026-06-13T11:33:00+04:00",
     "responseType": "denied",
-    "summary": "Partner needs more operational evidence before recovery can close.",
+    "summary": "Partner needs more operational evidence before the action can close.",
     "expectedResolutionAt": "2026-06-13T13:39:00+04:00",
     "changesRecommendation": false,
     "evidenceId": "evidence-partner-response-004"
@@ -102,7 +102,7 @@
     "relatedIssueId": "BATCH-HOS-SUPPLY-009",
     "receivedAt": "2026-06-13T09:28:00+04:00",
     "responseType": "recovered",
-    "summary": "Partner needs more operational evidence before recovery can close.",
+    "summary": "Partner needs more operational evidence before the action can close.",
     "expectedResolutionAt": "2026-06-13T12:44:00+04:00",
     "changesRecommendation": true,
     "evidenceId": "evidence-partner-response-009"
@@ -162,7 +162,7 @@
     "relatedIssueId": "BILL-HOS-014",
     "receivedAt": "2026-06-13T14:23:00+04:00",
     "responseType": "corrective_action",
-    "summary": "Partner needs more operational evidence before recovery can close.",
+    "summary": "Partner needs more operational evidence before the action can close.",
     "expectedResolutionAt": "2026-06-13T11:49:00+04:00",
     "changesRecommendation": false,
     "evidenceId": "evidence-partner-response-014"

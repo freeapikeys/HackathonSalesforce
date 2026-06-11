@@ -18,7 +18,7 @@ North Star can reuse these logical profiles and add hospital/global aliases only
 when they describe a distinct capability. Candidate profiles:
 
 - `hospital_signal_classification`
-- `hospital_recovery_reasoning`
+- `hospital_action_reasoning`
 - `resource_capacity_reasoning`
 - `partner_response_analysis`
 - `financial_impact_review`

@@ -29,10 +29,10 @@ the checklist in [ROADMAP.md](ROADMAP.md).
 
 The first North Star hospital proof is:
 
-`hospital operations surge -> global primitives and evidence -> Agentforce
-recovery recommendation -> clinical-refusal guardrail -> manager approval ->
-Salesforce task action records -> MuleSoft Slack and WhatsApp-style mock alerts
--> Salesforce outcomes -> updated command center`
+`customer/staff/system signal -> global primitives and evidence -> Agentforce
+action recommendation -> clinical-refusal guardrail -> manager approval ->
+Salesforce task action records -> MuleSoft Slack/WhatsApp actions -> Salesforce
+outcomes -> updated command center`
 
 The demo starts from rising patient complaints, blocked discharge rooms,
 outpatient queue pressure, low pharmacy stock, delayed lab response, and stuck
@@ -44,6 +44,8 @@ work.
 
 - `ROADMAP.md`: hackathon checklist and completion gates.
 - `AGENTS.md`: rules for Codex and human contributors.
+- `docs/north-star-master-reference.md`: one-stop team reference for agents,
+  IDs, channels, commands, setup, and demo gates.
 - `docs/north-star-mvp.md`: product brief, agent roles, demo story, and non-goals.
 - `docs/north-star-implementation-plan.md`: practical build plan for the team.
 - `docs/north-star-demo-narrative.md`: judge demo script and backup path.
@@ -66,12 +68,14 @@ work.
 
 North Star should show five things clearly:
 
-1. messy hospital operations signals becoming one coordinated recovery plan;
-2. Agentforce separating source-backed facts from inference;
-3. global primitives that judges can map to their own sectors;
-4. manager approval before protected Slack, WhatsApp-style, vendor, billing,
+1. messy hospital operations signals becoming one coordinated action plan;
+2. a credible intake story: WhatsApp/customer complaint, Salesforce fallback,
+   or system event becoming evidence;
+3. Agentforce separating source-backed facts from inference;
+4. global primitives that judges can map to their own sectors;
+5. manager approval before protected Slack, WhatsApp-style, vendor, billing,
    pharmacy, room/bed, staff-task, or patient-message actions;
-5. Salesforce records preserving evidence, approvals, actions, outcomes,
+6. Salesforce records preserving evidence, approvals, actions, outcomes,
    evaluations, and clinical refusal.
 
 ## Non-Goals

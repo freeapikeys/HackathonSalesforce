@@ -16,7 +16,7 @@ Provider and model identifiers are deployment configuration. They do not appear
 in recommendation requests, prompts, Agentforce workflow logic, or UI state.
 
 North Star callers should request logical capabilities such as
-`hospital_recovery_reasoning`, `resource_capacity_reasoning`,
+`hospital_action_reasoning`, `resource_capacity_reasoning`,
 `clinical_boundary_refusal`, or the existing `recommendation_reasoning` profile.
 They must not request a provider, a model name, or a scenario-specific profile.
 

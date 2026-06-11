@@ -33,7 +33,7 @@ Define:
 
 For North Star, trace the source of each hospital operations signal:
 
-- complaint or service-recovery evidence;
+- complaint or service response evidence;
 - bed, room, queue, staff, equipment, or capacity record;
 - pharmacy or supply position;
 - lab, laundry, insurer, payment, food, maintenance, or transport partner

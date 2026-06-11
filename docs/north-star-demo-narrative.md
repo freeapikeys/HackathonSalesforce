@@ -3,7 +3,7 @@
 ## Product Pitch
 
 North Star is a Salesforce and Agentforce command center that turns messy
-business operations signals into one manager-approved recovery plan. The demo
+business operations signals into one manager-approved action plan. The demo
 uses a large private hospital, but the architecture is global: the same
 primitives can map to hotel rooms, airport gates, bank cases, supermarket
 batches, cruise cabins, and hospital beds.
@@ -11,9 +11,10 @@ batches, cruise cabins, and hospital beds.
 ## Three-Minute Judge Demo
 
 The demo opens with a morning operations surge at a private hospital. The
-command center shows rising patient complaints, blocked discharge rooms, a
-growing outpatient queue, pharmacy stock pressure, delayed lab response, and
-stuck billing/insurance approvals.
+signal can start from a WhatsApp patient complaint, a Salesforce intake
+fallback, or a system event. The command center shows rising patient
+complaints, blocked discharge rooms, a growing outpatient queue, pharmacy stock
+pressure, delayed lab response, and stuck billing/insurance approvals.
 
 North Star reveals the conflict. The Patient Trust Agent sees a complaint
 cluster around waiting time, room readiness, and billing confusion. The Resource
@@ -23,15 +24,15 @@ response. The Financial Impact Agent flags billing and insurance exposure. The
 Risk and Approval Agent blocks any clinical-decision request and requires
 manager approval for protected operational actions.
 
-The orchestrator combines these findings into one recovery plan. It separates
+The orchestrator combines these findings into one action plan. It separates
 facts from inferences, names missing evidence, refuses diagnosis or triage, and
-proposes operational recovery: release cleaned beds, assign porter tasks,
+proposes operational action: release cleaned beds, assign porter tasks,
 request pharmacy restock, open billing review, escalate the lab partner, and
 prepare approved internal alerts.
 
 The operations manager approves consequential actions in the command center.
 The live harness executes approved Slack and WhatsApp-style MuleSoft channel
-actions and captures the resulting Salesforce outcomes. The broader recovery
+actions and captures the resulting Salesforce outcomes. The broader action
 plan names the service task, bed-cleaning request, vendor escalation, billing
 review, pharmacy restock, and outcome metrics that the mocked action catalog
 supports. The final view shows wait time reduced, beds released, stockout
@@ -57,7 +58,7 @@ capacity, pharmacy stock, lab response, billing approval, staffing baseline,
 and prior outcome evidence.
 
 Next, the presenter asks Agentforce for the recommendation. The specialist
-agents disagree in useful ways: patient trust wants fast recovery, capacity
+agents disagree in useful ways: patient trust wants a fast response, capacity
 shows blocked rooms, partner evidence shows a lab delay, and financial evidence
 shows billing exposure. The orchestrator explains which statements are source
 facts, which are inferences, what is missing, and what needs approval.
@@ -102,7 +103,7 @@ Judge bridge:
 
 Do not pitch "lots of bots." Pitch one governed North Star command center:
 
-- the Orchestrator turns one messy signal into one recovery plan;
+- the Orchestrator turns one messy signal into one action plan;
 - global primitives make the plan reusable across industries;
 - specialist agents contribute evidence, trust, capacity, vendor, financial,
   execution, communication, risk, and outcome views;
@@ -115,7 +116,7 @@ The system boundary is the strongest part of the story:
 
 - Salesforce stores the source-backed case, evidence, recommendation,
   approval, action, outcome, and evaluation records;
-- Agentforce drafts and explains the recovery plan, but does not execute
+- Agentforce drafts and explains the action plan, but does not execute
   protected actions;
 - MuleSoft executes only approved actions and returns delivery or mock
   evidence;
@@ -126,12 +127,14 @@ The system boundary is the strongest part of the story:
 
 Show the exact flow the repo can run:
 
-1. start with one hospital operations surge event;
+1. start with one WhatsApp/customer complaint, Salesforce intake fallback, or
+   hospital operations surge event;
 2. show global primitive context and conflicting evidence;
-3. ask Agentforce for the recovery recommendation;
+3. ask Agentforce for the action recommendation;
 4. show the clinical-decision request refused;
 5. approve protected operational actions as a business manager;
-6. execute approved Slack and WhatsApp-style MuleSoft alerts;
+6. execute approved Slack internal alerts and WhatsApp mobile/customer-safe
+   alerts;
 7. capture outcomes and evaluations in Salesforce;
 8. refresh the command center with channel, audit, and outcome evidence.
 
@@ -141,10 +144,10 @@ Quantify the demo with operational metrics, not vague AI language:
 
 | Value area            | Demo proof point                                                      |
 | --------------------- | --------------------------------------------------------------------- |
-| Wait time             | Outpatient queue is 34 waiting, target below 18 by recovery window    |
-| Bed capacity          | 7 discharge rooms are blocked; recovery plan targets room release     |
+| Wait time             | Outpatient queue is 34 waiting, target below 18 by service window     |
+| Bed capacity          | 7 discharge rooms are blocked; action plan targets room release       |
 | Stockout prevention   | Pharmacy supply is below threshold before the afternoon rush          |
-| Complaint containment | 11 synthetic complaints are clustered and tied to recovery actions    |
+| Complaint containment | 11 synthetic complaints are clustered and tied to approved actions    |
 | Financial risk        | Billing, insurer, voucher, payment, and revenue-risk cases are gated  |
 | Partner SLA           | Lab delay is preserved, escalated, then updated when response changes |
 | Staff execution       | Tasks have role owners, due windows, acknowledgement, and escalation  |
@@ -162,14 +165,16 @@ hospital demo:
 | Partner   | Lab, insurer, laundry      | Laundry, food, vendor | Airline, ground handler | Processor, KYC provider  | Supplier, courier      |
 | Policy    | Manager approval, clinical | Refund or safety rule | Safety and ops approval | Compliance approval      | Recall or reorder rule |
 | Action    | Task, restock, alert       | Housekeeping, voucher | Rebook, gate update     | Case review, callback    | Quarantine, reorder    |
-| Outcome   | Wait, bed, SLA, billing    | Guest recovery, room  | Delay recovery, baggage | Resolution, loss avoided | Waste, stock, trust    |
+| Outcome   | Wait, bed, SLA, billing    | Guest response, room  | Delay response, baggage | Resolution, loss avoided | Waste, stock, trust    |
 
 ### Slide 7: Honesty And Scope
 
 Be direct:
 
 - mocked in the hackathon: synthetic hospital data, local MuleSoft runtime,
-  provider channels when credentials are absent, and real hospital systems;
+  provider channels when credentials are absent, real hospital systems, and
+  live customer intake unless the inbound WhatsApp or Salesforce intake path is
+  implemented;
 - production-shaped architecture: evidence records, approval gate, protected
   action execution, provider-neutral model gateway, Salesforce audit trail,
   clean-clone runbook, and deterministic refusal checks;

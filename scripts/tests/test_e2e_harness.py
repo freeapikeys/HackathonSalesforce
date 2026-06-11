@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 import unittest
 from pathlib import Path
 from typing import Any
@@ -208,11 +209,26 @@ class DemoHarnessTest(unittest.TestCase):
                 },
             ],
         }
-        mulesoft = harness.run_mulesoft(
-            source,
-            recommendation,
-            action,
-        )
+        channel_env_names = [
+            "SLACK_WEBHOOK_URL",
+            "TWILIO_ACCOUNT_SID",
+            "TWILIO_AUTH_TOKEN",
+            "TWILIO_WHATSAPP_FROM",
+            "TWILIO_WHATSAPP_TO",
+        ]
+        original_channel_env = {
+            name: os.environ.pop(name, None) for name in channel_env_names
+        }
+        try:
+            mulesoft = harness.run_mulesoft(
+                source,
+                recommendation,
+                action,
+            )
+        finally:
+            for name, value in original_channel_env.items():
+                if value is not None:
+                    os.environ[name] = value
         self.assertEqual(403, mulesoft["blockedStatus"])
         self.assertEqual("PERMISSION_DENIED", mulesoft["blockedErrorCode"])
         self.assertEqual(202, mulesoft["executionStatus"])

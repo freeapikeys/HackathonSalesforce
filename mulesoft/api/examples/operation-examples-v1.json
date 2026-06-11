@@ -568,8 +568,8 @@
           "payload": {
             "targetRole": "Operations Manager",
             "targetChannel": "#north-star-demo",
-            "messageTitle": "Hospital operations surge recovery",
-            "messageBody": "Coordinate room cleaning, pharmacy restock, lab escalation, billing review, and privacy-safe internal updates.",
+            "messageTitle": "Hospital operations update",
+            "messageBody": "Please check room cleaning, pharmacy stock, lab delay, and billing review. North Star has linked the evidence.",
             "evidenceIds": [
               "hospital-complaint-cluster-001",
               "hospital-capacity-pressure-001",

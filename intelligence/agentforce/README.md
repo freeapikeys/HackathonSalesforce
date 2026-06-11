@@ -21,7 +21,7 @@ global operating model and the private hospital demo topics:
 - Outcome Learning.
 
 The actions remain governed. Agentforce can explain a hospital operations case,
-draft an evidence-backed recovery recommendation, and request approval. It
+draft an evidence-backed action recommendation, and request approval. It
 cannot directly send Slack, WhatsApp-style alerts, pharmacy restock, lab/vendor,
 billing, room/bed, staff-task, patient-message, or outcome write-backs.
 
@@ -32,7 +32,7 @@ closed and returns no protected facts, evidence, or record identifiers.
 The fixture set preserves the completed inventory/waste reasoning scenarios as
 compatibility coverage, then adds the active hospital demo path:
 
-- `hospital-operations-recovery-plan` combines complaints, bed capacity,
+- `hospital-operations-action-plan` combines complaints, bed capacity,
   outpatient queue pressure, staff coverage, pharmacy stock, lab partner delay,
   billing exposure, expected outcomes, and clinical-decision blocking;
 - `hospital-missing-capacity-evidence` proves the agent names missing room,

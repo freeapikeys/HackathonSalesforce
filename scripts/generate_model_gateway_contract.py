@@ -662,7 +662,7 @@ def check(
 
 
 def build_fixture() -> dict[str, Any]:
-    profile_key = "hospital_recovery_reasoning"
+    profile_key = "hospital_action_reasoning"
     primary_key = "mock-alpha-primary"
     fallback_key = "mock-beta-private"
     evidence_hash = (
@@ -785,7 +785,7 @@ def build_fixture() -> dict[str, Any]:
         "tenantKey": TENANT,
         "businessUnit": None,
         "agentKey": "north-star-orchestrator",
-        "subagentKey": "hospital-recovery-analysis",
+        "subagentKey": "hospital-action-analysis",
         "userId": "integration-user-001",
         "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "profileKey": profile_key,
@@ -883,7 +883,7 @@ def build_fixture() -> dict[str, Any]:
         "agentKey": "north-star-orchestrator",
         "profileKey": profile_key,
         "profileVersion": profile["version"],
-        "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+        "promptVersion": "north-star-hospital-action-prompt-1.0.0",
         "retrievalVersion": "north-star-hospital-context-1.0.0",
         "messages": [
             {
@@ -929,10 +929,10 @@ def build_fixture() -> dict[str, Any]:
             "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
         "inferences": [
-            "The safest recovery path is an operations plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
+            "The safest next step is an operations action plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
         "recommendation": (
-            "Route a hospital operations recovery plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes."
+            "Route a hospital operations action plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes."
         ),
         "confidence": 0.87,
         "evidenceIds": [

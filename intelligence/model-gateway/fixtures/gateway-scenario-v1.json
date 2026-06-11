@@ -4,7 +4,7 @@
     {
       "contractVersion": "1.0.0",
       "version": "1.0.0",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "taskType": "RECOMMENDATION",
       "inputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/generateRequest",
       "outputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/recommendationOutput",
@@ -58,7 +58,7 @@
       ],
       "contextWindowTokens": 32768,
       "qualifiedProfiles": [
-        "hospital_recovery_reasoning"
+        "hospital_action_reasoning"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.91
@@ -96,7 +96,7 @@
       ],
       "contextWindowTokens": 16384,
       "qualifiedProfiles": [
-        "hospital_recovery_reasoning"
+        "hospital_action_reasoning"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.88
@@ -115,7 +115,7 @@
       "policyKey": "north-star-hospital-routing-mauritius",
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "permittedPurposes": [
         "RESOLVE_HOSPITAL_OPERATION_RISK"
       ],
@@ -151,10 +151,10 @@
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
       "agentKey": "north-star-orchestrator",
-      "subagentKey": "hospital-recovery-analysis",
+      "subagentKey": "hospital-action-analysis",
       "userId": "integration-user-001",
       "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "dataClassification": "CONFIDENTIAL",
       "residencyRegion": "mu",
       "language": "en",
@@ -173,10 +173,10 @@
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
       "agentKey": "north-star-orchestrator",
-      "subagentKey": "hospital-recovery-analysis",
+      "subagentKey": "hospital-action-analysis",
       "userId": "integration-user-001",
       "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "dataClassification": "CONFIDENTIAL",
       "residencyRegion": "mu",
       "language": "en",
@@ -197,10 +197,10 @@
       "tenantKey": "demo-mauritius",
       "businessUnit": null,
       "agentKey": "north-star-orchestrator",
-      "subagentKey": "hospital-recovery-analysis",
+      "subagentKey": "hospital-action-analysis",
       "userId": "integration-user-001",
       "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "dataClassification": "RESTRICTED",
       "residencyRegion": "mu",
       "language": "en",
@@ -220,7 +220,7 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "decision": "SELECTED",
       "selectedDeploymentKey": "mock-alpha-primary",
@@ -320,7 +320,7 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "decision": "SELECTED",
       "selectedDeploymentKey": "mock-beta-private",
@@ -426,7 +426,7 @@
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "decision": "NO_QUALIFIED_DEPLOYMENT",
       "selectedDeploymentKey": null,
@@ -457,9 +457,9 @@
     "userId": "integration-user-001",
     "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
     "agentKey": "north-star-orchestrator",
-    "profileKey": "hospital_recovery_reasoning",
+    "profileKey": "hospital_action_reasoning",
     "profileVersion": "1.0.0",
-    "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+    "promptVersion": "north-star-hospital-action-prompt-1.0.0",
     "retrievalVersion": "north-star-hospital-context-1.0.0",
     "messages": [
       {
@@ -499,7 +499,7 @@
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "invocationId": "invocation-alpha-001",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "deploymentKey": "mock-alpha-primary",
       "deploymentVersion": "1.2.0",
@@ -509,9 +509,9 @@
           "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
         "inferences": [
-          "The safest recovery path is an operations plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
+          "The safest next step is an operations action plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
-        "recommendation": "Route a hospital operations recovery plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes.",
+        "recommendation": "Route a hospital operations action plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes.",
         "confidence": 0.87,
         "evidenceIds": [
           "evidence-complaint-hospital-001",
@@ -530,7 +530,7 @@
       "contractVersion": "1.0.0",
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "invocationId": "invocation-beta-001",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "deploymentKey": "mock-beta-private",
       "deploymentVersion": "2.0.0",
@@ -540,9 +540,9 @@
           "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
         "inferences": [
-          "The safest recovery path is an operations plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
+          "The safest next step is an operations action plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
-        "recommendation": "Route a hospital operations recovery plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes.",
+        "recommendation": "Route a hospital operations action plan for manager approval: release cleaned discharge rooms, move porter work forward, request pharmacy restock or transfer, escalate the lab partner response, open billing and insurance review, send privacy-safe internal Slack/WhatsApp alerts, and capture wait-time, bed-release, stockout, billing, vendor, and task outcomes.",
         "confidence": 0.87,
         "evidenceIds": [
           "evidence-complaint-hospital-001",
@@ -567,16 +567,16 @@
       "userId": "integration-user-001",
       "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
       "agentKey": "north-star-orchestrator",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": "mock-alpha-primary",
       "selectedDeploymentVersion": "1.2.0",
-      "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+      "promptVersion": "north-star-hospital-action-prompt-1.0.0",
       "retrievalVersion": "north-star-hospital-context-1.0.0",
-      "inputHash": "sha256:317c0b984322bbee73ba082b5e0281535b5409de40f4fd4650cfa110e4afb337",
-      "outputHash": "sha256:206dfb316a0f35ee8188d78e665c942c94a3bed0fe7a63fb5e330ddac1c4bbbd",
+      "inputHash": "sha256:be756af21425acd649ca75aa5196bce4fac401be87cb6e7f78526de6312ec620",
+      "outputHash": "sha256:1ab5579ce4740cb7ca372410ab2cd688d7f5e5299e2211b0a0e87086c09a3b6e",
       "evidenceIds": [
         "evidence-complaint-hospital-001",
         "evidence-capacity-hospital-001",
@@ -616,16 +616,16 @@
       "userId": "integration-user-001",
       "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
       "agentKey": "north-star-orchestrator",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": "mock-beta-private",
       "selectedDeploymentVersion": "2.0.0",
-      "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+      "promptVersion": "north-star-hospital-action-prompt-1.0.0",
       "retrievalVersion": "north-star-hospital-context-1.0.0",
-      "inputHash": "sha256:317c0b984322bbee73ba082b5e0281535b5409de40f4fd4650cfa110e4afb337",
-      "outputHash": "sha256:206dfb316a0f35ee8188d78e665c942c94a3bed0fe7a63fb5e330ddac1c4bbbd",
+      "inputHash": "sha256:be756af21425acd649ca75aa5196bce4fac401be87cb6e7f78526de6312ec620",
+      "outputHash": "sha256:1ab5579ce4740cb7ca372410ab2cd688d7f5e5299e2211b0a0e87086c09a3b6e",
       "evidenceIds": [
         "evidence-complaint-hospital-001",
         "evidence-capacity-hospital-001",
@@ -676,15 +676,15 @@
       "userId": "integration-user-001",
       "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
       "agentKey": "north-star-orchestrator",
-      "profileKey": "hospital_recovery_reasoning",
+      "profileKey": "hospital_action_reasoning",
       "profileVersion": "1.0.0",
       "policyKey": "north-star-hospital-routing-mauritius",
       "policyVersion": "1.0.0",
       "selectedDeploymentKey": null,
       "selectedDeploymentVersion": null,
-      "promptVersion": "north-star-hospital-recovery-prompt-1.0.0",
+      "promptVersion": "north-star-hospital-action-prompt-1.0.0",
       "retrievalVersion": "north-star-hospital-context-1.0.0",
-      "inputHash": "sha256:8e68124dfa1c5033266070b07c6b467b182664307611636f723beed98e32f308",
+      "inputHash": "sha256:f3b83218b0162898d52d6dbdd1bea11b945aaefe7b9b1f1cdd3e519ee6f70241",
       "outputHash": null,
       "evidenceIds": [
         "evidence-complaint-hospital-001",

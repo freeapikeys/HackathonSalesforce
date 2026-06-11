@@ -112,7 +112,7 @@ outpatient queue gets worse?
 
 Expected structured request:
 
-- `intent`: `ASK_HOSPITAL_RECOVERY_PLAN`
+- `intent`: `ASK_HOSPITAL_ACTION_PLAN`
 - `departmentId`: `department-outpatient-001`
 - `locationId`: `ward-discharge-002`
 - `resourceIds`: `bed-block-hos-041`, `queue-outpatient-009`

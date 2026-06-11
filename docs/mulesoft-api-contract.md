@@ -60,6 +60,35 @@ The same action boundary can later support hotel, airport, banking,
 supermarket, cruise, or other profiles by changing action types and payloads,
 not by adding a new endpoint.
 
+## North Star Signal Intake
+
+Inbound complaint and operations channels are not action executions. They are
+source signals and should enter through `INGEST_EVENT`.
+
+Preferred intake examples:
+
+- WhatsApp inbound customer complaint from Twilio Sandbox;
+- Salesforce command-center complaint or signal form;
+- system threshold event such as low pharmacy stock, queue spike, room blocked,
+  lab delay, payment issue, or billing approval stalled;
+- staff voice/manual transcript converted into a governed request.
+
+Inbound WhatsApp mapping:
+
+1. Twilio receives the customer or patient message.
+2. Twilio posts to a MuleSoft/source adapter endpoint.
+3. The adapter maps the message to the `INGEST_EVENT` request shape with:
+   source channel, synthetic customer alias, timestamp, safe message summary,
+   department/resource hints, tenant ID, correlation ID, and content hash.
+4. Salesforce stores the signal and evidence.
+5. Agentforce may draft a recommendation from the new evidence.
+6. Any customer reply, Slack alert, vendor request, stock request, billing
+   review, refund, or future email action must then go through approval and
+   `EXECUTE_APPROVED_ACTION`.
+
+Inbound WhatsApp must not directly create a refund, send a vendor email, change
+stock, reply with medical advice, or decide clinical priority.
+
 ## Protected Action Rules
 
 - All external actions require business manager approval unless explicitly
@@ -72,6 +101,8 @@ not by adding a new endpoint.
 - Slack can use `SLACK_WEBHOOK_URL`. WhatsApp can use Twilio Sandbox or a
   WhatsApp-enabled Twilio sender through `TWILIO_ACCOUNT_SID`,
   `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, and `TWILIO_WHATSAPP_TO`.
+- Email or vendor notification is a future protected adapter unless implemented
+  and tested; do not claim live email delivery in the MVP.
 - Clinical diagnosis, treatment, dosage, triage, and clinical priority actions
   are not valid MuleSoft actions for the demo.
 

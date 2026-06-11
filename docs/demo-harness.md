@@ -44,6 +44,9 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 North Star hospital assertions:
 
 - the case uses global primitives, not one-off hospital-only objects;
+- customer or patient complaint intake can be represented by a seeded event
+  today, and should be extended to live WhatsApp inbound or a Salesforce intake
+  screen before claiming real customer intake;
 - patient/visitor aliases contain no real personal or medical data;
 - complaint evidence is evaluated with capacity, partner, billing, stock, and
   staffing evidence;

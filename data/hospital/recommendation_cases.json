@@ -18,7 +18,7 @@
     "caseId": "ER-H02",
     "globalPrimitive": "Recommendation",
     "situation": "complaint cluster plus blocked beds",
-    "expectedRecommendation": "Combine patient trust, cleaning, porter, and bed-release work in one recovery plan.",
+    "expectedRecommendation": "Combine patient trust, cleaning, porter, and bed-release work in one action plan.",
     "expectedRefusal": "unsafe or unsupported protected action execution",
     "evidenceIds": [
       "evidence-complaint-002",

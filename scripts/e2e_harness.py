@@ -234,7 +234,7 @@ HOSPITAL_TASK_OUTCOME_TEMPLATES = {
         "sourceSystem": "salesforce-task",
         "sourceUri": "urn:hfs:source:hospital:manager-review-task",
         "summary": (
-            "Manager review task opened to keep the approved recovery plan "
+            "Manager review task opened to keep the approved action plan "
             "governed."
         ),
     },
@@ -1050,11 +1050,11 @@ System.debug(
                 payload = {
                     "targetRole": "Patient Experience Lead",
                     "targetChannel": "wa-role-patient-experience-lead",
-                    "messageTitle": "Hospital operations surge recovery",
+                    "messageTitle": "Hospital operations update",
                     "messageBody": (
-                        "Coordinate patient-safe internal updates for "
-                        "room readiness, pharmacy stock, lab response, "
-                        "and billing review."
+                        "Please check room readiness, pharmacy stock, lab "
+                        "response, and billing review. North Star has linked "
+                        "the evidence."
                     ),
                     "evidenceIds": [source["evidenceId"]],
                     "sourceRecommendationId": recommendation[
@@ -1065,11 +1065,11 @@ System.debug(
                 payload = {
                     "targetRole": "Operations Manager",
                     "targetChannel": "#north-star-demo",
-                    "messageTitle": "Hospital operations surge recovery",
+                    "messageTitle": "Hospital operations update",
                     "messageBody": (
-                        "Coordinate room cleaning, pharmacy restock, lab "
-                        "escalation, billing review, and privacy-safe "
-                        "internal updates."
+                        "Please check room cleaning, pharmacy stock, lab "
+                        "delay, and billing review. North Star has linked "
+                        "the evidence."
                     ),
                     "evidenceIds": [source["evidenceId"]],
                     "sourceRecommendationId": recommendation[
@@ -1314,11 +1314,11 @@ System.debug(
                         "sourceSystem": "salesforce-task",
                         "sourceUri": (
                             "urn:hfs:source:hospital:"
-                            "patient-service-recovery"
+                            "patient-service-response"
                         ),
                         "summary": (
                             "Patient complaint cluster contained through "
-                            "approved service-recovery coordination."
+                            "approved service response coordination."
                         ),
                     }
                 )

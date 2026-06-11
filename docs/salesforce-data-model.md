@@ -61,7 +61,7 @@ express the demo requirement.
 | Lab, laundry, insurer, payment, food, maintenance partner            | `HFS_Entity__c`                                          |
 | Complaint, queue spike, stock risk, vendor delay, billing issue      | `HFS_Event__c`                                           |
 | Source proof                                                         | `HFS_Evidence__c`                                        |
-| Recovery plan                                                        | `HFS_Recommendation__c`                                  |
+| Action plan                                                          | `HFS_Recommendation__c`                                  |
 | Operations manager decision                                          | `HFS_Approval__c`                                        |
 | Service task, bed cleaning, vendor escalation, billing review, alert | `HFS_Action__c`                                          |
 | Result                                                               | `HFS_Outcome__c` and `HFS_Evaluation__c`                 |

@@ -96,7 +96,7 @@
         ],
         "inferences": [
           {
-            "inferenceId": "inference-recovery-plan",
+            "inferenceId": "inference-action-plan",
             "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
               "fact-inventory-cover",
@@ -247,7 +247,7 @@
         ],
         "inferences": [
           {
-            "inferenceId": "inference-recovery-plan",
+            "inferenceId": "inference-action-plan",
             "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
               "fact-inventory-cover",
@@ -1390,7 +1390,7 @@
       }
     },
     {
-      "name": "hospital-operations-recovery-plan",
+      "name": "hospital-operations-action-plan",
       "request": {
         "contractVersion": "1.0.0",
         "action": "DRAFT_RELATIONSHIP_RECOMMENDATION",
@@ -1400,8 +1400,8 @@
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
-        "desiredOutcome": "Coordinate a non-clinical hospital operations recovery plan for the morning surge without bypassing manager approval.",
-        "modelProfile": "hospital_recovery_reasoning"
+        "desiredOutcome": "Coordinate a non-clinical hospital operations action plan for the morning surge without bypassing manager approval.",
+        "modelProfile": "hospital_action_reasoning"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -1692,7 +1692,7 @@
             "a06000000000026AAA",
             "a06000000000027AAA"
           ],
-          "modelProfile": "hospital_recovery_reasoning",
+          "modelProfile": "hospital_action_reasoning",
           "modelInvocationId": "model-invocation-agentforce-hospital-001",
           "requiresHumanApproval": true,
           "hospitalOperationsReasoning": {
@@ -1778,7 +1778,7 @@
               },
               {
                 "findingType": "CONTRADICTORY",
-                "summary": "Patient trust asks for immediate service recovery while capacity evidence shows discharge rooms are still blocked.",
+                "summary": "Patient trust asks for a quick service response while capacity evidence shows discharge rooms are still blocked.",
                 "action": "Send only approved internal updates now and delay room-release claims until cleaning and porter acknowledgements arrive.",
                 "evidenceIds": [
                   "a06000000000021AAA",
@@ -1804,7 +1804,7 @@
               {
                 "findingType": "LATE",
                 "summary": "The lab partner acknowledgement is forty-two minutes late against the operational SLA.",
-                "action": "Escalate the partner case only through approved vendor recovery.",
+                "action": "Escalate the partner case only through an approved vendor follow-up.",
                 "evidenceIds": [
                   "a06000000000024AAA"
                 ]
@@ -1836,7 +1836,7 @@
             "conflictResolutions": [
               {
                 "conflictId": "conflict-patient-trust-capacity",
-                "tension": "Patient Trust wants immediate service recovery, but Resource and Capacity shows rooms are still blocked.",
+                "tension": "Patient Trust wants a quick service response, but Resource and Capacity shows rooms are still blocked.",
                 "resolution": "Approve privacy-safe updates and service tasks now; release rooms only after housekeeping and porter acknowledgements.",
                 "winningPolicy": "Operational safety and evidence-backed capacity claims override speed-only messaging.",
                 "evidenceIds": [
@@ -1845,7 +1845,7 @@
                 ]
               },
               {
-                "conflictId": "conflict-finance-stock-recovery",
+                "conflictId": "conflict-finance-stock-action-plan",
                 "tension": "Pharmacy restock, refund, voucher, and billing work all compete for manager attention during the surge.",
                 "resolution": "Bundle stock, billing, insurer, voucher, and payment actions under one approval so the manager sees the full exposure.",
                 "winningPolicy": "Protected financial and inventory actions require manager approval before execution.",
@@ -1880,14 +1880,14 @@
                 "changedByEvidenceId": "a06000000000022AAA",
                 "before": "Treat complaints as patient-trust messages only.",
                 "after": "Tie complaints to blocked rooms, queue pressure, staff tasks, pharmacy cover, billing exposure, and outcomes.",
-                "decision": "Capacity evidence expands one complaint cluster into cross-functional recovery.",
+                "decision": "Capacity evidence expands one complaint cluster into a cross-functional action plan.",
                 "evidenceIds": [
                   "a06000000000021AAA",
                   "a06000000000022AAA"
                 ]
               },
               {
-                "trigger": "Billing and payment evidence changed the recovery risk.",
+                "trigger": "Billing and payment evidence changed the financial risk.",
                 "changedByEvidenceId": "a06000000000025AAA",
                 "before": "Open a simple billing review.",
                 "after": "Estimate exposure and route refund, voucher, compensation, payment, and insurer follow-up through approval.",
@@ -1971,9 +1971,9 @@
                 "requiresHumanApproval": true
               },
               {
-                "actionId": "action-service-recovery-message",
+                "actionId": "action-service-response-message",
                 "actionType": "CREATE_PATIENT_SERVICE_TASK",
-                "statement": "Draft a privacy-safe service-recovery message for manager approval, without clinical advice or personal data.",
+                "statement": "Draft a privacy-safe service response message for manager approval, without clinical advice or personal data.",
                 "evidenceIds": [
                   "a06000000000021AAA",
                   "a06000000000025AAA"
@@ -1983,7 +1983,7 @@
               {
                 "actionId": "action-manager-review",
                 "actionType": "CREATE_MANAGER_REVIEW_TASK",
-                "statement": "Create the operations manager review task that keeps the recovery plan approved, auditable, and time-boxed.",
+                "statement": "Create the operations manager review task that keeps the action plan approved, auditable, and time-boxed.",
                 "evidenceIds": [
                   "a06000000000025AAA"
                 ],
@@ -2014,9 +2014,9 @@
               ]
             },
             "serviceRecoveryDraft": {
-              "draftId": "draft-service-recovery-hospital-surge",
+              "draftId": "draft-service-response-hospital-surge",
               "audience": "Patient and visitor service desk",
-              "message": "We are coordinating outpatient queue support, room-readiness work, pharmacy stock recovery, and billing follow-up. A hospital operations manager is reviewing the protected actions, and clinical questions will be handled by clinical staff.",
+              "message": "We are coordinating outpatient queue support, room-readiness work, pharmacy stock support, and billing follow-up. A hospital operations manager is reviewing the protected actions, and clinical questions will be handled by clinical staff.",
               "approvalRequired": true,
               "approvalId": "a08000000000021AAA",
               "policyReason": "Patient-facing service messages are protected because they may affect trust, refunds, billing, and clinical-boundary wording.",
@@ -2051,7 +2051,7 @@
               {
                 "decisionState": "MODIFY",
                 "approvalId": "a08000000000021AAA",
-                "actionId": "action-service-recovery-message",
+                "actionId": "action-service-response-message",
                 "approverRole": "Patient Experience Manager",
                 "policyReason": "Patient-facing wording must remain privacy-safe and avoid clinical advice before it can be sent.",
                 "evidenceIds": [
@@ -2150,7 +2150,7 @@
                 ]
               }
             ],
-            "explanation": "The hospital surge is cross-functional: complaints are rising, rooms are blocked, stock cover is low, a partner SLA is late, and billing approvals are stuck. The safe next step is one manager-approved operations recovery plan with clinical decisions refused."
+            "explanation": "The hospital surge is cross-functional: complaints are rising, rooms are blocked, stock cover is low, a partner SLA is late, and billing approvals are stuck. The safe next step is one manager-approved operations action plan with clinical decisions refused."
           }
         },
         "approval": null,
@@ -2178,8 +2178,8 @@
         "workItemId": "a0E000000000001AAA",
         "recommendationId": null,
         "approvalPolicyKey": null,
-        "desiredOutcome": "Assess outpatient queue recovery when capacity evidence is missing.",
-        "modelProfile": "hospital_recovery_reasoning"
+        "desiredOutcome": "Assess outpatient queue risk when capacity evidence is missing.",
+        "modelProfile": "hospital_action_reasoning"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -2238,13 +2238,13 @@
         "recommendation": {
           "recommendationType": "NORTH_STAR_HOSPITAL_CAUTIONED_PLAN",
           "proposedActionType": "REQUEST_MISSING_CAPACITY_EVIDENCE",
-          "rationale": "Ask for current bed, room, queue, and staffing evidence before claiming a capacity recovery plan. Continue pharmacy restock review and patient trust monitoring behind approval.",
+          "rationale": "Ask for current bed, room, queue, and staffing evidence before claiming a capacity action plan. Continue pharmacy restock review and patient trust monitoring behind approval.",
           "confidence": 0.68,
           "evidenceIds": [
             "a06000000000021AAA",
             "a06000000000023AAA"
           ],
-          "modelProfile": "hospital_recovery_reasoning",
+          "modelProfile": "hospital_action_reasoning",
           "modelInvocationId": "model-invocation-agentforce-hospital-002",
           "requiresHumanApproval": true,
           "hospitalOperationsReasoning": {
@@ -2355,7 +2355,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": "Answer which patient should receive treatment first.",
-        "modelProfile": "hospital_recovery_reasoning"
+        "modelProfile": "hospital_action_reasoning"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -2402,7 +2402,7 @@
           "evidenceIds": [
             "a06000000000027AAA"
           ],
-          "modelProfile": "hospital_recovery_reasoning",
+          "modelProfile": "hospital_action_reasoning",
           "modelInvocationId": "model-invocation-agentforce-hospital-003",
           "requiresHumanApproval": true,
           "hospitalOperationsReasoning": {

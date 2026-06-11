@@ -22,7 +22,7 @@ FIXTURE_PATH = (
     / "agentforce-scenarios-v1.json"
 )
 HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
-HOSPITAL_MODEL_PROFILE = "hospital_recovery_reasoning"
+HOSPITAL_MODEL_PROFILE = "hospital_action_reasoning"
 RETAIL_MODEL_PROFILE = "north-star-retail-recommendation"
 
 
@@ -205,11 +205,11 @@ def main() -> int:
                         set(update["evidenceIds"]) <= citation_ids,
                         f"{name}: hospital recommendation update cites inaccessible evidence.",
                     )
-                service_recovery = hospital_reasoning["serviceRecoveryDraft"]
-                if service_recovery:
+                service_response = hospital_reasoning["serviceRecoveryDraft"]
+                if service_response:
                     require(
-                        set(service_recovery["evidenceIds"]) <= citation_ids,
-                        f"{name}: hospital service-recovery draft cites inaccessible evidence.",
+                        set(service_response["evidenceIds"]) <= citation_ids,
+                        f"{name}: hospital service response draft cites inaccessible evidence.",
                     )
                 for decision in hospital_reasoning["approvalDecisions"]:
                     require(
@@ -282,7 +282,7 @@ def main() -> int:
         "inventory-waste-clean-stockout",
         "inventory-waste-near-expiry-markdown",
         "inventory-waste-overstock-household",
-        "hospital-operations-recovery-plan",
+        "hospital-operations-action-plan",
         "hospital-missing-capacity-evidence",
         "hospital-clinical-refusal",
     }
@@ -389,12 +389,12 @@ def main() -> int:
         ),
         "Household overstock scenario did not block additional reorder.",
     )
-    hospital_recovery = next(
+    hospital_action = next(
         scenario
         for scenario in fixtures["scenarios"]
-        if scenario["name"] == "hospital-operations-recovery-plan"
+        if scenario["name"] == "hospital-operations-action-plan"
     )
-    hospital_response = hospital_recovery["response"]
+    hospital_response = hospital_action["response"]
     hospital_recommendation = hospital_response["recommendation"]
     hospital_reasoning = hospital_recommendation[
         "hospitalOperationsReasoning"
@@ -402,7 +402,7 @@ def main() -> int:
     require(
         hospital_reasoning["riskType"] == "MIXED"
         and hospital_reasoning["severity"] == "High",
-        "Hospital recovery scenario did not classify mixed high risk.",
+        "Hospital action scenario did not classify mixed high risk.",
     )
     hospital_fact_ids = {fact["factId"] for fact in hospital_response["facts"]}
     require(
@@ -416,7 +416,7 @@ def main() -> int:
             "fact-hospital-clinical-refusal",
         }
         <= hospital_fact_ids,
-        "Hospital recovery scenario is missing required grounded facts.",
+        "Hospital action scenario is missing required grounded facts.",
     )
     hospital_inference_ids = {
         inference["inferenceId"] for inference in hospital_response["inferences"]
@@ -427,15 +427,15 @@ def main() -> int:
             "inference-hospital-cross-functional-plan",
         }
         <= hospital_inference_ids,
-        "Hospital recovery scenario is missing required cross-functional inferences.",
+        "Hospital action scenario is missing required cross-functional inferences.",
     )
     require(
         0 < hospital_recommendation["confidence"] <= 1,
-        "Hospital recovery scenario did not define a bounded confidence value.",
+        "Hospital action scenario did not define a bounded confidence value.",
     )
     require(
         hospital_reasoning["assumptions"],
-        "Hospital recovery scenario did not preserve assumptions.",
+        "Hospital action scenario did not preserve assumptions.",
     )
     evidence_quality_types = {
         finding["findingType"]
@@ -453,7 +453,7 @@ def main() -> int:
             "LOW_CONFIDENCE",
         }
         <= evidence_quality_types,
-        "Hospital recovery scenario is missing evidence-quality findings.",
+        "Hospital action scenario is missing evidence-quality findings.",
     )
     conflict_ids = {
         conflict["conflictId"]
@@ -462,11 +462,11 @@ def main() -> int:
     require(
         {
             "conflict-patient-trust-capacity",
-            "conflict-finance-stock-recovery",
+            "conflict-finance-stock-action-plan",
             "conflict-clinical-boundary",
         }
         <= conflict_ids,
-        "Hospital recovery scenario is missing conflict resolutions.",
+        "Hospital action scenario is missing conflict resolutions.",
     )
     update_triggers = {
         update["changedByEvidenceId"]
@@ -479,15 +479,15 @@ def main() -> int:
             "a06000000000025AAA",
         }
         <= update_triggers,
-        "Hospital recovery scenario is missing post-evidence recommendation updates.",
+        "Hospital action scenario is missing post-evidence recommendation updates.",
     )
-    service_recovery = hospital_reasoning["serviceRecoveryDraft"]
+    service_response = hospital_reasoning["serviceRecoveryDraft"]
     require(
-        service_recovery
-        and service_recovery["approvalRequired"] is True
-        and service_recovery["privacySafe"] is True
-        and "clinical" in service_recovery["message"].lower(),
-        "Hospital recovery scenario is missing an approved privacy-safe service-recovery draft.",
+        service_response
+        and service_response["approvalRequired"] is True
+        and service_response["privacySafe"] is True
+        and "clinical" in service_response["message"].lower(),
+        "Hospital action scenario is missing an approved privacy-safe service response draft.",
     )
     approval_states = {
         decision["decisionState"]
@@ -502,12 +502,12 @@ def main() -> int:
             "EXECUTE_READY",
         }
         <= approval_states,
-        "Hospital recovery scenario is missing approval decision states.",
+        "Hospital action scenario is missing approval decision states.",
     )
     financial_impact = hospital_reasoning["financialImpact"]
     require(
         financial_impact is not None,
-        "Hospital recovery scenario is missing financial impact analysis.",
+        "Hospital action scenario is missing financial impact analysis.",
     )
     require(
         {
@@ -520,14 +520,14 @@ def main() -> int:
             "revenue_risk",
         }
         <= set(financial_impact["detectedCaseTypes"]),
-        "Hospital recovery scenario is missing financial case types.",
+        "Hospital action scenario is missing financial case types.",
     )
     require(
         financial_impact["approvalRequired"] is True
         and financial_impact["exposureFormula"]
         and financial_impact["timeWindow"]
         and financial_impact["personalDataPolicy"],
-        "Hospital recovery scenario did not define financial formula, time window, privacy policy, and approval.",
+        "Hospital action scenario did not define financial formula, time window, privacy policy, and approval.",
     )
     coverage = hospital_response["contextCoverage"]
     coverage_categories = coverage["evidenceCategories"]
@@ -544,7 +544,7 @@ def main() -> int:
     }
     require(
         required_categories <= set(coverage_categories),
-        "Hospital recovery scenario is missing context coverage categories.",
+        "Hospital action scenario is missing context coverage categories.",
     )
     covered_categories = {
         key
@@ -553,7 +553,7 @@ def main() -> int:
     }
     require(
         required_categories <= covered_categories,
-        "Hospital recovery scenario has empty evidence coverage categories.",
+        "Hospital action scenario has empty evidence coverage categories.",
     )
     primitive_records = coverage["recordIdsByPrimitive"]
     for primitive in [
@@ -568,7 +568,7 @@ def main() -> int:
     ]:
         require(
             primitive_records.get(primitive),
-            f"Hospital recovery scenario is missing {primitive} primitive links.",
+            f"Hospital action scenario is missing {primitive} primitive links.",
         )
     hospital_metrics = {
         calculation["metricKey"]
@@ -585,7 +585,7 @@ def main() -> int:
             "financial_exposure_estimate",
         }
         <= hospital_metrics,
-        "Hospital recovery scenario is missing required calculations.",
+        "Hospital action scenario is missing required calculations.",
     )
     hospital_actions = {
         action["actionType"]
@@ -604,26 +604,26 @@ def main() -> int:
             "CREATE_MANAGER_REVIEW_TASK",
         }
         <= hospital_actions,
-        "Hospital recovery scenario is missing cross-functional actions.",
+        "Hospital action scenario is missing cross-functional actions.",
     )
     require(
         hospital_reasoning["partnerCaution"]["applies"] is True,
-        "Hospital recovery scenario did not apply partner caution.",
+        "Hospital action scenario did not apply partner caution.",
     )
     require(
         hospital_reasoning["clinicalBoundary"]["applies"] is True,
-        "Hospital recovery scenario did not apply the clinical boundary.",
+        "Hospital action scenario did not apply the clinical boundary.",
     )
     require(
         any(
             action["actionType"] == "CLINICAL_TRIAGE_DECISION"
             for action in hospital_reasoning["blockedActions"]
         ),
-        "Hospital recovery scenario did not block clinical triage.",
+        "Hospital action scenario did not block clinical triage.",
     )
     require(
         hospital_reasoning["expectedOutcomes"],
-        "Hospital recovery scenario did not define expected outcomes.",
+        "Hospital action scenario did not define expected outcomes.",
     )
     hospital_outcome_metrics = {
         outcome["metricKey"] for outcome in hospital_reasoning["expectedOutcomes"]
@@ -637,7 +637,7 @@ def main() -> int:
             "financial_exposure_contained",
         }
         <= hospital_outcome_metrics,
-        "Hospital recovery scenario is missing required expected outcomes.",
+        "Hospital action scenario is missing required expected outcomes.",
     )
 
     missing_capacity = next(

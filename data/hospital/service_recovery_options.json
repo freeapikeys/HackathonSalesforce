@@ -1,6 +1,6 @@
 {
   "profile": "north-star-private-hospital-operations",
-  "note": "Hospital service-recovery options. These are governed actions, not marketing promotions.",
+  "note": "Hospital service response options. These are governed actions, not marketing promotions.",
   "serviceRecoveryOptions": [
     {
       "recoveryOptionId": "RECOVERY-HOS-001",

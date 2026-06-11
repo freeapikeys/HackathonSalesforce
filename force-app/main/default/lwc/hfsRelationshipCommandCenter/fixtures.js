@@ -5,7 +5,7 @@ const caseState = {
   externalKey: "CORR-NORTH-STAR-HOSPITAL-MORNING-001",
   title: "North Star hospital operations surge",
   summary:
-    "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab response, and stuck billing approvals need one manager-approved recovery plan.",
+    "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab response, and stuck billing approvals need one manager-approved action plan.",
   severity: "High",
   status: "Awaiting approval",
   owner: {
@@ -21,7 +21,7 @@ const caseState = {
     category: "Hospital operations",
     operationalFocus: "BED-BLOCK-A3 / PHARM-IV-KIT-LOW",
     partner: "Island Diagnostics Lab",
-    recoveryWindow: "Morning surge recovery",
+    recoveryWindow: "Morning operations window",
     serviceAreas: "Outpatient reception, Ward A3, Pharmacy"
   },
   resourcePositions: [
@@ -62,7 +62,7 @@ const caseState = {
       id: "conflict-patient-capacity",
       agent: "Patient Trust vs Resource and Capacity",
       conflict:
-        "Patient Trust wants immediate service recovery, but Resource and Capacity shows rooms are still blocked.",
+        "Patient Trust wants a quick service response, but Resource and Capacity shows rooms are still blocked.",
       resolution:
         "Approve internal updates now, then release rooms only after cleaning and porter tasks are acknowledged."
     },
@@ -272,7 +272,7 @@ const caseState = {
     }
   ],
   sop: {
-    name: "North Star hospital operations recovery",
+    name: "North Star hospital operations plan",
     version: "1.0.0",
     status: "In progress",
     currentStep: "Await manager approval",
@@ -284,7 +284,7 @@ const caseState = {
   recommendation: {
     id: "recommendation-north-star-hospital-001",
     status: "Pending approval",
-    title: "Approve hospital operations recovery actions",
+    title: "Approve hospital operations actions",
     recommendation:
       "Approve room-cleaning and porter tasks, pharmacy restock or transfer, lab vendor escalation, billing review, insurance follow-up, and privacy-safe Slack and WhatsApp-style internal alerts. Refuse clinical diagnosis, treatment, dosage, and triage decisions.",
     facts: [
@@ -294,8 +294,8 @@ const caseState = {
       "Lab partner response is forty-two minutes over the demo SLA."
     ],
     inferences: [
-      "The complaint is not just a complaint; it affects capacity, partner recovery, billing, communications, and outcome tracking.",
-      "The safe recovery path is operational: task owners, manager approval, protected action execution, and outcome measurement."
+      "The complaint is not just a complaint; it affects capacity, partner response, billing, communications, and outcome tracking.",
+      "The safe next step is operational: task owners, manager approval, protected action execution, and outcome measurement."
     ],
     confidence: 0.88,
     confidencePercent: "88%",
@@ -362,11 +362,11 @@ const caseState = {
       "Voice mode is modeled as an operator transcript input. It can request an Agentforce recommendation, but it cannot execute protected actions.",
     requests: [
       {
-        id: "voice-request-recovery-plan",
+        id: "voice-request-action-plan",
         transcriptSource: "manual",
         transcript:
           "Why are discharge beds blocked this morning and who needs to act before the outpatient queue gets worse?",
-        interpretedIntent: "ASK_HOSPITAL_RECOVERY_PLAN",
+        interpretedIntent: "ASK_HOSPITAL_ACTION_PLAN",
         agentforceAction: "DRAFT_RELATIONSHIP_RECOMMENDATION",
         recommendationId: "recommendation-north-star-hospital-001",
         status: "Ready for Agentforce",

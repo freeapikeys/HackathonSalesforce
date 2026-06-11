@@ -28,7 +28,7 @@ into the production product.
 
 North Star hospital suitable experiments:
 
-- complaint-cluster threshold compared with service recovery outcome;
+- complaint-cluster threshold compared with service response outcome;
 - capacity-pressure threshold compared with wait-time reduction;
 - pharmacy stock-risk threshold compared with stockout avoidance;
 - partner-response classification accuracy;

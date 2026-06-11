@@ -3,7 +3,7 @@
 ## North Star Orchestrator
 
 Combines patient trust, evidence, resource capacity, partner/vendor, financial,
-communication, approval, and outcome findings into one recovery plan. It
+communication, approval, and outcome findings into one action plan. It
 resolves conflicts, separates source facts from inferences and assumptions,
 decides which actions require manager approval, refuses clinical decisions, and
 updates the recommendation after partner, capacity, billing, or stock evidence
@@ -21,7 +21,7 @@ low-confidence evidence.
 
 Detects complaint clusters, classifies wait-time, room readiness, cleanliness,
 food, billing, discharge delay, pharmacy delay, accessibility, privacy, safety,
-lost-item, and staff-interaction issues. It drafts approved service-recovery
+lost-item, and staff-interaction issues. It drafts approved service response
 text and escalates high-risk complaints without making clinical decisions.
 
 ## Resource And Capacity
@@ -36,7 +36,7 @@ transfer, staffing, vendor, or manager-review actions that flow into approval.
 Creates patient-service, bed-cleaning, porter, pharmacy, billing, insurance,
 vendor-follow-up, maintenance, food-service, and manager-review tasks. It
 assigns owner roles, tracks acknowledgement and completion, and escalates missed
-work before the recovery window is lost.
+work before the service window is lost.
 
 ## Partner And Vendor
 
@@ -61,10 +61,12 @@ evidence without personal data.
 
 ## Communication
 
-Drafts and executes approved Slack or WhatsApp-style internal alerts through
-MuleSoft. It routes to role aliases, keeps messages privacy-safe, and preserves
-provider, status, fallback reason, evidence IDs, approval ID, action ID, and
-correlation ID.
+Drafts Slack, WhatsApp, and future email messages, then executes only the
+approved ones through MuleSoft. Slack is for internal teams. WhatsApp can be
+customer intake, urgent mobile alert, or approved customer acknowledgement.
+Customer-facing replies must be privacy-safe and must not include clinical
+advice. The agent preserves provider, status, fallback reason, evidence IDs,
+approval ID, action ID, and correlation ID.
 
 ## Outcome Learning
 

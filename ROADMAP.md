@@ -34,7 +34,7 @@ airport, banking, supermarket, cruise, and other profiles.
 
 | ID    | Issue module                     | Primary agent           | Hospital demo response                                                   |
 | ----- | -------------------------------- | ----------------------- | ------------------------------------------------------------------------ |
-| NS-01 | Complaint and trust              | Patient Trust           | Cluster complaints, classify cause, draft approved service recovery      |
+| NS-01 | Complaint and trust              | Patient Trust           | Cluster complaints, classify cause, draft approved service response      |
 | NS-02 | Capacity and availability        | Resource and Capacity   | Check beds, rooms, queues, staff, pharmacy stock, and equipment          |
 | NS-03 | Staff coordination               | Operations Execution    | Assign tasks, owners, due times, acknowledgements, and escalation        |
 | NS-04 | Partner and vendor failure       | Partner and Vendor      | Escalate lab, laundry, insurer, food, payment, or maintenance delay      |
@@ -42,36 +42,36 @@ airport, banking, supermarket, cruise, and other profiles.
 | NS-06 | Billing and financial exposure   | Financial Impact        | Flag duplicate billing, claim delay, refund, voucher, or revenue risk    |
 | NS-07 | Risk, safety, and compliance     | Risk and Approval       | Gate protected actions and refuse clinical decisions                     |
 | NS-08 | Communication and escalation     | Communication           | Send approved Slack/WhatsApp-style alerts to role aliases                |
-| NS-09 | Disruption recovery              | North Star Orchestrator | Combine complaints, capacity, vendor, billing, and staff signals         |
+| NS-09 | Disruption coordination          | North Star Orchestrator | Combine complaints, capacity, vendor, billing, and staff signals         |
 | NS-10 | Outcome learning                 | Outcome Learning        | Track wait-time, bed release, stockout avoidance, SLA, and task outcome  |
 | NS-11 | Evidence quality and uncertainty | Evidence and Context    | Detect missing, contradictory, late, duplicate, or restricted evidence   |
 | NS-12 | Policy and approval routing      | Risk and Approval       | Decide manager approval, refusal, defer, modification, or execution path |
 
 ## Private Hospital Issues We Solve
 
-| ID     | Hospital issue                          | Primary agent         | Demo response                                                               |
-| ------ | --------------------------------------- | --------------------- | --------------------------------------------------------------------------- |
-| HOS-01 | Patient wait-time complaints            | Patient Trust         | Cluster complaints, cite queue evidence, draft service recovery             |
-| HOS-02 | Room readiness or cleanliness complaint | Patient Trust         | Link complaint to blocked room, housekeeping task, and manager escalation   |
-| HOS-03 | Discharge bed blocked                   | Resource and Capacity | Detect blocked beds, assign cleaning/porter task, estimate bed release      |
-| HOS-04 | Outpatient queue spike                  | Resource and Capacity | Predict queue risk and recommend staff movement                             |
-| HOS-05 | Pharmacy supply running low             | Resource and Capacity | Calculate stock days remaining and request approved restock or transfer     |
-| HOS-06 | Lab vendor response delayed             | Partner and Vendor    | Escalate vendor case and update recommendation when response arrives        |
-| HOS-07 | Insurance approval stuck                | Financial Impact      | Open approved insurance follow-up and estimate claim-delay exposure         |
-| HOS-08 | Duplicate billing or refund complaint   | Financial Impact      | Open billing review, require approval for refund or compensation            |
-| HOS-09 | Food or hospitality complaint           | Patient Trust         | Route food-service task and approved patient-safe message                   |
-| HOS-10 | Accessibility support missing           | Operations Execution  | Assign wheelchair/porter/support task and track acknowledgement             |
-| HOS-11 | Equipment or maintenance unavailable    | Partner and Vendor    | Check resource status, vendor SLA, and fallback options                     |
-| HOS-12 | Privacy or safety-sensitive complaint   | Risk and Approval     | Escalate, preserve evidence, and prevent unsafe message/action              |
-| HOS-13 | Clinical-decision request               | Risk and Approval     | Refuse diagnosis/treatment/triage decision and route to clinician           |
-| HOS-14 | Multi-department morning surge          | Orchestrator          | Create one recovery plan across trust, capacity, vendor, billing, and tasks |
+| ID     | Hospital issue                          | Primary agent         | Demo response                                                             |
+| ------ | --------------------------------------- | --------------------- | ------------------------------------------------------------------------- |
+| HOS-01 | Patient wait-time complaints            | Patient Trust         | Cluster complaints, cite queue evidence, draft service response           |
+| HOS-02 | Room readiness or cleanliness complaint | Patient Trust         | Link complaint to blocked room, housekeeping task, and manager escalation |
+| HOS-03 | Discharge bed blocked                   | Resource and Capacity | Detect blocked beds, assign cleaning/porter task, estimate bed release    |
+| HOS-04 | Outpatient queue spike                  | Resource and Capacity | Predict queue risk and recommend staff movement                           |
+| HOS-05 | Pharmacy supply running low             | Resource and Capacity | Calculate stock days remaining and request approved restock or transfer   |
+| HOS-06 | Lab vendor response delayed             | Partner and Vendor    | Escalate vendor case and update recommendation when response arrives      |
+| HOS-07 | Insurance approval stuck                | Financial Impact      | Open approved insurance follow-up and estimate claim-delay exposure       |
+| HOS-08 | Duplicate billing or refund complaint   | Financial Impact      | Open billing review, require approval for refund or compensation          |
+| HOS-09 | Food or hospitality complaint           | Patient Trust         | Route food-service task and approved patient-safe message                 |
+| HOS-10 | Accessibility support missing           | Operations Execution  | Assign wheelchair/porter/support task and track acknowledgement           |
+| HOS-11 | Equipment or maintenance unavailable    | Partner and Vendor    | Check resource status, vendor SLA, and fallback options                   |
+| HOS-12 | Privacy or safety-sensitive complaint   | Risk and Approval     | Escalate, preserve evidence, and prevent unsafe message/action            |
+| HOS-13 | Clinical-decision request               | Risk and Approval     | Refuse diagnosis/treatment/triage decision and route to clinician         |
+| HOS-14 | Multi-department morning surge          | Orchestrator          | Create one action plan across trust, capacity, vendor, billing, and tasks |
 
 ## Agent Responsibilities
 
 ### North Star Orchestrator
 
 - [x] Combine patient trust, resource capacity, partner/vendor, financial,
-      communication, and outcome findings into one recovery plan.
+      communication, and outcome findings into one action plan.
 - [x] Resolve conflicts, for example "move patients faster" versus "room
       cleaning is not complete."
 - [x] Decide which actions require manager approval.
@@ -98,7 +98,7 @@ airport, banking, supermarket, cruise, and other profiles.
       pharmacy delay, and staff interaction.
 - [x] Connect complaints to location, department, resource, time window,
       partner, and evidence.
-- [x] Draft approved service-recovery or patient-facing message text.
+- [x] Draft approved service response or patient-facing message text.
 - [x] Escalate safety, privacy, or high-severity complaints.
 
 ### Resource And Capacity Agent
@@ -118,7 +118,7 @@ airport, banking, supermarket, cruise, and other profiles.
 - [x] Assign tasks to role aliases.
 - [x] Prioritize tasks by urgency, risk, approval state, and service window.
 - [x] Track acknowledgement and completion.
-- [x] Escalate missed tasks before the recovery window is lost.
+- [x] Escalate missed tasks before the service window is lost.
 
 ### Partner And Vendor Agent
 
@@ -171,14 +171,17 @@ increasing, discharge rooms are blocked, outpatient wait time is rising, pharmac
 stock is low, a lab partner response is delayed, and billing/insurance approvals
 are stuck.
 
-North Star should produce one recovery plan:
+North Star should produce one action plan:
 
+- accept a customer or patient complaint through WhatsApp or a Salesforce
+  intake fallback;
 - identify whether the root issue is complaint, capacity, partner, billing,
   stock, staffing, or mixed;
 - check hospital resources and evidence;
 - refuse any clinical treatment or triage decision;
 - create approved service, cleaning, restock, vendor, and billing actions;
-- send internal Slack and WhatsApp-style alerts;
+- send Slack internal alerts and approved WhatsApp mobile/customer-safe
+  messages;
 - record outcome metrics and audit trail.
 
 ## Detailed Checklist
@@ -320,6 +323,39 @@ file before editing.
       reason.
 - [x] Mock channel results are visible in the hospital command center.
 
+### 7A. Signal Intake And Channel Routing
+
+- [x] Document that inbound channels create `Signal` and `Evidence`, while
+      outbound channels execute approved `Action` records.
+- [x] Document WhatsApp as the preferred customer/patient complaint intake
+      story.
+- [x] Document Slack as internal worker and manager coordination.
+- [x] Document WhatsApp outbound as either urgent internal mobile alert or
+      approved customer acknowledgement.
+- [x] Document email as a future protected action adapter, not a current live
+      capability.
+- [x] Verify live outbound Slack delivery when `SLACK_WEBHOOK_URL` is
+      configured.
+- [x] Verify live outbound WhatsApp delivery when Twilio Sandbox credentials are
+      configured.
+- [ ] Implement or simulate a Twilio inbound WhatsApp webhook that maps customer
+      complaint text to `INGEST_EVENT`.
+- [ ] Add a Salesforce command-center complaint/signal intake fallback for demo
+      reliability.
+- [ ] Convert inbound complaint text into a synthetic customer alias, source
+      channel, timestamp, department/resource hints, correlation ID, and
+      evidence ID.
+- [ ] Trigger or request an Agentforce recommendation from the newly stored
+      intake evidence.
+- [ ] Show the manager approval step before Slack, WhatsApp, vendor, pharmacy,
+      billing, refund, email, or customer-facing response execution.
+- [ ] Add optional email/vendor notification only behind the protected action
+      boundary if time remains.
+- [ ] Add a demo script beat: WhatsApp complaint enters, Salesforce stores
+      evidence, agents create an action plan, manager approves, Slack alerts
+      staff, WhatsApp sends approved reply or internal mobile alert, outcomes
+      update.
+
 ### 8. Voice Mode
 
 - [x] Add voice transcript request panel or fixture path.
@@ -414,10 +450,12 @@ repo has code for the demo.
   with `HFS_ServiceContractTest`, `HFS_RelationshipServiceImplTest`,
   `HFS_AgentActionServiceTest`, and `HFS_RelationshipControllerTest` passing;
   `npm run demo:reset`, `npm run demo:seed`, and the connected demo run passed;
-  the run wrote `artifacts/demo-harness-result.json`. The connected run
-  completed the work item with 10 actions, 11 outcomes, 11 evaluations,
-  `CLINICAL_DECISION_REFUSED`, and honest `MOCK_SENT` Slack and WhatsApp-style
-  delivery because channel credentials were not configured.
+  the live-channel run wrote
+  `artifacts/demo-harness-result-live-channels-simple-language.json`. The
+  connected run completed the work item with 10 actions, 11 outcomes, 11
+  evaluations, `CLINICAL_DECISION_REFUSED`, `SEND_SLACK_ALERT.status = SENT`,
+  and `SEND_WHATSAPP_ALERT.status = SENT`. This proves approved outbound
+  channels, not live inbound WhatsApp customer intake.
 - Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` only if the team wants
   a real Slack webhook; WhatsApp-style delivery uses Twilio or Meta credentials
   only if they are configured outside Git. Missing credentials are acceptable

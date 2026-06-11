@@ -98,7 +98,7 @@ Agentforce topics:
 Agentforce action catalog:
 
 - explain North Star case;
-- draft evidence-backed recovery plan;
+- draft evidence-backed action plan;
 - request manager approval;
 - summarize partner or capacity response;
 - draft internal staff alerts;
@@ -150,7 +150,19 @@ Slack:
 WhatsApp:
 
 - use Twilio Sandbox or Meta Cloud API only if setup is complete;
+- outbound WhatsApp may be used for urgent internal mobile alerts or approved
+  customer acknowledgements;
+- inbound WhatsApp should be modeled as signal intake through `INGEST_EVENT`,
+  not as an approved action execution;
 - otherwise use an honest WhatsApp-style internal alert mock.
+
+Email:
+
+- email is not implemented in the current MVP;
+- model email as a future protected action adapter for suppliers, insurers,
+  vendors, formal customer follow-up, or manager-approved notices;
+- do not claim email delivery until a `SEND_EMAIL` or equivalent adapter exists
+  and passes tests.
 
 Acceptance:
 
@@ -158,6 +170,48 @@ Acceptance:
 - approved action execution returns queued, success, or honest mock status with
   correlation IDs;
 - channel results are visible in the command center.
+
+## Workstream 4A: Customer And Staff Signal Intake
+
+This is the missing "front door" for the demo. North Star needs a credible path
+for complaints and operational signals to enter the system before agents can
+reason over them.
+
+Preferred intake paths:
+
+1. WhatsApp inbound through Twilio Sandbox for customer, patient, visitor, or
+   client complaints.
+2. Salesforce command-center intake screen for a reliable live-demo fallback.
+3. System event fixtures for queue spike, low stock, vendor delay, billing
+   issue, room readiness, or equipment issue.
+4. Manual or voice transcript request for staff asking what to do next.
+
+Inbound WhatsApp flow:
+
+1. Customer sends a WhatsApp message to the sandbox number.
+2. Twilio posts the webhook payload to a MuleSoft/source adapter endpoint.
+3. The adapter maps the message to `INGEST_EVENT` with source channel,
+   synthetic customer alias, timestamp, department/resource hints, and
+   correlation ID.
+4. Salesforce stores the signal and evidence. No diagnosis, treatment, dosage,
+   triage, clinical priority, personal medical record, or raw phone number is
+   stored in demo fixtures.
+5. Agentforce drafts an action plan from the new evidence.
+6. A manager approves protected actions.
+7. MuleSoft sends approved Slack, WhatsApp, vendor, billing, stock, task, or
+   future email actions.
+8. Outcomes return to Salesforce and update the command center.
+
+Acceptance:
+
+- inbound complaint text can become a `Signal` and `Evidence` record;
+- source channel and correlation ID are preserved;
+- personal contact data is masked or represented by a synthetic alias;
+- Agentforce uses the new evidence in its recommendation;
+- customer-facing replies are not sent without approval;
+- clinical requests are refused or routed to a clinician;
+- the command center shows the intake source, evidence, approval, action, and
+  outcome.
 
 ## Workstream 5: North Star Command Center
 
@@ -235,6 +289,32 @@ Focused checks:
 
 ## Build Checklist
 
+### Customer Complaint And Signal Intake
+
+- [x] Document channel direction: inbound creates `Signal` and `Evidence`;
+      outbound executes approved `Action` records.
+- [x] Document WhatsApp as the preferred customer/patient complaint intake
+      channel.
+- [x] Document Slack as internal worker and manager coordination.
+- [x] Document WhatsApp outbound as urgent internal mobile alert or approved
+      customer acknowledgement.
+- [x] Document email as a future protected action adapter, not a current live
+      capability.
+- [ ] Add or simulate a Twilio inbound WhatsApp webhook that maps customer
+      complaint text to `INGEST_EVENT`.
+- [ ] Add a Salesforce complaint/signal intake screen or command-center action
+      as the reliable fallback.
+- [ ] Convert inbound text into synthetic customer alias, source channel,
+      timestamp, department/resource hints, correlation ID, and evidence ID.
+- [ ] Ensure the new intake evidence can trigger or request an Agentforce
+      recommendation.
+- [ ] Block customer-facing replies until manager approval and privacy-safe
+      wording checks pass.
+- [ ] Add tests or harness evidence for WhatsApp complaint intake through
+      recommendation, approval, Slack alert, WhatsApp response, and outcome.
+- [ ] Add optional email/vendor adapter only if time remains and it can stay
+      behind the approval boundary.
+
 ### Slack And Approved MuleSoft Execution
 
 - [x] Inspect `docs/mulesoft-api-contract.md`, `mulesoft/README.md`, and the
@@ -296,12 +376,12 @@ Focused checks:
       complaints, queues, stock, billing, insurance, tasks, channel aliases, and
       outcomes.
 - [x] Create an initial realistic complaint cluster for wait time, room
-      readiness, billing, pharmacy delay, and service recovery.
+      readiness, billing, pharmacy delay, and service response.
 - [x] Add complaint variants for isolated complaints, food, accessibility,
       privacy, and staff interaction.
 - [x] Create initial partner response examples for lab delay and
       billing/insurance follow-up.
-- [x] Add partner recovery variants: lab recovered, insurance approved,
+- [x] Add partner response variants: lab recovered, insurance approved,
       laundry delayed, food supplier delayed, and maintenance unresolved.
 - [x] Create late, malformed, duplicate, out-of-order, idempotency-conflict, and
       invalid-hash event examples.

@@ -70,6 +70,34 @@ contract tests can be applied to Mule flows and real connectors without
 embedding mock behavior in production configuration. The runtime is an
 integration test harness, not a substitute for an Anypoint deployment.
 
+## Signal Intake Path
+
+Inbound customer and operations signals must enter through event intake, not
+through approved action execution.
+
+Use `POST /v1/events` for:
+
+- WhatsApp customer, patient, visitor, or client complaints;
+- Salesforce command-center intake form submissions;
+- queue, room, stock, partner, payment, billing, or equipment system events;
+- staff voice or manual transcript requests that need governed reasoning.
+
+For WhatsApp inbound, the intended production-shaped flow is:
+
+1. Twilio Sandbox or Meta receives the customer message.
+2. MuleSoft maps the webhook payload to an `INGEST_EVENT` request.
+3. The event stores source channel, timestamp, safe message summary, synthetic
+   customer alias, department/resource hints, tenant, correlation ID, and
+   content hash.
+4. Salesforce stores the signal and evidence.
+5. Agentforce drafts an action plan from that evidence.
+6. Any reply, Slack alert, vendor request, billing review, stock request,
+   refund, or future email action still requires approval first.
+
+Inbound WhatsApp must never directly send medical advice, decide clinical
+priority, issue refunds, email vendors, change stock, or message staff without
+the protected action boundary.
+
 ## Slack Alert Path
 
 Slack is modeled as the protected action type `SEND_SLACK_ALERT` behind
@@ -110,10 +138,24 @@ Use the Twilio WhatsApp address format, for example
 configured but rejects or times out, the runtime records `FAILED`; it never
 claims `SENT` unless Twilio accepts the message.
 
+Use outbound WhatsApp for urgent internal mobile alerts or approved
+customer-facing acknowledgements. For hackathon safety, customer-facing replies
+must be privacy-safe, approval-gated, and free of diagnosis, treatment, dosage,
+triage, or clinical-priority wording.
+
 For an Anypoint build, keep the same Process API boundary and implement the
 WhatsApp write-back as a Mule flow or connector-backed adapter behind
 `POST /v1/actions/executions`. Store Twilio or Meta credentials in Anypoint
 secure configuration, never in Git.
+
+## Email Path
+
+Email is not implemented in the current MVP. If added, it should be a protected
+action such as `SEND_EMAIL` or `SEND_VENDOR_EMAIL` behind
+`EXECUTE_APPROVED_ACTION`. It is most useful for suppliers, insurers, vendors,
+formal customer follow-up, and manager-approved notices. Do not claim live email
+delivery until an adapter exists, credentials are stored outside Git, and tests
+prove approval-gated execution.
 
 ## Clinical Boundary
 

@@ -27,7 +27,7 @@ TENANT = "demo-mauritius"
 CORRELATION = "30000000-0000-4000-8000-000000000001"
 WORK_ITEM = "a0E000000000001AAA"
 HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
-HOSPITAL_MODEL_PROFILE = "hospital_recovery_reasoning"
+HOSPITAL_MODEL_PROFILE = "hospital_action_reasoning"
 HOSPITAL_APPROVAL_POLICY = "north-star-hospital-manager-approval-v1"
 
 
@@ -1218,7 +1218,7 @@ def fixtures() -> dict[str, Any]:
     ]
     explain_response["inferences"] = [
         {
-            "inferenceId": "inference-recovery-plan",
+            "inferenceId": "inference-action-plan",
             "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
                 "fact-inventory-cover",
@@ -1926,7 +1926,7 @@ def fixtures() -> dict[str, Any]:
 
     hospital_request = base_request("DRAFT_RELATIONSHIP_RECOMMENDATION")
     hospital_request["desiredOutcome"] = (
-        "Coordinate a non-clinical hospital operations recovery plan for the "
+        "Coordinate a non-clinical hospital operations action plan for the "
         "morning surge without bypassing manager approval."
     )
     hospital_request["modelProfile"] = HOSPITAL_MODEL_PROFILE
@@ -2119,7 +2119,7 @@ def fixtures() -> dict[str, Any]:
                 },
                 {
                     "findingType": "CONTRADICTORY",
-                    "summary": "Patient trust asks for immediate service recovery while capacity evidence shows discharge rooms are still blocked.",
+                    "summary": "Patient trust asks for a quick service response while capacity evidence shows discharge rooms are still blocked.",
                     "action": "Send only approved internal updates now and delay room-release claims until cleaning and porter acknowledgements arrive.",
                     "evidenceIds": [
                         hospital_complaint["evidenceId"],
@@ -2141,7 +2141,7 @@ def fixtures() -> dict[str, Any]:
                 {
                     "findingType": "LATE",
                     "summary": "The lab partner acknowledgement is forty-two minutes late against the operational SLA.",
-                    "action": "Escalate the partner case only through approved vendor recovery.",
+                    "action": "Escalate the partner case only through an approved vendor follow-up.",
                     "evidenceIds": [hospital_partner["evidenceId"]],
                 },
                 {
@@ -2169,7 +2169,7 @@ def fixtures() -> dict[str, Any]:
             "conflictResolutions": [
                 {
                     "conflictId": "conflict-patient-trust-capacity",
-                    "tension": "Patient Trust wants immediate service recovery, but Resource and Capacity shows rooms are still blocked.",
+                    "tension": "Patient Trust wants a quick service response, but Resource and Capacity shows rooms are still blocked.",
                     "resolution": "Approve privacy-safe updates and service tasks now; release rooms only after housekeeping and porter acknowledgements.",
                     "winningPolicy": "Operational safety and evidence-backed capacity claims override speed-only messaging.",
                     "evidenceIds": [
@@ -2178,7 +2178,7 @@ def fixtures() -> dict[str, Any]:
                     ],
                 },
                 {
-                    "conflictId": "conflict-finance-stock-recovery",
+                    "conflictId": "conflict-finance-stock-action-plan",
                     "tension": "Pharmacy restock, refund, voucher, and billing work all compete for manager attention during the surge.",
                     "resolution": "Bundle stock, billing, insurer, voucher, and payment actions under one approval so the manager sees the full exposure.",
                     "winningPolicy": "Protected financial and inventory actions require manager approval before execution.",
@@ -2209,14 +2209,14 @@ def fixtures() -> dict[str, Any]:
                     "changedByEvidenceId": hospital_capacity["evidenceId"],
                     "before": "Treat complaints as patient-trust messages only.",
                     "after": "Tie complaints to blocked rooms, queue pressure, staff tasks, pharmacy cover, billing exposure, and outcomes.",
-                    "decision": "Capacity evidence expands one complaint cluster into cross-functional recovery.",
+                    "decision": "Capacity evidence expands one complaint cluster into a cross-functional action plan.",
                     "evidenceIds": [
                         hospital_complaint["evidenceId"],
                         hospital_capacity["evidenceId"],
                     ],
                 },
                 {
-                    "trigger": "Billing and payment evidence changed the recovery risk.",
+                    "trigger": "Billing and payment evidence changed the financial risk.",
                     "changedByEvidenceId": hospital_billing["evidenceId"],
                     "before": "Open a simple billing review.",
                     "after": "Estimate exposure and route refund, voucher, compensation, payment, and insurer follow-up through approval.",
@@ -2282,9 +2282,9 @@ def fixtures() -> dict[str, Any]:
                     "requiresHumanApproval": True,
                 },
                 {
-                    "actionId": "action-service-recovery-message",
+                    "actionId": "action-service-response-message",
                     "actionType": "CREATE_PATIENT_SERVICE_TASK",
-                    "statement": "Draft a privacy-safe service-recovery message for manager approval, without clinical advice or personal data.",
+                    "statement": "Draft a privacy-safe service response message for manager approval, without clinical advice or personal data.",
                     "evidenceIds": [
                         hospital_complaint["evidenceId"],
                         hospital_billing["evidenceId"],
@@ -2294,7 +2294,7 @@ def fixtures() -> dict[str, Any]:
                 {
                     "actionId": "action-manager-review",
                     "actionType": "CREATE_MANAGER_REVIEW_TASK",
-                    "statement": "Create the operations manager review task that keeps the recovery plan approved, auditable, and time-boxed.",
+                    "statement": "Create the operations manager review task that keeps the action plan approved, auditable, and time-boxed.",
                     "evidenceIds": [hospital_billing["evidenceId"]],
                     "requiresHumanApproval": True,
                 },
@@ -2317,9 +2317,9 @@ def fixtures() -> dict[str, Any]:
                 "evidenceIds": [hospital_clinical["evidenceId"]],
             },
             "serviceRecoveryDraft": {
-                "draftId": "draft-service-recovery-hospital-surge",
+                "draftId": "draft-service-response-hospital-surge",
                 "audience": "Patient and visitor service desk",
-                "message": "We are coordinating outpatient queue support, room-readiness work, pharmacy stock recovery, and billing follow-up. A hospital operations manager is reviewing the protected actions, and clinical questions will be handled by clinical staff.",
+                "message": "We are coordinating outpatient queue support, room-readiness work, pharmacy stock support, and billing follow-up. A hospital operations manager is reviewing the protected actions, and clinical questions will be handled by clinical staff.",
                 "approvalRequired": True,
                 "approvalId": "a08000000000021AAA",
                 "policyReason": "Patient-facing service messages are protected because they may affect trust, refunds, billing, and clinical-boundary wording.",
@@ -2350,7 +2350,7 @@ def fixtures() -> dict[str, Any]:
                 {
                     "decisionState": "MODIFY",
                     "approvalId": "a08000000000021AAA",
-                    "actionId": "action-service-recovery-message",
+                    "actionId": "action-service-response-message",
                     "approverRole": "Patient Experience Manager",
                     "policyReason": "Patient-facing wording must remain privacy-safe and avoid clinical advice before it can be sent.",
                     "evidenceIds": [
@@ -2433,7 +2433,7 @@ def fixtures() -> dict[str, Any]:
                     "evidenceIds": [hospital_billing["evidenceId"]],
                 },
             ],
-            "explanation": "The hospital surge is cross-functional: complaints are rising, rooms are blocked, stock cover is low, a partner SLA is late, and billing approvals are stuck. The safe next step is one manager-approved operations recovery plan with clinical decisions refused.",
+            "explanation": "The hospital surge is cross-functional: complaints are rising, rooms are blocked, stock cover is low, a partner SLA is late, and billing approvals are stuck. The safe next step is one manager-approved operations action plan with clinical decisions refused.",
         },
     }
     hospital_response["audit"] = audit(
@@ -2444,7 +2444,7 @@ def fixtures() -> dict[str, Any]:
         "DRAFT_RELATIONSHIP_RECOMMENDATION"
     )
     missing_capacity_request["desiredOutcome"] = (
-        "Assess outpatient queue recovery when capacity evidence is missing."
+        "Assess outpatient queue risk when capacity evidence is missing."
     )
     missing_capacity_request["modelProfile"] = HOSPITAL_MODEL_PROFILE
     missing_capacity_response = response(
@@ -2482,7 +2482,7 @@ def fixtures() -> dict[str, Any]:
         "proposedActionType": "REQUEST_MISSING_CAPACITY_EVIDENCE",
         "rationale": (
             "Ask for current bed, room, queue, and staffing evidence before "
-            "claiming a capacity recovery plan. Continue pharmacy restock "
+            "claiming a capacity action plan. Continue pharmacy restock "
             "review and patient trust monitoring behind approval."
         ),
         "confidence": 0.68,
@@ -2792,7 +2792,7 @@ def fixtures() -> dict[str, Any]:
                 "response": overstock_response,
             },
             {
-                "name": "hospital-operations-recovery-plan",
+                "name": "hospital-operations-action-plan",
                 "request": hospital_request,
                 "response": hospital_response,
             },

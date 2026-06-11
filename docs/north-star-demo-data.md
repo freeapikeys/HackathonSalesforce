@@ -20,7 +20,7 @@ make diagnosis, treatment, dosage, triage, or clinical priority decisions.
 | Pharmacy                   | Stock risk, restock/transfer decision, counter queue    |
 | Laboratory coordination    | Partner response delay and recommendation update        |
 | Billing and insurance      | Duplicate invoice, claim approval, refund request       |
-| Food and hospitality       | Meal complaint and service recovery                     |
+| Food and hospitality       | Meal complaint and service response                     |
 | Facilities and maintenance | Equipment, lift, HVAC, or wheelchair delay              |
 
 ## Committed Synthetic Data Files
@@ -58,7 +58,7 @@ The validator proves:
 | Expected recommendation cases | 15            | `data/hospital/recommendation_cases.json`     |
 | Hospital event summaries      | 20            | `data/hospital/event_stream.json`             |
 | Supply batches                | 24            | `data/hospital/supply_batches.json`           |
-| Service recovery options      | 12            | `data/hospital/service_recovery_options.json` |
+| Service response options      | 12            | `data/hospital/service_recovery_options.json` |
 
 ## Fixture IDs
 
@@ -125,7 +125,7 @@ patient identifiers, insurer records, medical notes, or real vendor contacts.
 
 | Alias ID                          | Alias type     | Used by                                      |
 | --------------------------------- | -------------- | -------------------------------------------- |
-| `alias-patient-group-morning-001` | customer group | Complaint clusters and recovery              |
+| `alias-patient-group-morning-001` | customer group | Complaint clusters and service response      |
 | `alias-visitor-billing-queue-001` | visitor group  | Billing complaint variant                    |
 | `alias-patient-accessibility-001` | customer alias | Accessibility support variant                |
 | `role:operations-manager`         | manager role   | Final approval and Slack target              |
@@ -190,7 +190,7 @@ patient identifiers, insurer records, medical notes, or real vendor contacts.
 | `COMP-H11` | staff interaction  | Route patient experience follow-up without naming staff personally       |
 | `COMP-H12` | clinical priority  | Refuse clinical decision and route to clinician                          |
 
-## Partner Recovery Variants
+## Partner Response Variants
 
 | Variant ID | Partner signal           | Recommendation effect                                                       |
 | ---------- | ------------------------ | --------------------------------------------------------------------------- |
@@ -199,7 +199,7 @@ patient identifiers, insurer records, medical notes, or real vendor contacts.
 | `PV-H03`   | Insurer pending evidence | Keep billing review open and request approved follow-up                     |
 | `PV-H04`   | Insurer approved         | Release billing hold and mark financial exposure reduced                    |
 | `PV-H05`   | Laundry delayed          | Create fallback housekeeping or linen task                                  |
-| `PV-H06`   | Food supplier delayed    | Route meal-service recovery and avoid unsupported supplier-wide conclusions |
+| `PV-H06`   | Food supplier delayed    | Route meal-service response and avoid unsupported supplier-wide conclusions |
 | `PV-H07`   | Maintenance unresolved   | Escalate facilities case and route around unavailable resource              |
 | `PV-H08`   | Payment gateway issue    | Open payment review and preserve duplicate-charge evidence                  |
 
@@ -234,16 +234,16 @@ Expected behavior:
 
 ## Expected Outcome Metrics
 
-| Metric              | Target                                                    |
-| ------------------- | --------------------------------------------------------- |
-| Wait time reduced   | Outpatient waiting count reduced below target window      |
-| Bed released        | At least 5 blocked discharge rooms moved to ready state   |
-| Stockout avoided    | Pharmacy supply risk reduced before afternoon rush        |
-| Complaint contained | Complaint cluster acknowledged and recovery tasks created |
-| Billing resolved    | Stuck approval or duplicate invoice routed with evidence  |
-| Partner SLA         | Lab/insurance/laundry response captured with state        |
-| Staff execution     | Critical tasks acknowledged within 10 minutes             |
-| Clinical boundary   | Clinical-decision request refused and routed safely       |
+| Metric              | Target                                                   |
+| ------------------- | -------------------------------------------------------- |
+| Wait time reduced   | Outpatient waiting count reduced below target window     |
+| Bed released        | At least 5 blocked discharge rooms moved to ready state  |
+| Stockout avoided    | Pharmacy supply risk reduced before afternoon rush       |
+| Complaint contained | Complaint cluster acknowledged and service tasks created |
+| Billing resolved    | Stuck approval or duplicate invoice routed with evidence |
+| Partner SLA         | Lab/insurance/laundry response captured with state       |
+| Staff execution     | Critical tasks acknowledged within 10 minutes            |
+| Clinical boundary   | Clinical-decision request refused and routed safely      |
 
 ## Expected Recommendation Cases
 

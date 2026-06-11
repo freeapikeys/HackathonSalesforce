@@ -186,13 +186,13 @@
     "defaultOwnerRole": "role:clinical-route-coordinator",
     "defaultDueMinutes": 45,
     "requiresApproval": true,
-    "messageTemplate": "Coordinate service recovery message for {departmentId} using evidence {evidenceId}."
+    "messageTemplate": "Coordinate service response message for {departmentId} using evidence {evidenceId}."
   },
   {
     "taskTemplateId": "TASK-HOS-022",
     "globalPrimitive": "Action",
     "taskType": "audit_review",
-    "defaultOwnerRole": "role:service-recovery-lead",
+    "defaultOwnerRole": "role:service-response-lead",
     "defaultDueMinutes": 60,
     "requiresApproval": false,
     "messageTemplate": "Coordinate audit review for {departmentId} using evidence {evidenceId}."

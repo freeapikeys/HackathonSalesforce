@@ -197,12 +197,8 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Second courier route");
     expect(root.textContent).toContain("Source records");
     expect(root.textContent).toContain("Accessible source evidence");
-    expect(root.textContent).toContain(
-      "North Star hospital operations recovery"
-    );
-    expect(root.textContent).toContain(
-      "Approve hospital operations recovery actions"
-    );
+    expect(root.textContent).toContain("North Star hospital operations plan");
+    expect(root.textContent).toContain("Approve hospital operations actions");
     expect(root.textContent).toContain("Approval decision");
     expect(root.textContent).toContain("Operations tasks and channel log");
     expect(root.textContent).toContain("Voice request");
@@ -222,7 +218,7 @@ describe("c-hfs-relationship-command-center", () => {
       root.querySelector('[data-testid="voice-mode-panel"]')
     ).not.toBeNull();
     expect(root.querySelectorAll(".voice-card")).toHaveLength(2);
-    expect(root.textContent).toContain("ASK_HOSPITAL_RECOVERY_PLAN");
+    expect(root.textContent).toContain("ASK_HOSPITAL_ACTION_PLAN");
     expect(root.textContent).toContain("DRAFT_RELATIONSHIP_RECOMMENDATION");
     expect(root.textContent).toContain("No protected action executed");
     expect(root.textContent).toContain(
@@ -263,8 +259,7 @@ describe("c-hfs-relationship-command-center", () => {
       results: [
         [
           {
-            transcript:
-              "Please coordinate discharge rooms and pharmacy stock recovery"
+            transcript: "Please check discharge rooms and pharmacy stock"
           }
         ]
       ]
@@ -275,15 +270,12 @@ describe("c-hfs-relationship-command-center", () => {
       element.shadowRoot.querySelector(
         '[data-testid="voice-captured-transcript"]'
       ).textContent
-    ).toContain(
-      "Please coordinate discharge rooms and pharmacy stock recovery"
-    );
+    ).toContain("Please check discharge rooms and pharmacy stock");
     expect(handler).toHaveBeenCalledWith(
       expect.objectContaining({
         detail: expect.objectContaining({
           source: "browserSpeech",
-          transcript:
-            "Please coordinate discharge rooms and pharmacy stock recovery",
+          transcript: "Please check discharge rooms and pharmacy stock",
           protectedActionState: "No protected action executed",
           correlationId: "20000000-0000-4000-8000-000000000001",
           stateVersion: UI_STATE_VERSION

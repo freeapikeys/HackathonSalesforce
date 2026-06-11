@@ -9,11 +9,11 @@ banking, retail, cruise, and other sectors.
 
 ```mermaid
 flowchart LR
-    SOURCES["Hospital source signals<br/>complaints, capacity, stock,<br/>partner, billing, staffing"]
+    SOURCES["Hospital source signals<br/>WhatsApp complaints, intake form,<br/>capacity, stock, partner, billing"]
     CONTEXT["Evidence and context<br/>customer alias, department, location,<br/>resource, partner, policy, metric"]
     AGENTS["Agentforce analysis<br/>trust, capacity, vendor,<br/>finance, approval, communication"]
     REVIEW["Manager review<br/>facts, inference, recommendation,<br/>refusal, approval"]
-    ACTIONS["Mocked actions<br/>service task, bed cleaning,<br/>vendor case, billing review,<br/>Slack, WhatsApp-style alert"]
+    ACTIONS["Approved actions<br/>service task, bed cleaning,<br/>vendor case, billing review,<br/>Slack, WhatsApp, future email"]
     OUTCOME["Outcome<br/>wait reduced, bed released,<br/>stockout avoided, complaint contained"]
 
     SOURCES --> CONTEXT --> AGENTS --> REVIEW --> ACTIONS --> OUTCOME
@@ -27,8 +27,9 @@ clinical priority decisions are outside the demo.
 
 ## North Star Flow
 
-1. A hospital operations event arrives from a synthetic complaint, capacity,
-   resource, partner, billing, stock, or staffing source.
+1. A hospital operations signal arrives from WhatsApp inbound, a Salesforce
+   intake screen, a synthetic complaint, capacity, resource, partner, billing,
+   stock, or staffing source.
 2. The event contract validates the envelope, hash, idempotency key, sequence,
    and correlation ID.
 3. The source payload maps into Salesforce context records for global
@@ -37,7 +38,7 @@ clinical priority decisions are outside the demo.
 4. Agentforce receives only the context the current user and purpose can access.
 5. Specialist agents analyze evidence, patient trust, capacity, partner/vendor,
    financial impact, risk/approval, communication, and outcome implications.
-6. The orchestrator produces one evidence-backed recovery plan.
+6. The orchestrator produces one evidence-backed action plan.
 7. The manager approves, rejects, modifies, or defers protected actions.
 8. MuleSoft mocks execute approved write-backs and channel alerts.
 9. Outcome events return through the same intake path and refresh the command
@@ -48,7 +49,8 @@ clinical priority decisions are outside the demo.
 ```mermaid
 flowchart TB
     subgraph Sources["Hospital Operations Sources"]
-        COMP["Complaints"]
+        COMP["WhatsApp/customer complaints"]
+        FORM["Salesforce intake form"]
         CAP["Capacity and queues"]
         RES["Beds, rooms, stock, equipment"]
         PARTNER["Partner/vendor responses"]
@@ -59,7 +61,7 @@ flowchart TB
     subgraph Integration["Integration Boundary"]
         EVENTS["Event contract"]
         MULE["MuleSoft mock APIs"]
-        CHANNELS["Slack and WhatsApp-style mocks"]
+        CHANNELS["Slack, WhatsApp, future email adapters"]
     end
 
     subgraph Salesforce["Salesforce Core"]
@@ -73,7 +75,7 @@ flowchart TB
         CONTEXT["Permission-aware context"]
         ROUTER["Logical model routing"]
         AGENT["North Star agents"]
-        REC["Recovery recommendation"]
+        REC["Action recommendation"]
     end
 
     subgraph UI["Human Surface"]

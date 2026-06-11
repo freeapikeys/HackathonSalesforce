@@ -45,6 +45,37 @@ architecture. A hospital bed, hotel room, airport gate, bank account,
 supermarket batch, and cruise cabin are all `Resource` records with different
 types, policies, and actions.
 
+## Signal Intake And Channel Roles
+
+North Star should not be pitched as "the user talks to a chatbot and the bot
+magically fixes everything." The winning flow is a governed operations loop:
+signals enter, evidence is stored, agents reason, managers approve, actions
+execute, and outcomes are measured.
+
+Inbound channels create `Signal` and `Evidence`:
+
+| Channel                  | Primary role                                                              |
+| ------------------------ | ------------------------------------------------------------------------- |
+| WhatsApp inbound         | Customer, patient, visitor, or client complaint intake                    |
+| Salesforce intake screen | Staff-entered complaint, low-stock issue, room issue, or billing issue    |
+| System event             | Queue spike, stock threshold, vendor delay, payment issue, or room status |
+| Voice/manual transcript  | Staff request that becomes a governed recommendation request              |
+
+Outbound channels execute approved `Action` records:
+
+| Channel           | Primary role                                                                |
+| ----------------- | --------------------------------------------------------------------------- |
+| Slack             | Internal worker and manager coordination                                    |
+| WhatsApp outbound | Urgent mobile alert or approved customer acknowledgement                    |
+| Email             | Future supplier, insurer, vendor, or formal customer follow-up adapter      |
+| Salesforce tasks  | Role-owned work for cleaning, porter, pharmacy, billing, vendor, and review |
+
+For the hospital demo, WhatsApp should be the customer-facing intake story and
+Slack should be the internal team coordination story. WhatsApp outbound should
+be used carefully: internal urgent alerts are safe for the demo, while
+customer-facing replies need approval, privacy-safe text, template/consent
+handling, and no clinical advice.
+
 ## Winning Demo Story
 
 A large private hospital starts the morning with several connected problems:
@@ -53,9 +84,9 @@ A large private hospital starts the morning with several connected problems:
   readiness;
 - discharge rooms are blocked because cleaning and porter tasks are delayed;
 - pharmacy stock for a common supply is low before the afternoon rush;
-- a lab partner response is late, which affects service recovery;
+- a lab partner response is late, which affects the service response;
 - insurance and billing approvals are stuck for several cases;
-- the operations manager needs one coordinated recovery plan before queues get
+- the operations manager needs one coordinated action plan before queues get
   worse.
 
 A weak assistant says "notify the manager." North Star does more:
@@ -65,7 +96,7 @@ A weak assistant says "notify the manager." North Star does more:
 2. checks beds, rooms, queues, staff roles, pharmacy stock, vendor status, and
    approval state;
 3. separates facts from inference and names missing evidence;
-4. creates a recovery plan across patient trust, capacity, operations, vendor,
+4. creates an action plan across patient trust, capacity, operations, vendor,
    billing, risk, and communications;
 5. refuses diagnosis, treatment, dosage, or clinical priority decisions;
 6. requires business approval before protected actions;
@@ -79,7 +110,7 @@ chatbots.
 ### North Star Orchestrator Topic
 
 Owns the final decision trace. It expands one issue across all affected
-business functions, resolves tradeoffs, and produces one recovery plan.
+business functions, resolves tradeoffs, and produces one action plan.
 
 Responsibilities:
 
@@ -112,10 +143,10 @@ Responsibilities:
 
 - classify complaints into waiting time, room readiness, food, billing,
   discharge delay, staff interaction, lost item, pharmacy delay, accessibility,
-  safety, privacy, or service recovery;
+  safety, privacy, or service response;
 - detect repeated complaint clusters;
 - draft manager-approved messages;
-- recommend service recovery actions that require approval when consequential.
+- recommend service response actions that require approval when consequential.
 
 ### Resource And Capacity Agent
 
@@ -143,7 +174,7 @@ Responsibilities:
 
 ### Partner And Vendor Agent
 
-Owns external dependency recovery.
+Owns external dependency follow-up.
 
 Responsibilities:
 
@@ -202,11 +233,11 @@ Responsibilities:
    signals.
 2. **Context:** show department, resource, complaint, vendor, queue, billing,
    approval, and stock evidence.
-3. **Conflict:** patient trust wants fast recovery, capacity shows blocked
+3. **Conflict:** patient trust wants a fast response, capacity shows blocked
    rooms, pharmacy stock is low, and billing approvals are stuck.
 4. **Partner response:** lab, insurance, laundry, or pharmacy partner evidence
    changes the recommendation.
-5. **Recommendation:** Agentforce proposes one recovery plan with cited facts,
+5. **Recommendation:** Agentforce proposes one action plan with cited facts,
    inferences, missing evidence, blocked clinical actions, and approval needs.
 6. **Approval:** operations manager approves protected actions.
 7. **Action:** MuleSoft mock executes approved tasks, vendor follow-up, Slack
@@ -235,6 +266,8 @@ records, diagnoses, or treatment details.
 - Do not claim diagnosis, treatment, dosage, or clinical triage capability.
 - Do not claim real hospital, patient, insurer, WhatsApp, Slack, or vendor
   production integrations unless configured and demonstrated.
+- Do not claim live WhatsApp customer intake or email delivery until the inbound
+  webhook or email adapter exists and has been tested.
 - Do not claim machine-learning forecasting if the prototype uses deterministic
   rules. Say "rules-based baseline with model-ready architecture."
 - Do not let Agentforce execute protected external actions directly.
@@ -253,7 +286,9 @@ The demo succeeds when judges see:
   arrives;
 - clinical decision requests refused or routed to human clinicians;
 - manager approval gating consequential changes;
-- Slack and WhatsApp-style alerts reaching internal roles or honest mock
-  channels;
+- a customer complaint entering through WhatsApp or a Salesforce intake
+  fallback, then becoming evidence and an action plan;
+- Slack alerts reaching internal roles, plus WhatsApp alerts or honest mock
+  channel evidence;
 - Salesforce records preserving evidence, tasks, approvals, actions, and
   outcomes.

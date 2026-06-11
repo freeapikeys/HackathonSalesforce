@@ -79,7 +79,7 @@
       "name": "Food and hospitality",
       "globalPrimitive": "Location",
       "serviceAreaType": "partner_coordination",
-      "riskSummary": "meal complaint, supplier delay, service recovery",
+      "riskSummary": "meal complaint, supplier delay, service response",
       "businessDate": "2026-06-13",
       "timezone": "Indian/Mauritius"
     },
@@ -97,7 +97,7 @@
       "name": "Patient experience desk",
       "globalPrimitive": "Location",
       "serviceAreaType": "ward",
-      "riskSummary": "complaint cluster, message approval, recovery follow-up",
+      "riskSummary": "complaint cluster, message approval, response follow-up",
       "businessDate": "2026-06-13",
       "timezone": "Indian/Mauritius"
     }
@@ -892,7 +892,7 @@
       "evidenceId": "evidence-role-021"
     },
     {
-      "roleAliasId": "role:service-recovery-lead",
+      "roleAliasId": "role:service-response-lead",
       "globalPrimitive": "Actor",
       "departmentId": "DEPT-EMERGENCY-INTAKE-002",
       "canApproveProtectedAction": false,

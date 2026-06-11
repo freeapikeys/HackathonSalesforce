@@ -126,7 +126,7 @@
     },
     {
       "path": "data/hospital/service_recovery_options.json",
-      "contains": ["service recovery options"]
+      "contains": ["service response options"]
     }
   ]
 }

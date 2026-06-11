@@ -216,7 +216,7 @@ export function mapCommandCenterPayload(payload, purpose) {
       },
       operationsExecution: {
         primaryRecommendation: taskActions.length
-          ? "Approved Salesforce action records map the recovery plan into role-owned operations tasks."
+          ? "Approved Salesforce action records map the action plan into role-owned operations tasks."
           : "No operations task action records have been logged yet.",
         tasks: taskActions.map((action, index) =>
           taskAction(action, index, entityById)

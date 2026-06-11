@@ -30,7 +30,10 @@ class FakeWhatsAppTransport:
 
 class MockAdapterTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.api = build_default_api(slack_webhook_url="")
+        self.api = build_default_api(
+            slack_webhook_url="",
+            whatsapp_provider_config=None,
+        )
         self.contract = self.api.contract
 
     def request(

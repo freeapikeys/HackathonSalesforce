@@ -11,7 +11,7 @@ This assignment is not "make random fake data." It is building the evidence
 base that lets the agents reason:
 
 - Patient Trust Agent needs patient/visitor complaints, complaint clusters,
-  service recovery context, and safe message drafts.
+  service response context, and safe message drafts.
 - Resource and Capacity Agent needs beds, rooms, queues, staff, pharmacy stock,
   equipment, and service counters.
 - Partner and Vendor Agent needs lab, laundry, insurer, payment, food,
@@ -21,7 +21,7 @@ base that lets the agents reason:
 - Operations Execution Agent needs staff roles, task templates, channel
   aliases, acknowledgements, due times, and escalation paths.
 - The Orchestrator Topic needs all of the above to produce one coordinated
-  recovery plan.
+  action plan.
 
 ## What The Project Already Has
 
@@ -82,7 +82,7 @@ hospital ticket demo.
 | Locations                     | 20 to 30     | Wards, counters, rooms, pharmacy, lab, billing    |
 | Resource types                | 8 to 12      | Beds, rooms, queues, stock, equipment, counters   |
 | Resource records              | 80 to 120    | Enough capacity and availability evidence         |
-| Synthetic customer aliases    | 40 to 60     | Patient/visitor complaint and service recovery    |
+| Synthetic customer aliases    | 40 to 60     | Patient/visitor complaint and service response    |
 | Staff role aliases            | 20 to 30     | Task routing without personal data                |
 | Partner/vendor aliases        | 8 to 12      | Lab, laundry, insurer, payment, food, maintenance |
 | Complaint records             | 50 to 70     | Isolated complaints plus meaningful clusters      |
@@ -126,7 +126,7 @@ through canonical `data/hospital/` files:
   duplicate, malformed, late, out-of-order, idempotency-conflict, invalid-hash,
   and clinical-refusal cases.
 - `data/hospital/supply_batches.json`: 24 hospital supply batches.
-- `data/hospital/service_recovery_options.json`: 12 service recovery options.
+- `data/hospital/service_recovery_options.json`: 12 service response options.
 
 Run `npm run check:demo-data` to verify counts, evidence links, role aliases,
 approval flags, and absence of personal contact or clinical decision data.
@@ -144,7 +144,7 @@ approval flags, and absence of personal contact or clinical decision data.
 | Billing and insurance      | duplicate invoice, claim approval stuck, refund request         |
 | Food and hospitality       | meal complaint, allergy-safe service escalation, supplier delay |
 | Facilities and maintenance | wheelchair, lift, HVAC, equipment, or cleaning issue            |
-| Patient experience desk    | complaint cluster, service recovery, approved message           |
+| Patient experience desk    | complaint cluster, service response, approved message           |
 
 ## Required Partners
 
@@ -323,7 +323,7 @@ Create these exact scenario types:
 4. Pharmacy stock risk requiring approved restock or transfer.
 5. Lab partner delay that changes the recommendation after response.
 6. Billing or insurance approval stuck and needing financial approval.
-7. Food or hospitality complaint requiring service recovery.
+7. Food or hospitality complaint requiring service response.
 8. Accessibility support delay requiring task assignment.
 9. Privacy or safety-sensitive complaint requiring escalation.
 10. Clinical triage/treatment request that North Star refuses.
@@ -347,7 +347,7 @@ Create 12 to 15 expected recommendation notes:
 | Case ID | Situation                           | Expected behavior                                             |
 | ------- | ----------------------------------- | ------------------------------------------------------------- |
 | ER-H01  | clean queue pressure                | move staff or open service counter after approval if needed   |
-| ER-H02  | complaint cluster plus blocked beds | create cleaning/porter tasks and patient trust recovery       |
+| ER-H02  | complaint cluster plus blocked beds | create cleaning/porter tasks and patient trust response       |
 | ER-H03  | partner response received           | update plan and preserve previous recommendation history      |
 | ER-H04  | pharmacy stock risk                 | restock, transfer, or substitute operationally after approval |
 | ER-H05  | billing approval stalled            | open billing/insurance review and estimate exposure           |
@@ -400,7 +400,7 @@ Consumes:
 - customer aliases;
 - department and location context;
 - safety/privacy flags;
-- service recovery status.
+- service response status.
 
 Produces:
 
