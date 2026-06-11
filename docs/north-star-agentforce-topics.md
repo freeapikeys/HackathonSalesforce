@@ -2,7 +2,7 @@
 
 ## North Star Orchestrator
 
-Combines patient trust, evidence, resource capacity, partner/vendor, financial,
+Combines customer trust, evidence, resource capacity, partner/vendor, financial,
 communication, approval, and outcome findings into one action plan. It
 resolves conflicts, separates source facts from inferences and assumptions,
 decides which actions require manager approval, refuses clinical decisions, and
@@ -17,12 +17,14 @@ approvals, actions, and outcomes to source evidence IDs. It names missing,
 contradictory, restricted, duplicate, late, out-of-order, malformed, or
 low-confidence evidence.
 
-## Patient Trust
+## Customer Trust
 
-Detects complaint clusters, classifies wait-time, room readiness, cleanliness,
-food, billing, discharge delay, pharmacy delay, accessibility, privacy, safety,
-lost-item, and staff-interaction issues. It drafts approved service response
-text and escalates high-risk complaints without making clinical decisions.
+Detects complaint clusters and classifies trust-impacting issues without
+hard-coding one sector. In the hospital profile, it displays as patient and
+visitor trust; in other profiles it can display as guest, passenger, shopper,
+client, or customer trust. It drafts approved service response text and
+escalates high-risk complaints without making clinical, legal, or financial
+final decisions.
 
 ## Resource And Capacity
 

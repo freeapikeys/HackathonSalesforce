@@ -48,6 +48,14 @@
 output application/json
 var bodyText = ((payload.Body default payload.body default "") as String)
 var lowerBody = lower(bodyText)
+var mediaCount = ((payload.NumMedia default "0") as Number) default 0
+var firstMediaType = ((payload.MediaContentType0 default "") as String)
+var firstMediaKind =
+    if (firstMediaType startsWith "audio/") "voice note"
+    else if (firstMediaType startsWith "image/") "image"
+    else if (firstMediaType == "application/pdf") "document"
+    else if (mediaCount > 0) "media file"
+    else "none"
 fun hasAny(words) = sizeOf(words filter ((word) -> lowerBody contains word)) > 0
 var categories = [
     if (hasAny(["wait", "queue", "delay"])) "WAIT_TIME" else null,
@@ -58,7 +66,8 @@ var categories = [
     if (hasAny(["food", "meal"])) "FOOD_SERVICE" else null,
     if (hasAny(["rude", "staff"])) "STAFF_INTERACTION" else null,
     if (hasAny(["privacy", "unsafe"])) "PRIVACY_SAFETY" else null,
-    if (hasAny(["diagnose", "dosage", "treatment", "triage", "chest pain", "emergency"])) "CLINICAL_REQUEST" else null
+    if (hasAny(["diagnose", "dosage", "treatment", "triage", "chest pain", "emergency"])) "CLINICAL_REQUEST" else null,
+    if (mediaCount > 0) "VOICE_OR_MEDIA" else null
 ] filter ($ != null)
 var safeCategories = if (isEmpty(categories)) ["GENERAL_SERVICE"] else categories
 var summaryParts = [
@@ -70,7 +79,8 @@ var summaryParts = [
     if (safeCategories contains "FOOD_SERVICE") "food service" else null,
     if (safeCategories contains "STAFF_INTERACTION") "staff interaction" else null,
     if (safeCategories contains "PRIVACY_SAFETY") "privacy or safety" else null,
-    if (safeCategories contains "CLINICAL_REQUEST") "clinical review" else null
+    if (safeCategories contains "CLINICAL_REQUEST") "clinical review" else null,
+    if (safeCategories contains "VOICE_OR_MEDIA") firstMediaKind else null
 ] filter ($ != null)
 ---
 {
@@ -80,8 +90,15 @@ var summaryParts = [
     sourceChannel: "Twilio Sandbox WhatsApp",
     rawBody: bodyText,
     from: ((payload.From default "") as String),
-    messageSummary: "A WhatsApp message mentions " ++ (summaryParts joinBy ", ") ++ ".",
+    messageSummary:
+        if (!isEmpty(bodyText)) "A WhatsApp message mentions " ++ (summaryParts joinBy ", ") ++ "."
+        else if (mediaCount > 0) "A WhatsApp " ++ firstMediaKind ++ " was received and needs transcript or extraction before action."
+        else "A WhatsApp message needs service review.",
     categories: safeCategories,
+    mediaCount: mediaCount,
+    firstMediaType: firstMediaType,
+    firstMediaKind: firstMediaKind,
+    mediaUrl0: ((payload.MediaUrl0 default "") as String),
     clinicalRequest: safeCategories contains "CLINICAL_REQUEST"
 }]]></ee:set-payload>
             </ee:message>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Create role-owned service tasks, due windows, acknowledgements, missed-task escalation, and execution notes.</description>
+    <developerName>p_16jg5000000abFZ_Operations_Execution</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Convert recommendations into proposed Action records such as action:create-service-task, action:send-internal-alert, or action:request-partner-followup.</description>
+        <developerName>north_star_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Name owner role aliases, due time, service window, priority, approval requirement, fallback path, and outcome metric.</description>
+        <developerName>north_star_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Do not execute tasks directly from Agentforce. Only propose tasks and route protected actions for approval.</description>
+        <developerName>north_star_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName
+  >p_16jg5000000abFZ_Operations_Execution</localDeveloperName>
+    <masterLabel>Operations Execution</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic for task coordination, owner assignment, service windows, acknowledgement tracking, and missed work escalation.</scope>
+</GenAiPlugin>

@@ -188,6 +188,48 @@ export function mapCommandCenterPayload(payload, purpose) {
         recoveryWindow: "Not recorded",
         serviceAreas: "Not recorded"
       },
+      profile: {
+        core: "North Star universal operations",
+        activeProfile: "profile:hospital-private-large",
+        displayName: "Active business profile",
+        boundary:
+          "Profile wording may change by sector; primitive and action contracts stay universal."
+      },
+      profileMappings: [
+        {
+          id: "mapping-room-readiness-live",
+          issue: "Room readiness",
+          primitive: "Resource",
+          hospital: "Discharge room readiness",
+          hotel: "Guest room readiness",
+          airport: "Gate readiness",
+          banking: "Service case readiness",
+          supermarket: "Checkout or shelf readiness",
+          cruise: "Cabin readiness"
+        },
+        {
+          id: "mapping-stock-risk-live",
+          issue: "Stock risk",
+          primitive: "Resource",
+          hospital: "Pharmacy stock risk",
+          hotel: "Linen or food stock risk",
+          airport: "Equipment stock risk",
+          banking: "Card, cash, or document stock risk",
+          supermarket: "Shelf or cold-chain stock risk",
+          cruise: "Galley or cabin-supply stock risk"
+        },
+        {
+          id: "mapping-complaint-live",
+          issue: "Customer complaint",
+          primitive: "Signal",
+          hospital: "Patient or visitor complaint",
+          hotel: "Guest complaint",
+          airport: "Passenger complaint",
+          banking: "Client complaint",
+          supermarket: "Shopper complaint",
+          cruise: "Guest complaint"
+        }
+      ],
       resourcePositions: [],
       riskPulses: [
         { id: "risk-complaint", label: "Complaint", status: "Review" },
@@ -268,10 +310,10 @@ export function mapCommandCenterPayload(payload, purpose) {
           output: "Signal and evidence coverage"
         },
         {
-          id: "handoff-patient-trust-live",
-          agent: "Patient Trust",
+          id: "handoff-customer-trust-live",
+          agent: "Customer Trust",
           contribution:
-            "Classifies complaint evidence and drafts safe follow-up needs.",
+            "Classifies complaint evidence and drafts safe follow-up needs. The active profile controls whether this displays as patient, guest, passenger, or client trust.",
           output: "Complaint impact"
         },
         {

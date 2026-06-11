@@ -3,7 +3,7 @@
     <header class="hero">
       <div>
         <p class="eyebrow">North Star command center</p>
-        <h1 id="command-center-title">Hospital operations action plan</h1>
+        <h1 id="command-center-title">Universal operations action plan</h1>
       </div>
       <span class="version">{uiVersionLabel}</span>
     </header>
@@ -136,6 +136,62 @@
           </ul>
         </section>
 
+        <template lwc:if={state.case.profileMappings}>
+          <section
+            class="panel"
+            data-testid="profile-mapping-cards"
+            aria-labelledby="profile-mapping-heading"
+          >
+            <div class="panel-heading">
+              <div>
+                <p class="section-kicker">Universal core</p>
+                <h2 id="profile-mapping-heading">
+                  {state.case.profile.activeProfile}
+                </h2>
+                <p class="profile-boundary">{state.case.profile.boundary}</p>
+              </div>
+              <span class="status-pill">{state.case.profile.displayName}</span>
+            </div>
+            <div class="mapping-grid">
+              <template
+                for:each={state.case.profileMappings}
+                for:item="mapping"
+              >
+                <article key={mapping.id} class="mapping-card">
+                  <span class="entity-type">{mapping.primitive}</span>
+                  <h3>{mapping.issue}</h3>
+                  <dl>
+                    <div>
+                      <dt>Hospital</dt>
+                      <dd>{mapping.hospital}</dd>
+                    </div>
+                    <div>
+                      <dt>Hotel</dt>
+                      <dd>{mapping.hotel}</dd>
+                    </div>
+                    <div>
+                      <dt>Airport</dt>
+                      <dd>{mapping.airport}</dd>
+                    </div>
+                    <div>
+                      <dt>Banking</dt>
+                      <dd>{mapping.banking}</dd>
+                    </div>
+                    <div>
+                      <dt>Supermarket</dt>
+                      <dd>{mapping.supermarket}</dd>
+                    </div>
+                    <div>
+                      <dt>Cruise</dt>
+                      <dd>{mapping.cruise}</dd>
+                    </div>
+                  </dl>
+                </article>
+              </template>
+            </div>
+          </section>
+        </template>
+
         <template lwc:if={showRestrictedNotice}>
           <div class="permission-notice" data-testid="restricted-notice">
             You can inspect the accessible case facts. Approval controls are not
@@ -228,7 +284,7 @@
             <section class="panel" aria-labelledby="complaint-heading">
               <div class="panel-heading">
                 <div>
-                  <p class="section-kicker">Patient trust</p>
+                  <p class="section-kicker">Customer trust</p>
                   <h2 id="complaint-heading">Complaint cluster</h2>
                 </div>
               </div>

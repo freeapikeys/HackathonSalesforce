@@ -187,6 +187,12 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
     expect(root.textContent).toContain("North Star hospital operations surge");
     expect(root.textContent).toContain("North Star operations signals");
+    expect(root.textContent).toContain("profile:hospital-private-large");
+    expect(root.textContent).toContain("Guest room readiness");
+    expect(root.textContent).toContain("Passenger fee dispute");
+    expect(root.textContent).toContain("Client complaint");
+    expect(root.textContent).toContain("Shopper complaint");
+    expect(root.textContent).toContain("Cabin readiness");
     expect(root.textContent).toContain("Resource, partner, and capacity");
     expect(root.textContent).toContain("Complaint cluster");
     expect(root.textContent).toContain("WhatsApp intake");
@@ -197,6 +203,7 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Conflicts before orchestration");
     expect(root.textContent).toContain("10-agent coordination trace");
     expect(root.textContent).toContain("North Star Orchestrator");
+    expect(root.textContent).toContain("Customer Trust");
     expect(root.textContent).toContain("Outcome Learning");
     expect(root.textContent).toContain(
       "Partner and capacity response changed the plan"
@@ -220,6 +227,9 @@ describe("c-hfs-relationship-command-center", () => {
         '[data-testid="agent-handoff-trace"] .action-list li'
       )
     ).toHaveLength(10);
+    expect(
+      root.querySelectorAll('[data-testid="profile-mapping-cards"] article')
+    ).toHaveLength(5);
   });
 
   it("renders governed voice transcript requests without protected execution", () => {

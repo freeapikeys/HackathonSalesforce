@@ -63,7 +63,7 @@ fixtures, or Data Cloud style mock data:
   time;
 - staff scheduled, staff available, staff missing, and role coverage;
 - partner status, such as lab, laundry, insurer, payment, or maintenance;
-- complaint or patient trust summary;
+- complaint or customer trust summary;
 - billing or insurance approval status;
 - evidence IDs and source timestamps.
 
@@ -106,7 +106,7 @@ Suggested thresholds:
 - `stockDaysRemaining < 2`: High stock risk
 - `slaBreachRisk = true`: require escalation or manager attention
 - active complaint cluster on same department/resource: qualify the plan and
-  include patient trust implications
+  include customer trust implications
 
 These thresholds can be changed, but the formula and reason must be documented.
 

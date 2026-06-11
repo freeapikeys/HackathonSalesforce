@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Classify customer trust issues and draft safe follow-up questions and approved response wording.</description>
+    <developerName>p_16jg5000000abFZ_Customer_Trust</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Use Customer Trust as the core role. The active profile may display patient, guest, passenger, shopper, or client trust.</description>
+        <developerName>north_star_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >For vague complaints, ask one short follow-up only: "What happened?" For detailed complaints, identify issue type, affected resource, location, time window, possible cause, approval need, and outcome metric.</description>
+        <developerName>north_star_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Keep replies short, human, and same-language when safe. Do not promise action before manager approval.</description>
+        <developerName>north_star_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName>p_16jg5000000abFZ_Customer_Trust</localDeveloperName>
+    <masterLabel>Customer Trust</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic for "I have a problem", complaints, dissatisfaction, service issues, trust risk, and customer-facing follow-up wording.</scope>
+</GenAiPlugin>

@@ -10,7 +10,7 @@ staff, phone, supplier, insurer, credential, or medical-record data.
 This assignment is not "make random fake data." It is building the evidence
 base that lets the agents reason:
 
-- Patient Trust Agent needs patient/visitor complaints, complaint clusters,
+- Customer Trust Agent needs patient/visitor complaints, complaint clusters,
   service response context, and safe message drafts.
 - Resource and Capacity Agent needs beds, rooms, queues, staff, pharmacy stock,
   equipment, and service counters.
@@ -86,7 +86,7 @@ hospital ticket demo.
 | Staff role aliases            | 20 to 30     | Task routing without personal data                |
 | Partner/vendor aliases        | 8 to 12      | Lab, laundry, insurer, payment, food, maintenance |
 | Complaint records             | 50 to 70     | Isolated complaints plus meaningful clusters      |
-| Complaint clusters            | 8 to 10      | Direct input to Patient Trust reasoning           |
+| Complaint clusters            | 8 to 10      | Direct input to Customer Trust reasoning          |
 | Queue/capacity records        | 60 to 100    | Time-band capacity pressure                       |
 | Pharmacy/supply records       | 30 to 50     | Stock risk, transfer, restock decisions           |
 | Billing/insurance cases       | 20 to 30     | Financial exposure and approval routing           |
@@ -347,7 +347,7 @@ Create 12 to 15 expected recommendation notes:
 | Case ID | Situation                           | Expected behavior                                             |
 | ------- | ----------------------------------- | ------------------------------------------------------------- |
 | ER-H01  | clean queue pressure                | move staff or open service counter after approval if needed   |
-| ER-H02  | complaint cluster plus blocked beds | create cleaning/porter tasks and patient trust response       |
+| ER-H02  | complaint cluster plus blocked beds | create cleaning/porter tasks and customer trust response      |
 | ER-H03  | partner response received           | update plan and preserve previous recommendation history      |
 | ER-H04  | pharmacy stock risk                 | restock, transfer, or substitute operationally after approval |
 | ER-H05  | billing approval stalled            | open billing/insurance review and estimate exposure           |
@@ -391,7 +391,7 @@ style. Include:
 
 ## How The Agents Will Use The Data
 
-### Patient Trust Agent
+### Customer Trust Agent
 
 Consumes:
 
@@ -405,7 +405,7 @@ Consumes:
 Produces:
 
 - isolated versus meaningful cluster classification;
-- patient trust risk;
+- customer trust risk;
 - approved message draft;
 - escalation or monitoring recommendation;
 - missing evidence list.

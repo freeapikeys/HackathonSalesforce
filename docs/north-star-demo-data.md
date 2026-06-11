@@ -153,7 +153,7 @@ patient identifiers, insurer records, medical notes, or real vendor contacts.
 
 | Response ID                               | Meaning                      | Recommended interpretation                              |
 | ----------------------------------------- | ---------------------------- | ------------------------------------------------------- |
-| `PARTNER_RESPONSE-LAB-DELAYED`            | Lab partner confirms delay   | Escalate vendor case and update patient trust plan      |
+| `PARTNER_RESPONSE-LAB-DELAYED`            | Lab partner confirms delay   | Escalate vendor case and update customer trust plan     |
 | `PARTNER_RESPONSE-LAB-RECOVERED`          | Lab partner resolves backlog | Update recommendation and reduce escalation severity    |
 | `PARTNER_RESPONSE-INSURANCE-PENDING`      | Insurer needs more evidence  | Keep billing review open and request follow-up          |
 | `PARTNER_RESPONSE-INSURANCE-APPROVED`     | Claim approval received      | Release billing hold and update outcome                 |
@@ -250,7 +250,7 @@ Expected behavior:
 | Case ID | Situation                   | Expected North Star behavior                                            |
 | ------- | --------------------------- | ----------------------------------------------------------------------- |
 | ER-H01  | Clean queue pressure        | Recommend opening support counter or moving staff after approval        |
-| ER-H02  | Complaint cluster plus beds | Combine patient trust, cleaning, porter, and bed-release tasks          |
+| ER-H02  | Complaint cluster plus beds | Combine customer trust, cleaning, porter, and bed-release tasks         |
 | ER-H03  | Lab delayed                 | Escalate only the affected lab case and preserve SLA evidence           |
 | ER-H04  | Lab recovered               | Update recommendation without deleting the earlier delay history        |
 | ER-H05  | Pharmacy stock risk         | Recommend restock or transfer after approval; no clinical substitute    |

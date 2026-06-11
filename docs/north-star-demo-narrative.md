@@ -17,7 +17,7 @@ approval surface. It shows rising patient
 complaints, blocked discharge rooms, a growing outpatient queue, pharmacy stock
 pressure, delayed lab response, and stuck billing/insurance approvals.
 
-North Star reveals the conflict. The Patient Trust Agent sees a complaint
+North Star reveals the conflict. The Customer Trust Agent sees a complaint
 cluster around waiting time, room readiness, and billing confusion. The Resource
 and Capacity Agent shows blocked beds, staff coverage gaps, and low stock days
 remaining for a pharmacy item. The Partner and Vendor Agent shows a delayed lab
@@ -60,7 +60,7 @@ capacity, pharmacy stock, lab response, billing approval, staffing baseline,
 and prior outcome evidence.
 
 Next, the presenter asks Agentforce for the recommendation. The specialist
-agents disagree in useful ways: patient trust wants a fast response, capacity
+agents disagree in useful ways: customer trust wants a fast response, capacity
 shows blocked rooms, partner evidence shows a lab delay, and financial evidence
 shows billing exposure. The orchestrator explains which statements are source
 facts, which are inferences, what is missing, and what needs approval.

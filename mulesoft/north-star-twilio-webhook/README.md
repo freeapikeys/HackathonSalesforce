@@ -13,6 +13,16 @@ Flow:
    recommendation, and pending approval records.
 5. Twilio receives a short TwiML acknowledgement.
 
+Text messages are mapped into safe complaint summaries. Voice notes, images,
+and PDFs are mapped as media evidence hints with media count, media type, media
+kind, and a media URL hash. The app does not store raw media URLs or claim
+transcription/extraction until a trusted service supplies it.
+
+If Twilio receives the inbound message but the WhatsApp user sees no reply,
+check Twilio's latest outbound-reply status. Error `63038` is a Twilio account
+daily-limit/account-restriction failure; the webhook can be healthy while
+Twilio blocks delivery.
+
 No secrets belong in this folder. Override these properties at runtime:
 
 - `salesforce.host`

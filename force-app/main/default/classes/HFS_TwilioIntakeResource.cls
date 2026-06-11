@@ -21,6 +21,8 @@ global with sharing class HFS_TwilioIntakeResource {
     public List<String> followUpQuestions;
     public List<String> rootCauseHypotheses;
     public List<String> missingEvidence;
+    public String languageCode;
+    public String replyLanguage;
     public String commandCenterHint;
     public HFS_ServiceError error;
   }
@@ -56,6 +58,9 @@ global with sharing class HFS_TwilioIntakeResource {
         ? summarize(rawBody)
         : clean(providedSummary, 500);
       HFS_ServiceSupport.requireText(summary, 'messageSummary');
+      String languageCode = detectedLanguage(payload, rawBody + ' ' + summary);
+      String replyLanguage = languageName(languageCode);
+      Map<String, Object> mediaInfo = mediaInfo(payload);
 
       String correlationId = text(
         payload,
@@ -116,6 +121,9 @@ global with sharing class HFS_TwilioIntakeResource {
         'fromHash' => fromHash,
         'bodyHash' => bodyHash,
         'messageSummary' => summary,
+        'media' => mediaInfo,
+        'languageCode' => languageCode,
+        'replyLanguage' => replyLanguage,
         'categories' => categories,
         'affectedPrimitives' => affectedPrimitives,
         'followUpQuestions' => followUpQuestions,
@@ -159,7 +167,7 @@ global with sharing class HFS_TwilioIntakeResource {
           : 'WHATSAPP_COMPLAINT_RECEIVED',
         Subject__c = clinicalRequest
           ? 'WhatsApp request routed to clinician or manager'
-          : 'WhatsApp patient complaint received',
+          : 'WhatsApp customer complaint received',
         Occurred_At__c = observedAt,
         Observed_At__c = observedAt,
         Source_Sequence__c = 1,
@@ -212,7 +220,14 @@ global with sharing class HFS_TwilioIntakeResource {
         Evidence_Type__c = clinicalRequest
           ? 'CLINICAL_DECISION_REFUSAL'
           : 'WHATSAPP_COMPLAINT_INTAKE',
-        Summary__c = evidenceSummary(summary, categories, clinicalRequest),
+        Summary__c = evidenceSummary(
+          summary,
+          categories,
+          clinicalRequest,
+          languageCode,
+          replyLanguage,
+          mediaInfo
+        ),
         Content_Hash__c = safeHash,
         Source_URI__c = 'urn:north-star:twilio:whatsapp:sandbox',
         Captured_At__c = observedAt
@@ -254,9 +269,7 @@ global with sharing class HFS_TwilioIntakeResource {
 
       response.success = true;
       response.status = 'ACCEPTED';
-      response.message = clinicalRequest
-        ? 'Received. North Star routed this to a clinician or manager.'
-        : 'Received. North Star created an operations case for manager review.';
+      response.message = responseMessage(clinicalRequest, languageCode);
       response.tenantKey = tenantKey;
       response.correlationId = correlationId;
       response.eventId = eventRecord.Id;
@@ -269,6 +282,8 @@ global with sharing class HFS_TwilioIntakeResource {
       response.followUpQuestions = followUpQuestions;
       response.rootCauseHypotheses = hypotheses;
       response.missingEvidence = missingEvidence;
+      response.languageCode = languageCode;
+      response.replyLanguage = replyLanguage;
       response.commandCenterHint = commandCenterHint(workItem.Id);
       RestContext.response.statusCode = 202;
       return response;
@@ -394,7 +409,7 @@ global with sharing class HFS_TwilioIntakeResource {
       External_Key__c = aliasKey,
       Tenant_Key__c = tenantKey,
       Entity_Type__c = 'CUSTOMER_ALIAS',
-      Display_Name__c = 'WhatsApp patient or visitor alias',
+      Display_Name__c = 'WhatsApp customer alias',
       Source_Event__c = sourceEventId,
       Valid_From__c = observedAt,
       Confidence__c = 0.86,
@@ -489,25 +504,62 @@ global with sharing class HFS_TwilioIntakeResource {
       String.join(hypotheses, '; ') +
       '. Missing evidence: ' +
       String.join(missingEvidence, '; ') +
-      '. Recommended next step: manager reviews one action plan across patient trust, capacity, pharmacy or inventory, billing, communication, and outcome tracking before any protected action runs.';
+      '. Recommended next step: manager reviews one action plan across customer trust, capacity, pharmacy or inventory, billing, communication, and outcome tracking before any protected action runs.';
   }
 
   private static String evidenceSummary(
     String summary,
     List<String> categories,
-    Boolean clinicalRequest
+    Boolean clinicalRequest,
+    String languageCode,
+    String replyLanguage,
+    Map<String, Object> mediaInfo
   ) {
+    String mediaNote = mediaNote(mediaInfo);
     if (clinicalRequest) {
-      return 'WhatsApp message may need clinical judgement. North Star stored only a safe summary and routed the case to clinician or manager review.';
+      return 'WhatsApp message may need clinical judgement. North Star stored only a safe summary and routed the case to clinician or manager review. Language: ' +
+        replyLanguage +
+        ' (' +
+        languageCode +
+        ').' +
+        mediaNote;
     }
     return clean(
       'WhatsApp complaint summary: ' +
         summary +
         ' Categories: ' +
         String.join(categories, ', ') +
+        '. Language: ' +
+        replyLanguage +
+        ' (' +
+        languageCode +
+        ')' +
+        mediaNote +
         '. Raw phone and raw message text were not stored.',
       32000
     );
+  }
+
+  private static String responseMessage(
+    Boolean clinicalRequest,
+    String languageCode
+  ) {
+    if (clinicalRequest) {
+      if (languageCode == 'fr') {
+        return 'Recu. North Star a envoye cela a un clinicien ou manager.';
+      }
+      if (languageCode == 'mfe') {
+        return 'Resi. North Star inn avoy sa ar enn clinician ouswa manager.';
+      }
+      return 'Received. North Star routed this to a clinician or manager.';
+    }
+    if (languageCode == 'fr') {
+      return 'Recu. North Star a cree un dossier operations pour revue manager.';
+    }
+    if (languageCode == 'mfe') {
+      return 'Resi. North Star inn kree enn case operasyon pou manager verifye.';
+    }
+    return 'Received. North Star created an operations case for manager review.';
   }
 
   private static String workSummary(
@@ -534,6 +586,96 @@ global with sharing class HFS_TwilioIntakeResource {
     return 'MEDIUM';
   }
 
+  private static String detectedLanguage(
+    Map<String, Object> payload,
+    String textValue
+  ) {
+    String explicitLanguage = firstText(
+      payload,
+      new List<String>{
+        'languageCode',
+        'language',
+        'detectedLanguage',
+        'customerLanguage',
+        'EndUserLanguage'
+      },
+      ''
+    );
+    String normalizedExplicit = normalizeLanguage(explicitLanguage);
+    if (!String.isBlank(normalizedExplicit)) {
+      return normalizedExplicit;
+    }
+    String normalized = String.valueOf(textValue).toLowerCase();
+    if (
+      containsAny(
+        normalized,
+        new List<String>{
+          'mo ',
+          'mo pe',
+          'mo finn',
+          'pena',
+          'enn ',
+          'pa pe',
+          'kouma',
+          'mersi',
+          'kapav'
+        }
+      )
+    ) {
+      return 'mfe';
+    }
+    if (
+      containsAny(
+        normalized,
+        new List<String>{
+          'bonjour',
+          'merci',
+          'facture',
+          'retard',
+          'attente',
+          'chambre',
+          'probleme',
+          'pharmacie'
+        }
+      )
+    ) {
+      return 'fr';
+    }
+    return 'en';
+  }
+
+  private static String normalizeLanguage(String value) {
+    String normalized = String.valueOf(value).trim().toLowerCase();
+    if (String.isBlank(normalized) || normalized == 'null') {
+      return null;
+    }
+    if (normalized.startsWith('fr')) {
+      return 'fr';
+    }
+    if (
+      normalized == 'mfe' ||
+      normalized.contains('creole') ||
+      normalized.contains('kreol') ||
+      normalized.contains('mauritian')
+    ) {
+      return 'mfe';
+    }
+    if (normalized.startsWith('en')) {
+      return 'en';
+    }
+    return null;
+  }
+
+  private static String languageName(String languageCode) {
+    if (languageCode == 'fr') {
+      return 'French';
+    }
+    if (languageCode == 'mfe') {
+      return 'Mauritian Creole';
+    }
+    return 'English';
+  }
+
   private static List<String> categories(
     Map<String, Object> payload,
     String textValue
@@ -544,6 +686,9 @@ global with sharing class HFS_TwilioIntakeResource {
       for (Object item : (List<Object>) explicitValue) {
         add(values, clean(String.valueOf(item), 60).toUpperCase());
       }
+    }
+    if (intValue(payload, 'mediaCount') > 0) {
+      add(values, 'VOICE_OR_MEDIA');
     }
     String normalized = String.valueOf(textValue).toLowerCase();
     if (containsAny(normalized, new List<String>{ 'wait', 'queue', 'delay' })) {
@@ -613,7 +758,8 @@ global with sharing class HFS_TwilioIntakeResource {
     if (
       categories.contains('WAIT_TIME') ||
       categories.contains('ROOM_READINESS') ||
-      categories.contains('PHARMACY_STOCK')
+      categories.contains('PHARMACY_STOCK') ||
+      categories.contains('VOICE_OR_MEDIA')
     ) {
       add(primitives, 'Resource');
       add(primitives, 'Metric');
@@ -643,6 +789,11 @@ global with sharing class HFS_TwilioIntakeResource {
     }
     if (categories.contains('PHARMACY_STOCK')) {
       questions.add('Which item or prescription pickup is delayed?');
+    }
+    if (categories.contains('VOICE_OR_MEDIA')) {
+      questions.add(
+        'Can you send one short text summary if the voice note or document is unclear?'
+      );
     }
     if (questions.isEmpty()) {
       questions.add('Which service area should the manager review first?');
@@ -683,6 +834,11 @@ global with sharing class HFS_TwilioIntakeResource {
     if (categories.contains('LAB_VENDOR')) {
       values.add('A lab partner response may be affecting the service update.');
     }
+    if (categories.contains('VOICE_OR_MEDIA')) {
+      values.add(
+        'The media needs transcript or document extraction before protected action.'
+      );
+    }
     if (values.isEmpty()) {
       values.add(
         'The complaint needs evidence from the affected service area.'
@@ -707,6 +863,9 @@ global with sharing class HFS_TwilioIntakeResource {
     }
     if (categories.contains('LAB_VENDOR')) {
       values.add('partner SLA acknowledgement');
+    }
+    if (categories.contains('VOICE_OR_MEDIA')) {
+      values.add('media transcript or document extraction confidence');
     }
     return values;
   }
@@ -779,6 +938,67 @@ global with sharing class HFS_TwilioIntakeResource {
       return (Boolean) value;
     }
     return String.valueOf(value).toLowerCase() == 'true';
+  }
+
+  private static Integer intValue(Map<String, Object> payload, String key) {
+    Object value = payload.get(key);
+    if (value == null) {
+      return 0;
+    }
+    try {
+      return Integer.valueOf(String.valueOf(value));
+    } catch (Exception ignored) {
+      return 0;
+    }
+  }
+
+  private static Map<String, Object> mediaInfo(Map<String, Object> payload) {
+    Integer mediaCount = intValue(payload, 'mediaCount');
+    String mediaType = firstText(
+      payload,
+      new List<String>{ 'firstMediaType', 'MediaContentType0' },
+      ''
+    );
+    String mediaKind = firstText(
+      payload,
+      new List<String>{ 'firstMediaKind', 'mediaKind' },
+      ''
+    );
+    String mediaUrl = firstText(
+      payload,
+      new List<String>{ 'mediaUrl0', 'MediaUrl0' },
+      ''
+    );
+    if (String.isBlank(mediaKind) && !String.isBlank(mediaType)) {
+      String normalizedType = mediaType.toLowerCase();
+      if (normalizedType.startsWith('audio/')) {
+        mediaKind = 'voice note';
+      } else if (normalizedType.startsWith('image/')) {
+        mediaKind = 'image';
+      } else if (normalizedType == 'application/pdf') {
+        mediaKind = 'document';
+      } else {
+        mediaKind = 'media file';
+      }
+    }
+    return new Map<String, Object>{
+      'hasMedia' => mediaCount > 0,
+      'mediaCount' => mediaCount,
+      'firstMediaType' => clean(mediaType, 80),
+      'firstMediaKind' => clean(mediaKind, 80),
+      'mediaUrlHash' => hashText(mediaUrl),
+      'rawMediaUrlStored' => false,
+      'transcriptStatus' => mediaCount > 0 ? 'PENDING_OR_MANUAL' : 'NONE'
+    };
+  }
+
+  private static String mediaNote(Map<String, Object> mediaInfo) {
+    if (mediaInfo == null || mediaInfo.get('hasMedia') != true) {
+      return '';
+    }
+    return ' Media: ' +
+      String.valueOf(mediaInfo.get('firstMediaKind')) +
+      ' received; transcript or extraction is required before protected action.';
   }
 
   private static Boolean containsAny(String haystack, List<String> needles) {

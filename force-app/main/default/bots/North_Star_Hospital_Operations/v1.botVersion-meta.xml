@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<BotVersion xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>v1</fullName>
+    <articleAnswersGPTEnabled>false</articleAnswersGPTEnabled>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message
+        >Hi, I am North Star. Tell me the issue in one sentence. I will map it to evidence, approvals, actions, and outcomes.</message>
+                <messageIdentifier
+        >c62fca50-8555-4395-8c11-a3686782a0ab</messageIdentifier>
+            </botMessages>
+            <stepIdentifier
+      >36574c6a-753a-4412-b3b5-a47be082826d</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier
+      >3e2565fd-c511-4e98-beb9-ab79ce722b8f</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Welcome</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>North Star start</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message
+        >Sorry, it looks like something has gone wrong.</message>
+                <messageIdentifier
+        >72ada961-fc1e-4d8a-af48-95f5c09ad2a0</messageIdentifier>
+            </botMessages>
+            <stepIdentifier
+      >c63e7b7c-7cd4-4197-9d26-27080b7569b7</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <stepIdentifier
+      >d658fdcc-774d-422a-b0ec-cb9a293fc336</stepIdentifier>
+            <type>Wait</type>
+        </botSteps>
+        <developerName>Error_Handling</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label
+    >Unfortunately, a system error occurred. Let us start again.</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <botDialogs>
+        <botSteps>
+            <botMessages>
+                <message
+        >One moment while I connect you to the next available service representative.</message>
+                <messageIdentifier
+        >44676716-6821-4143-bb9a-5a4122cbde26</messageIdentifier>
+            </botMessages>
+            <stepIdentifier
+      >821136f5-cc9a-49af-8e65-0ec155ba0291</stepIdentifier>
+            <type>Message</type>
+        </botSteps>
+        <botSteps>
+            <conversationSystemMessage>
+                <type>Transfer</type>
+            </conversationSystemMessage>
+            <stepIdentifier
+      >548d8ded-444e-47e2-ba8f-d0ce52a8614a</stepIdentifier>
+            <type>SystemMessage</type>
+        </botSteps>
+        <developerName>Transfer_To_Agent</developerName>
+        <isPlaceholderDialog>false</isPlaceholderDialog>
+        <label>Transfer To Agent</label>
+        <showInFooterMenu>false</showInFooterMenu>
+    </botDialogs>
+    <citationsEnabled>false</citationsEnabled>
+    <company>North Star</company>
+    <conversationDefinitionPlanners>
+        <genAiPlannerName>North_Star_Hospital_Operations</genAiPlannerName>
+    </conversationDefinitionPlanners>
+    <conversationVariables>
+        <dataType>Text</dataType>
+        <description
+    >North Star maps profile-specific operations context into universal evidence, approvals, actions, and outcomes.</description>
+        <developerName>VerifiedCustomerId</developerName>
+        <includeInPrompt>false</includeInPrompt>
+        <label>VerifiedCustomerId</label>
+        <visibility>Internal</visibility>
+    </conversationVariables>
+    <defaultStdObjForContactIdFltrEnabled
+  >false</defaultStdObjForContactIdFltrEnabled>
+    <entryDialog>Welcome</entryDialog>
+    <intentDisambiguationEnabled>false</intentDisambiguationEnabled>
+    <intentV3Enabled>false</intentV3Enabled>
+    <isScriptCompatibleAgent>false</isScriptCompatibleAgent>
+    <knowledgeActionEnabled>false</knowledgeActionEnabled>
+    <knowledgeFallbackEnabled>false</knowledgeFallbackEnabled>
+    <role
+  >North Star is a general operations command center, not a generic support chatbot. If the user only says they have a problem or issue, reply only: "What happened?" If the user names two or more issues, do not ask which issue to handle; map the case into universal primitives and draft one evidence-backed recommendation with facts, likely causes, missing evidence, involved agents, manager approval needs, protected actions, and outcome metrics. Require manager approval for protected actions. Keep hospital wording only as the active demo profile. Do not make clinical, legal, or financial final decisions and do not execute protected actions directly.</role>
+    <smallTalkEnabled>false</smallTalkEnabled>
+    <staticPromptsEnabled>false</staticPromptsEnabled>
+    <stopRecPrompts>false</stopRecPrompts>
+    <stopWelcomePrompts>false</stopWelcomePrompts>
+    <surfacesEnabled>false</surfacesEnabled>
+    <toneType>Neutral</toneType>
+</BotVersion>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Track partner/vendor delays, SLA risk, response evidence, and approved follow-up requests.</description>
+    <developerName>p_16jg5000000abFZ_Partner_and_Vendor</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Use Partner as the core primitive. A lab, laundry, insurer, airline, supplier, payment processor, and vendor are all partners.</description>
+        <developerName>north_star_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Identify SLA window, delay reason, response evidence, fallback option, approval need, and communication target.</description>
+        <developerName>north_star_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Vendor email or partner follow-up is protected. Propose it, but do not execute without approval.</description>
+        <developerName>north_star_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName
+  >p_16jg5000000abFZ_Partner_and_Vendor</localDeveloperName>
+    <masterLabel>Partner and Vendor</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic for external dependency delays, supplier issues, insurer or processor follow-up, SLA risk, and partner evidence updates.</scope>
+</GenAiPlugin>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Measure what changed after approved actions and feed outcome evidence back into the next recommendation.</description>
+    <developerName>p_16jg5000000abFZ_Outcome_Learning</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Track actual outcomes, expected outcomes, metric definitions, time windows, evidence IDs, provider status, and next-plan changes.</description>
+        <developerName>north_star_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Compare whether the issue improved, stayed open, got worse, or needs more evidence. Do not call a message delivery an outcome by itself.</description>
+        <developerName>north_star_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Keep outcome wording simple: what changed, how measured, by when, and what North Star should learn for the next issue.</description>
+        <developerName>north_star_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName>p_16jg5000000abFZ_Outcome_Learning</localDeveloperName>
+    <masterLabel>Outcome Learning</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic after actions are approved or completed, or when the user asks what changed, what worked, or what to measure next.</scope>
+</GenAiPlugin>

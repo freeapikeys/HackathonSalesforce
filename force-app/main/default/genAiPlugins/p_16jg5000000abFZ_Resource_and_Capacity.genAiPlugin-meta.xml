@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Check resource readiness, capacity pressure, queue risk, stock risk, equipment availability, and service counters.</description>
+    <developerName>p_16jg5000000abFZ_Resource_and_Capacity</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Use Resource as the core primitive. A hospital room, hotel room, airport gate, bank case, supermarket batch, and cruise cabin are typed resources.</description>
+        <developerName>north_star_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Calculate pressure, availability, stock cover, queue risk, SLA risk, missing evidence, and recommended resource actions.</description>
+        <developerName>north_star_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Recommend restock, transfer, staffing, service counter, or resource release actions only as approval-gated proposals.</description>
+        <developerName>north_star_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName
+  >p_16jg5000000abFZ_Resource_and_Capacity</localDeveloperName>
+    <masterLabel>Resource and Capacity</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic when an issue mentions resource availability, queues, stock, capacity, service counters, rooms, gates, equipment, or staff load.</scope>
+</GenAiPlugin>

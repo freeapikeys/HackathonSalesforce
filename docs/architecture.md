@@ -9,9 +9,9 @@ banking, retail, cruise, and other sectors.
 
 ```mermaid
 flowchart LR
-    SOURCES["Hospital source signals<br/>Twilio WhatsApp complaints,<br/>capacity, stock, partner, billing"]
+    SOURCES["Profile source signals<br/>Twilio WhatsApp complaints,<br/>capacity, stock, partner, billing"]
     CONTEXT["Evidence and context<br/>customer alias, department, location,<br/>resource, partner, policy, metric"]
-    AGENTS["Agentforce analysis<br/>trust, capacity, vendor,<br/>finance, approval, communication"]
+    AGENTS["Agentforce analysis<br/>customer trust, capacity, vendor,<br/>finance, approval, communication"]
     REVIEW["Manager review<br/>facts, inference, recommendation,<br/>refusal, approval"]
     ACTIONS["Approved actions<br/>service task, bed cleaning,<br/>vendor case, billing review,<br/>Slack, WhatsApp, vendor email queue"]
     OUTCOME["Outcome<br/>wait reduced, bed released,<br/>stockout avoided, complaint contained"]
@@ -37,7 +37,7 @@ clinical priority decisions are outside the demo.
    primitives: signal, evidence, customer alias, department, location, resource,
    partner, policy, recommendation, approval, action, outcome, and metric.
 4. Agentforce receives only the context the current user and purpose can access.
-5. Specialist agents analyze evidence, patient trust, capacity, partner/vendor,
+5. Specialist agents analyze evidence, customer trust, capacity, partner/vendor,
    financial impact, risk/approval, communication, and outcome implications.
 6. The orchestrator produces one evidence-backed action plan.
 7. The manager approves, rejects, modifies, or defers protected actions.

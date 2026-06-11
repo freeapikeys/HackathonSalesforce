@@ -8,7 +8,9 @@ Salesforce, Agentforce, MuleSoft, model gateway, LWC, and harness contracts
 already present in the repository.
 
 The first task is specialization through global primitives and a hospital
-profile, not reinvention.
+profile, not reinvention. Keep the core general: profile IDs, primitive IDs,
+agent names, action IDs, and skill names must be sector-neutral. Hospital terms
+belong in the active profile rendering and demo data only.
 
 ## Current Starting Point
 
@@ -35,6 +37,10 @@ Tasks:
 2. Use existing HFS records before adding metadata.
 3. Keep the model reusable for hotel, airport, banking, supermarket, and other
    profiles.
+4. Use general IDs such as `profile:hospital-private-large`,
+   `resource:room`, `resource:stock-item`, `resource:service-counter`,
+   `action:send-internal-alert`, `action:create-service-task`, and
+   `action:request-partner-followup`.
 
 Initial mapping:
 
@@ -86,7 +92,7 @@ Agentforce topics:
 
 - North Star Orchestration;
 - Evidence and Context;
-- Patient Trust;
+- Customer Trust;
 - Resource and Capacity;
 - Operations Execution;
 - Partner and Vendor;
@@ -94,6 +100,11 @@ Agentforce topics:
 - Financial Impact;
 - Communication;
 - Outcome Learning.
+
+Profile labels may adapt the same role for demo clarity. For example, Customer
+Trust renders as patient or visitor trust in the hospital profile, guest trust
+in a hotel profile, passenger trust in an airport profile, and client trust in a
+banking profile.
 
 Agentforce action catalog:
 
@@ -217,6 +228,16 @@ Inbound WhatsApp flow:
    protected mock vendor-email actions.
 8. Outcomes return to Salesforce and update the command center.
 
+Language, voice, and document handling:
+
+- English, French, and Mauritian Creole messages use the same universal intake
+  contract and should reply in the same language when the reply is safe.
+- Voice notes become `Signal` plus transcript `Evidence`; low confidence
+  transcript evidence asks one short follow-up.
+- Documents and images become `Evidence` records. Extraction is used only as
+  evidence support; clinical, legal, or financial final decisions still require
+  human approval.
+
 Implemented bridge:
 
 - Salesforce endpoint:
@@ -244,7 +265,7 @@ Acceptance:
 ## Workstream 5: North Star Command Center
 
 Update the Lightning command center from retail operations wording to universal
-hospital operations wording.
+core wording with a hospital profile rendering.
 
 Required panels:
 
@@ -257,6 +278,8 @@ Required panels:
 - approval cockpit;
 - Slack and WhatsApp-style alert log;
 - outcome metrics.
+- cross-sector mapping cards proving the same universal issue can render as
+  hospital, hotel, airport, banking, supermarket, or cruise wording.
 
 Acceptance:
 
@@ -385,7 +408,7 @@ Focused checks:
       resources.
 - [x] Wire Agentforce-facing outputs so recommendations cite facts, separate
       inferences, and name missing evidence.
-- [x] Ensure the orchestrator recommendation includes patient trust, resource
+- [x] Ensure the orchestrator recommendation includes customer trust, resource
       capacity, partner/vendor, financial, and operations execution
       implications.
 - [x] Preserve clinical refusal and manager approval boundaries.

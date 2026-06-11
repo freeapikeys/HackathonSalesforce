@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlannerBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >North Star turns profile-specific operational signals into universal evidence, recommendations, approvals, actions, and outcomes. The hospital is the active demo profile.</description>
+    <genAiPlugins>
+        <genAiPluginName
+    >p_16jg5000000abFZ_North_Star_Orchestrator</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName
+    >p_16jg5000000abFZ_Evidence_and_Context</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName>p_16jg5000000abFZ_Customer_Trust</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName
+    >p_16jg5000000abFZ_Resource_and_Capacity</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName
+    >p_16jg5000000abFZ_Operations_Execution</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName>p_16jg5000000abFZ_Partner_and_Vendor</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName>p_16jg5000000abFZ_Risk_and_Approval</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName>p_16jg5000000abFZ_Financial_Impact</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName>p_16jg5000000abFZ_Communication</genAiPluginName>
+    </genAiPlugins>
+    <genAiPlugins>
+        <genAiPluginName>p_16jg5000000abFZ_Outcome_Learning</genAiPluginName>
+    </genAiPlugins>
+    <masterLabel>North Star Global Operations</masterLabel>
+    <plannerSurfaces>
+        <adaptiveResponseAllowed>true</adaptiveResponseAllowed>
+        <callRecordingAllowed>false</callRecordingAllowed>
+        <surface>SurfaceAction__Messaging</surface>
+        <surfaceType>Messaging</surfaceType>
+    </plannerSurfaces>
+    <plannerSurfaces>
+        <adaptiveResponseAllowed>true</adaptiveResponseAllowed>
+        <callRecordingAllowed>false</callRecordingAllowed>
+        <surface>SurfaceAction__CustomerWebClient</surface>
+        <surfaceType>CustomerWebClient</surfaceType>
+    </plannerSurfaces>
+    <plannerType>AiCopilot__ReAct</plannerType>
+</GenAiPlannerBundle>

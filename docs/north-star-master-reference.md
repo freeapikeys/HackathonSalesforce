@@ -18,6 +18,12 @@ outcomes.
 North Star must not make diagnosis, treatment, dosage, triage, or clinical
 priority decisions.
 
+North Star is general first. Hospital is the flagship demo profile, not the
+core product. Core names, IDs, agents, skills, actions, and primitives stay
+sector-neutral; hospital words such as patient, bed, ward, pharmacy, clinician,
+and lab appear only in the active profile display, demo data, or hospital
+fixtures.
+
 ## Global Primitives
 
 These are the reusable building blocks. Business-specific objects must map into
@@ -42,6 +48,30 @@ these instead of creating a new architecture.
 | `Outcome`        | Result after execution                                                     |
 | `Metric`         | Wait time, stock risk, cost exposure, SLA, completion, or complaint change |
 
+## General IDs
+
+Use these shapes for core IDs. Do not create core IDs such as
+`hospital-bed-agent` or `pharmacy-only-action` when a universal primitive or
+action can describe the same work.
+
+| Type     | Examples                                                                                                                            |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Profile  | `profile:hospital-private-large`, `profile:airport-operations`, `profile:hotel-guest-operations`, `profile:bank-service-operations` |
+| Resource | `resource:room`, `resource:stock-item`, `resource:service-counter`                                                                  |
+| Action   | `action:send-internal-alert`, `action:create-service-task`, `action:request-partner-followup`                                       |
+
+## Profile Mapping
+
+Business profiles translate sector words into primitives.
+
+| Universal issue    | Hospital profile                | Hotel profile             | Airport profile                 | Banking profile                    |
+| ------------------ | ------------------------------- | ------------------------- | ------------------------------- | ---------------------------------- |
+| Room readiness     | Discharge room readiness        | Guest room readiness      | Gate readiness                  | Service case readiness             |
+| Stock risk         | Pharmacy stock risk             | Linen or food stock risk  | Equipment stock risk            | Card, cash, or document stock risk |
+| Duplicate charge   | Billing duplicate               | Guest overcharge          | Passenger fee dispute           | Bank dispute                       |
+| Customer complaint | Patient or visitor complaint    | Guest complaint           | Passenger complaint             | Client complaint                   |
+| Partner delay      | Lab, insurer, or supplier delay | Laundry or supplier delay | Airline or ground handler delay | Processor or insurer delay         |
+
 ## Agent System
 
 North Star should feel like one coordinated product, not separate chatbots.
@@ -54,7 +84,7 @@ North Star has 10 core agents in the MVP.
 | --------------------------- | ------------------------------------------------------------------------------ |
 | North Star Orchestrator     | Combines all specialist findings into one manager-ready plan                   |
 | Evidence and Context Agent  | Normalizes signals, links evidence, detects missing or conflicting facts       |
-| Patient Trust Agent         | Classifies complaints and drafts safe manager-approved messages                |
+| Customer Trust Agent        | Classifies complaints and drafts safe manager-approved messages                |
 | Resource and Capacity Agent | Checks beds, rooms, queues, staff, stock, equipment, and capacity pressure     |
 | Operations Execution Agent  | Creates role-owned tasks, due times, acknowledgements, and escalations         |
 | Partner and Vendor Agent    | Tracks lab, laundry, food, insurer, payment, maintenance, and transport status |
@@ -72,7 +102,7 @@ they return evidence-backed findings into one shared action plan.
 | --------------------------- | ------------------------------------------------------------------------------------------- |
 | North Star Orchestrator     | route issue type, merge findings, resolve conflicts, set approval path, explain plan        |
 | Evidence and Context Agent  | normalize source signals, map global primitives, detect missing/late/contradictory evidence |
-| Patient Trust Agent         | classify complaints, detect clusters, draft privacy-safe service response text              |
+| Customer Trust Agent        | classify complaints, detect clusters, draft privacy-safe service response text              |
 | Resource and Capacity Agent | calculate queue pressure, bed/room availability, stock days remaining, staff gap            |
 | Operations Execution Agent  | create tasks, assign role owners, set due windows, track acknowledgement                    |
 | Partner and Vendor Agent    | check lab/laundry/insurer/payment/food/maintenance status and SLA risk                      |
@@ -90,7 +120,7 @@ chatbots and they must not create a new architecture.
 | Inventory and Capacity | Resource and Capacity   | stock days remaining, transfer option, restock urgency, queue load  |
 | Billing and Insurance  | Financial Impact        | duplicate invoice, stuck claim, refund threshold, payment issue     |
 | Vendor SLA             | Partner and Vendor      | lab, laundry, food, supplier, maintenance, and insurer follow-up    |
-| Patient Experience     | Patient Trust           | complaint follow-up questions and privacy-safe response drafts      |
+| Customer Experience    | Customer Trust          | complaint follow-up questions and privacy-safe response drafts      |
 | Channel Approval UX    | Risk/Approval and Comms | Slack, WhatsApp, and email action wording after approval            |
 | Cross-Sector Mapping   | Orchestrator            | maps hospital primitives to airport, hotel, banking, and retail     |
 
@@ -111,7 +141,7 @@ Orchestration flow:
 
 | ID      | Module                           | Primary agent           |
 | ------- | -------------------------------- | ----------------------- |
-| `NS-01` | Complaint and trust              | Patient Trust           |
+| `NS-01` | Complaint and trust              | Customer Trust          |
 | `NS-02` | Capacity and availability        | Resource and Capacity   |
 | `NS-03` | Staff coordination               | Operations Execution    |
 | `NS-04` | Partner and vendor failure       | Partner and Vendor      |
@@ -185,7 +215,7 @@ become action?"
    The same model can handle a hospital bed, hotel room, airport gate, bank
    case, supermarket batch, or cruise cabin as a typed `Resource`.
 4. The Orchestrator asks specialist agents for findings.
-   Patient Trust classifies the complaint. Resource and Capacity checks rooms,
+   Customer Trust classifies the complaint. Resource and Capacity checks rooms,
    queues, stock, equipment, and staff. Partner and Vendor checks external
    delays. Financial Impact checks billing, refund, claim, and payment exposure.
    Risk and Approval checks policy and clinical boundaries.
@@ -231,7 +261,7 @@ Complaint: "I waited one hour, the pharmacy said there is no stock, and my invoi
 
 North Star should not only send a message. It should connect:
 
-- Patient Trust: wait-time and billing frustration;
+- Customer Trust: wait-time and billing frustration;
 - Resource and Capacity: outpatient queue and pharmacy stock;
 - Financial Impact: possible duplicate invoice or insurer delay;
 - Risk and Approval: no refund or customer reply without approval;
@@ -260,7 +290,22 @@ Current deployed demo webhook:
 https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
-## Key Demo IDs
+If Twilio receives the inbound message but the WhatsApp user sees no reply,
+check the latest Twilio outbound-reply status. Error `63038` means Twilio
+blocked the reply because the account reached a rolling daily message limit or
+an account-level sending restriction. That is an account/provider limit, not a
+North Star webhook failure.
+
+Voice notes, images, and documents arrive from Twilio as media fields such as
+`MediaUrl0` and `MediaContentType0`. North Star stores only safe media metadata
+and a media URL hash. Transcript or document extraction remains pending
+evidence until a trusted transcription or extraction path is available.
+
+## Hospital Profile Demo IDs
+
+These are profile/demo records used by the current hospital story. They are not
+the universal core naming pattern. New reusable contracts should prefer the
+general ID shapes above.
 
 | Concept           | ID                                        |
 | ----------------- | ----------------------------------------- |

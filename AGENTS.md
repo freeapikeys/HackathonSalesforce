@@ -54,6 +54,24 @@ separate architecture. For example, hospital beds, hotel rooms, airport gates,
 bank accounts, supermarket product batches, and cruise cabins are all typed
 `Resource` records.
 
+Use sector-neutral core IDs and action IDs. Examples:
+
+- `profile:hospital-private-large`
+- `profile:airport-operations`
+- `profile:hotel-guest-operations`
+- `profile:bank-service-operations`
+- `resource:room`
+- `resource:stock-item`
+- `resource:service-counter`
+- `action:send-internal-alert`
+- `action:create-service-task`
+- `action:request-partner-followup`
+
+Hospital-specific words such as patient, bed, pharmacy, ward, clinician, or lab
+belong in the hospital profile, demo fixture, or display label. They must not be
+used as core architecture names when a universal primitive or action name can be
+used instead.
+
 ## Private Hospital Demo Boundary
 
 The hospital demo solves non-clinical operations problems:
@@ -78,7 +96,7 @@ are:
 
 - North Star Orchestrator Topic;
 - Evidence and Context Agent;
-- Patient Trust Agent;
+- Customer Trust Agent;
 - Resource and Capacity Agent;
 - Operations Execution Agent;
 - Partner and Vendor Agent;
@@ -88,9 +106,11 @@ are:
 - Outcome Learning Agent.
 
 Optional specialist skills may be added only when they plug into the same
-primitives and approval rules, for example Hospital Operations, Inventory and
-Capacity, Billing and Insurance, Vendor SLA, Patient Experience, Food Safety, or
-Fraud Review.
+primitives and approval rules, for example Complaint Handling, Capacity
+Pressure, Inventory and Supply, Billing and Payment Review, Partner SLA,
+Customer Experience, Food Safety, or Fraud Review. The hospital profile may
+display Customer Trust as patient or visitor trust, but the core role remains
+Customer Trust.
 
 ## Issue Tracking
 

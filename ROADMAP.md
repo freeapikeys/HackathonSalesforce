@@ -16,6 +16,23 @@ The active demo profile is a large private hospital operations command center.
 It solves non-clinical operations issues. It must not make diagnosis, treatment,
 dosage, triage, or clinical priority decisions.
 
+North Star is general first. Core agents, action contracts, primitives, and IDs
+must stay sector-neutral; the hospital is one profile that renders those
+primitives with hospital words for the demo.
+
+General profile and action IDs:
+
+- `profile:hospital-private-large`
+- `profile:airport-operations`
+- `profile:hotel-guest-operations`
+- `profile:bank-service-operations`
+- `resource:room`
+- `resource:stock-item`
+- `resource:service-counter`
+- `action:send-internal-alert`
+- `action:create-service-task`
+- `action:request-partner-followup`
+
 North Star must answer:
 
 - Which signal triggered the issue?
@@ -34,7 +51,7 @@ airport, banking, supermarket, cruise, and other profiles.
 
 | ID    | Issue module                     | Primary agent           | Hospital demo response                                                   |
 | ----- | -------------------------------- | ----------------------- | ------------------------------------------------------------------------ |
-| NS-01 | Complaint and trust              | Patient Trust           | Cluster complaints, classify cause, draft approved service response      |
+| NS-01 | Complaint and trust              | Customer Trust          | Cluster complaints, classify cause, draft approved service response      |
 | NS-02 | Capacity and availability        | Resource and Capacity   | Check beds, rooms, queues, staff, pharmacy stock, and equipment          |
 | NS-03 | Staff coordination               | Operations Execution    | Assign tasks, owners, due times, acknowledgements, and escalation        |
 | NS-04 | Partner and vendor failure       | Partner and Vendor      | Escalate lab, laundry, insurer, food, payment, or maintenance delay      |
@@ -51,15 +68,15 @@ airport, banking, supermarket, cruise, and other profiles.
 
 | ID     | Hospital issue                          | Primary agent         | Demo response                                                             |
 | ------ | --------------------------------------- | --------------------- | ------------------------------------------------------------------------- |
-| HOS-01 | Patient wait-time complaints            | Patient Trust         | Cluster complaints, cite queue evidence, draft service response           |
-| HOS-02 | Room readiness or cleanliness complaint | Patient Trust         | Link complaint to blocked room, housekeeping task, and manager escalation |
+| HOS-01 | Patient wait-time complaints            | Customer Trust        | Cluster complaints, cite queue evidence, draft service response           |
+| HOS-02 | Room readiness or cleanliness complaint | Customer Trust        | Link complaint to blocked room, housekeeping task, and manager escalation |
 | HOS-03 | Discharge bed blocked                   | Resource and Capacity | Detect blocked beds, assign cleaning/porter task, estimate bed release    |
 | HOS-04 | Outpatient queue spike                  | Resource and Capacity | Predict queue risk and recommend staff movement                           |
 | HOS-05 | Pharmacy supply running low             | Resource and Capacity | Calculate stock days remaining and request approved restock or transfer   |
 | HOS-06 | Lab vendor response delayed             | Partner and Vendor    | Escalate vendor case and update recommendation when response arrives      |
 | HOS-07 | Insurance approval stuck                | Financial Impact      | Open approved insurance follow-up and estimate claim-delay exposure       |
 | HOS-08 | Duplicate billing or refund complaint   | Financial Impact      | Open billing review, require approval for refund or compensation          |
-| HOS-09 | Food or hospitality complaint           | Patient Trust         | Route food-service task and approved patient-safe message                 |
+| HOS-09 | Food or hospitality complaint           | Customer Trust        | Route food-service task and approved patient-safe message                 |
 | HOS-10 | Accessibility support missing           | Operations Execution  | Assign wheelchair/porter/support task and track acknowledgement           |
 | HOS-11 | Equipment or maintenance unavailable    | Partner and Vendor    | Check resource status, vendor SLA, and fallback options                   |
 | HOS-12 | Privacy or safety-sensitive complaint   | Risk and Approval     | Escalate, preserve evidence, and prevent unsafe message/action            |
@@ -70,7 +87,7 @@ airport, banking, supermarket, cruise, and other profiles.
 
 ### North Star Orchestrator
 
-- [x] Combine patient trust, resource capacity, partner/vendor, financial,
+- [x] Combine customer trust, resource capacity, partner/vendor, financial,
       communication, and outcome findings into one action plan.
 - [x] Resolve conflicts, for example "move patients faster" versus "room
       cleaning is not complete."
@@ -90,15 +107,16 @@ airport, banking, supermarket, cruise, and other profiles.
 - [x] Preserve source facts separately from claims and inferences.
 - [x] Ask for missing operational evidence when needed.
 
-### Patient Trust Agent
+### Customer Trust Agent
 
-- [x] Detect patient and visitor complaint clusters.
+- [x] Detect customer complaint clusters. In the hospital profile, customers
+      render as patients and visitors.
 - [x] Classify complaints into wait time, room readiness, cleanliness, food,
       billing, discharge delay, lost item, accessibility, privacy, safety,
       pharmacy delay, and staff interaction.
 - [x] Connect complaints to location, department, resource, time window,
       partner, and evidence.
-- [x] Draft approved service response or patient-facing message text.
+- [x] Draft approved service response or customer-facing message text.
 - [x] Escalate safety, privacy, or high-severity complaints.
 
 ### Resource And Capacity Agent
@@ -191,6 +209,10 @@ North Star should produce one action plan:
 - [x] Active docs now define a global operating model with a private hospital
       demo profile.
 - [x] Universal primitive list added to active docs.
+- [x] Core profile, resource, and action ID examples are documented as
+      sector-neutral (`profile:*`, `resource:*`, `action:*`).
+- [x] Hospital wording is documented as profile display/demo data, not core
+      architecture.
 - [x] Hospital non-clinical boundary documented.
 - [x] Teammate assignment docs exist in `docs/assignments/`.
 - [x] One-sentence hospital/global product pitch finalized.
@@ -276,7 +298,7 @@ file before editing.
 
 - [x] Define/update North Star Orchestrator topic for global primitives.
 - [x] Define/update Evidence and Context topic.
-- [x] Define/update Patient Trust topic.
+- [x] Define/update Customer Trust topic.
 - [x] Define/update Resource and Capacity topic.
 - [x] Define/update Operations Execution topic.
 - [x] Define/update Partner and Vendor topic.
@@ -301,6 +323,13 @@ file before editing.
 - [x] Show the agent handoff trace in the command center: which agent found
       facts, which agent inferred risk, which agent required approval, and
       which agent executed or measured the outcome.
+- [x] Replace the generated 8-topic hospital labels with the universal 10-agent
+      Agentforce source model.
+- [x] Replace the default Studio welcome/role text with North Star operations
+      language.
+- [x] Agentforce source instructs "I have a problem" to ask one short follow-up.
+- [x] Agentforce source keeps hospital words inside the active profile and uses
+      universal primitive/action wording for the core.
 
 ### 7. MuleSoft And Channel Mocks
 
@@ -379,12 +408,22 @@ file before editing.
 - [x] Package/deploy the Twilio webhook Mule app to CloudHub and verify the
       public endpoint creates Salesforce event, evidence, recommendation, and
       approval records.
+- [x] Agentforce and docs define English, French, and Mauritian Creole as safe
+      same-language reply targets for short operational responses.
+- [x] Extend the live Twilio inbound mapper to persist detected language and
+      reply-language preference for English, French, and Mauritian Creole.
+- [x] Extend WhatsApp intake records for voice, image, and document media
+      metadata without storing raw media URLs; transcript or extraction
+      confidence remains pending evidence before protected action.
 - [ ] Point Twilio Sandbox "When a message comes in" to the public CloudHub
       webhook URL in Twilio Console:
       `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 - [ ] Replace the temporary Salesforce session token in CloudHub with a
       Connected App/JWT path or refresh the secure property immediately before
       final rehearsal.
+- [ ] Re-test WhatsApp replies after the Twilio rolling 24-hour daily message
+      limit resets or after Twilio raises the account limit; latest live reply
+      was blocked by Twilio error `63038`, not by the North Star webhook.
 - [ ] Add WhatsApp approval templates only if approved templates are available;
       otherwise keep WhatsApp as intake/outbound alert, not approval surface.
 - [x] Add a demo script beat: WhatsApp complaint enters MuleSoft intake,
@@ -406,13 +445,13 @@ notifies a manager.
 - [x] Display follow-up questions and missing evidence in the command center
       when an inbound complaint starts the case.
 - [x] Add a demo scenario where one complaint expands into at least four
-      affected functions: patient trust, capacity, inventory, billing, and
+      affected functions: customer trust, capacity, inventory, billing, and
       communication.
 - [ ] Add an outcome comparison showing what changed after the actions, not
       just that messages were sent.
-- [ ] Add cross-sector explanation cards mapping the same issue to airport,
+- [x] Add cross-sector explanation cards mapping the same issue to airport,
       hotel, banking, supermarket, and cruise equivalents.
-- [ ] Add a "why this is deeper than a chatbot" pitch beat with evidence,
+- [x] Add a "why this is deeper than a chatbot" pitch beat with evidence,
       approval, protected actions, and outcome learning.
 
 ### 8. Voice Mode
@@ -429,10 +468,14 @@ notifies a manager.
 - [x] Voice mode refuses clinical decision requests.
 - [x] LWC or fixture tests cover transcript-to-request, protected-action
       refusal, and clinical-decision refusal.
+- [ ] Add document/image intake evidence fixtures with low-confidence
+      extraction follow-up.
 
 ### 9. Lightning Command Center
 
 - [x] UI title and labels use North Star global/hospital operations language.
+- [x] UI shows universal primitive/profile mapping before the active hospital
+      rendering.
 - [x] Risk pulse cards show complaint, bed capacity, queue, pharmacy stock,
       vendor delay, billing, approval, and outcome readiness.
 - [x] Patient/visitor alias, department, location, and resource context are
@@ -522,6 +565,11 @@ artifacts/demo-harness-result-current.json` successfully. The connected run
   `SEND_VENDOR_EMAIL.status = QUEUED`. This proves the governed end-to-end path;
   real outbound channel delivery still depends on credentials being visible to
   the running process.
+- Agentforce Studio gate: the universal 10-agent metadata is deployed to
+  `hfs-dev`, but the deep Agent Script is live only in authoring-bundle preview
+  until Salesforce's publish endpoint `test.api.salesforce.com:443` is reachable
+  from the publishing machine or Salesforce completes the publish through
+  Builder/VS Code.
 - Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` for outbound alerts
   and `SLACK_SIGNING_SECRET` plus a public Slack App interactivity URL for live
   approve/reject buttons. WhatsApp uses Twilio Sandbox credentials only for the

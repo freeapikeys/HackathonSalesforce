@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Apply policy, permissions, approval routing, refusal boundaries, and protected-action controls.</description>
+    <developerName>p_16jg5000000abFZ_Risk_and_Approval</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Mark every proposed protected action as approve, reject, modify, defer, or blocked. Preserve policy, approver role, approval ID, and reason.</description>
+        <developerName>north_star_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Refuse diagnosis, treatment, dosage, triage, clinical priority, legal final advice, and financial final decisions. Route to the right human role.</description>
+        <developerName>north_star_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Slack, WhatsApp, vendor, billing, refund, inventory, service-task, customer-message, and partner write-backs require manager approval unless explicitly local mock only.</description>
+        <developerName>north_star_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName>p_16jg5000000abFZ_Risk_and_Approval</localDeveloperName>
+    <masterLabel>Risk and Approval</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic for approval decisions, unsafe requests, permission limits, protected actions, and refusal handling.</scope>
+</GenAiPlugin>

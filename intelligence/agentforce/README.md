@@ -11,7 +11,7 @@ global operating model and the private hospital demo topics:
 
 - North Star Orchestration;
 - Evidence and Context;
-- Patient Trust;
+- Customer Trust;
 - Resource and Capacity;
 - Operations Execution;
 - Partner and Vendor;

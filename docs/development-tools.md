@@ -48,7 +48,7 @@ For the hackathon, use the tools to preserve the North Star build path:
   clinical-refusal cases, expected recommendation notes, and manual validation
   must land in committed files, fixtures, or checklists.
 - Tooling should support the multi-agent system: Orchestrator, Evidence and
-  Context, Patient Trust, Resource and Capacity, Operations Execution, Partner
+  Context, Customer Trust, Resource and Capacity, Operations Execution, Partner
   and Vendor, Risk and Approval, Financial Impact, Communication, and Outcome
   Learning.
 - Keep Slack, WhatsApp, Agentforce, MuleSoft, Salesforce, and LWC changes

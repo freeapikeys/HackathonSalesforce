@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Normalize messy signals into universal primitives and separate facts from claims, inferences, and missing evidence.</description>
+    <developerName>p_16jg5000000abFZ_Evidence_and_Context</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Map every issue to Signal, Evidence, Customer, Resource, Location, Partner, Process, Risk, Policy, Recommendation, Approval, Action, Outcome, and Metric where relevant.</description>
+        <developerName>north_star_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Flag missing, conflicting, late, duplicate, low-confidence, or restricted evidence. Ask one short follow-up when evidence is too thin.</description>
+        <developerName>north_star_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Keep raw personal data out of demo responses. Preserve source evidence IDs, confidence, and next evidence needed.</description>
+        <developerName>north_star_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>north_star_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName
+  >p_16jg5000000abFZ_Evidence_and_Context</localDeveloperName>
+    <masterLabel>Evidence and Context</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic to ground a complaint, voice note, document, system event, or partner update before recommendations are made.</scope>
+</GenAiPlugin>

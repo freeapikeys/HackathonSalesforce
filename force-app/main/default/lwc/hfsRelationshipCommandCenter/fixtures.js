@@ -15,6 +15,13 @@ const caseState = {
   },
   serviceDeadline: "2026-06-06T11:15:00Z",
   nextUpdateDue: "2026-06-06T10:00:00Z",
+  profile: {
+    core: "North Star universal operations",
+    activeProfile: "profile:hospital-private-large",
+    displayName: "Large private hospital operations",
+    boundary:
+      "Hospital wording is profile display only; the core agents and actions stay sector-neutral."
+  },
   operationsContext: {
     organization: "North Star Private Hospital",
     resource: "Morning outpatient and discharge flow",
@@ -24,6 +31,63 @@ const caseState = {
     recoveryWindow: "Morning operations window",
     serviceAreas: "Outpatient reception, Ward A3, Pharmacy"
   },
+  profileMappings: [
+    {
+      id: "mapping-room-readiness",
+      issue: "Room readiness",
+      primitive: "Resource",
+      hospital: "Discharge room readiness",
+      hotel: "Guest room readiness",
+      airport: "Gate readiness",
+      banking: "Service case readiness",
+      supermarket: "Checkout or shelf readiness",
+      cruise: "Cabin readiness"
+    },
+    {
+      id: "mapping-stock-risk",
+      issue: "Stock risk",
+      primitive: "Resource",
+      hospital: "Pharmacy stock risk",
+      hotel: "Linen or food stock risk",
+      airport: "Equipment stock risk",
+      banking: "Card, cash, or document stock risk",
+      supermarket: "Shelf or cold-chain stock risk",
+      cruise: "Galley or cabin-supply stock risk"
+    },
+    {
+      id: "mapping-billing-dispute",
+      issue: "Duplicate charge",
+      primitive: "Risk",
+      hospital: "Billing duplicate",
+      hotel: "Guest overcharge",
+      airport: "Passenger fee dispute",
+      banking: "Bank dispute",
+      supermarket: "Receipt overcharge",
+      cruise: "Onboard account dispute"
+    },
+    {
+      id: "mapping-complaint",
+      issue: "Customer complaint",
+      primitive: "Signal",
+      hospital: "Patient or visitor complaint",
+      hotel: "Guest complaint",
+      airport: "Passenger complaint",
+      banking: "Client complaint",
+      supermarket: "Shopper complaint",
+      cruise: "Guest complaint"
+    },
+    {
+      id: "mapping-partner-delay",
+      issue: "Partner delay",
+      primitive: "Partner",
+      hospital: "Lab, insurer, or supplier delay",
+      hotel: "Laundry or supplier delay",
+      airport: "Airline or ground handler delay",
+      banking: "Processor or insurer delay",
+      supermarket: "Supplier or delivery delay",
+      cruise: "Port or supplier delay"
+    }
+  ],
   resourcePositions: [
     { id: "resource-beds", label: "Ready beds", value: "6 of 18" },
     { id: "resource-rooms", label: "Blocked rooms", value: "7 rooms" },
@@ -91,10 +155,10 @@ const caseState = {
       output: "Signal, Evidence, Customer, Resource, Partner, Risk"
     },
     {
-      id: "handoff-patient-trust",
-      agent: "Patient Trust",
+      id: "handoff-customer-trust",
+      agent: "Customer Trust",
       contribution:
-        "Classified wait-time, pharmacy-delay, and billing complaint themes and drafted safe follow-up questions.",
+        "Classified complaint themes and drafted safe follow-up questions. The hospital profile displays this as patient or visitor trust.",
       output: "Complaint type, missing evidence, privacy-safe response draft"
     },
     {
@@ -157,9 +221,9 @@ const caseState = {
   orchestrationConflicts: [
     {
       id: "conflict-patient-capacity",
-      agent: "Patient Trust vs Resource and Capacity",
+      agent: "Customer Trust vs Resource and Capacity",
       conflict:
-        "Patient Trust wants a quick service response, but Resource and Capacity shows rooms are still blocked.",
+        "Customer Trust wants a quick service response, but Resource and Capacity shows rooms are still blocked.",
       resolution:
         "Approve internal updates now, then release rooms only after cleaning and porter tasks are acknowledged."
     },
@@ -331,7 +395,7 @@ const caseState = {
       id: "evidence-complaint-hospital-001",
       label: "Patient complaint cluster",
       summary:
-        "Eleven synthetic complaints map to patient trust, billing, pharmacy, and room readiness signals.",
+        "Eleven synthetic complaints map to customer trust, billing, pharmacy, and room readiness signals.",
       sourceUri: "urn:hfs:source:hospital:complaints",
       capturedAt: "2026-06-06T08:45:00Z",
       contentHash:

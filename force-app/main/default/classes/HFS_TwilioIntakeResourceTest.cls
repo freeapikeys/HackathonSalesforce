@@ -23,6 +23,8 @@ private class HFS_TwilioIntakeResourceTest {
       System.assert(response.categories.contains('BILLING'));
       System.assert(response.categories.contains('PHARMACY_STOCK'));
       System.assertEquals(false, response.replayed);
+      System.assertEquals('en', response.languageCode);
+      System.assertEquals('English', response.replyLanguage);
 
       HFS_Event__c eventRecord = [
         SELECT Payload_JSON__c, Source_Record_Id__c
@@ -62,6 +64,108 @@ private class HFS_TwilioIntakeResourceTest {
         LIMIT 1
       ];
       System.assertEquals('PENDING', approval.Status__c);
+    }
+  }
+
+  @IsTest
+  static void preservesSafeLanguageHintForCreoleIntake() {
+    System.runAs(createUser('twiliom', 'HFS_Integration_User')) {
+      Map<String, Object> requestBody = basePayload();
+      requestBody.put('messageSid', 'SM-test-mfe');
+      requestBody.put(
+        'rawBody',
+        'Mo pe atann depi enn ler, bill la pa bon, pharmacy pena stock.'
+      );
+      requestBody.put('from', 'whatsapp:+23057175190');
+
+      HFS_TwilioIntakeResource.IntakeResponse response = post(requestBody);
+
+      System.assertEquals(
+        true,
+        response.success,
+        JSON.serialize(response.error)
+      );
+      System.assertEquals('mfe', response.languageCode);
+      System.assertEquals('Mauritian Creole', response.replyLanguage);
+      System.assert(
+        response.message.contains('North Star inn kree enn case operasyon')
+      );
+
+      HFS_Event__c eventRecord = [
+        SELECT Payload_JSON__c
+        FROM HFS_Event__c
+        WHERE Id = :response.eventId
+        LIMIT 1
+      ];
+      System.assert(
+        eventRecord.Payload_JSON__c.contains('"languageCode":"mfe"')
+      );
+      System.assert(
+        eventRecord.Payload_JSON__c.contains(
+          '"replyLanguage":"Mauritian Creole"'
+        )
+      );
+      System.assert(!eventRecord.Payload_JSON__c.contains('+23057175190'));
+      System.assert(!eventRecord.Payload_JSON__c.contains('Mo pe atann'));
+    }
+  }
+
+  @IsTest
+  static void storesVoiceMediaAsSafePendingEvidence() {
+    System.runAs(createUser('twiliov', 'HFS_Integration_User')) {
+      Map<String, Object> requestBody = basePayload();
+      requestBody.put('messageSid', 'SM-test-voice');
+      requestBody.put('rawBody', '');
+      requestBody.put(
+        'messageSummary',
+        'A WhatsApp voice note was received and needs transcript before action.'
+      );
+      requestBody.put('mediaCount', 1);
+      requestBody.put('firstMediaType', 'audio/ogg');
+      requestBody.put('firstMediaKind', 'voice note');
+      requestBody.put(
+        'mediaUrl0',
+        'https://api.twilio.com/2010-04-01/Accounts/test/Messages/test/Media/test'
+      );
+
+      HFS_TwilioIntakeResource.IntakeResponse response = post(requestBody);
+
+      System.assertEquals(
+        true,
+        response.success,
+        JSON.serialize(response.error)
+      );
+      System.assert(response.categories.contains('VOICE_OR_MEDIA'));
+      System.assert(
+        response.missingEvidence.contains(
+          'media transcript or document extraction confidence'
+        )
+      );
+
+      HFS_Event__c eventRecord = [
+        SELECT Payload_JSON__c
+        FROM HFS_Event__c
+        WHERE Id = :response.eventId
+        LIMIT 1
+      ];
+      System.assert(eventRecord.Payload_JSON__c.contains('"hasMedia":true'));
+      System.assert(
+        eventRecord.Payload_JSON__c.contains(
+          '"transcriptStatus":"PENDING_OR_MANUAL"'
+        )
+      );
+      System.assert(
+        eventRecord.Payload_JSON__c.contains('"rawMediaUrlStored":false')
+      );
+      System.assert(!eventRecord.Payload_JSON__c.contains('api.twilio.com'));
+
+      HFS_Evidence__c evidence = [
+        SELECT Summary__c
+        FROM HFS_Evidence__c
+        WHERE Id = :response.evidenceId
+        LIMIT 1
+      ];
+      System.assert(evidence.Summary__c.contains('voice note received'));
     }
   }
 

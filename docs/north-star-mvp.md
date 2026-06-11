@@ -7,6 +7,11 @@ that need to resolve messy, cross-functional issues quickly. It uses one global
 operating model and one business profile at a time. The hackathon demo profile
 is a large private hospital.
 
+The product is general first. Hospital is not the architecture; it is the
+flagship demo profile. Core names, IDs, primitives, agents, skills, and action
+contracts stay sector-neutral. Hospital words such as patient, bed, pharmacy,
+ward, and lab appear only in the hospital profile, demo data, or display labels.
+
 North Star is not a generic chatbot. It is a governed multi-agent system that
 turns one operational signal into:
 
@@ -45,6 +50,24 @@ architecture. A hospital bed, hotel room, airport gate, bank account,
 supermarket batch, and cruise cabin are all `Resource` records with different
 types, policies, and actions.
 
+Core ID examples:
+
+| ID type  | General examples                                                                                                                    |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Profile  | `profile:hospital-private-large`, `profile:airport-operations`, `profile:hotel-guest-operations`, `profile:bank-service-operations` |
+| Resource | `resource:room`, `resource:stock-item`, `resource:service-counter`                                                                  |
+| Action   | `action:send-internal-alert`, `action:create-service-task`, `action:request-partner-followup`                                       |
+
+Profile mapping examples:
+
+| Universal issue    | Hospital profile                | Hotel profile             | Airport profile                 | Banking profile                    |
+| ------------------ | ------------------------------- | ------------------------- | ------------------------------- | ---------------------------------- |
+| Room readiness     | Discharge room readiness        | Guest room readiness      | Gate readiness                  | Service room or case readiness     |
+| Stock risk         | Pharmacy stock risk             | Linen or food stock risk  | Equipment stock risk            | Card, cash, or document stock risk |
+| Duplicate charge   | Billing duplicate               | Guest overcharge          | Passenger fee dispute           | Bank dispute                       |
+| Customer complaint | Patient or visitor complaint    | Guest complaint           | Passenger complaint             | Client complaint                   |
+| Partner delay      | Lab, insurer, or supplier delay | Laundry or supplier delay | Airline or ground handler delay | Processor or insurer delay         |
+
 ## Signal Intake And Channel Roles
 
 North Star should not be pitched as "the user talks to a chatbot and the bot
@@ -56,10 +79,11 @@ Inbound channels create `Signal` and `Evidence`:
 
 | Channel                   | Primary role                                                              |
 | ------------------------- | ------------------------------------------------------------------------- |
-| Twilio WhatsApp inbound   | Customer, patient, visitor, or client complaint intake                    |
+| Twilio WhatsApp inbound   | Customer, guest, passenger, patient, visitor, or client complaint intake  |
 | Salesforce command center | Staff review, approval, audit, and fallback visibility                    |
 | System event              | Queue spike, stock threshold, vendor delay, payment issue, or room status |
-| Voice/manual transcript   | Staff request that becomes a governed recommendation request              |
+| Voice/manual transcript   | Staff or customer voice note that becomes governed evidence               |
+| Document/image intake     | Uploaded proof, invoice, photo, note, or partner file as evidence         |
 
 Outbound channels execute approved `Action` records:
 
@@ -98,7 +122,7 @@ A weak assistant says "notify the manager." North Star does more:
 2. checks beds, rooms, queues, staff roles, pharmacy stock, vendor status, and
    approval state;
 3. separates facts from inference and names missing evidence;
-4. creates an action plan across patient trust, capacity, operations, vendor,
+4. creates an action plan across customer trust, capacity, operations, vendor,
    billing, risk, and communications;
 5. refuses diagnosis, treatment, dosage, or clinical priority decisions;
 6. requires business approval before protected actions;
@@ -137,9 +161,10 @@ Responsibilities:
 - detect missing or contradictory evidence;
 - keep source facts separate from claims and inference.
 
-### Patient Trust Agent
+### Customer Trust Agent
 
-Owns patient and visitor experience without making clinical decisions.
+Owns customer trust without making sector-specific final decisions. In the
+hospital profile, this displays as patient and visitor trust.
 
 Responsibilities:
 
@@ -235,7 +260,7 @@ Responsibilities:
    signals.
 2. **Context:** show department, resource, complaint, vendor, queue, billing,
    approval, and stock evidence.
-3. **Conflict:** patient trust wants a fast response, capacity shows blocked
+3. **Conflict:** customer trust wants a fast response, capacity shows blocked
    rooms, pharmacy stock is low, and billing approvals are stuck.
 4. **Partner response:** lab, insurance, laundry, or pharmacy partner evidence
    changes the recommendation.

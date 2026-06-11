@@ -1989,7 +1989,7 @@ def fixtures() -> dict[str, Any]:
         },
         {
             "inferenceId": "inference-hospital-cross-functional-plan",
-            "statement": "The complaint cluster affects patient trust, bed release, pharmacy stock, partner escalation, billing, communications, and outcome tracking; it should become one approved operations plan.",
+            "statement": "The complaint cluster affects customer trust, bed release, pharmacy stock, partner escalation, billing, communications, and outcome tracking; it should become one approved operations plan.",
             "basisFactIds": [
                 "fact-hospital-complaints",
                 "fact-hospital-capacity",
@@ -2169,7 +2169,7 @@ def fixtures() -> dict[str, Any]:
             "conflictResolutions": [
                 {
                     "conflictId": "conflict-patient-trust-capacity",
-                    "tension": "Patient Trust wants a quick service response, but Resource and Capacity shows rooms are still blocked.",
+                    "tension": "Customer Trust wants a quick service response, but Resource and Capacity shows rooms are still blocked.",
                     "resolution": "Approve privacy-safe updates and service tasks now; release rooms only after housekeeping and porter acknowledgements.",
                     "winningPolicy": "Operational safety and evidence-backed capacity claims override speed-only messaging.",
                     "evidenceIds": [
@@ -2469,7 +2469,7 @@ def fixtures() -> dict[str, Any]:
     missing_capacity_response["inferences"] = [
         {
             "inferenceId": "inference-missing-capacity-caution",
-            "statement": "North Star can identify patient trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
+            "statement": "North Star can identify customer trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
             "basisFactIds": [
                 "fact-missing-capacity-complaints",
                 "fact-missing-capacity-pharmacy",
@@ -2483,7 +2483,7 @@ def fixtures() -> dict[str, Any]:
         "rationale": (
             "Ask for current bed, room, queue, and staffing evidence before "
             "claiming a capacity action plan. Continue pharmacy restock "
-            "review and patient trust monitoring behind approval."
+            "review and customer trust monitoring behind approval."
         ),
         "confidence": 0.68,
         "evidenceIds": [
