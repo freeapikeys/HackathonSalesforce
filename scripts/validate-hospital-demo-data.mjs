@@ -126,6 +126,39 @@ const taskTemplates = rootData["task_templates.json"];
 const channelAliases = rootData["channel_aliases.json"];
 const recommendationCases = rootData["recommendation_cases.json"];
 const eventStream = rootData["event_stream.json"];
+const requiredComplaintTypes = new Set([
+  "wait_time",
+  "room_readiness",
+  "cleanliness",
+  "food",
+  "billing",
+  "discharge_delay",
+  "lost_item",
+  "accessibility",
+  "privacy",
+  "safety",
+  "pharmacy_delay",
+  "staff_interaction"
+]);
+const requiredResourceTypes = new Set([
+  "BED",
+  "ROOM",
+  "QUEUE",
+  "STAFF_POOL",
+  "SUPPLY",
+  "EQUIPMENT",
+  "SERVICE_COUNTER"
+]);
+const requiredPartnerTypes = new Set([
+  "laboratory",
+  "laundry",
+  "food_service",
+  "insurance",
+  "payment_processor",
+  "maintenance",
+  "transport",
+  "equipment_vendor"
+]);
 
 countBetween("department", masterData.departments.length, 8, 10);
 countBetween("location", masterData.locations.length, 20, 30);
@@ -149,6 +182,28 @@ countBetween("staff task template", taskTemplates.length, 20, 25);
 countBetween("channel recipient alias", channelAliases.length, 12, 16);
 countBetween("expected recommendation", recommendationCases.length, 12, 15);
 countBetween("hospital event fixture", eventStream.length, 18, 24);
+
+const resourceTypes = new Set(resources.map((resource) => resource.resourceType));
+for (const resourceType of requiredResourceTypes) {
+  assert(resourceTypes.has(resourceType), `Missing resource type ${resourceType}`);
+}
+
+const partnerTypes = new Set(
+  masterData.partners.map((partner) => partner.partnerType)
+);
+for (const partnerType of requiredPartnerTypes) {
+  assert(partnerTypes.has(partnerType), `Missing partner type ${partnerType}`);
+}
+
+const complaintTypes = new Set(
+  complaints.map((complaint) => complaint.complaintType)
+);
+for (const complaintType of requiredComplaintTypes) {
+  assert(
+    complaintTypes.has(complaintType),
+    `Missing complaint type ${complaintType}`
+  );
+}
 
 const departmentIds = new Set(
   masterData.departments.map((d) => d.departmentId)
@@ -188,6 +243,14 @@ for (const resource of resources) {
 
 for (const complaint of complaints) {
   assert(
+    complaint.globalPrimitive === "Signal",
+    `${complaint.complaintId} is not a Signal primitive`
+  );
+  assert(
+    requiredComplaintTypes.has(complaint.complaintType),
+    `${complaint.complaintId} has unknown complaint type ${complaint.complaintType}`
+  );
+  assert(
     customerAliasIds.has(complaint.customerAliasId),
     `${complaint.complaintId} has unknown customer alias`
   );
@@ -208,6 +271,12 @@ for (const complaint of complaints) {
     complaint.evidenceId,
     `${complaint.complaintId} is missing evidenceId`
   );
+  if (["privacy", "safety"].includes(complaint.complaintType)) {
+    assert(
+      complaint.approvalRequiredForOutboundMessage === true,
+      `${complaint.complaintId} must require approval for sensitive outbound messages`
+    );
+  }
 }
 
 for (const cluster of complaintClusters) {
@@ -221,9 +290,23 @@ for (const cluster of complaintClusters) {
       `${cluster.clusterId} references unknown complaint ${complaintId}`
     );
   }
+  for (const dominantType of cluster.dominantTypes) {
+    assert(
+      requiredComplaintTypes.has(dominantType),
+      `${cluster.clusterId} has unknown dominant complaint type ${dominantType}`
+    );
+  }
+  assert(
+    cluster.evidenceIds.length > 0,
+    `${cluster.clusterId} has no evidence IDs`
+  );
 }
 
 for (const response of partnerResponses) {
+  assert(
+    response.globalPrimitive === "Evidence",
+    `${response.partnerResponseId} is not Evidence primitive`
+  );
   assert(
     issueIds.has(response.relatedIssueId),
     `${response.partnerResponseId} references unknown issue`
@@ -231,6 +314,10 @@ for (const response of partnerResponses) {
   assert(
     response.evidenceId,
     `${response.partnerResponseId} is missing evidenceId`
+  );
+  assert(
+    typeof response.changesRecommendation === "boolean",
+    `${response.partnerResponseId} does not state recommendation impact`
   );
 }
 

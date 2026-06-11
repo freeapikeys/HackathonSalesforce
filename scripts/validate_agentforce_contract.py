@@ -347,7 +347,9 @@ def main() -> int:
         for scenario in fixtures["scenarios"]
         if scenario["name"] == "hospital-operations-recovery-plan"
     )
-    hospital_reasoning = hospital_recovery["response"]["recommendation"][
+    hospital_response = hospital_recovery["response"]
+    hospital_recommendation = hospital_response["recommendation"]
+    hospital_reasoning = hospital_recommendation[
         "hospitalOperationsReasoning"
     ]
     require(
@@ -355,6 +357,80 @@ def main() -> int:
         and hospital_reasoning["severity"] == "High",
         "Hospital recovery scenario did not classify mixed high risk.",
     )
+    hospital_fact_ids = {fact["factId"] for fact in hospital_response["facts"]}
+    require(
+        {
+            "fact-hospital-complaints",
+            "fact-hospital-capacity",
+            "fact-hospital-pharmacy",
+            "fact-hospital-partner",
+            "fact-hospital-billing",
+            "fact-hospital-staffing",
+            "fact-hospital-clinical-refusal",
+        }
+        <= hospital_fact_ids,
+        "Hospital recovery scenario is missing required grounded facts.",
+    )
+    hospital_inference_ids = {
+        inference["inferenceId"] for inference in hospital_response["inferences"]
+    }
+    require(
+        {
+            "inference-hospital-capacity-pressure",
+            "inference-hospital-cross-functional-plan",
+        }
+        <= hospital_inference_ids,
+        "Hospital recovery scenario is missing required cross-functional inferences.",
+    )
+    require(
+        0 < hospital_recommendation["confidence"] <= 1,
+        "Hospital recovery scenario did not define a bounded confidence value.",
+    )
+    require(
+        hospital_reasoning["assumptions"],
+        "Hospital recovery scenario did not preserve assumptions.",
+    )
+    coverage = hospital_response["contextCoverage"]
+    coverage_categories = coverage["evidenceCategories"]
+    required_categories = {
+        "complaint",
+        "resource",
+        "capacity",
+        "partner",
+        "billing",
+        "stock",
+        "staffing",
+        "approval",
+        "outcome",
+    }
+    require(
+        required_categories <= set(coverage_categories),
+        "Hospital recovery scenario is missing context coverage categories.",
+    )
+    covered_categories = {
+        key
+        for key, value in coverage_categories.items()
+        if key == "outcome" or value.get("evidenceIds")
+    }
+    require(
+        required_categories <= covered_categories,
+        "Hospital recovery scenario has empty evidence coverage categories.",
+    )
+    primitive_records = coverage["recordIdsByPrimitive"]
+    for primitive in [
+        "customerAliases",
+        "departments",
+        "locations",
+        "resources",
+        "partners",
+        "processes",
+        "recommendations",
+        "approvals",
+    ]:
+        require(
+            primitive_records.get(primitive),
+            f"Hospital recovery scenario is missing {primitive} primitive links.",
+        )
     hospital_metrics = {
         calculation["metricKey"]
         for calculation in hospital_reasoning["calculations"]
@@ -408,6 +484,19 @@ def main() -> int:
         hospital_reasoning["expectedOutcomes"],
         "Hospital recovery scenario did not define expected outcomes.",
     )
+    hospital_outcome_metrics = {
+        outcome["metricKey"] for outcome in hospital_reasoning["expectedOutcomes"]
+    }
+    require(
+        {
+            "outpatient_wait_time_minutes",
+            "rooms_released",
+            "pharmacy_stock_cover_hours",
+            "lab_partner_acknowledgement",
+        }
+        <= hospital_outcome_metrics,
+        "Hospital recovery scenario is missing required expected outcomes.",
+    )
 
     missing_capacity = next(
         scenario
@@ -420,6 +509,16 @@ def main() -> int:
     require(
         missing_reasoning["missingEvidence"],
         "Missing capacity scenario did not name missing evidence.",
+    )
+    require(
+        {
+            "Current ready rooms",
+            "Blocked discharge rooms",
+            "Outpatient waiting count",
+            "Available staff by role",
+        }
+        <= set(missing_reasoning["missingEvidence"]),
+        "Missing capacity scenario did not ask for the required operational evidence.",
     )
     require(
         any(

@@ -70,46 +70,46 @@ airport, banking, supermarket, cruise, and other profiles.
 
 ### North Star Orchestrator
 
-- [ ] Combine patient trust, resource capacity, partner/vendor, financial,
+- [x] Combine patient trust, resource capacity, partner/vendor, financial,
       communication, and outcome findings into one recovery plan.
 - [ ] Resolve conflicts, for example "move patients faster" versus "room
       cleaning is not complete."
-- [ ] Decide which actions require manager approval.
-- [ ] Produce one recommendation with facts, inferences, assumptions, missing
+- [x] Decide which actions require manager approval.
+- [x] Produce one recommendation with facts, inferences, assumptions, missing
       evidence, blocked actions, confidence, and expected outcome.
 - [ ] Update the recommendation after partner, capacity, billing, or stock
       evidence arrives.
 
 ### Evidence And Context Agent
 
-- [ ] Normalize hospital signals into global primitives.
-- [ ] Link complaints, queues, resources, partners, policies, approvals,
+- [x] Normalize hospital signals into global primitives.
+- [x] Link complaints, queues, resources, partners, policies, approvals,
       actions, and outcomes to evidence IDs.
 - [ ] Detect missing, contradictory, restricted, duplicate, late, out-of-order,
       malformed, and low-confidence evidence.
-- [ ] Preserve source facts separately from claims and inferences.
-- [ ] Ask for missing operational evidence when needed.
+- [x] Preserve source facts separately from claims and inferences.
+- [x] Ask for missing operational evidence when needed.
 
 ### Patient Trust Agent
 
-- [ ] Detect patient and visitor complaint clusters.
-- [ ] Classify complaints into wait time, room readiness, cleanliness, food,
+- [x] Detect patient and visitor complaint clusters.
+- [x] Classify complaints into wait time, room readiness, cleanliness, food,
       billing, discharge delay, lost item, accessibility, privacy, safety,
       pharmacy delay, and staff interaction.
-- [ ] Connect complaints to location, department, resource, time window,
+- [x] Connect complaints to location, department, resource, time window,
       partner, and evidence.
 - [ ] Draft approved service-recovery or patient-facing message text.
-- [ ] Escalate safety, privacy, or high-severity complaints.
+- [x] Escalate safety, privacy, or high-severity complaints.
 
 ### Resource And Capacity Agent
 
-- [ ] Evaluate bed, room, queue, staff, pharmacy stock, equipment, and service
+- [x] Evaluate bed, room, queue, staff, pharmacy stock, equipment, and service
       counter capacity.
-- [ ] Calculate available capacity, demand pressure, queue risk, stock days
+- [x] Calculate available capacity, demand pressure, queue risk, stock days
       remaining, and SLA breach risk.
-- [ ] Detect blocked discharge rooms and delayed cleaning/porter tasks.
-- [ ] Recommend task, restock, transfer, staffing, or escalation actions.
-- [ ] Name missing evidence when data is incomplete.
+- [x] Detect blocked discharge rooms and delayed cleaning/porter tasks.
+- [x] Recommend task, restock, transfer, staffing, or escalation actions.
+- [x] Name missing evidence when data is incomplete.
 
 ### Operations Execution Agent
 
@@ -122,20 +122,20 @@ airport, banking, supermarket, cruise, and other profiles.
 
 ### Partner And Vendor Agent
 
-- [ ] Track lab, laundry, food, insurer, payment, maintenance, transport, and
+- [x] Track lab, laundry, food, insurer, payment, maintenance, transport, and
       equipment partner status.
-- [ ] Create vendor escalation or response request after approval.
-- [ ] Preserve SLA evidence and partner response details.
-- [ ] Update the recommendation when a partner response changes the plan.
+- [x] Create vendor escalation or response request after approval.
+- [x] Preserve SLA evidence and partner response details.
+- [x] Update the recommendation when a partner response changes the plan.
 
 ### Risk And Approval Agent
 
-- [ ] Enforce business manager approval before protected actions.
-- [ ] Refuse diagnosis, treatment, dosage, triage, and clinical priority
+- [x] Enforce business manager approval before protected actions.
+- [x] Refuse diagnosis, treatment, dosage, triage, and clinical priority
       decisions.
 - [ ] Decide approve, reject, modify, defer, or execute-ready state.
 - [ ] Preserve policy reason, approver role, approval ID, and action ID.
-- [ ] Ensure agents operate with current user permissions and purpose limits.
+- [x] Ensure agents operate with current user permissions and purpose limits.
 
 ### Financial Impact Agent
 
