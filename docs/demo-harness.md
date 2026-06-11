@@ -35,7 +35,10 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
 13. evaluate the defined outcomes;
 14. refresh the Lightning controller and verify completed state;
 15. re-read Agentforce recommendation context and prove outcome and metric
-    coverage are now present.
+    coverage are now present;
+16. re-read direct Apex context and prove the final graph still includes the
+    customer alias, department/location, resources, partner, process, evidence,
+    recommendation, approval, actions, outcomes, and outcome metrics.
 
 North Star hospital assertions:
 
@@ -117,6 +120,9 @@ The connected report must show:
 - `403 PERMISSION_DENIED` for an unregistered MuleSoft approval;
 - five approved task action records, two approved channel actions, two
   correlated outcomes, and two evaluations;
+- direct Apex final context includes the global primitive records, hospital
+  evidence types, approved action types, Slack/WhatsApp-style delivery outcomes,
+  and delivery metric keys;
 - final channel action statuses `EXECUTED`, task action statuses `PENDING`, and
   work item status `COMPLETED`;
 - Lightning controller permissions and refreshed final context.

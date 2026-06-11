@@ -260,7 +260,7 @@ file before editing.
 - [x] Map hospital partners to entity records.
 - [x] Map complaints to evidence records.
 - [x] Map tasks to action records and/or Salesforce task records.
-- [ ] Apex context includes customer alias, department, location, resource,
+- [x] Apex context includes customer alias, department, location, resource,
       partner, complaint, capacity, stock, billing, recommendation, approval,
       action, and outcome.
 - [x] Manager approval is enforced before vendor, billing, pharmacy, Slack,

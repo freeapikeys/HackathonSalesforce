@@ -99,6 +99,55 @@ def passing_demo():
                 "actionRecordCount": 7,
                 "metricCount": 2,
             },
+            "apexFinalContext": {
+                "workItemStatus": "COMPLETED",
+                "entityTypes": [
+                    "CUSTOMER_ALIAS",
+                    "LOCATION",
+                    "RESOURCE",
+                    "PARTNER",
+                    "PROCESS",
+                ],
+                "entityExternalKeys": [
+                    "ALIAS-PATIENT-GROUP-MORNING-001",
+                    "DEPT-OUTPATIENT-RECEPTION",
+                    "RESOURCE-WARD-A3-DISCHARGE-ROOMS",
+                    "RESOURCE-PHARMACY-IV-KITS",
+                    "PARTNER-ISLAND-DIAGNOSTICS",
+                    "PROCESS-BILLING-INSURANCE-REVIEW",
+                ],
+                "evidenceTypes": [
+                    "PATIENT_COMPLAINT_CLUSTER",
+                    "RESOURCE_CAPACITY",
+                    "PHARMACY_STOCK_POSITION",
+                    "PARTNER_RESPONSE_STATUS",
+                    "BILLING_AND_INSURANCE_HOLD",
+                    "STAFF_QUEUE_RISK",
+                    "CLINICAL_DECISION_REFUSAL",
+                ],
+                "actionTypes": [
+                    "CREATE_PATIENT_SERVICE_TASK",
+                    "REQUEST_BED_CLEANING",
+                    "CREATE_PHARMACY_RESTOCK_REQUEST",
+                    "ESCALATE_LAB_VENDOR_CASE",
+                    "OPEN_BILLING_REVIEW",
+                    "SEND_SLACK_ALERT",
+                    "SEND_WHATSAPP_ALERT",
+                ],
+                "outcomeTypes": [
+                    "SLACK_ALERT_DELIVERY",
+                    "WHATSAPP_ALERT_DELIVERY",
+                ],
+                "outcomeMetricKeys": [
+                    "slack_alert_delivery_success",
+                    "whatsapp_alert_delivery_success",
+                ],
+                "recommendationCount": 1,
+                "approvalCount": 1,
+                "actionCount": 7,
+                "outcomeCount": 2,
+                "evaluationCount": 2,
+            },
             "connected": {
                 "counts": dict(verify.FINAL_COUNT_MINIMUMS),
             },
@@ -128,6 +177,10 @@ class CleanCloneResultTest(unittest.TestCase):
             "COMPLETED",
             evidence["demo"]["invariants"]["finalWorkItemStatus"],
         )
+        self.assertIn(
+            "CUSTOMER_ALIAS",
+            evidence["demo"]["invariants"]["apexFinalEntityTypes"],
+        )
 
     def test_rejects_a_missing_governed_failure_step(self):
         report = passing_demo()
@@ -144,6 +197,18 @@ class CleanCloneResultTest(unittest.TestCase):
         report["logs"] = "local command output"
 
         with self.assertRaisesRegex(verify.VerificationError, "sensitive key"):
+            verify.validate_demo(report)
+
+    def test_rejects_missing_final_apex_primitive(self):
+        report = passing_demo()
+        report["details"]["apexFinalContext"]["entityTypes"].remove(
+            "CUSTOMER_ALIAS"
+        )
+
+        with self.assertRaisesRegex(
+            verify.VerificationError,
+            "Final Apex entity types",
+        ):
             verify.validate_demo(report)
 
     def test_rejects_deployment_test_failures(self):

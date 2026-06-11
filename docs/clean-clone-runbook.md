@@ -115,6 +115,9 @@ Evidence validation fails unless all of these are true:
 - approved WhatsApp-style delivery is recorded as `SENT` or honest `MOCK_SENT`;
 - five task action records remain visible in the final Salesforce context, and
   two channel actions are `EXECUTED`;
+- direct Apex final context includes the customer alias, department/location,
+  resources, partner, process, hospital evidence types, approved actions,
+  delivery outcomes, and delivery metric keys;
 - outcomes are `SUCCESS`, work item is `COMPLETED`, and evaluations exist;
 - final Salesforce counts include at least three events, seven evidence
   records, seven actions, two outcomes, two evaluations, one recommendation,

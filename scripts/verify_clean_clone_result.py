@@ -30,6 +30,7 @@ REQUIRED_STEPS = [
     "mulesoft-writeback",
     "outcome-and-lightning-refresh",
     "agentforce-outcome-context",
+    "apex-final-context",
     "verify-connected",
 ]
 FINAL_COUNT_MINIMUMS = {
@@ -40,6 +41,47 @@ FINAL_COUNT_MINIMUMS = {
     "HFS_Outcome__c": 2,
     "HFS_Recommendation__c": 1,
     "HFS_Work_Item__c": 1,
+}
+REQUIRED_FINAL_ENTITY_TYPES = {
+    "CUSTOMER_ALIAS",
+    "LOCATION",
+    "RESOURCE",
+    "PARTNER",
+    "PROCESS",
+}
+REQUIRED_FINAL_ENTITY_KEYS = {
+    "ALIAS-PATIENT-GROUP-MORNING-001",
+    "DEPT-OUTPATIENT-RECEPTION",
+    "RESOURCE-WARD-A3-DISCHARGE-ROOMS",
+    "RESOURCE-PHARMACY-IV-KITS",
+    "PARTNER-ISLAND-DIAGNOSTICS",
+    "PROCESS-BILLING-INSURANCE-REVIEW",
+}
+REQUIRED_FINAL_EVIDENCE_TYPES = {
+    "PATIENT_COMPLAINT_CLUSTER",
+    "RESOURCE_CAPACITY",
+    "PHARMACY_STOCK_POSITION",
+    "PARTNER_RESPONSE_STATUS",
+    "BILLING_AND_INSURANCE_HOLD",
+    "STAFF_QUEUE_RISK",
+    "CLINICAL_DECISION_REFUSAL",
+}
+REQUIRED_FINAL_ACTION_TYPES = {
+    "CREATE_PATIENT_SERVICE_TASK",
+    "REQUEST_BED_CLEANING",
+    "CREATE_PHARMACY_RESTOCK_REQUEST",
+    "ESCALATE_LAB_VENDOR_CASE",
+    "OPEN_BILLING_REVIEW",
+    "SEND_SLACK_ALERT",
+    "SEND_WHATSAPP_ALERT",
+}
+REQUIRED_FINAL_OUTCOME_TYPES = {
+    "SLACK_ALERT_DELIVERY",
+    "WHATSAPP_ALERT_DELIVERY",
+}
+REQUIRED_FINAL_OUTCOME_METRICS = {
+    "slack_alert_delivery_success",
+    "whatsapp_alert_delivery_success",
 }
 SENSITIVE_KEYS = {
     "accessToken",
@@ -65,6 +107,14 @@ def integer(value: Any, name: str) -> int:
         return int(value)
     except (TypeError, ValueError) as error:
         raise VerificationError(f"{name} must be an integer") from error
+
+
+def require_subset(value: Any, required: set[str], name: str) -> set[str]:
+    require(isinstance(value, list), f"{name} must be a list")
+    actual = {str(item) for item in value}
+    missing = sorted(required - actual)
+    require(not missing, f"{name} is missing: {', '.join(missing)}")
+    return actual
 
 
 def normalize_repository(repository: str) -> str:
@@ -165,6 +215,7 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
     delivery_by_type = mulesoft.get("deliveryByActionType") or {}
     outcome = details.get("outcome") or {}
     post_outcome_agentforce = details.get("postOutcomeAgentforce") or {}
+    apex_final_context = details.get("apexFinalContext") or {}
     connected = details.get("connected") or {}
     counts = connected.get("counts") or {}
 
@@ -273,6 +324,69 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
         >= 2,
         "Agentforce did not include outcome and metric context after write-back",
     )
+    require(
+        apex_final_context.get("workItemStatus") == "COMPLETED",
+        "Final Apex context did not return the completed work item",
+    )
+    final_entity_types = require_subset(
+        apex_final_context.get("entityTypes"),
+        REQUIRED_FINAL_ENTITY_TYPES,
+        "Final Apex entity types",
+    )
+    require_subset(
+        apex_final_context.get("entityExternalKeys"),
+        REQUIRED_FINAL_ENTITY_KEYS,
+        "Final Apex entity external keys",
+    )
+    final_evidence_types = require_subset(
+        apex_final_context.get("evidenceTypes"),
+        REQUIRED_FINAL_EVIDENCE_TYPES,
+        "Final Apex evidence types",
+    )
+    final_action_types = require_subset(
+        apex_final_context.get("actionTypes"),
+        REQUIRED_FINAL_ACTION_TYPES,
+        "Final Apex action types",
+    )
+    final_outcome_types = require_subset(
+        apex_final_context.get("outcomeTypes"),
+        REQUIRED_FINAL_OUTCOME_TYPES,
+        "Final Apex outcome types",
+    )
+    require_subset(
+        apex_final_context.get("outcomeMetricKeys"),
+        REQUIRED_FINAL_OUTCOME_METRICS,
+        "Final Apex outcome metric keys",
+    )
+    require(
+        integer(
+            apex_final_context.get("recommendationCount", 0),
+            "Final Apex recommendation count",
+        )
+        >= 1
+        and integer(
+            apex_final_context.get("approvalCount", 0),
+            "Final Apex approval count",
+        )
+        >= 1
+        and integer(
+            apex_final_context.get("actionCount", 0),
+            "Final Apex action count",
+        )
+        >= 7
+        and integer(
+            apex_final_context.get("outcomeCount", 0),
+            "Final Apex outcome count",
+        )
+        >= 2
+        and integer(
+            apex_final_context.get("evaluationCount", 0),
+            "Final Apex evaluation count",
+        )
+        >= 2,
+        "Final Apex context is missing recommendation, approval, action, "
+        "outcome, or evaluation records",
+    )
 
     for object_name, minimum in FINAL_COUNT_MINIMUMS.items():
         require(
@@ -320,6 +434,10 @@ def validate_demo(report: dict[str, Any]) -> dict[str, Any]:
             "postOutcomeAgentforce": post_outcome_agentforce[
                 "outcomeContextCovered"
             ],
+            "apexFinalEntityTypes": sorted(final_entity_types),
+            "apexFinalEvidenceTypes": sorted(final_evidence_types),
+            "apexFinalActionTypes": sorted(final_action_types),
+            "apexFinalOutcomeTypes": sorted(final_outcome_types),
             "finalActionStatus": outcome["actionStatus"],
             "finalOutcomeStatus": outcome["outcomeStatus"],
             "finalWorkItemStatus": outcome["workItemStatus"],

@@ -1223,6 +1223,128 @@ System.debug(
             },
         }
 
+    def verify_apex_final_context(
+        self,
+        source: dict[str, Any],
+    ) -> dict[str, Any]:
+        script = f"""
+HFS_ContextRequest contextRequest = new HFS_ContextRequest();
+contextRequest.contractVersion = HFS_ServiceContract.VERSION;
+contextRequest.tenantKey = '{apex_string(self.config["tenantKey"])}';
+contextRequest.workItemId = '{apex_string(source["workItemId"])}';
+contextRequest.purpose = '{HOSPITAL_PURPOSE}';
+contextRequest.correlationId = '{apex_string(self.config["correlationId"])}';
+contextRequest.includeProvenance = true;
+contextRequest.timelineLimit = 100;
+
+HFS_ContextResponse context = new HFS_RelationshipServiceImpl()
+  .getContext(contextRequest);
+System.assertEquals(0, context.errors.size(), JSON.serialize(context.errors));
+System.assertEquals('COMPLETED', context.workItem.status);
+
+Set<String> entityTypes = new Set<String>();
+Set<String> entityExternalKeys = new Set<String>();
+for (HFS_ContextItem item : context.entities) {{
+  entityTypes.add(item.recordType);
+  entityExternalKeys.add(item.externalKey);
+}}
+System.assertEquals(true, entityTypes.contains('CUSTOMER_ALIAS'));
+System.assertEquals(true, entityTypes.contains('LOCATION'));
+System.assertEquals(true, entityTypes.contains('RESOURCE'));
+System.assertEquals(true, entityTypes.contains('PARTNER'));
+System.assertEquals(true, entityTypes.contains('PROCESS'));
+System.assertEquals(
+  true,
+  entityExternalKeys.contains('ALIAS-PATIENT-GROUP-MORNING-001')
+);
+System.assertEquals(
+  true,
+  entityExternalKeys.contains('DEPT-OUTPATIENT-RECEPTION')
+);
+System.assertEquals(
+  true,
+  entityExternalKeys.contains('RESOURCE-WARD-A3-DISCHARGE-ROOMS')
+);
+System.assertEquals(
+  true,
+  entityExternalKeys.contains('RESOURCE-PHARMACY-IV-KITS')
+);
+System.assertEquals(
+  true,
+  entityExternalKeys.contains('PARTNER-ISLAND-DIAGNOSTICS')
+);
+System.assertEquals(
+  true,
+  entityExternalKeys.contains('PROCESS-BILLING-INSURANCE-REVIEW')
+);
+
+Set<String> evidenceTypes = new Set<String>();
+for (HFS_EvidenceCitation citation : context.evidence) {{
+  evidenceTypes.add(citation.evidenceType);
+}}
+System.assertEquals(true, evidenceTypes.contains('PATIENT_COMPLAINT_CLUSTER'));
+System.assertEquals(true, evidenceTypes.contains('RESOURCE_CAPACITY'));
+System.assertEquals(true, evidenceTypes.contains('PHARMACY_STOCK_POSITION'));
+System.assertEquals(true, evidenceTypes.contains('PARTNER_RESPONSE_STATUS'));
+System.assertEquals(true, evidenceTypes.contains('BILLING_AND_INSURANCE_HOLD'));
+System.assertEquals(true, evidenceTypes.contains('STAFF_QUEUE_RISK'));
+System.assertEquals(true, evidenceTypes.contains('CLINICAL_DECISION_REFUSAL'));
+
+Set<String> actionTypes = new Set<String>();
+for (HFS_ContextItem item : context.actions) {{
+  actionTypes.add(item.recordType);
+}}
+System.assert(context.actions.size() >= 7);
+System.assertEquals(true, actionTypes.contains('CREATE_PATIENT_SERVICE_TASK'));
+System.assertEquals(true, actionTypes.contains('REQUEST_BED_CLEANING'));
+System.assertEquals(true, actionTypes.contains('CREATE_PHARMACY_RESTOCK_REQUEST'));
+System.assertEquals(true, actionTypes.contains('ESCALATE_LAB_VENDOR_CASE'));
+System.assertEquals(true, actionTypes.contains('OPEN_BILLING_REVIEW'));
+System.assertEquals(true, actionTypes.contains('{HOSPITAL_SLACK_ACTION_TYPE}'));
+System.assertEquals(
+  true,
+  actionTypes.contains('{HOSPITAL_WHATSAPP_ACTION_TYPE}')
+);
+
+Set<String> outcomeTypes = new Set<String>();
+Set<String> outcomeMetricKeys = new Set<String>();
+for (HFS_ContextItem item : context.outcomes) {{
+  outcomeTypes.add(item.recordType);
+  outcomeMetricKeys.add(item.metricKey);
+}}
+System.assert(context.outcomes.size() >= 2);
+System.assert(context.evaluations.size() >= 2);
+System.assertEquals(true, outcomeTypes.contains('SLACK_ALERT_DELIVERY'));
+System.assertEquals(true, outcomeTypes.contains('WHATSAPP_ALERT_DELIVERY'));
+System.assertEquals(true, outcomeMetricKeys.contains('slack_alert_delivery_success'));
+System.assertEquals(
+  true,
+  outcomeMetricKeys.contains('whatsapp_alert_delivery_success')
+);
+System.assertEquals(1, context.recommendations.size());
+System.assertEquals(1, context.approvals.size());
+
+Map<String, Object> output = new Map<String, Object>{{
+  'workItemStatus' => context.workItem.status,
+  'entityTypes' => new List<String>(entityTypes),
+  'entityExternalKeys' => new List<String>(entityExternalKeys),
+  'evidenceTypes' => new List<String>(evidenceTypes),
+  'actionTypes' => new List<String>(actionTypes),
+  'outcomeTypes' => new List<String>(outcomeTypes),
+  'outcomeMetricKeys' => new List<String>(outcomeMetricKeys),
+  'recommendationCount' => context.recommendations.size(),
+  'approvalCount' => context.approvals.size(),
+  'actionCount' => context.actions.size(),
+  'outcomeCount' => context.outcomes.size(),
+  'evaluationCount' => context.evaluations.size()
+}};
+System.debug(
+  'HFS_CP3_APEX_FINAL_CONTEXT:' +
+  EncodingUtil.base64Encode(Blob.valueOf(JSON.serialize(output)))
+);
+"""
+        return self.run_apex_source(script, "HFS_CP3_APEX_FINAL_CONTEXT")
+
     def verify_agentforce_after_outcomes(
         self,
         source: dict[str, Any],
@@ -1445,6 +1567,10 @@ System.debug(
                 "agentforce-outcome-context",
                 lambda: self.verify_agentforce_after_outcomes(source, model),
             )
+            apex_final_context = self.step(
+                "apex-final-context",
+                lambda: self.verify_apex_final_context(source),
+            )
             connected = self.step(
                 "verify-connected",
                 self.verify_connected,
@@ -1466,6 +1592,7 @@ System.debug(
                 },
                 "outcome": outcome,
                 "postOutcomeAgentforce": post_outcome_agentforce,
+                "apexFinalContext": apex_final_context,
                 "connected": connected,
             }
         if command == "verify":
