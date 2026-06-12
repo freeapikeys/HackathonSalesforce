@@ -63,6 +63,59 @@ approved-reply, and voice/media evidence path that fits the existing MVP.
 - Voice, image, and document media can be represented as evidence metadata; live
   Meta media download, transcription, OCR, and extraction are still remaining
   work.
+- Hassan owns this lane solo for the hackathon: multilingual WhatsApp, voice
+  mode, customer-facing chat drafts, and judge-sector WhatsApp use cases.
+- Hassan may use his own pretrained multilingual or voice models for language
+  detection, translation, transcription, and confidence scoring.
+- Hassan may use DeepSeek for customer chat drafting or short same-language
+  responses, as long as it stays behind the model/adapter boundary and never
+  bypasses evidence, approval, safety, or audit rules.
+
+## Model And Chat Guardrails
+
+Use custom models as implementation details, not as product architecture.
+
+- Do not hard-code `DeepSeek`, a local model name, or a provider-specific model
+  ID into North Star core IDs, action IDs, primitive IDs, Agentforce topics, or
+  UI state.
+- Use logical capabilities instead, for example `language_detection`,
+  `voice_transcription`, `message_drafting`, `customer_reply_drafting`, or
+  `judge_sector_use_case_mapping`.
+- Keep provider credentials, model endpoints, API keys, and local model paths
+  outside Git.
+- Send only safe, minimized context to any external model: synthetic alias,
+  source channel, language, safe summary, evidence IDs, affected primitives,
+  and policy flags. Do not send raw phone numbers, raw media URLs, credentials,
+  medical records, or private documents.
+- Record language, transcript, extraction, and chat-draft confidence where
+  available.
+- If model confidence is low, ask one short follow-up instead of guessing.
+- DeepSeek or pretrained-model output may draft a response, classify intent, or
+  summarize evidence. It must not approve actions, send WhatsApp messages,
+  decide refunds, make clinical decisions, or bypass manager approval.
+- Customer-facing WhatsApp replies remain short, same-language where safe, and
+  manager-approved before consequential statements are sent.
+
+## Judge-Sector Use Cases
+
+Hassan owns the WhatsApp/chat use-case examples for the judge sectors. These
+are demo mappings, not separate architectures.
+
+- [ ] Build a hospital WhatsApp use case for patient/visitor complaint intake.
+- [ ] Build a hotel WhatsApp use case for guest complaint, room readiness,
+      billing, food/service, and housekeeping coordination.
+- [ ] Build an airport WhatsApp use case for passenger complaint, gate/baggage
+      issue, vendor delay, staff coordination, and customer update.
+- [ ] Build a banking WhatsApp use case for client complaint, duplicate charge,
+      dispute/case status, compliance-safe follow-up, and manager approval.
+- [ ] For each sector, map the use case to the same primitives:
+      `Signal`, `Evidence`, `Customer`, `Resource`, `Partner`, `Policy`,
+      `Recommendation`, `Approval`, `Action`, `Outcome`, and `Metric`.
+- [ ] For each sector, show which model step is used:
+      language detection, voice transcription, chat draft, evidence summary, or
+      follow-up question.
+- [ ] For each sector, name what must remain human-approved.
+- [ ] Keep wording simple and natural. Do not create a separate bot per sector.
 
 ## WhatsApp Required Behavior
 
@@ -216,6 +269,17 @@ Expected behavior:
 - [ ] Add tests or harness proof for Meta text, French text, Mauritian Creole
       text, audio pending transcript, audio transcript success, image/document
       pending extraction, and no raw phone/media storage.
+- [ ] Add an adapter boundary for Hassan's pretrained multilingual/voice
+      models so language, transcript, and confidence are recorded without
+      leaking model-specific IDs into core contracts.
+- [ ] Add a DeepSeek-backed or DeepSeek-compatible chat-draft path for safe
+      same-language WhatsApp responses, with `MOCK` or local fallback when no
+      model credential is available.
+- [ ] Add tests or fixtures proving model output cannot approve actions, send
+      protected messages, make clinical decisions, decide refunds, or overwrite
+      source evidence.
+- [ ] Add judge-sector WhatsApp/chat examples for hospital, hotel, airport, and
+      banking using the same universal primitives.
 
 ## Testing Checklist
 
@@ -257,7 +321,9 @@ Read docs/assignments/hassan.md, docs/mulesoft-api-contract.md,
 docs/agentforce-action-contract.md, and docs/ui-state-contract.md. Implement
 the next smallest official Meta WhatsApp task for North Star: same-language
 receipt, approved customer response, voice-note evidence, or image/document
-evidence. Preserve approval gating, honest mock fallback, no raw personal/media
-storage, and clinical decision refusal. Inspect existing files before editing,
-add tests, and run the focused checks.
+evidence. Hassan may use his pretrained multilingual/voice models and DeepSeek
+for chat drafting behind a safe adapter boundary. Preserve approval gating,
+honest mock fallback, no raw personal/media storage, no provider secrets in Git,
+no provider-specific core IDs, and clinical decision refusal. Inspect existing
+files before editing, add tests, and run the focused checks.
 ```

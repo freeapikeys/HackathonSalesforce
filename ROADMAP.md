@@ -235,9 +235,10 @@ file before editing.
 - [x] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved
       MuleSoft action execution, with real webhook support only through
       `SLACK_WEBHOOK_URL` and honest `MOCK_SENT` fallback.
-- [ ] Hassan: finish the official Meta WhatsApp customer channel: same-language
-      receipts and approved replies, voice-note evidence, image/document
-      evidence, and no clinical or protected action bypass.
+- [ ] Hassan: finish the official Meta WhatsApp customer channel solo:
+      same-language receipts and approved replies, pretrained multilingual and
+      voice-model evidence, DeepSeek-compatible chat drafts, judge-sector use
+      cases, and no clinical or protected action bypass.
 - [x] Ranveer: finish the internal execution proof: signed Slack approval
       harness plus command-center fallback, command-center action/outcome
       trace, protected vendor-email mock proof, and resource/capacity workflows
@@ -450,6 +451,15 @@ file before editing.
       mark the voice note as pending transcript with one short follow-up.
 - [ ] Hassan: add Meta WhatsApp image/document evidence extraction or
       low-confidence follow-up handling.
+- [ ] Hassan: integrate his pretrained multilingual/voice models behind an
+      adapter that records language, transcript, extraction, confidence, and
+      evidence IDs without committing model endpoints, local paths, or secrets.
+- [ ] Hassan: add a DeepSeek-backed or DeepSeek-compatible chat-draft path for
+      safe WhatsApp replies. It may draft language, but it must not approve,
+      execute, make clinical decisions, decide refunds, or bypass evidence.
+- [ ] Hassan: build WhatsApp/chat use-case mappings for hospital, hotel,
+      airport, and banking judges using the same global primitives rather than
+      separate architectures.
 - [x] Ranveer: rehearse live Slack approve/reject/modify buttons with a public
       Slack App interactivity Request URL, or document the command-center
       fallback used in the demo.

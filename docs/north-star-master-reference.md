@@ -513,29 +513,35 @@ Highest-value tasks still open:
    `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 2. Finish same-language Meta WhatsApp receipts and approved replies for
    English, French, and Mauritian Creole.
-3. Add Meta WhatsApp voice-note transcription evidence or a clear
+3. Hassan may use his pretrained multilingual/voice models and DeepSeek for
+   WhatsApp language handling, voice transcription, and chat drafting, but only
+   behind logical model capabilities and with no secrets, raw media, or
+   provider-specific core IDs committed.
+4. Add Meta WhatsApp voice-note transcription evidence or a clear
    pending-transcript follow-up path.
-4. Add Meta WhatsApp image/document evidence extraction or low-confidence
+5. Add Meta WhatsApp image/document evidence extraction or low-confidence
    follow-up handling.
-5. Configure Slack App Interactivity with a public Request URL if the live demo
+6. Hassan should build judge-sector WhatsApp/chat use cases for hospital,
+   hotel, airport, and banking using the same global primitives.
+7. Configure Slack App Interactivity with a public Request URL if the live demo
    should use real Slack button clicks; otherwise use the signed harness proof
    and Salesforce command-center approval fallback.
-6. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
+8. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
-7. Aarav should prepare the final no-credential QA pack: multilingual complaint
+9. Aarav should prepare the final no-credential QA pack: multilingual complaint
    scripts, fake voice-note transcripts, document/image evidence scenarios,
    expected agent routing, and judge-sector mappings.
-8. Add cross-sector cards showing how the same global primitives map to
-   airport, hotel, banking, supermarket, and cruise operations.
+10. Add cross-sector cards showing how the same global primitives map to
+    airport, hotel, banking, supermarket, and cruise operations.
 
 ## Team Ownership
 
-| Person  | Main area                                                                                |
-| ------- | ---------------------------------------------------------------------------------------- |
-| Fahan   | Final testing and coordination only; no new implementation task in this split            |
-| Hassan  | Official Meta WhatsApp customer channel, same-language replies, voice/media evidence     |
-| Aarav   | Synthetic data review, no-credential QA scripts, voice/document scenarios, judge mapping |
-| Ranveer | Slack approval proof, command-center action trace, resource/capacity/billing workflows   |
+| Person  | Main area                                                                                                                   |
+| ------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Fahan   | Final testing and coordination only; no new implementation task in this split                                               |
+| Hassan  | Official Meta WhatsApp customer channel, pretrained multilingual/voice models, DeepSeek chat drafts, judge-sector use cases |
+| Aarav   | Synthetic data review, no-credential QA scripts, voice/document scenarios, judge mapping                                    |
+| Ranveer | Slack approval proof, command-center action trace, resource/capacity/billing workflows                                      |
 
 ## Final Warnings
 

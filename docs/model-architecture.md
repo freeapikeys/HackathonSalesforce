@@ -25,10 +25,21 @@ when they describe a distinct capability. Candidate profiles:
 - `clinical_boundary_refusal`
 - `staff_alert_drafting`
 - `manager_briefing`
+- `language_detection`
+- `voice_transcription`
+- `customer_reply_drafting`
+- `judge_sector_use_case_mapping`
 
 Do not encode provider names, patient aliases, hospital names, or one-off demo
 scenario names into a model profile. The selected business profile belongs in
 context, not routing policy.
+
+Hassan may use pretrained multilingual or voice models and DeepSeek for the
+WhatsApp/chat lane during the hackathon. Treat those as deployments behind the
+logical profiles above, not as core architecture names. Model output may draft,
+classify, translate, transcribe, summarize, or ask for missing evidence. It must
+not approve actions, execute MuleSoft actions, decide refunds, make clinical
+decisions, or weaken evidence and approval rules.
 
 Each logical profile resolves to a versioned deployment and policy.
 

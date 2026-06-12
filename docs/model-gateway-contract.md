@@ -17,8 +17,16 @@ in recommendation requests, prompts, Agentforce workflow logic, or UI state.
 
 North Star callers should request logical capabilities such as
 `hospital_action_reasoning`, `resource_capacity_reasoning`,
-`clinical_boundary_refusal`, or the existing `recommendation_reasoning` profile.
-They must not request a provider, a model name, or a scenario-specific profile.
+`clinical_boundary_refusal`, `language_detection`, `voice_transcription`,
+`customer_reply_drafting`, `judge_sector_use_case_mapping`, or the existing
+`recommendation_reasoning` profile. They must not request a provider, a model
+name, or a scenario-specific profile.
+
+For the hackathon WhatsApp lane, Hassan may route these logical capabilities to
+his pretrained multilingual/voice models or DeepSeek through configuration. The
+gateway contract stays the same: provider output is advisory, audited, and
+policy-bound. It must not approve protected actions, execute external actions,
+make clinical decisions, decide refunds, or bypass evidence retention.
 
 ## Deterministic Routing
 

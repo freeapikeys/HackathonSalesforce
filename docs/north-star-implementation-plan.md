@@ -247,6 +247,15 @@ Language, voice, and document handling:
 - Current Salesforce intake stores language hints for English, French, and
   Mauritian Creole. The live Meta receipt still needs same-language response
   wording before it should be pitched as multilingual customer chat.
+- Hassan owns the multilingual and voice-model lane. He may use his own
+  pretrained multilingual or voice models for language detection, translation,
+  transcription, and confidence scoring, provided they stay behind a safe
+  adapter boundary and do not introduce secrets, raw personal data, raw media,
+  or provider-specific core IDs into the repo.
+- Hassan may use DeepSeek for customer chat drafts or same-language response
+  drafting. DeepSeek output is advisory draft text only; it must not approve
+  actions, execute MuleSoft actions, decide refunds, make clinical decisions,
+  or overwrite evidence.
 - Voice notes currently become media metadata and pending evidence. A real
   Meta media download and transcription step is still required before voice
   mode can be pitched as live WhatsApp voice understanding.
@@ -450,6 +459,15 @@ Focused checks:
       pending-transcript follow-up path.
 - [ ] Add Meta WhatsApp image/document evidence extraction or low-confidence
       follow-up handling.
+- [ ] Add Hassan's pretrained multilingual/voice models through logical
+      capabilities such as `language_detection`, `voice_transcription`,
+      `message_drafting`, and `customer_reply_drafting`; do not hard-code
+      provider names into core architecture.
+- [ ] Add a DeepSeek-backed or DeepSeek-compatible chat-draft path with mock or
+      local fallback, confidence/audit metadata, and tests proving protected
+      actions remain manager-approved.
+- [ ] Add Hassan-owned judge-sector WhatsApp/chat use cases for hospital,
+      hotel, airport, and banking, all mapped through the same primitives.
 - [x] Update the command center to show hospital risk pulse, evidence timeline,
       vendor response, approval cockpit, Slack result, WhatsApp result, and task
       acknowledgement.
