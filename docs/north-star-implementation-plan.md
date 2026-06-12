@@ -131,6 +131,13 @@ Acceptance:
   separated;
 - restricted or missing evidence fails closed.
 
+Recovery note:
+
+- If the live Agentforce Studio preview drifts back to generic Salesforce
+  responses, use `docs/agentforce-publish-recovery.md` to validate, publish,
+  activate, retrieve, and smoke test the latest
+  `North_Star_Hospital_Operations` authoring bundle on Windows.
+
 ## Workstream 4: MuleSoft Mock Actions And Channels
 
 Keep the existing Process API operations:

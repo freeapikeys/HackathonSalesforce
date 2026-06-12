@@ -443,6 +443,11 @@ What it does not prove yet:
 `hfs-dev` is the local Salesforce CLI alias for the connected demo org. It is
 not a Salesforce product name.
 
+The live Agentforce Studio recovery and publish notes are in
+`docs/agentforce-publish-recovery.md`. Use that runbook if Builder falls back to
+generic Salesforce replies or if `sf agent publish authoring-bundle` fails on
+Windows.
+
 Useful commands:
 
 ```powershell

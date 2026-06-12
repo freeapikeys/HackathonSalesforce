@@ -46,6 +46,8 @@ work.
 - `AGENTS.md`: rules for Codex and human contributors.
 - `docs/north-star-master-reference.md`: one-stop team reference for agents,
   IDs, channels, commands, setup, and demo gates.
+- `docs/agentforce-publish-recovery.md`: Windows runbook for recovering and
+  publishing the live Agentforce Studio agent.
 - `docs/north-star-mvp.md`: product brief, agent roles, demo story, and non-goals.
 - `docs/north-star-implementation-plan.md`: practical build plan for the team.
 - `docs/north-star-demo-narrative.md`: judge demo script and backup path.

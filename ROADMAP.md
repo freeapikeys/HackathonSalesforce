@@ -565,11 +565,12 @@ artifacts/demo-harness-result-current.json` successfully. The connected run
   `SEND_VENDOR_EMAIL.status = QUEUED`. This proves the governed end-to-end path;
   real outbound channel delivery still depends on credentials being visible to
   the running process.
-- Agentforce Studio gate: the universal 10-agent metadata is deployed to
-  `hfs-dev`, but the deep Agent Script is live only in authoring-bundle preview
-  until Salesforce's publish endpoint `test.api.salesforce.com:443` is reachable
-  from the publishing machine or Salesforce completes the publish through
-  Builder/VS Code.
+- Agentforce Studio gate: the universal 10-agent metadata is deployed and
+  activated as `North_Star_Hospital_Operations` version 2 in `hfs-dev`. The live
+  preview now responds to "I have a problem" with "What happened?" and mixed
+  issues produce the North Star primitive trace, agent handoff, approval gate,
+  proposed actions, and outcome metric. The Windows recovery path is documented
+  in `docs/agentforce-publish-recovery.md`.
 - Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` for outbound alerts
   and `SLACK_SIGNING_SECRET` plus a public Slack App interactivity URL for live
   approve/reject buttons. WhatsApp uses Twilio Sandbox credentials only for the
