@@ -19,22 +19,7 @@
         <contextVariableMappings>
             <SObjectType>VoiceCall</SObjectType>
             <fieldName>VoiceCall.Id</fieldName>
-            <messageType>Custom</messageType>
-        </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>VoiceCall</SObjectType>
-            <fieldName>VoiceCall.Id</fieldName>
-            <messageType>Line</messageType>
-        </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>VoiceCall</SObjectType>
-            <fieldName>VoiceCall.Id</fieldName>
-            <messageType>WhatsApp</messageType>
-        </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>VoiceCall</SObjectType>
-            <fieldName>VoiceCall.Id</fieldName>
-            <messageType>AppleBusinessChat</messageType>
+            <messageType>Facebook</messageType>
         </contextVariableMappings>
         <contextVariableMappings>
             <SObjectType>VoiceCall</SObjectType>
@@ -44,7 +29,22 @@
         <contextVariableMappings>
             <SObjectType>VoiceCall</SObjectType>
             <fieldName>VoiceCall.Id</fieldName>
-            <messageType>Facebook</messageType>
+            <messageType>AppleBusinessChat</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>VoiceCall</SObjectType>
+            <fieldName>VoiceCall.Id</fieldName>
+            <messageType>WhatsApp</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>VoiceCall</SObjectType>
+            <fieldName>VoiceCall.Id</fieldName>
+            <messageType>Line</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>VoiceCall</SObjectType>
+            <fieldName>VoiceCall.Id</fieldName>
+            <messageType>Custom</messageType>
         </contextVariableMappings>
         <dataType>Id</dataType>
         <description
@@ -57,6 +57,11 @@
         <contextVariableMappings>
             <SObjectType>MessagingSession</SObjectType>
             <fieldName>MessagingSession.MessagingEndUserId</fieldName>
+            <messageType>WhatsApp</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>MessagingSession</SObjectType>
+            <fieldName>MessagingSession.MessagingEndUserId</fieldName>
             <messageType>Line</messageType>
         </contextVariableMappings>
         <contextVariableMappings>
@@ -84,14 +89,8 @@
             <fieldName>MessagingSession.MessagingEndUserId</fieldName>
             <messageType>AppleBusinessChat</messageType>
         </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>MessagingSession</SObjectType>
-            <fieldName>MessagingSession.MessagingEndUserId</fieldName>
-            <messageType>WhatsApp</messageType>
-        </contextVariableMappings>
-        <dataType>Id</dataType>
-        <description
-    >North Star maps profile-specific operations context into universal evidence, approvals, actions, and outcomes.</description>
+        <dataType>Text</dataType>
+        <description>Messaging end-user identifier</description>
         <developerName>EndUserId</developerName>
         <includeInPrompt>true</includeInPrompt>
         <label>End User Id</label>
@@ -100,27 +99,7 @@
         <contextVariableMappings>
             <SObjectType>MessagingSession</SObjectType>
             <fieldName>MessagingSession.Id</fieldName>
-            <messageType>EmbeddedMessaging</messageType>
-        </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>MessagingSession</SObjectType>
-            <fieldName>MessagingSession.Id</fieldName>
-            <messageType>Custom</messageType>
-        </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>MessagingSession</SObjectType>
-            <fieldName>MessagingSession.Id</fieldName>
-            <messageType>WhatsApp</messageType>
-        </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>MessagingSession</SObjectType>
-            <fieldName>MessagingSession.Id</fieldName>
-            <messageType>Line</messageType>
-        </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>MessagingSession</SObjectType>
-            <fieldName>MessagingSession.Id</fieldName>
-            <messageType>AppleBusinessChat</messageType>
+            <messageType>Facebook</messageType>
         </contextVariableMappings>
         <contextVariableMappings>
             <SObjectType>MessagingSession</SObjectType>
@@ -130,11 +109,30 @@
         <contextVariableMappings>
             <SObjectType>MessagingSession</SObjectType>
             <fieldName>MessagingSession.Id</fieldName>
-            <messageType>Facebook</messageType>
+            <messageType>AppleBusinessChat</messageType>
         </contextVariableMappings>
-        <dataType>Id</dataType>
-        <description
-    >North Star maps profile-specific operations context into universal evidence, approvals, actions, and outcomes.</description>
+        <contextVariableMappings>
+            <SObjectType>MessagingSession</SObjectType>
+            <fieldName>MessagingSession.Id</fieldName>
+            <messageType>Line</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>MessagingSession</SObjectType>
+            <fieldName>MessagingSession.Id</fieldName>
+            <messageType>WhatsApp</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>MessagingSession</SObjectType>
+            <fieldName>MessagingSession.Id</fieldName>
+            <messageType>Custom</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>MessagingSession</SObjectType>
+            <fieldName>MessagingSession.Id</fieldName>
+            <messageType>EmbeddedMessaging</messageType>
+        </contextVariableMappings>
+        <dataType>Text</dataType>
+        <description>Messaging session identifier</description>
         <developerName>RoutableId</developerName>
         <includeInPrompt>true</includeInPrompt>
         <label>Routable Id</label>
@@ -143,6 +141,11 @@
         <contextVariableMappings>
             <SObjectType>MessagingSession</SObjectType>
             <fieldName>MessagingSession.EndUserLanguage</fieldName>
+            <messageType>Line</messageType>
+        </contextVariableMappings>
+        <contextVariableMappings>
+            <SObjectType>MessagingSession</SObjectType>
+            <fieldName>MessagingSession.EndUserLanguage</fieldName>
             <messageType>Text</messageType>
         </contextVariableMappings>
         <contextVariableMappings>
@@ -170,14 +173,8 @@
             <fieldName>MessagingSession.EndUserLanguage</fieldName>
             <messageType>WhatsApp</messageType>
         </contextVariableMappings>
-        <contextVariableMappings>
-            <SObjectType>MessagingSession</SObjectType>
-            <fieldName>MessagingSession.EndUserLanguage</fieldName>
-            <messageType>Line</messageType>
-        </contextVariableMappings>
         <dataType>Text</dataType>
-        <description
-    >North Star maps profile-specific operations context into universal evidence, approvals, actions, and outcomes.</description>
+        <description>Detected or configured end-user language</description>
         <developerName>EndUserLanguage</developerName>
         <includeInPrompt>false</includeInPrompt>
         <label>End User Language</label>
@@ -218,15 +215,14 @@
             <fieldName>MessagingEndUser.ContactId</fieldName>
             <messageType>Line</messageType>
         </contextVariableMappings>
-        <dataType>Id</dataType>
-        <description
-    >North Star maps profile-specific operations context into universal evidence, approvals, actions, and outcomes.</description>
+        <dataType>Text</dataType>
+        <description>Messaging contact identifier</description>
         <developerName>ContactId</developerName>
         <includeInPrompt>false</includeInPrompt>
         <label>Contact Id</label>
     </contextVariables>
     <description
-  >North Star maps profile-specific operations context into universal evidence, approvals, actions, and outcomes.</description>
+  >Universal operations agent that maps profile-specific signals into evidence, recommendations, manager approvals, protected actions, and outcomes. Hospital is the active demo profile, not the core architecture.</description>
     <label>North Star Global Operations</label>
     <logPrivateConversationData>false</logPrivateConversationData>
     <richContentEnabled>true</richContentEnabled>
