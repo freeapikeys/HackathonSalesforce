@@ -229,7 +229,7 @@ file before editing.
 - [x] Aarav: create realistic synthetic hospital operations data, complaints,
       partner responses, capacity pressure, task templates, channel recipient
       aliases, and expected recommendation cases.
-- [ ] Aarav: prepare the final no-credential demo QA pack: multilingual
+- [x] Aarav: prepare the final no-credential demo QA pack: multilingual
       complaint scripts, voice-note transcript scripts, document/image evidence
       scenarios, expected agent routing, and judge-sector mapping examples.
 - [x] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved
@@ -512,7 +512,7 @@ notifies a manager.
       refusal, and clinical-decision refusal.
 - [ ] Add document/image intake evidence fixtures with low-confidence
       extraction follow-up.
-- [ ] Aarav: write fake voice-note transcripts and document/image scenario
+- [x] Aarav: write fake voice-note transcripts and document/image scenario
       descriptions that Hassan can use to test Meta WhatsApp media handling
       without needing live customer media, real files, or API secrets.
 
@@ -578,7 +578,7 @@ notifies a manager.
       and supermarket equivalents.
 - [x] Honesty slide states what is mocked, what is production-ready
       architecture, and what clinical decisions are out of scope.
-- [ ] Aarav: add the final judge-demo script pack with at least 12 safe
+- [x] Aarav: add the final judge-demo script pack with at least 12 safe
       complaint prompts across English, French, and Mauritian Creole, expected
       follow-up questions, affected agents, protected actions, and outcomes.
 - [ ] Timing has been rehearsed.

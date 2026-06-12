@@ -566,19 +566,24 @@ give Hassan, Ranveer, and the presenters safe examples that prove one customer
 message expands into evidence, agents, approvals, protected actions, and
 outcomes.
 
+Completion evidence now lives in `docs/no-credential-demo-qa-pack.md`. It
+contains 12 multilingual complaint scripts, 6 fake voice-note transcripts, 6
+document/image evidence scenarios, a full agent routing matrix, judge-sector
+mapping, and live-pitch picks.
+
 ### Multilingual Complaint Scripts
 
 Create a small script bank of safe test messages. Do not use real patient names,
 phone numbers, emails, addresses, or medical details.
 
-- [ ] Add at least 12 customer complaint prompts: - 4 English; - 4 French; - 4 Mauritian Creole.
-- [ ] Cover at least these issue types:
+- [x] Add at least 12 customer complaint prompts: - 4 English; - 4 French; - 4 Mauritian Creole.
+- [x] Cover at least these issue types:
       wait time, room readiness, pharmacy stock, duplicate bill, food/service,
       accessibility, privacy/safety concern, partner delay, and mixed issue.
-- [ ] For each prompt, add: - expected language; - one short follow-up question North Star should ask if evidence is
+- [x] For each prompt, add: - expected language; - one short follow-up question North Star should ask if evidence is
       missing; - affected primitives, for example `Customer`, `Resource`, `Partner`,
       `Policy`, `Approval`, `Action`, `Outcome`; - expected agents involved; - protected actions that must wait for approval; - safe customer acknowledgement wording.
-- [ ] Keep wording simple and natural. Avoid corporate phrases, diagnosis,
+- [x] Keep wording simple and natural. Avoid corporate phrases, diagnosis,
       treatment, triage, dosage, legal advice, or final refund decisions.
 
 ### Voice-Note Transcript Scripts
@@ -586,45 +591,45 @@ phone numbers, emails, addresses, or medical details.
 These are fake transcripts for Hassan to test voice handling without needing
 live WhatsApp audio or API access.
 
-- [ ] Add at least 6 voice-note transcript examples: - 2 clear operational complaints; - 2 messy/noisy transcripts with missing details; - 1 mixed issue touching complaint, stock, and billing; - 1 clinical-decision request that must be refused and routed to a human.
-- [ ] For each transcript, add: - transcript language; - expected confidence: high, medium, or low; - whether North Star should ask a follow-up; - expected evidence type; - expected refusal or protected approval rule.
+- [x] Add at least 6 voice-note transcript examples: - 2 clear operational complaints; - 2 messy/noisy transcripts with missing details; - 1 mixed issue touching complaint, stock, and billing; - 1 clinical-decision request that must be refused and routed to a human.
+- [x] For each transcript, add: - transcript language; - expected confidence: high, medium, or low; - whether North Star should ask a follow-up; - expected evidence type; - expected refusal or protected approval rule.
 
 ### Document And Image Evidence Scenarios
 
 These are scenario descriptions, not real uploaded files. Do not include
 screenshots of real documents or any private data.
 
-- [ ] Add at least 6 document/image scenarios: - duplicate invoice screenshot; - pharmacy stock shelf/photo note; - room-readiness photo note; - lab/partner delay note; - insurance approval document summary; - unclear/low-confidence image that needs a follow-up.
-- [ ] For each scenario, add: - safe extracted summary; - expected evidence confidence; - missing evidence; - whether approval is required before any action.
+- [x] Add at least 6 document/image scenarios: - duplicate invoice screenshot; - pharmacy stock shelf/photo note; - room-readiness photo note; - lab/partner delay note; - insurance approval document summary; - unclear/low-confidence image that needs a follow-up.
+- [x] For each scenario, add: - safe extracted summary; - expected evidence confidence; - missing evidence; - whether approval is required before any action.
 
 ### Agent Routing Matrix
 
-- [ ] Create a compact table mapping each final demo script to: - trigger signal; - agents involved; - facts; - inferences; - missing evidence; - manager approval needed; - action candidates; - expected outcome metric.
-- [ ] Include at least three cases where one complaint expands into four or more
+- [x] Create a compact table mapping each final demo script to: - trigger signal; - agents involved; - facts; - inferences; - missing evidence; - manager approval needed; - action candidates; - expected outcome metric.
+- [x] Include at least three cases where one complaint expands into four or more
       functions, for example customer trust, resource/capacity, inventory,
       billing, communication, and outcome learning.
-- [ ] Include at least two cases where North Star must not act because evidence
+- [x] Include at least two cases where North Star must not act because evidence
       is missing, restricted, clinical, or unsafe.
 
 ### Judge-Sector Mapping
 
-- [ ] Add a simple mapping table showing how the same script would translate to:
+- [x] Add a simple mapping table showing how the same script would translate to:
       hospital, hotel, airport, banking, and supermarket.
-- [ ] Keep the mapping based on global primitives, not separate product ideas.
+- [x] Keep the mapping based on global primitives, not separate product ideas.
       Example: hospital room, hotel room, airport gate, and bank case are all
       `Resource` examples.
-- [ ] Make the judge takeaway clear: North Star is not a hospital-only bot; the
+- [x] Make the judge takeaway clear: North Star is not a hospital-only bot; the
       hospital is one profile proving the global operating model.
 
 ### Validation Checklist
 
-- [ ] Run `npm run check:demo-data` if Node is available.
-- [ ] Run `npm run check:fixture-language` if Node is available.
-- [ ] If checks cannot run locally, manually verify:
+- [x] Run `npm run check:demo-data` if Node is available.
+- [x] Run `npm run check:fixture-language` if Node is available.
+- [x] If checks cannot run locally, manually verify:
       no real personal data, no real credentials, no clinical advice, no final
       refund/financial decisions, no raw phone numbers, and no local machine
       paths.
-- [ ] Add a short note saying which scripts are strongest for the live pitch and
+- [x] Add a short note saying which scripts are strongest for the live pitch and
       which are backup examples.
 
 ## Codex Or Local LLM Prompt Starter

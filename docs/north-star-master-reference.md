@@ -528,10 +528,11 @@ Highest-value tasks still open:
    and Salesforce command-center approval fallback.
 8. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
-9. Aarav should prepare the final no-credential QA pack: multilingual complaint
-   scripts, fake voice-note transcripts, document/image evidence scenarios,
-   expected agent routing, and judge-sector mappings.
-10. Add cross-sector cards showing how the same global primitives map to
+9. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for
+   multilingual complaint scripts, fake voice-note transcripts, document/image
+   evidence scenarios, expected agent routing, judge-sector mappings, and
+   strongest/backup pitch picks.
+10. Keep the cross-sector cards aligned with the same global primitives across
     airport, hotel, banking, supermarket, and cruise operations.
 
 ## Team Ownership

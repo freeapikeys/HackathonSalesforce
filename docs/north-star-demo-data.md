@@ -31,6 +31,11 @@ single source of truth for hospital demo data.
 For a quick agent-friendly index, use
 `data/hospital-demo-data-manifest.json`.
 
+For no-credential final rehearsal prompts, use
+`docs/no-credential-demo-qa-pack.md`. That pack contains multilingual complaint
+scripts, fake voice-note transcripts, document/image evidence scenarios, agent
+routing expectations, judge-sector mappings, and live-pitch picks.
+
 Run:
 
 ```bash
