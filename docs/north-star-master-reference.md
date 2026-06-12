@@ -522,17 +522,20 @@ Highest-value tasks still open:
    and Salesforce command-center approval fallback.
 6. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
-7. Add cross-sector cards showing how the same global primitives map to
+7. Aarav should prepare the final no-credential QA pack: multilingual complaint
+   scripts, fake voice-note transcripts, document/image evidence scenarios,
+   expected agent routing, and judge-sector mappings.
+8. Add cross-sector cards showing how the same global primitives map to
    airport, hotel, banking, supermarket, and cruise operations.
 
 ## Team Ownership
 
-| Person  | Main area                                                                              |
-| ------- | -------------------------------------------------------------------------------------- |
-| Fahan   | Final testing and coordination only; no new implementation task in this split          |
-| Hassan  | Official Meta WhatsApp customer channel, same-language replies, voice/media evidence   |
-| Aarav   | Synthetic data review, complaint scripts, manual demo validation                       |
-| Ranveer | Slack approval proof, command-center action trace, resource/capacity/billing workflows |
+| Person  | Main area                                                                                |
+| ------- | ---------------------------------------------------------------------------------------- |
+| Fahan   | Final testing and coordination only; no new implementation task in this split            |
+| Hassan  | Official Meta WhatsApp customer channel, same-language replies, voice/media evidence     |
+| Aarav   | Synthetic data review, no-credential QA scripts, voice/document scenarios, judge mapping |
+| Ranveer | Slack approval proof, command-center action trace, resource/capacity/billing workflows   |
 
 ## Final Warnings
 
