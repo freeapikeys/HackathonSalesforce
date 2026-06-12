@@ -171,6 +171,9 @@ WhatsApp:
 - use Meta WhatsApp Cloud API for the hackathon demo when the app, phone
   number, test recipient, token, and webhook are ready;
 - keep Twilio Sandbox as the backup provider;
+- the current CloudHub public callback URL is
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`;
+  despite the inherited path name, it accepts Meta JSON and Twilio form payloads;
 - outbound WhatsApp may be used for urgent internal mobile alerts or approved
   customer acknowledgements;
 - inbound WhatsApp should be modeled as signal intake through `INGEST_EVENT`,
@@ -220,8 +223,9 @@ Preferred intake paths:
 
 Inbound WhatsApp flow:
 
-1. Customer sends a WhatsApp message to the sandbox number.
-2. Twilio posts the webhook payload to the public CloudHub webhook URL:
+1. Customer sends a WhatsApp message to the configured WhatsApp number.
+2. Meta WhatsApp Cloud API or Twilio posts the webhook payload to the public
+   CloudHub webhook URL:
    `https://<cloudhub-host>/twilio/whatsapp/inbound`.
 3. Mule maps the message to the Salesforce Apex REST intake endpoint at
    `/services/apexrest/northstar/v1/twilio/whatsapp`.
@@ -252,8 +256,11 @@ Implemented bridge:
 - Mule app: `mulesoft/north-star-twilio-webhook`.
 - Current deployed CloudHub webhook:
   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+- Use the same URL as the Meta WhatsApp Cloud API callback URL with verify token
+  `north-star-meta-verify`.
 - Public hosting requires packaging/deploying the Mule app to CloudHub and
-  setting the Twilio Sandbox inbound Request URL to the public webhook URL.
+  setting the active WhatsApp provider inbound Request URL to the public webhook
+  URL.
 
 Acceptance:
 

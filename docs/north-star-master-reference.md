@@ -280,15 +280,22 @@ work item, recommendation, and pending approval. It does not store raw phone
 numbers or raw message text.
 
 The live public webhook is proven when the Mule app is deployed to CloudHub and
-Twilio Sandbox points "When a message comes in" to that public URL. The current
-CloudHub endpoint has been tested with a synthetic Twilio-style form post and
-created Salesforce event, evidence, recommendation, and approval records.
+a WhatsApp provider points its inbound callback to that public URL. The current
+CloudHub endpoint has been tested with both Meta-style JSON and Twilio-style
+form posts, and it created Salesforce event, evidence, recommendation, and
+approval records.
 
 Current deployed demo webhook:
 
 ```text
 https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
+
+Use this same URL for Meta WhatsApp Cloud API webhook verification and message
+delivery. The name is inherited from the first Twilio bridge, but the deployed
+Mule route is provider-neutral. The friendly `/meta/whatsapp/inbound` listener
+exists in the Mule app for future CloudHub routing targets; the active public
+demo route is the URL above.
 
 If Twilio receives the inbound message but the WhatsApp user sees no reply,
 check the latest Twilio outbound-reply status. Error `63038` means Twilio
@@ -498,9 +505,9 @@ customer messages unless that Request URL has also been hosted and tested.
 
 Highest-value tasks still open:
 
-1. Point Meta WhatsApp Cloud API webhook callback URL to the CloudHub webhook
-   URL:
-   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/meta/whatsapp/inbound`.
+1. Point Meta WhatsApp Cloud API webhook callback URL to the active CloudHub
+   webhook URL:
+   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 2. Configure Slack App Interactivity with a public Request URL if the live demo
    should use real Slack button clicks; otherwise use the signed harness proof
    and Salesforce command-center approval fallback.

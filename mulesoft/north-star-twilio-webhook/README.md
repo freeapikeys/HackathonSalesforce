@@ -16,18 +16,23 @@ Twilio flow:
 
 Meta flow:
 
-1. Meta verifies the webhook with `GET
-https://<cloudhub-host>/meta/whatsapp/inbound`.
-2. Meta posts WhatsApp Cloud API JSON to `POST
-https://<cloudhub-host>/meta/whatsapp/inbound`.
+1. Meta verifies the webhook with `GET` against the configured public CloudHub
+   callback URL.
+2. Meta posts WhatsApp Cloud API JSON to `POST` against the same callback URL.
 3. Mule maps the Meta message into the same safe North Star intake payload.
 4. Mule calls the same Salesforce Apex REST endpoint used by the Twilio path.
 5. Meta receives a JSON acknowledgement.
 
-Text messages are mapped into safe complaint summaries. Voice notes, images,
-and PDFs are mapped as media evidence hints with media count, media type, media
-kind, and a media URL hash. The app does not store raw media URLs or claim
-transcription/extraction until a trusted service supplies it.
+CloudHub 2 ingress behavior can differ by deployment target. This app accepts
+both the friendly public paths and the rewritten internal root path `/`. That
+keeps Twilio and Meta working whether the deployment target preserves the path
+or rewrites it before reaching the Mule listener.
+
+Text messages are forwarded as safe intake payloads and Salesforce performs the
+deeper complaint categorisation, evidence creation, recommendation, and approval
+setup. Voice notes, images, and PDFs are mapped as media evidence hints with
+media count, media type, media kind, and a media reference. The app does not
+claim transcription/extraction until a trusted service supplies it.
 
 If Twilio receives the inbound message but the WhatsApp user sees no reply,
 check Twilio's latest outbound-reply status. Error `63038` is a Twilio account
@@ -55,17 +60,30 @@ mvn -f mulesoft/north-star-twilio-webhook/pom.xml clean package
 Deploy the packaged app with Anypoint CLI or Anypoint Runtime Manager. Use
 Anypoint secure properties for the Salesforce access token.
 
-For CloudHub 2 shared spaces, point Twilio Sandbox "When a message comes in" to
-`https://<cloudhub-host>/twilio/whatsapp/inbound`.
-
-For Meta, set the WhatsApp webhook callback URL to:
+For CloudHub 2 shared spaces, point WhatsApp providers to the active public
+endpoint. The current deployed endpoint is:
 
 ```text
-https://<cloudhub-host>/meta/whatsapp/inbound
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
-Use the same verify token value that is configured as
-`meta.webhookVerifyToken` in Anypoint.
+Despite the inherited `twilio` path name, the Mule listener behind this route is
+provider-neutral: Twilio form posts return TwiML, and Meta JSON posts return a
+JSON acknowledgement. CloudHub 2 currently routes this endpoint reliably with
+`pathRewrite: "/"`; the friendly `/meta/whatsapp/inbound` listener remains in
+the Mule app for future routing targets, but it is not the active public demo
+endpoint.
+
+For Meta, set the WhatsApp webhook callback URL to the active endpoint above and
+use this verify token value from Anypoint runtime properties:
+
+```text
+north-star-meta-verify
+```
+
+Meta verification is healthy when a GET with `hub.mode=subscribe`, the matching
+`hub.verify_token`, and a `hub.challenge` returns HTTP `200` with the raw
+challenge body.
 
 Current deployed demo URL:
 

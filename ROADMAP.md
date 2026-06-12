@@ -408,6 +408,9 @@ file before editing.
 - [x] Package/deploy the Twilio webhook Mule app to CloudHub and verify the
       public endpoint creates Salesforce event, evidence, recommendation, and
       approval records.
+- [x] Verify the CloudHub WhatsApp endpoint also accepts Meta WhatsApp Cloud API
+      JSON, returns Meta webhook challenge text for a valid verify token, and
+      creates Salesforce intake records.
 - [x] Agentforce and docs define English, French, and Mauritian Creole as safe
       same-language reply targets for short operational responses.
 - [x] Extend the live Twilio inbound mapper to persist detected language and
@@ -418,6 +421,9 @@ file before editing.
 - [ ] Point Twilio Sandbox "When a message comes in" to the public CloudHub
       webhook URL in Twilio Console:
       `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+- [ ] Point Meta WhatsApp Cloud API callback URL to the same public CloudHub
+      webhook URL in Meta App Dashboard. Use verify token
+      `north-star-meta-verify`.
 - [ ] Replace the temporary Salesforce session token in CloudHub with a
       Connected App/JWT path or refresh the secure property immediately before
       final rehearsal.

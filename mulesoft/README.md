@@ -107,11 +107,12 @@ root-cause hypotheses, and preserves the event through the same intake
 classifier used by the Process API.
 
 The repo also includes `mulesoft/north-star-twilio-webhook`, a deployable Mule
-app for live WhatsApp inbound messages. It can receive Twilio Sandbox
-form-encoded webhooks at `https://<cloudhub-host>/twilio/whatsapp/inbound` and
-Meta WhatsApp Cloud API webhooks at
-`https://<cloudhub-host>/meta/whatsapp/inbound`. Both paths map the message into
-a safe JSON payload and call the existing Salesforce Apex REST endpoint
+app for live WhatsApp inbound messages. The current CloudHub public route is
+the inherited endpoint
+`https://<cloudhub-host>/twilio/whatsapp/inbound`; despite the path name, it is
+provider-neutral. Twilio Sandbox form posts return TwiML, and Meta WhatsApp
+Cloud API JSON posts return JSON. Both shapes map into a safe JSON payload and
+call the existing Salesforce Apex REST endpoint
 `/services/apexrest/northstar/v1/twilio/whatsapp`. Salesforce then creates the
 event, synthetic customer alias, evidence, work item, recommendation, and
 pending approval.
@@ -121,6 +122,11 @@ Current deployed demo webhook:
 ```text
 https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
+
+Use that same URL as the Meta WhatsApp Cloud API callback URL. The verify token
+configured in Anypoint is `north-star-meta-verify`. A healthy Meta verification
+request returns HTTP `200` with the raw `hub.challenge` body; an incorrect token
+returns HTTP `403`.
 
 Verify with:
 

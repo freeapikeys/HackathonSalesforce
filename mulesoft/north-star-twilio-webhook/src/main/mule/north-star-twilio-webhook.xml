@@ -24,132 +24,21 @@
     />
     </http:request-config>
 
-    <flow name="twilio-whatsapp-inbound">
+    <flow name="meta-whatsapp-webhook-verify-root">
         <http:listener
       config-ref="northStarListener"
-      path="/twilio/whatsapp/inbound"
-      allowedMethods="POST"
+      path="/"
+      allowedMethods="GET"
     >
-            <http:response statusCode="200">
+            <http:response statusCode="#[vars.statusCode default 403]">
                 <http:headers
-        ><![CDATA[#[{'Content-Type': 'text/xml'}]]]></http:headers>
+        ><![CDATA[#[{'Content-Type': 'text/plain'}]]]></http:headers>
             </http:response>
-            <http:error-response statusCode="200">
-                <http:body><![CDATA[#[payload]]]></http:body>
-                <http:headers
-        ><![CDATA[#[{'Content-Type': 'text/xml'}]]]></http:headers>
-            </http:error-response>
         </http:listener>
-
-        <ee:transform doc:name="Map Twilio form to safe North Star intake">
-            <ee:message>
-                <ee:set-payload
-        ><![CDATA[%dw 2.0
-output application/json
-var bodyText = ((payload.Body default payload.body default "") as String)
-var lowerBody = lower(bodyText)
-var mediaCount = ((payload.NumMedia default "0") as Number) default 0
-var firstMediaType = ((payload.MediaContentType0 default "") as String)
-var firstMediaKind =
-    if (firstMediaType startsWith "audio/") "voice note"
-    else if (firstMediaType startsWith "image/") "image"
-    else if (firstMediaType == "application/pdf") "document"
-    else if (mediaCount > 0) "media file"
-    else "none"
-fun hasAny(words) = sizeOf(words filter ((word) -> lowerBody contains word)) > 0
-var categories = [
-    if (hasAny(["wait", "queue", "delay"])) "WAIT_TIME" else null,
-    if (hasAny(["room", "clean", "bed"])) "ROOM_READINESS" else null,
-    if (hasAny(["bill", "invoice", "refund", "insurance", "payment"])) "BILLING" else null,
-    if (hasAny(["pharmacy", "medicine late", "stock", "supply"])) "PHARMACY_STOCK" else null,
-    if (hasAny(["lab", "test result"])) "LAB_VENDOR" else null,
-    if (hasAny(["food", "meal"])) "FOOD_SERVICE" else null,
-    if (hasAny(["rude", "staff"])) "STAFF_INTERACTION" else null,
-    if (hasAny(["privacy", "unsafe"])) "PRIVACY_SAFETY" else null,
-    if (hasAny(["diagnose", "dosage", "treatment", "triage", "chest pain", "emergency"])) "CLINICAL_REQUEST" else null,
-    if (mediaCount > 0) "VOICE_OR_MEDIA" else null
-] filter ($ != null)
-var safeCategories = if (isEmpty(categories)) ["GENERAL_SERVICE"] else categories
-var summaryParts = [
-    if (safeCategories contains "WAIT_TIME") "waiting time" else null,
-    if (safeCategories contains "ROOM_READINESS") "room readiness" else null,
-    if (safeCategories contains "BILLING") "billing or payment" else null,
-    if (safeCategories contains "PHARMACY_STOCK") "pharmacy or supply" else null,
-    if (safeCategories contains "LAB_VENDOR") "lab response" else null,
-    if (safeCategories contains "FOOD_SERVICE") "food service" else null,
-    if (safeCategories contains "STAFF_INTERACTION") "staff interaction" else null,
-    if (safeCategories contains "PRIVACY_SAFETY") "privacy or safety" else null,
-    if (safeCategories contains "CLINICAL_REQUEST") "clinical review" else null,
-    if (safeCategories contains "VOICE_OR_MEDIA") firstMediaKind else null
-] filter ($ != null)
----
-{
-    tenantKey: p("northstar.tenant"),
-    purpose: p("northstar.purpose"),
-    messageSid: ((payload.MessageSid default payload.SmsSid default uuid()) as String),
-    sourceChannel: "Twilio Sandbox WhatsApp",
-    rawBody: bodyText,
-    from: ((payload.From default "") as String),
-    messageSummary:
-        if (!isEmpty(bodyText)) "A WhatsApp message mentions " ++ (summaryParts joinBy ", ") ++ "."
-        else if (mediaCount > 0) "A WhatsApp " ++ firstMediaKind ++ " was received and needs transcript or extraction before action."
-        else "A WhatsApp message needs service review.",
-    categories: safeCategories,
-    mediaCount: mediaCount,
-    firstMediaType: firstMediaType,
-    firstMediaKind: firstMediaKind,
-    mediaUrl0: ((payload.MediaUrl0 default "") as String),
-    clinicalRequest: safeCategories contains "CLINICAL_REQUEST"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-
-        <http:request
-      method="POST"
-      config-ref="salesforceRequest"
-      path="/services/apexrest/northstar/v1/twilio/whatsapp"
-    >
-            <http:headers
-      ><![CDATA[#[{
-                'Authorization': 'Bearer ' ++ p('salesforce.accessToken'),
-                'Content-Type': 'application/json'
-            }]]]></http:headers>
-        </http:request>
-
-        <ee:transform doc:name="Return simple WhatsApp acknowledgement">
-            <ee:message>
-                <ee:set-payload
-        ><![CDATA[%dw 2.0
-output application/xml
----
-{
-    Response: {
-        Message: "Thanks. North Star received this. A manager will review it."
-    }
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-
-        <error-handler>
-            <on-error-continue enableNotifications="true" logException="true">
-                <ee:transform doc:name="Return safe fallback acknowledgement">
-                    <ee:message>
-                        <ee:set-payload
-            ><![CDATA[%dw 2.0
-output application/xml
----
-{
-    Response: {
-        Message: "Thanks. North Star received this. A manager will review it."
-    }
-}]]></ee:set-payload>
-                    </ee:message>
-                </ee:transform>
-            </on-error-continue>
-        </error-handler>
+        <flow-ref name="verify-meta-webhook" />
     </flow>
 
-    <flow name="meta-whatsapp-webhook-verify">
+    <flow name="meta-whatsapp-webhook-verify-path">
         <http:listener
       config-ref="northStarListener"
       path="/meta/whatsapp/inbound"
@@ -160,7 +49,85 @@ output application/xml
         ><![CDATA[#[{'Content-Type': 'text/plain'}]]]></http:headers>
             </http:response>
         </http:listener>
+        <flow-ref name="verify-meta-webhook" />
+    </flow>
 
+    <flow name="whatsapp-inbound-root">
+        <http:listener
+      config-ref="northStarListener"
+      path="/"
+      allowedMethods="POST"
+    >
+            <http:response statusCode="200">
+                <http:headers
+        ><![CDATA[#[{
+                    'Content-Type': if (vars.responseFormat == 'twiml') 'text/xml' else 'application/json'
+                }]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="200">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers
+        ><![CDATA[#[{
+                    'Content-Type': if (vars.responseFormat == 'twiml') 'text/xml' else 'application/json'
+                }]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <set-variable
+      variableName="responseFormat"
+      value="#[if (((attributes.headers.'content-type' default '') as String) contains 'json') 'json' else 'twiml']"
+    />
+        <flow-ref name="process-whatsapp-inbound" />
+    </flow>
+
+    <flow name="twilio-whatsapp-inbound">
+        <http:listener
+      config-ref="northStarListener"
+      path="/twilio/whatsapp/inbound"
+      allowedMethods="POST"
+    >
+            <http:response statusCode="200">
+                <http:headers
+        ><![CDATA[#[{
+                    'Content-Type': if (vars.responseFormat == 'twiml') 'text/xml' else 'application/json'
+                }]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="200">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers
+        ><![CDATA[#[{
+                    'Content-Type': if (vars.responseFormat == 'twiml') 'text/xml' else 'application/json'
+                }]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <set-variable variableName="responseFormat" value="twiml" />
+        <flow-ref name="process-whatsapp-inbound" />
+    </flow>
+
+    <flow name="meta-whatsapp-inbound">
+        <http:listener
+      config-ref="northStarListener"
+      path="/meta/whatsapp/inbound"
+      allowedMethods="POST"
+    >
+            <http:response statusCode="200">
+                <http:headers
+        ><![CDATA[#[{
+                    'Content-Type': if (vars.responseFormat == 'twiml') 'text/xml' else 'application/json'
+                }]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="200">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers
+        ><![CDATA[#[{
+                    'Content-Type': if (vars.responseFormat == 'twiml') 'text/xml' else 'application/json'
+                }]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <set-variable variableName="responseFormat" value="json" />
+        <flow-ref name="process-whatsapp-inbound" />
+    </flow>
+
+    <flow name="verify-meta-webhook">
         <choice doc:name="Verify Meta webhook token">
             <when
         expression="#[attributes.queryParams.'hub.mode' == 'subscribe' and attributes.queryParams.'hub.verify_token' == p('meta.webhookVerifyToken')]"
@@ -177,103 +144,50 @@ output application/xml
         </choice>
     </flow>
 
-    <flow name="meta-whatsapp-inbound">
-        <http:listener
-      config-ref="northStarListener"
-      path="/meta/whatsapp/inbound"
-      allowedMethods="POST"
-    >
-            <http:response statusCode="200">
-                <http:headers
-        ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
-            </http:response>
-            <http:error-response statusCode="200">
-                <http:body><![CDATA[#[payload]]]></http:body>
-                <http:headers
-        ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
-            </http:error-response>
-        </http:listener>
-
-        <ee:transform
-      doc:name="Map Meta WhatsApp JSON to safe North Star intake"
-    >
+    <flow name="process-whatsapp-inbound">
+        <ee:transform doc:name="Map WhatsApp webhook to safe North Star intake">
             <ee:message>
                 <ee:set-payload
         ><![CDATA[%dw 2.0
 output application/json
-var entry = ((payload.entry default [])[0] default {})
-var change = ((entry.changes default [])[0] default {})
-var value = change.value default {}
-var message = ((value.messages default [])[0] default {})
-var contact = ((value.contacts default [])[0] default {})
-var messageType = ((message.type default "") as String)
-var bodyText =
-    if (messageType == "text") ((message.text.body default "") as String)
-    else ""
-var mediaCount = if (messageType in ["audio", "image", "document", "video"]) 1 else 0
-var firstMediaType =
-    if (messageType == "audio") ((message.audio.mime_type default "audio/unknown") as String)
-    else if (messageType == "image") ((message.image.mime_type default "image/unknown") as String)
-    else if (messageType == "document") ((message.document.mime_type default "application/octet-stream") as String)
-    else if (messageType == "video") ((message.video.mime_type default "video/unknown") as String)
-    else ""
-var firstMediaKind =
-    if (messageType == "audio") "voice note"
-    else if (messageType == "image") "image"
-    else if (messageType == "document") "document"
-    else if (messageType == "video") "video"
-    else "none"
-var firstMediaId =
-    if (messageType == "audio") ((message.audio.id default "") as String)
-    else if (messageType == "image") ((message.image.id default "") as String)
-    else if (messageType == "document") ((message.document.id default "") as String)
-    else if (messageType == "video") ((message.video.id default "") as String)
-    else ""
+var isMeta = vars.responseFormat == "json"
+var bodyText = if (isMeta) write(payload, "application/json") else ((payload.Body default payload.body default "") as String)
 var lowerBody = lower(bodyText)
-fun hasAny(words) = sizeOf(words filter ((word) -> lowerBody contains word)) > 0
-var categories = [
-    if (hasAny(["wait", "queue", "delay"])) "WAIT_TIME" else null,
-    if (hasAny(["room", "clean", "bed"])) "ROOM_READINESS" else null,
-    if (hasAny(["bill", "invoice", "refund", "insurance", "payment"])) "BILLING" else null,
-    if (hasAny(["pharmacy", "medicine late", "stock", "supply"])) "PHARMACY_STOCK" else null,
-    if (hasAny(["lab", "test result"])) "LAB_VENDOR" else null,
-    if (hasAny(["food", "meal"])) "FOOD_SERVICE" else null,
-    if (hasAny(["rude", "staff"])) "STAFF_INTERACTION" else null,
-    if (hasAny(["privacy", "unsafe"])) "PRIVACY_SAFETY" else null,
-    if (hasAny(["diagnose", "dosage", "treatment", "triage", "chest pain", "emergency"])) "CLINICAL_REQUEST" else null,
-    if (mediaCount > 0) "VOICE_OR_MEDIA" else null
-] filter ($ != null)
-var safeCategories = if (isEmpty(categories)) ["GENERAL_SERVICE"] else categories
-var summaryParts = [
-    if (safeCategories contains "WAIT_TIME") "waiting time" else null,
-    if (safeCategories contains "ROOM_READINESS") "room readiness" else null,
-    if (safeCategories contains "BILLING") "billing or payment" else null,
-    if (safeCategories contains "PHARMACY_STOCK") "pharmacy or supply" else null,
-    if (safeCategories contains "LAB_VENDOR") "lab response" else null,
-    if (safeCategories contains "FOOD_SERVICE") "food service" else null,
-    if (safeCategories contains "STAFF_INTERACTION") "staff interaction" else null,
-    if (safeCategories contains "PRIVACY_SAFETY") "privacy or safety" else null,
-    if (safeCategories contains "CLINICAL_REQUEST") "clinical review" else null,
-    if (safeCategories contains "VOICE_OR_MEDIA") firstMediaKind else null
-] filter ($ != null)
+var twilioMediaCount = ((payload.NumMedia default "0") as Number) default 0
+var mediaCount = if (isMeta and ((lowerBody contains "audio") or (lowerBody contains "image") or (lowerBody contains "document") or (lowerBody contains "video"))) 1 else if (isMeta) 0 else twilioMediaCount
+var firstMediaType =
+    if (isMeta and (lowerBody contains "audio")) "audio/unknown"
+    else if (isMeta and (lowerBody contains "image")) "image/unknown"
+    else if (isMeta and (lowerBody contains "document")) "application/octet-stream"
+    else if (isMeta and (lowerBody contains "video")) "video/unknown"
+    else ((payload.MediaContentType0 default "") as String)
+var firstMediaKind =
+    if (firstMediaType startsWith "audio/") "voice note"
+    else if (firstMediaType startsWith "image/") "image"
+    else if (firstMediaType == "application/octet-stream") "document"
+    else if (firstMediaType startsWith "video/") "video"
+    else if (mediaCount > 0) "media file"
+    else "none"
+var firstMediaReference = if (isMeta) "" else ((payload.MediaUrl0 default "") as String)
 ---
 {
     tenantKey: p("northstar.tenant"),
     purpose: p("northstar.purpose"),
-    messageSid: ((message.id default uuid()) as String),
-    sourceChannel: "Meta WhatsApp Cloud API",
+    messageSid: if (isMeta) uuid() else ((payload.MessageSid default payload.SmsSid default uuid()) as String),
+    sourceChannel: if (isMeta) "Meta WhatsApp Cloud API" else "Twilio Sandbox WhatsApp",
+    responseFormat: vars.responseFormat,
     rawBody: bodyText,
-    from: ((message.from default contact.wa_id default "") as String),
+    from: if (isMeta) "" else ((payload.From default "") as String),
     messageSummary:
-        if (!isEmpty(bodyText)) "A WhatsApp message mentions " ++ (summaryParts joinBy ", ") ++ "."
+        if (isMeta) "A WhatsApp Cloud API message was received."
+        else if (bodyText != "") "A WhatsApp message was received."
         else if (mediaCount > 0) "A WhatsApp " ++ firstMediaKind ++ " was received and needs transcript or extraction before action."
         else "A WhatsApp message needs service review.",
-    categories: safeCategories,
     mediaCount: mediaCount,
     firstMediaType: firstMediaType,
     firstMediaKind: firstMediaKind,
-    mediaUrl0: firstMediaId,
-    clinicalRequest: safeCategories contains "CLINICAL_REQUEST"
+    mediaUrl0: firstMediaReference,
+    clinicalRequest: false
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
@@ -290,21 +204,24 @@ var summaryParts = [
             }]]]></http:headers>
         </http:request>
 
-        <ee:transform doc:name="Return Meta webhook acknowledgement">
-            <ee:message>
-                <ee:set-payload
-        ><![CDATA[%dw 2.0
-output application/json
+        <choice doc:name="Return channel acknowledgement">
+            <when expression="#[vars.responseFormat == 'twiml']">
+                <ee:transform doc:name="Return Twilio acknowledgement">
+                    <ee:message>
+                        <ee:set-payload
+            ><![CDATA[%dw 2.0
+output application/xml
 ---
 {
-    status: "received"
+    Response: {
+        Message: "Thanks. North Star received this. A manager will review it."
+    }
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-
-        <error-handler>
-            <on-error-continue enableNotifications="true" logException="true">
-                <ee:transform doc:name="Return safe Meta webhook fallback">
+                    </ee:message>
+                </ee:transform>
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Return Meta acknowledgement">
                     <ee:message>
                         <ee:set-payload
             ><![CDATA[%dw 2.0
@@ -315,6 +232,41 @@ output application/json
 }]]></ee:set-payload>
                     </ee:message>
                 </ee:transform>
+            </otherwise>
+        </choice>
+
+        <error-handler>
+            <on-error-continue enableNotifications="true" logException="true">
+                <choice doc:name="Return safe fallback acknowledgement">
+                    <when expression="#[vars.responseFormat == 'twiml']">
+                        <ee:transform doc:name="Return safe Twilio fallback">
+                            <ee:message>
+                                <ee:set-payload
+                ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+    Response: {
+        Message: "Thanks. North Star received this. A manager will review it."
+    }
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </when>
+                    <otherwise>
+                        <ee:transform doc:name="Return safe Meta fallback">
+                            <ee:message>
+                                <ee:set-payload
+                ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    status: "received"
+}]]></ee:set-payload>
+                            </ee:message>
+                        </ee:transform>
+                    </otherwise>
+                </choice>
             </on-error-continue>
         </error-handler>
     </flow>
