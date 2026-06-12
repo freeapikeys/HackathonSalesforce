@@ -115,6 +115,13 @@ Configure the Lightning command center with:
 - purpose: `RESOLVE_HOSPITAL_OPERATION_RISK`;
 - synthetic demo data: disabled.
 
+For the synthetic command-center fixture, use mock state `ready` to show the
+pending manager approval controls and mock state `completed` to show the
+after-approval proof: 11 action records, protected Slack/WhatsApp/vendor-email
+channel results, task acknowledgements, and outcome metrics. The completed
+state is the command-center fallback view when a public Slack App Interactivity
+Request URL has not been configured for live button clicks.
+
 ## Connected Invariants
 
 The connected report must show:

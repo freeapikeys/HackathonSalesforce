@@ -115,11 +115,11 @@ const caseState = {
     window: "08:45-09:18"
   },
   inboundComplaintIntake: {
-    sourceChannel: "Twilio Sandbox WhatsApp",
+    sourceChannel: "Meta WhatsApp Cloud API",
     customerAlias: "alias-whatsapp-customer-demo",
     protectedActionState: "No protected action executed",
     summary:
-      "Inbound WhatsApp complaint expands into wait time, pharmacy stock, and billing review without storing raw phone or message text.",
+      "Inbound Meta WhatsApp complaint expands into customer trust, resource/capacity, stock, billing, communication, approval, action, and outcome work without storing raw phone or message text.",
     followUpQuestions: [
       "Which service area were you in?",
       "When did the issue happen?",
@@ -193,7 +193,7 @@ const caseState = {
       id: "handoff-communication",
       agent: "Communication",
       contribution:
-        "Prepared Slack manager approval, internal Slack alert, and Twilio WhatsApp update after approval.",
+        "Prepared Slack manager approval, internal Slack alert, and Meta WhatsApp-style update after approval.",
       output: "Slack approval, Slack alert, WhatsApp alert"
     },
     {
@@ -630,6 +630,272 @@ const caseState = {
   }
 };
 
+const completedCaseState = {
+  ...caseState,
+  status: "Completed after approval",
+  summary:
+    "One Meta WhatsApp complaint expanded into customer trust, capacity, stock, billing, communication, approval, protected action execution, and measured outcomes.",
+  nextUpdateDue: "2026-06-06T10:15:00Z",
+  riskPulses: [
+    { id: "risk-complaint", label: "Complaints", status: "Contained" },
+    { id: "risk-bed", label: "Bed capacity", status: "Released" },
+    { id: "risk-queue", label: "Queue", status: "Reduced" },
+    { id: "risk-pharmacy", label: "Pharmacy stock", status: "Restocked" },
+    { id: "risk-lab", label: "Lab partner", status: "Escalated" },
+    { id: "risk-billing", label: "Billing", status: "Review opened" },
+    { id: "risk-approval", label: "Approval", status: "Approved" },
+    { id: "risk-clinical", label: "Clinical boundary", status: "Refused" },
+    { id: "risk-communication", label: "Communication", status: "Recorded" },
+    { id: "risk-outcome", label: "Outcome", status: "Measured" }
+  ],
+  inboundComplaintIntake: {
+    ...caseState.inboundComplaintIntake,
+    protectedActionState:
+      "Protected actions executed only after manager approval",
+    summary:
+      "The Meta WhatsApp complaint became source evidence, a recommendation, manager approval, Slack/internal alert, protected vendor-email mock queue, task actions, and outcome records."
+  },
+  sop: {
+    ...caseState.sop,
+    status: "Completed",
+    currentStep: "Outcome evidence recorded",
+    completedSteps: 6,
+    progress: 100,
+    requiredEvidence:
+      "Approved actions, channel delivery evidence, task acknowledgements, and outcome metrics"
+  },
+  approval: {
+    ...caseState.approval,
+    status: "Approved",
+    decidedAt: "2026-06-06T09:42:00Z",
+    decidedBy: "Operations Manager"
+  },
+  blockers: [
+    {
+      id: "blocker-slack-public-url",
+      label:
+        "Public Slack App interactivity URL is not configured in this repo run",
+      owner: "Operations Manager",
+      status: "Command-center fallback documented",
+      dueAt: "2026-06-06T09:42:00Z"
+    },
+    {
+      id: "blocker-clinical-001",
+      label: "Clinical treatment and triage decisions are out of scope",
+      owner: "Risk and Approval Agent",
+      status: "Refused and routed to clinician",
+      dueAt: "2026-06-06T09:40:00Z"
+    }
+  ],
+  actions: [
+    {
+      id: "action-service-task-001",
+      type: "CREATE_PATIENT_SERVICE_TASK",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T09:48:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-bed-cleaning-001",
+      type: "REQUEST_BED_CLEANING",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T09:52:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-porter-001",
+      type: "REQUEST_PORTER_SUPPORT_TASK",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T09:51:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-front-desk-001",
+      type: "OPEN_FRONT_DESK_QUEUE_TASK",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T09:49:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-pharmacy-001",
+      type: "CREATE_PHARMACY_RESTOCK_REQUEST",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T10:02:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-lab-vendor-001",
+      type: "ESCALATE_LAB_VENDOR_CASE",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T09:55:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-billing-001",
+      type: "OPEN_BILLING_REVIEW",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T09:58:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-manager-review-001",
+      type: "CREATE_MANAGER_REVIEW_TASK",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:36:00Z",
+      completedAt: "2026-06-06T09:45:00Z",
+      sourceSystem: "Salesforce task mock",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-slack-001",
+      type: "SEND_SLACK_ALERT",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:42:00Z",
+      completedAt: "2026-06-06T09:42:05Z",
+      sourceSystem: "MuleSoft mock delivery: MOCK_SENT",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-whatsapp-001",
+      type: "SEND_WHATSAPP_ALERT",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:42:00Z",
+      completedAt: "2026-06-06T09:42:06Z",
+      sourceSystem: "MuleSoft mock delivery: MOCK_SENT",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-vendor-email-001",
+      type: "SEND_VENDOR_EMAIL",
+      status: "Executed",
+      requestedAt: "2026-06-06T09:42:00Z",
+      completedAt: "2026-06-06T09:42:07Z",
+      sourceSystem: "MuleSoft protected vendor-email mock queued",
+      correlationId: "20000000-0000-4000-8000-000000000001"
+    }
+  ],
+  operationsExecution: {
+    primaryRecommendation:
+      "Approved plan executed: service, cleaning, porter, front-desk, pharmacy, lab, billing, manager-review, Slack, WhatsApp, and protected vendor-email mock actions.",
+    tasks: [
+      {
+        id: "task-service",
+        label: "Contain patient trust issue and coordinate service response",
+        owner: "Patient Experience Lead",
+        status: "Acknowledged"
+      },
+      {
+        id: "task-cleaning",
+        label: "Clean and release Ward A3 discharge rooms",
+        owner: "Housekeeping Lead",
+        status: "3 rooms released"
+      },
+      {
+        id: "task-porter",
+        label: "Move discharged patients to lounge after nurse handoff",
+        owner: "Porter Coordinator",
+        status: "Dispatched"
+      },
+      {
+        id: "task-front-desk",
+        label: "Open extra outpatient front-desk support",
+        owner: "Front Desk Lead",
+        status: "Opened"
+      },
+      {
+        id: "task-pharmacy",
+        label: "Request approved IV kit restock or transfer",
+        owner: "Pharmacy Lead",
+        status: "Stockout avoided"
+      },
+      {
+        id: "task-lab",
+        label: "Escalate lab partner SLA with alternate courier option",
+        owner: "Lab Coordination Lead",
+        status: "SLA escalated"
+      },
+      {
+        id: "task-billing",
+        label: "Open duplicate invoice and insurer follow-up review",
+        owner: "Billing Supervisor",
+        status: "Review opened"
+      },
+      {
+        id: "task-manager",
+        label: "Keep action set under manager review",
+        owner: "Operations Manager",
+        status: "Completed"
+      }
+    ]
+  },
+  channelLog: [
+    {
+      id: "channel-slack-001",
+      channel: "Slack",
+      status: "MOCK_SENT",
+      target: "Operations Manager",
+      detail:
+        "Role-targeted internal alert recorded after approval; fallback reason: SLACK_WEBHOOK_URL not configured."
+    },
+    {
+      id: "channel-whatsapp-001",
+      channel: "WhatsApp-style",
+      status: "MOCK_SENT",
+      target: "Pharmacy Lead",
+      detail:
+        "Approved internal mobile alert recorded without personal contact data because provider credentials were not configured."
+    },
+    {
+      id: "channel-vendor-email-001",
+      channel: "Vendor email",
+      status: "QUEUED",
+      target: "Vendor Coordinator",
+      detail:
+        "Protected supplier/vendor follow-up stayed a mock queue result; no live email delivery is claimed."
+    }
+  ],
+  outcomeMetrics: [
+    { id: "outcome-wait", label: "Wait time reduced", value: "18 min" },
+    { id: "outcome-bed", label: "Beds released", value: "3 rooms" },
+    { id: "outcome-porter", label: "Porter support", value: "Dispatched" },
+    { id: "outcome-front-desk", label: "Front desk support", value: "Opened" },
+    { id: "outcome-stock", label: "Stockout avoided", value: "IV kits" },
+    {
+      id: "outcome-complaint",
+      label: "Complaint containment",
+      value: "Contained"
+    },
+    {
+      id: "outcome-billing",
+      label: "Billing exposure",
+      value: "Review opened"
+    },
+    { id: "outcome-sla", label: "Partner SLA", value: "Escalated" },
+    { id: "outcome-email", label: "Vendor email", value: "Mock queued" }
+  ],
+  outcome: {
+    status: "Completed after approved mock execution",
+    summary:
+      "Connected proof records 11 action records, 12 outcomes, 12 evaluations, channel delivery evidence, and business outcomes after approval.",
+    observedAt: "2026-06-06T10:05:00Z",
+    effectiveness: "12 outcomes recorded"
+  }
+};
+
 const readyState = {
   stateVersion: UI_STATE_VERSION,
   stateName: "ready",
@@ -647,8 +913,22 @@ const readyState = {
   case: caseState
 };
 
+const completedState = {
+  ...readyState,
+  stateName: "completed",
+  generatedAt: "2026-06-06T10:05:00Z",
+  permissions: {
+    canApprove: false,
+    canModify: false,
+    canReject: false,
+    canExecute: false
+  },
+  case: completedCaseState
+};
+
 export const UI_STATES = {
   ready: readyState,
+  completed: completedState,
   restricted: {
     ...readyState,
     stateName: "restricted",

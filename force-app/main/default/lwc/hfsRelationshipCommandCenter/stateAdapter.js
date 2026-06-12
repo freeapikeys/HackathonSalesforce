@@ -92,6 +92,18 @@ function channelAction(action, index) {
   };
 }
 
+function outcomeMetric(outcome, index) {
+  const value =
+    outcome.metricValue === null || outcome.metricValue === undefined
+      ? humanize(outcome.status, "Recorded")
+      : String(outcome.metricValue);
+  return {
+    id: outcome.recordId || `outcome-metric-${index}`,
+    label: humanize(outcome.metricKey || outcome.recordType, "Outcome"),
+    value
+  };
+}
+
 export function mapCommandCenterPayload(payload, purpose) {
   const context = payload?.context;
   if (!context) {
@@ -129,7 +141,8 @@ export function mapCommandCenterPayload(payload, purpose) {
   const sop = first(context.sopExecutions) || {};
   const recommendation = first(context.recommendations) || {};
   const approval = first(context.approvals) || {};
-  const outcome = first(context.outcomes) || {};
+  const outcomes = context.outcomes || [];
+  const outcome = first(outcomes) || {};
   const evaluation = first(context.evaluations) || {};
   const workItem = context.workItem;
   const actions = context.actions || [];
@@ -468,7 +481,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         correlationId: action.correlationId || context.correlationId
       })),
       channelLog: channelActions.map(channelAction),
-      outcomeMetrics: [],
+      outcomeMetrics: outcomes.map(outcomeMetric),
       outcome: {
         status: humanize(outcome.status, "Awaiting outcome"),
         summary:

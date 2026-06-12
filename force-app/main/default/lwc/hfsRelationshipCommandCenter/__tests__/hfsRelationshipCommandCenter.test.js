@@ -232,6 +232,34 @@ describe("c-hfs-relationship-command-center", () => {
     ).toHaveLength(5);
   });
 
+  it("renders the post-approval action and outcome proof state", () => {
+    const element = createComponent("completed");
+    const root = element.shadowRoot;
+
+    expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
+    expect(root.textContent).toContain(
+      "Completed after approved mock execution"
+    );
+    expect(root.textContent).toContain("Meta WhatsApp Cloud API");
+    expect(root.textContent).toContain(
+      "Protected actions executed only after manager approval"
+    );
+    expect(root.textContent).toContain("CREATE_PATIENT_SERVICE_TASK");
+    expect(root.textContent).toContain("CREATE_PHARMACY_RESTOCK_REQUEST");
+    expect(root.textContent).toContain("OPEN_BILLING_REVIEW");
+    expect(root.textContent).toContain("SEND_VENDOR_EMAIL");
+    expect(root.textContent).toContain("Vendor email");
+    expect(root.textContent).toContain("Mock queued");
+    expect(root.textContent).toContain("3 rooms released");
+    expect(root.textContent).toContain("Stockout avoided");
+    expect(root.textContent).toContain("Review opened");
+    expect(root.textContent).toContain("12 outcomes recorded");
+    expect(root.querySelector('[data-testid="approval-controls"]')).toBeNull();
+    expect(
+      root.querySelectorAll(".action-list li").length
+    ).toBeGreaterThanOrEqual(25);
+  });
+
   it("renders governed voice transcript requests without protected execution", () => {
     const element = createComponent();
     const root = element.shadowRoot;

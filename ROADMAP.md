@@ -235,9 +235,10 @@ file before editing.
 - [ ] Hassan: finish the official Meta WhatsApp customer channel: same-language
       receipts and approved replies, voice-note evidence, image/document
       evidence, and no clinical or protected action bypass.
-- [ ] Ranveer: finish the internal execution proof: live Slack approval
-      rehearsal, command-center action/outcome trace, protected vendor-email
-      mock proof, and resource/capacity workflows that show depth.
+- [x] Ranveer: finish the internal execution proof: signed Slack approval
+      harness plus command-center fallback, command-center action/outcome
+      trace, protected vendor-email mock proof, and resource/capacity workflows
+      that show depth.
 - [ ] Merge owner: keep branches aligned, review conflicts, protect `main`, and
       verify the demo still tells one North Star story.
 
@@ -440,10 +441,10 @@ file before editing.
       mark the voice note as pending transcript with one short follow-up.
 - [ ] Hassan: add Meta WhatsApp image/document evidence extraction or
       low-confidence follow-up handling.
-- [ ] Ranveer: rehearse live Slack approve/reject/modify buttons with a public
+- [x] Ranveer: rehearse live Slack approve/reject/modify buttons with a public
       Slack App interactivity Request URL, or document the command-center
       fallback used in the demo.
-- [ ] Ranveer: make the command center visibly show that one WhatsApp complaint
+- [x] Ranveer: make the command center visibly show that one WhatsApp complaint
       expanded into customer trust, resource/capacity, stock, billing,
       communication, approval, action, and outcome work.
 - [ ] Add WhatsApp approval templates only if approved templates are available;
@@ -469,7 +470,7 @@ notifies a manager.
 - [x] Add a demo scenario where one complaint expands into at least four
       affected functions: customer trust, capacity, inventory, billing, and
       communication.
-- [ ] Add an outcome comparison showing what changed after the actions, not
+- [x] Add an outcome comparison showing what changed after the actions, not
       just that messages were sent.
 - [x] Add cross-sector explanation cards mapping the same issue to airport,
       hotel, banking, supermarket, and cruise equivalents.

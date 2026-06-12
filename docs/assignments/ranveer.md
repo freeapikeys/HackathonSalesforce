@@ -160,25 +160,25 @@ Correct behavior:
 - [ ] Rehearse live Slack approve, reject, and modify buttons with a public
       Slack App interactivity Request URL and `SLACK_SIGNING_SECRET` outside
       Git.
-- [ ] If live Slack interactivity is not reachable, document the exact
+- [x] If live Slack interactivity is not reachable, document the exact
       command-center fallback used for manager approval.
-- [ ] Prove protected actions stay blocked before approval and execute only
+- [x] Prove protected actions stay blocked before approval and execute only
       after approval.
-- [ ] Show a visible command-center trace from one Meta WhatsApp complaint to
+- [x] Show a visible command-center trace from one Meta WhatsApp complaint to
       evidence, recommendation, approval, Slack/internal alert, vendor-email
       mock queue, task action, and outcome.
-- [ ] Make the stock flow judge-readable: low stock is detected, manager sees
+- [x] Make the stock flow judge-readable: low stock is detected, manager sees
       restock/transfer recommendation, protected supplier/vendor email remains
       queued mock unless live email credentials exist, and outcome is recorded.
-- [ ] Make the billing flow judge-readable: duplicate or stuck billing issue
+- [x] Make the billing flow judge-readable: duplicate or stuck billing issue
       creates a financial-impact finding, requires approval, opens review, and
       records outcome without making a final refund/financial decision.
-- [ ] Make the capacity flow judge-readable: blocked room/queue pressure creates
+- [x] Make the capacity flow judge-readable: blocked room/queue pressure creates
       task actions with owner roles, due windows, acknowledgement, escalation,
       and outcome metrics.
-- [ ] Ensure Slack messages are short, operational, privacy-safe, and role
+- [x] Ensure Slack messages are short, operational, privacy-safe, and role
       targeted.
-- [ ] Ensure the demo never says vendor email is live unless an email provider
+- [x] Ensure the demo never says vendor email is live unless an email provider
       is configured and tested.
 
 ## Scenario Checklist
@@ -207,11 +207,11 @@ Correct behavior:
 - [x] Add or update tests for evidence citation, fact versus inference
       separation, partner caution, missing evidence, refusal to execute
       protected actions directly, and clinical-decision refusal.
-- [ ] Run `npm run check:harness` after changing approval, action execution, or
+- [x] Run `npm run check:harness` after changing approval, action execution, or
       command-center proof data.
-- [ ] Run `npm run check:mulesoft` after changing Slack approval, protected
+- [x] Run `npm run check:mulesoft` after changing Slack approval, protected
       vendor email, or action execution contracts.
-- [ ] Capture one rehearsal note: what was live, what was mock, and what the
+- [x] Capture one rehearsal note: what was live, what was mock, and what the
       judge will see in the command center.
 
 ## Demo Acceptance
