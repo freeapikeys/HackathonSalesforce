@@ -178,14 +178,14 @@ execute actions.
 Outbound action channels execute approved `Action` records. They require a
 business manager approval unless the demo clearly marks them as local mocks.
 
-| Channel                     | Best use                                                 | Current demo state                                                                   |
-| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | CloudHub Mule endpoint is deployed and tested; Twilio Sandbox must point to that URL |
-| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                              |
-| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                                           |
-| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                              |
-| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live outbound delivery works through Twilio Sandbox                                  |
-| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured                        |
+| Channel                     | Best use                                                 | Current demo state                                                         |
+| --------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
+| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | CloudHub Mule endpoint supports Twilio Sandbox and Meta Cloud API payloads |
+| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                    |
+| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                                 |
+| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                    |
+| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live outbound delivery works through Twilio Sandbox                        |
+| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured              |
 
 Recommended hackathon stance:
 
@@ -358,7 +358,21 @@ $env:SLACK_WEBHOOK_URL = [Environment]::GetEnvironmentVariable("SLACK_WEBHOOK_UR
 $env:SLACK_SIGNING_SECRET = [Environment]::GetEnvironmentVariable("SLACK_SIGNING_SECRET", "User")
 ```
 
-WhatsApp through Twilio Sandbox:
+WhatsApp through Meta Cloud API:
+
+```powershell
+[Environment]::SetEnvironmentVariable("META_WHATSAPP_PHONE_NUMBER_ID", "<phone-number-id>", "User")
+[Environment]::SetEnvironmentVariable("META_WHATSAPP_ACCESS_TOKEN", "<access-token>", "User")
+[Environment]::SetEnvironmentVariable("META_WHATSAPP_TO", "+<recipient-phone>", "User")
+[Environment]::SetEnvironmentVariable("META_GRAPH_VERSION", "v25.0", "User")
+
+$env:META_WHATSAPP_PHONE_NUMBER_ID = [Environment]::GetEnvironmentVariable("META_WHATSAPP_PHONE_NUMBER_ID", "User")
+$env:META_WHATSAPP_ACCESS_TOKEN = [Environment]::GetEnvironmentVariable("META_WHATSAPP_ACCESS_TOKEN", "User")
+$env:META_WHATSAPP_TO = [Environment]::GetEnvironmentVariable("META_WHATSAPP_TO", "User")
+$env:META_GRAPH_VERSION = [Environment]::GetEnvironmentVariable("META_GRAPH_VERSION", "User")
+```
+
+WhatsApp through Twilio Sandbox backup:
 
 ```powershell
 [Environment]::SetEnvironmentVariable("TWILIO_ACCOUNT_SID", "<account-sid>", "User")
@@ -411,6 +425,10 @@ Use these before demo rehearsal:
 ```powershell
 $env:SLACK_WEBHOOK_URL = [Environment]::GetEnvironmentVariable("SLACK_WEBHOOK_URL", "User")
 $env:SLACK_SIGNING_SECRET = [Environment]::GetEnvironmentVariable("SLACK_SIGNING_SECRET", "User")
+$env:META_WHATSAPP_PHONE_NUMBER_ID = [Environment]::GetEnvironmentVariable("META_WHATSAPP_PHONE_NUMBER_ID", "User")
+$env:META_WHATSAPP_ACCESS_TOKEN = [Environment]::GetEnvironmentVariable("META_WHATSAPP_ACCESS_TOKEN", "User")
+$env:META_WHATSAPP_TO = [Environment]::GetEnvironmentVariable("META_WHATSAPP_TO", "User")
+$env:META_GRAPH_VERSION = [Environment]::GetEnvironmentVariable("META_GRAPH_VERSION", "User")
 $env:TWILIO_ACCOUNT_SID = [Environment]::GetEnvironmentVariable("TWILIO_ACCOUNT_SID", "User")
 $env:TWILIO_AUTH_TOKEN = [Environment]::GetEnvironmentVariable("TWILIO_AUTH_TOKEN", "User")
 $env:TWILIO_WHATSAPP_FROM = [Environment]::GetEnvironmentVariable("TWILIO_WHATSAPP_FROM", "User")
@@ -480,8 +498,9 @@ customer messages unless that Request URL has also been hosted and tested.
 
 Highest-value tasks still open:
 
-1. Point Twilio Sandbox "When a message comes in" to the CloudHub webhook URL:
-   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+1. Point Meta WhatsApp Cloud API webhook callback URL to the CloudHub webhook
+   URL:
+   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/meta/whatsapp/inbound`.
 2. Configure Slack App Interactivity with a public Request URL if the live demo
    should use real Slack button clicks; otherwise use the signed harness proof
    and Salesforce command-center approval fallback.

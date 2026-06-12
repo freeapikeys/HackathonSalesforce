@@ -47,10 +47,13 @@ class MockHttpResponse:
 @dataclass(frozen=True)
 class WhatsAppProviderConfig:
     provider: str
-    account_sid: str
-    auth_token: str
-    from_number: str
-    to_number: str
+    account_sid: str = ""
+    auth_token: str = ""
+    from_number: str = ""
+    to_number: str = ""
+    phone_number_id: str = ""
+    access_token: str = ""
+    graph_version: str = "v25.0"
 
 
 @dataclass(frozen=True)
@@ -124,9 +127,18 @@ class SlackWebhookTransport:
 
 
 class TwilioWhatsAppTransport:
-    """Posts approved WhatsApp alerts through Twilio sandbox credentials."""
+    """Posts approved WhatsApp alerts through the configured WhatsApp provider."""
 
     def post(
+        self,
+        config: WhatsAppProviderConfig,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        if config.provider == "meta-whatsapp-cloud":
+            return self._post_meta(config, payload)
+        return self._post_twilio(config, payload)
+
+    def _post_twilio(
         self,
         config: WhatsAppProviderConfig,
         payload: dict[str, Any],
@@ -183,9 +195,71 @@ class TwilioWhatsAppTransport:
             "body": response_body,
         }
 
+    def _post_meta(
+        self,
+        config: WhatsAppProviderConfig,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        endpoint = (
+            "https://graph.facebook.com/"
+            f"{urllib.parse.quote(config.graph_version, safe='')}/"
+            f"{urllib.parse.quote(config.phone_number_id, safe='')}/messages"
+        )
+        message = "\n".join(
+            [
+                payload["messageTitle"].strip(),
+                payload["messageBody"].strip(),
+            ]
+        )
+        body = {
+            "messaging_product": "whatsapp",
+            "to": self._meta_phone_number(config.to_number),
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": message[:4096],
+            },
+        }
+        request = urllib.request.Request(
+            endpoint,
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {config.access_token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                response_body = response.read().decode("utf-8", errors="replace")
+                status_code = getattr(response, "status", response.getcode())
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            raise RetryableDependencyFailure(
+                "Meta WhatsApp Cloud API request failed."
+            ) from error
+
+        if status_code < 200 or status_code >= 300:
+            raise RetryableDependencyFailure(
+                f"Meta WhatsApp Cloud API returned HTTP {status_code}."
+            )
+        try:
+            parsed = json.loads(response_body)
+        except json.JSONDecodeError:
+            parsed = {}
+        messages = parsed.get("messages") or [{}]
+        return {
+            "statusCode": status_code,
+            "messageId": messages[0].get("id"),
+            "body": response_body,
+        }
+
     @staticmethod
     def _whatsapp_address(value: str) -> str:
         return value if value.startswith("whatsapp:") else f"whatsapp:{value}"
+
+    @staticmethod
+    def _meta_phone_number(value: str) -> str:
+        return value.removeprefix("whatsapp:").replace(" ", "").lstrip("+")
 
 
 class MockCallbackTransport:
@@ -2125,20 +2199,34 @@ class MockIntegrationApi:
 
 
 def whatsapp_provider_config_from_env() -> WhatsAppProviderConfig | None:
-    values = {
+    meta_values = {
+        "phone_number_id": os.getenv("META_WHATSAPP_PHONE_NUMBER_ID"),
+        "access_token": os.getenv("META_WHATSAPP_ACCESS_TOKEN"),
+        "to_number": os.getenv("META_WHATSAPP_TO"),
+    }
+    if all(meta_values.values()):
+        return WhatsAppProviderConfig(
+            provider="meta-whatsapp-cloud",
+            phone_number_id=str(meta_values["phone_number_id"]),
+            access_token=str(meta_values["access_token"]),
+            to_number=str(meta_values["to_number"]),
+            graph_version=os.getenv("META_GRAPH_VERSION", "v25.0"),
+        )
+
+    twilio_values = {
         "account_sid": os.getenv("TWILIO_ACCOUNT_SID"),
         "auth_token": os.getenv("TWILIO_AUTH_TOKEN"),
         "from_number": os.getenv("TWILIO_WHATSAPP_FROM"),
         "to_number": os.getenv("TWILIO_WHATSAPP_TO"),
     }
-    if not all(values.values()):
+    if not all(twilio_values.values()):
         return None
     return WhatsAppProviderConfig(
         provider="twilio-whatsapp",
-        account_sid=str(values["account_sid"]),
-        auth_token=str(values["auth_token"]),
-        from_number=str(values["from_number"]),
-        to_number=str(values["to_number"]),
+        account_sid=str(twilio_values["account_sid"]),
+        auth_token=str(twilio_values["auth_token"]),
+        from_number=str(twilio_values["from_number"]),
+        to_number=str(twilio_values["to_number"]),
     )
 
 

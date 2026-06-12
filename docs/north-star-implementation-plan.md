@@ -168,9 +168,9 @@ Slack:
 
 WhatsApp:
 
-- use Twilio Sandbox for the hackathon demo;
-- keep Meta Cloud API out of scope unless the team already has business
-  verification, templates, and a production number ready;
+- use Meta WhatsApp Cloud API for the hackathon demo when the app, phone
+  number, test recipient, token, and webhook are ready;
+- keep Twilio Sandbox as the backup provider;
 - outbound WhatsApp may be used for urgent internal mobile alerts or approved
   customer acknowledgements;
 - inbound WhatsApp should be modeled as signal intake through `INGEST_EVENT`,
@@ -353,8 +353,8 @@ Focused checks:
       outbound executes approved `Action` records.
 - [x] Document WhatsApp as the preferred customer/patient complaint intake
       channel.
-- [x] Document Twilio Sandbox as the hackathon WhatsApp provider and Meta Cloud
-      API as out of scope.
+- [x] Document Meta Cloud API as the preferred WhatsApp provider when ready and
+      Twilio Sandbox as the backup provider.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as urgent internal mobile alert or approved
       customer acknowledgement.
@@ -502,10 +502,10 @@ be explicit about which path is active.
    commands above.
 3. For real Slack delivery, configure `SLACK_WEBHOOK_URL` outside Git. Without
    it, the MuleSoft mock must return honest `MOCK_SENT`.
-4. For real WhatsApp delivery in the hackathon, configure Twilio Sandbox
-   credentials outside Git. Meta Cloud API remains out of scope unless the team
-   already has business verification and templates ready. Without Twilio
-   credentials, the MuleSoft mock must return honest `MOCK_SENT`.
+4. For real WhatsApp delivery in the hackathon, configure Meta Cloud API
+   credentials outside Git when ready. Keep Twilio Sandbox credentials as the
+   backup. Without a complete provider config, the MuleSoft mock must return
+   honest `MOCK_SENT`.
 5. Review the final non-goals as a team: no diagnosis, treatment, dosage,
    triage, clinical priority, real patient records, or autonomous protected
    actions.

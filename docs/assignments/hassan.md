@@ -48,9 +48,9 @@ the existing MVP.
 WhatsApp must be modeled as the protected action type `SEND_WHATSAPP_ALERT`.
 
 The action may execute only after a business manager approval exists. The
-hackathon demo should use Twilio Sandbox or an honest mock result, and it must
-label the result honestly. Meta Cloud API is out of scope unless business
-verification and templates are already ready.
+hackathon demo should use Meta Cloud API when the app, phone number, token,
+test recipient, and webhook are ready. Keep Twilio Sandbox as backup. If no
+real provider is complete, label the result honestly.
 
 The action request should preserve:
 

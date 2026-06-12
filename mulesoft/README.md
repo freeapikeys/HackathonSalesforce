@@ -107,13 +107,14 @@ root-cause hypotheses, and preserves the event through the same intake
 classifier used by the Process API.
 
 The repo also includes `mulesoft/north-star-twilio-webhook`, a deployable Mule
-app for live Twilio Sandbox inbound messages. It receives Twilio's
-form-encoded webhook at `https://<cloudhub-host>/twilio/whatsapp/inbound`, maps
-the message into a safe JSON payload, and calls Salesforce Apex REST endpoint
+app for live WhatsApp inbound messages. It can receive Twilio Sandbox
+form-encoded webhooks at `https://<cloudhub-host>/twilio/whatsapp/inbound` and
+Meta WhatsApp Cloud API webhooks at
+`https://<cloudhub-host>/meta/whatsapp/inbound`. Both paths map the message into
+a safe JSON payload and call the existing Salesforce Apex REST endpoint
 `/services/apexrest/northstar/v1/twilio/whatsapp`. Salesforce then creates the
 event, synthetic customer alias, evidence, work item, recommendation, and
-pending approval. Deploying the Mule app to CloudHub and pointing Twilio to the
-public URL is the final live-intake rehearsal step.
+pending approval.
 
 Current deployed demo webhook:
 
@@ -162,21 +163,30 @@ WhatsApp is modeled as the protected action type `SEND_WHATSAPP_ALERT` behind
 action validates the role alias, target alias, message, evidence IDs, and
 source recommendation before producing a channel delivery record.
 
-For the hackathon demo, use Twilio Sandbox. Meta Cloud API is out of scope
-unless the team already has business verification, templates, and a production
-number ready. The runtime can send through Twilio Sandbox or a WhatsApp-enabled
-Twilio sender when all of these environment variables are configured:
+For the hackathon demo, use Meta Cloud API when the app, phone number, webhook,
+and access token are ready. Keep Twilio Sandbox as the backup path. The runtime
+prefers Meta Cloud API when all of these environment variables are configured:
+
+- `META_WHATSAPP_PHONE_NUMBER_ID`
+- `META_WHATSAPP_ACCESS_TOKEN`
+- `META_WHATSAPP_TO`
+- `META_GRAPH_VERSION`, optional, default `v25.0`
+
+If Meta is not configured, the runtime can send through Twilio Sandbox or a
+WhatsApp-enabled Twilio sender when all of these environment variables are
+configured:
 
 - `TWILIO_ACCOUNT_SID`
 - `TWILIO_AUTH_TOKEN`
 - `TWILIO_WHATSAPP_FROM`
 - `TWILIO_WHATSAPP_TO`
 
-Use the Twilio WhatsApp address format, for example
-`whatsapp:+14155238886`. If any variable is missing, the runtime records
-`MOCK_SENT` with `provider = mock-whatsapp` and a fallback reason. If Twilio is
-configured but rejects or times out, the runtime records `FAILED`; it never
-claims `SENT` unless Twilio accepts the message.
+Use the Twilio WhatsApp address format, for example `whatsapp:+14155238886`, for
+Twilio. Use a normal E.164 recipient such as `+23055550123` for Meta. If no
+provider variable set is complete, the runtime records `MOCK_SENT` with
+`provider = mock-whatsapp` and a fallback reason. If the configured provider
+rejects or times out, the runtime records `FAILED`; it never claims `SENT`
+unless the provider accepts the message.
 
 Use outbound WhatsApp for urgent internal mobile alerts or approved
 customer-facing acknowledgements. For hackathon safety, customer-facing replies
@@ -185,10 +195,10 @@ triage, or clinical-priority wording.
 
 For an Anypoint build, keep the same Process API boundary and implement the
 WhatsApp write-back as a Mule flow or connector-backed adapter behind
-`POST /v1/actions/executions`. For the hackathon, store Twilio Sandbox
-credentials in Anypoint secure configuration or process environment, never in
-Git. Meta Cloud API is out of scope unless the team already has business
-verification and templates ready.
+`POST /v1/actions/executions`. For the hackathon, store Meta Cloud API or
+Twilio Sandbox credentials in Anypoint secure configuration or process
+environment, never in Git. Meta is preferred when the app, phone number, test
+recipient, token, and webhook are ready; Twilio stays the backup.
 
 ## Email Path
 

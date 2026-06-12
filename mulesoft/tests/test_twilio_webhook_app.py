@@ -18,10 +18,26 @@ class TwilioWebhookAppTest(unittest.TestCase):
             / "north-star-twilio-webhook.xml"
         ).read_text()
 
-        self.assertIn('path="/*"', config)
+        self.assertIn('path="/twilio/whatsapp/inbound"', config)
         self.assertIn('/services/apexrest/northstar/v1/twilio/whatsapp', config)
         self.assertIn('Twilio Sandbox WhatsApp', config)
         self.assertIn('Thanks. North Star received this.', config)
+
+    def test_mule_app_exposes_meta_intake_and_webhook_verification(self) -> None:
+        config = (
+            APP
+            / "src"
+            / "main"
+            / "mule"
+            / "north-star-twilio-webhook.xml"
+        ).read_text()
+
+        self.assertIn('path="/meta/whatsapp/inbound"', config)
+        self.assertIn('allowedMethods="GET"', config)
+        self.assertIn("hub.verify_token", config)
+        self.assertIn("meta.webhookVerifyToken", config)
+        self.assertIn("Meta WhatsApp Cloud API", config)
+        self.assertIn("status: \"received\"", config)
 
     def test_mule_app_does_not_commit_runtime_secrets(self) -> None:
         combined = "\n".join(

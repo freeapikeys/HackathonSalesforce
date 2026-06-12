@@ -94,13 +94,12 @@ Outbound channels execute approved `Action` records:
 | Email             | Future supplier, insurer, vendor, or formal customer follow-up adapter      |
 | Salesforce tasks  | Role-owned work for cleaning, porter, pharmacy, billing, vendor, and review |
 
-For the hospital demo, Twilio Sandbox WhatsApp is the customer-facing intake
-story and Slack is the internal team coordination and approval story. WhatsApp
-outbound should be used carefully: internal urgent alerts are safe for the demo,
-while customer-facing replies need approval, privacy-safe text, template/consent
-handling, and no clinical advice. Meta Cloud API is out of scope for the
-hackathon unless the team already has verification, templates, and a production
-number ready.
+For the hospital demo, Meta WhatsApp Cloud API is the preferred customer-facing
+intake story when the app, phone number, test recipient, token, and webhook are
+ready. Twilio Sandbox remains the backup. Slack is the internal team
+coordination and approval story. WhatsApp outbound should be used carefully:
+internal urgent alerts are safe for the demo, while customer-facing replies need
+approval, privacy-safe text, template/consent handling, and no clinical advice.
 
 ## Winning Demo Story
 

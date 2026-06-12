@@ -4,6 +4,7 @@ import json
 import unittest
 import urllib.parse
 from copy import deepcopy
+from unittest.mock import patch
 
 from mock_runtime import (
     RetryPolicy,
@@ -576,6 +577,90 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(
             "whatsapp-message-001",
             record["delivery"]["providerMessageId"],
+        )
+
+    def test_whatsapp_meta_provider_is_used_when_configured(self) -> None:
+        transport = FakeWhatsAppTransport()
+        api = build_default_api(
+            slack_webhook_url="",
+            whatsapp_provider_config=WhatsAppProviderConfig(
+                provider="meta-whatsapp-cloud",
+                phone_number_id="1234567890123456",
+                access_token="test-meta-token",
+                to_number="+23055550123",
+                graph_version="v25.0",
+            ),
+            whatsapp_transport=transport,
+        )
+        example = api.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        body = deepcopy(example["value"])
+        body["actionType"] = "SEND_WHATSAPP_ALERT"
+        body["sourceSystem"] = "whatsapp"
+        body["externalKey"] = "action-whatsapp-alert-meta"
+        body["idempotencyKey"] = "action-whatsapp-alert-meta-v1"
+        body["approvalId"] = "approval-whatsapp-alert-meta"
+        body["actionId"] = "action-whatsapp-alert-meta"
+        body["payload"] = {
+            "targetRole": "Operations Manager",
+            "targetChannel": "wa-role-operations-manager",
+            "messageTitle": "North Star action",
+            "messageBody": "Please check the approved stock request.",
+            "evidenceIds": ["evidence-hospital-001"],
+            "sourceRecommendationId": body["recommendationId"],
+        }
+        headers = deepcopy(example["x-hfs-headers"])
+        headers["X-Idempotency-Key"] = body["idempotencyKey"]
+        api.write_back_adapter.register_approval(
+            approval_id=body["approvalId"],
+            tenant_key=body["tenantKey"],
+            recommendation_id=body["recommendationId"],
+            action_id=body["actionId"],
+        )
+
+        response = api.request(
+            "POST",
+            "/v1/actions/executions",
+            headers,
+            body,
+        )
+
+        self.assertEqual(202, response.status)
+        self.assertEqual(1, len(transport.posts))
+        self.assertEqual(
+            "meta-whatsapp-cloud",
+            transport.posts[0]["config"].provider,
+        )
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        self.assertEqual("SENT", record["delivery"]["status"])
+        self.assertEqual(
+            "meta-whatsapp-cloud",
+            record["delivery"]["provider"],
+        )
+
+    def test_whatsapp_provider_env_prefers_meta_cloud_api(self) -> None:
+        with patch.dict(
+            "os.environ",
+            {
+                "META_WHATSAPP_PHONE_NUMBER_ID": "1234567890123456",
+                "META_WHATSAPP_ACCESS_TOKEN": "test-meta-token",
+                "META_WHATSAPP_TO": "+23055550123",
+                "TWILIO_ACCOUNT_SID": "AC00000000000000000000000000000000",
+                "TWILIO_AUTH_TOKEN": "test-token",
+                "TWILIO_WHATSAPP_FROM": "whatsapp:+14155238886",
+                "TWILIO_WHATSAPP_TO": "whatsapp:+23055550123",
+            },
+            clear=False,
+        ):
+            api = build_default_api(
+                slack_webhook_url="",
+                whatsapp_transport=FakeWhatsAppTransport(),
+            )
+
+        self.assertEqual(
+            "meta-whatsapp-cloud",
+            api.write_back_adapter.whatsapp_provider_config.provider,
         )
 
     def test_hospital_action_types_record_delivery_evidence(self) -> None:

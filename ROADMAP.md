@@ -367,8 +367,8 @@ file before editing.
       outbound channels execute approved `Action` records.
 - [x] Document WhatsApp as the preferred customer/patient complaint intake
       story.
-- [x] Document Twilio Sandbox as the hackathon WhatsApp provider and Meta Cloud
-      API as out of scope for the final demo.
+- [x] Document Meta Cloud API as the preferred WhatsApp provider when ready and
+      Twilio Sandbox as the backup provider.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as either urgent internal mobile alert or
       approved customer acknowledgement.
