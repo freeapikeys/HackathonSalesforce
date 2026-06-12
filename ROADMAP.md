@@ -260,6 +260,12 @@ file before editing.
       refund request, payment issue, and approval threshold.
 - [x] Define expected outcome metrics for the demo.
 - [x] Ensure every fixture uses global primitive language where possible.
+- [x] Re-verified Aarav's canonical hospital data on 2026-06-12 after pulling
+      `origin/main`: `npm run check:demo-data` passed with 90 resources, 60
+      complaints, 15 recommendation cases, and 20 hospital events.
+- [x] Re-verified the hospital fixture wording on 2026-06-12:
+      `npm run check:fixture-language` passed without introducing real patient,
+      staff, vendor, phone, email, credential, or clinical-decision data.
 
 ### 4. Hospital Event Fixtures
 

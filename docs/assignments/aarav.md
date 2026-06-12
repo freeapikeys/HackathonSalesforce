@@ -131,6 +131,13 @@ through canonical `data/hospital/` files:
 Run `npm run check:demo-data` to verify counts, evidence links, role aliases,
 approval flags, and absence of personal contact or clinical decision data.
 
+Latest verification on 2026-06-12 after pulling `origin/main`:
+
+- `npm run check:demo-data` passed with 90 resources, 60 complaints, 15
+  recommendation cases, and 20 hospital events.
+- `npm run check:fixture-language` passed for the hospital event and Agentforce
+  fixtures while preserving the documented legacy retail fixtures.
+
 ## Required Departments And Risks
 
 | Department/service area    | Required risks                                                  |
