@@ -109,7 +109,7 @@ For the final rehearsal, the human setup work is:
   and run;
 - keep Slack and WhatsApp credentials outside Git. `SLACK_WEBHOOK_URL` enables a
   real Slack webhook, and `SLACK_SIGNING_SECRET` enables live Slack approval
-  buttons when a public interactivity URL is configured. Twilio Sandbox
-  credentials enable WhatsApp delivery for the hackathon. Missing credentials
-  are acceptable only when the presenter calls out the honest `MOCK_SENT`
-  fallback.
+  buttons when a public interactivity URL is configured. Official Meta
+  WhatsApp Cloud API credentials enable WhatsApp delivery for the hackathon;
+  Twilio Sandbox is legacy backup only. Missing credentials are acceptable only
+  when the presenter calls out the honest `MOCK_SENT` fallback.

@@ -9,7 +9,7 @@ banking, retail, cruise, and other sectors.
 
 ```mermaid
 flowchart LR
-    SOURCES["Profile source signals<br/>Twilio WhatsApp complaints,<br/>capacity, stock, partner, billing"]
+    SOURCES["Profile source signals<br/>Meta WhatsApp complaints,<br/>capacity, stock, partner, billing"]
     CONTEXT["Evidence and context<br/>customer alias, department, location,<br/>resource, partner, policy, metric"]
     AGENTS["Agentforce analysis<br/>customer trust, capacity, vendor,<br/>finance, approval, communication"]
     REVIEW["Manager review<br/>facts, inference, recommendation,<br/>refusal, approval"]
@@ -27,7 +27,7 @@ clinical priority decisions are outside the demo.
 
 ## North Star Flow
 
-1. A hospital operations signal arrives from Twilio WhatsApp inbound, a
+1. A hospital operations signal arrives from Meta WhatsApp inbound, a
    synthetic complaint, capacity, resource, partner, billing, stock, or staffing
    source. The Salesforce command center remains the visibility, audit, and
    fallback approval surface.

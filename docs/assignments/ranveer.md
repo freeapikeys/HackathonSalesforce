@@ -1,14 +1,19 @@
-# Ranveer Assignment: Agentforce Resource And Capacity Reasoning
+# Ranveer Assignment: Internal Execution Proof And Resource Reasoning
 
 ## Goal
 
 Preserve the completed Agentforce inventory/waste reasoning work from latest
-`main`, then generalize it into Resource and Capacity reasoning for North Star's
-private hospital operations demo. The agent should turn hospital operations
-evidence into grounded recommendations: bed pressure, queue risk, stock risk,
-SLA risk, staff pressure, vendor dependency, and safe next actions. It must cite
-facts, separate inference, name missing evidence, respect approval boundaries,
-and refuse clinical decisions.
+`main`, then own the internal proof that North Star does more than send a fake
+WhatsApp receipt. Your lane is the manager/team side: resource and capacity
+reasoning, live Slack approval rehearsal, command-center action/outcome trace,
+protected vendor-email mock proof, and clear evidence that one customer issue
+expands into several business functions.
+
+The agent should turn hospital operations evidence into grounded
+recommendations: bed pressure, queue risk, stock risk, SLA risk, staff pressure,
+vendor dependency, billing exposure, approval requirement, and safe next
+actions. It must cite facts, separate inference, name missing evidence, respect
+approval boundaries, and refuse clinical decisions.
 
 ## What The Project Already Has
 
@@ -152,6 +157,29 @@ Correct behavior:
       appropriate.
 - [x] Add `CLINICAL_REFUSAL` or equivalent blocked-action scenario.
 - [x] Ensure recommendations feed the hospital approval/action path.
+- [ ] Rehearse live Slack approve, reject, and modify buttons with a public
+      Slack App interactivity Request URL and `SLACK_SIGNING_SECRET` outside
+      Git.
+- [ ] If live Slack interactivity is not reachable, document the exact
+      command-center fallback used for manager approval.
+- [ ] Prove protected actions stay blocked before approval and execute only
+      after approval.
+- [ ] Show a visible command-center trace from one Meta WhatsApp complaint to
+      evidence, recommendation, approval, Slack/internal alert, vendor-email
+      mock queue, task action, and outcome.
+- [ ] Make the stock flow judge-readable: low stock is detected, manager sees
+      restock/transfer recommendation, protected supplier/vendor email remains
+      queued mock unless live email credentials exist, and outcome is recorded.
+- [ ] Make the billing flow judge-readable: duplicate or stuck billing issue
+      creates a financial-impact finding, requires approval, opens review, and
+      records outcome without making a final refund/financial decision.
+- [ ] Make the capacity flow judge-readable: blocked room/queue pressure creates
+      task actions with owner roles, due windows, acknowledgement, escalation,
+      and outcome metrics.
+- [ ] Ensure Slack messages are short, operational, privacy-safe, and role
+      targeted.
+- [ ] Ensure the demo never says vendor email is live unless an email provider
+      is configured and tested.
 
 ## Scenario Checklist
 
@@ -179,6 +207,12 @@ Correct behavior:
 - [x] Add or update tests for evidence citation, fact versus inference
       separation, partner caution, missing evidence, refusal to execute
       protected actions directly, and clinical-decision refusal.
+- [ ] Run `npm run check:harness` after changing approval, action execution, or
+      command-center proof data.
+- [ ] Run `npm run check:mulesoft` after changing Slack approval, protected
+      vendor email, or action execution contracts.
+- [ ] Capture one rehearsal note: what was live, what was mock, and what the
+      judge will see in the command center.
 
 ## Demo Acceptance
 
@@ -194,6 +228,9 @@ The Resource and Capacity reasoning work is demo-ready when:
   staff-task actions directly;
 - it refuses diagnosis, treatment, dosage, triage, and clinical priority
   decisions;
+- Slack approval or command-center approval clearly gates protected actions;
+- protected vendor email is visibly queued as a mock, not claimed as live;
+- the command center shows action results and outcome metrics after approval;
 - a manager can understand the reasoning in less than one minute.
 
 ## Codex Prompt Starter
@@ -202,10 +239,11 @@ Use this when starting a fresh Codex task:
 
 ```text
 Read docs/assignments/ranveer.md, docs/agentforce-action-contract.md,
-docs/apex-service-contract.md, and intelligence/agentforce fixtures. Preserve
-the latest inventory/waste reasoning work, then implement the next smallest
-Resource and Capacity reasoning task for the private hospital operations demo.
-Preserve evidence citations, fact/inference separation, partner caution,
-approval gating, and clinical-decision refusal. Run npm run check:agentforce and
-any focused checks for changed files.
+docs/apex-service-contract.md, docs/mulesoft-api-contract.md, and
+intelligence/agentforce fixtures. Implement the next smallest internal proof
+task: live Slack approval rehearsal, command-center action/outcome trace,
+protected vendor-email mock proof, stock/capacity/billing workflow clarity, or
+Resource and Capacity reasoning. Preserve evidence citations, fact/inference
+separation, partner caution, approval gating, and clinical-decision refusal.
+Run the focused checks for changed files.
 ```

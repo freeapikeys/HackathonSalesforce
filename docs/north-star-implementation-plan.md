@@ -168,12 +168,13 @@ Slack:
 
 WhatsApp:
 
-- use Meta WhatsApp Cloud API for the hackathon demo when the app, phone
-  number, test recipient, token, and webhook are ready;
-- keep Twilio Sandbox as the backup provider;
+- use Meta WhatsApp Cloud API as the active hackathon demo provider;
+- keep Twilio Sandbox as legacy backup only;
 - the current CloudHub public callback URL is
   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`;
   despite the inherited path name, it accepts Meta JSON and Twilio form payloads;
+- the current visible Meta WhatsApp reply is a receipt acknowledgement, not the
+  full agent conversation;
 - outbound WhatsApp may be used for urgent internal mobile alerts or approved
   customer acknowledgements;
 - inbound WhatsApp should be modeled as signal intake through `INGEST_EVENT`,
@@ -213,8 +214,8 @@ reason over them.
 
 Preferred intake paths:
 
-1. WhatsApp inbound through Twilio Sandbox for customer, patient, visitor, or
-   client complaints.
+1. WhatsApp inbound through Meta WhatsApp Cloud API for customer, patient,
+   visitor, or client complaints.
 2. Existing Salesforce command center for visibility, approval, and fallback
    review. A new intake form is not required for hackathon v1.
 3. System event fixtures for queue spike, low stock, vendor delay, billing
@@ -224,8 +225,8 @@ Preferred intake paths:
 Inbound WhatsApp flow:
 
 1. Customer sends a WhatsApp message to the configured WhatsApp number.
-2. Meta WhatsApp Cloud API or Twilio posts the webhook payload to the public
-   CloudHub webhook URL:
+2. Meta WhatsApp Cloud API posts the webhook payload to the public CloudHub
+   webhook URL:
    `https://<cloudhub-host>/twilio/whatsapp/inbound`.
 3. Mule maps the message to the Salesforce Apex REST intake endpoint at
    `/services/apexrest/northstar/v1/twilio/whatsapp`.
@@ -243,11 +244,16 @@ Language, voice, and document handling:
 
 - English, French, and Mauritian Creole messages use the same universal intake
   contract and should reply in the same language when the reply is safe.
-- Voice notes become `Signal` plus transcript `Evidence`; low confidence
-  transcript evidence asks one short follow-up.
-- Documents and images become `Evidence` records. Extraction is used only as
-  evidence support; clinical, legal, or financial final decisions still require
-  human approval.
+- Current Salesforce intake stores language hints for English, French, and
+  Mauritian Creole. The live Meta receipt still needs same-language response
+  wording before it should be pitched as multilingual customer chat.
+- Voice notes currently become media metadata and pending evidence. A real
+  Meta media download and transcription step is still required before voice
+  mode can be pitched as live WhatsApp voice understanding.
+- Documents and images currently become evidence metadata. OCR or document
+  extraction is still required before they can be pitched as live document
+  understanding. Extraction is only evidence support; clinical, legal, or
+  financial final decisions still require human approval.
 
 Implemented bridge:
 
@@ -360,15 +366,15 @@ Focused checks:
       outbound executes approved `Action` records.
 - [x] Document WhatsApp as the preferred customer/patient complaint intake
       channel.
-- [x] Document Meta Cloud API as the preferred WhatsApp provider when ready and
-      Twilio Sandbox as the backup provider.
+- [x] Document Meta WhatsApp Cloud API as the active WhatsApp provider and
+      Twilio Sandbox as legacy backup only.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as urgent internal mobile alert or approved
       customer acknowledgement.
 - [x] Document email as a protected mock vendor/supplier action, not a current
       live delivery capability.
-- [x] Add or simulate a Twilio inbound WhatsApp webhook that maps customer
-      complaint text to `INGEST_EVENT`.
+- [x] Add or simulate a provider-neutral inbound WhatsApp webhook that maps
+      customer complaint text to `INGEST_EVENT`.
 - [x] Keep existing Salesforce command center as the visibility, approval, and
       fallback review surface instead of adding a new intake screen.
 - [x] Convert inbound text into synthetic customer alias, source channel,
@@ -435,9 +441,15 @@ Focused checks:
 - [x] Ensure `EXECUTE_APPROVED_ACTION` supports `SEND_WHATSAPP_ALERT` with the
       same approval, correlation, target role, message, delivery status, and
       fallback fields as Slack.
-- [x] Add a WhatsApp configuration path that can use Twilio Sandbox or Meta
-      Cloud API only when credentials are configured, otherwise returns
+- [x] Add a WhatsApp configuration path that can use Meta Cloud API when
+      credentials are configured, otherwise returns
       `MOCK_SENT` honestly.
+- [ ] Add same-language Meta WhatsApp receipt and approved-response wording for
+      English, French, and Mauritian Creole.
+- [ ] Add Meta WhatsApp voice-note download/transcription evidence or a clear
+      pending-transcript follow-up path.
+- [ ] Add Meta WhatsApp image/document evidence extraction or low-confidence
+      follow-up handling.
 - [x] Update the command center to show hospital risk pulse, evidence timeline,
       vendor response, approval cockpit, Slack result, WhatsApp result, and task
       acknowledgement.
@@ -510,9 +522,8 @@ be explicit about which path is active.
 3. For real Slack delivery, configure `SLACK_WEBHOOK_URL` outside Git. Without
    it, the MuleSoft mock must return honest `MOCK_SENT`.
 4. For real WhatsApp delivery in the hackathon, configure Meta Cloud API
-   credentials outside Git when ready. Keep Twilio Sandbox credentials as the
-   backup. Without a complete provider config, the MuleSoft mock must return
-   honest `MOCK_SENT`.
+   credentials outside Git. Twilio Sandbox is legacy backup only. Without a
+   complete provider config, the MuleSoft mock must return honest `MOCK_SENT`.
 5. Review the final non-goals as a team: no diagnosis, treatment, dosage,
    triage, clinical priority, real patient records, or autonomous protected
    actions.

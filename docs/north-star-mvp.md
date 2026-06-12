@@ -79,7 +79,7 @@ Inbound channels create `Signal` and `Evidence`:
 
 | Channel                   | Primary role                                                              |
 | ------------------------- | ------------------------------------------------------------------------- |
-| Twilio WhatsApp inbound   | Customer, guest, passenger, patient, visitor, or client complaint intake  |
+| Meta WhatsApp Cloud API   | Customer, guest, passenger, patient, visitor, or client complaint intake  |
 | Salesforce command center | Staff review, approval, audit, and fallback visibility                    |
 | System event              | Queue spike, stock threshold, vendor delay, payment issue, or room status |
 | Voice/manual transcript   | Staff or customer voice note that becomes governed evidence               |
@@ -94,12 +94,19 @@ Outbound channels execute approved `Action` records:
 | Email             | Future supplier, insurer, vendor, or formal customer follow-up adapter      |
 | Salesforce tasks  | Role-owned work for cleaning, porter, pharmacy, billing, vendor, and review |
 
-For the hospital demo, Meta WhatsApp Cloud API is the preferred customer-facing
-intake story when the app, phone number, test recipient, token, and webhook are
-ready. Twilio Sandbox remains the backup. Slack is the internal team
+For the hospital demo, Meta WhatsApp Cloud API is the customer-facing intake
+story. Twilio Sandbox is legacy backup only. Slack is the internal team
 coordination and approval story. WhatsApp outbound should be used carefully:
 internal urgent alerts are safe for the demo, while customer-facing replies need
 approval, privacy-safe text, template/consent handling, and no clinical advice.
+
+Current reality: the live Meta WhatsApp reply is a short receipt
+acknowledgement after intake succeeds. It proves the public webhook is alive and
+North Star received the signal, but it is not yet a full WhatsApp agent
+conversation. The deeper agent reasoning happens in Salesforce and Agentforce:
+the message becomes `Signal` and `Evidence`, the system drafts a
+recommendation, a manager approves protected actions, and MuleSoft records the
+approved outcomes.
 
 ## Winning Demo Story
 
@@ -292,10 +299,10 @@ records, diagnoses, or treatment details.
 - Do not claim diagnosis, treatment, dosage, or clinical triage capability.
 - Do not claim real hospital, patient, insurer, WhatsApp, Slack, or vendor
   production integrations unless configured and demonstrated.
-- Do not claim live WhatsApp customer intake until the Mule webhook app is
-  deployed, Twilio points to it, and a real sandbox message creates Salesforce
-  records. Do not claim live email delivery until an email adapter exists and
-  has been tested.
+- Do not claim full WhatsApp agent chat yet. Claim live Meta WhatsApp intake
+  and receipt acknowledgement only when the webhook and token are working. Do
+  not claim live email delivery until an email adapter exists and has been
+  tested.
 - Do not claim machine-learning forecasting if the prototype uses deterministic
   rules. Say "rules-based baseline with model-ready architecture."
 - Do not let Agentforce execute protected external actions directly.
@@ -314,7 +321,7 @@ The demo succeeds when judges see:
   arrives;
 - clinical decision requests refused or routed to human clinicians;
 - manager approval gating consequential changes;
-- a customer complaint entering through Twilio Sandbox WhatsApp, then becoming
+- a customer complaint entering through Meta WhatsApp Cloud API, then becoming
   evidence and an action plan visible in Salesforce;
 - Slack alerts reaching internal roles, plus WhatsApp alerts or honest mock
   channel evidence;

@@ -178,14 +178,14 @@ execute actions.
 Outbound action channels execute approved `Action` records. They require a
 business manager approval unless the demo clearly marks them as local mocks.
 
-| Channel                     | Best use                                                 | Current demo state                                                         |
-| --------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------- |
-| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | CloudHub Mule endpoint supports Twilio Sandbox and Meta Cloud API payloads |
-| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                    |
-| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                                 |
-| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                    |
-| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live outbound delivery works through Twilio Sandbox                        |
-| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured              |
+| Channel                     | Best use                                                 | Current demo state                                                       |
+| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------ |
+| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | Official Meta WhatsApp Cloud API is active; Twilio is legacy backup only |
+| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                  |
+| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                               |
+| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                  |
+| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live Meta receipt works; approved replies still need final rehearsal     |
+| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured            |
 
 Recommended hackathon stance:
 
@@ -193,9 +193,12 @@ Recommended hackathon stance:
 - Slack should be the internal worker and manager coordination story.
 - Slack approve/reject buttons should be the manager approval story when the
   Slack App interactivity Request URL is configured.
-- WhatsApp outbound may be used for urgent internal mobile alerts in the demo.
+- WhatsApp outbound may be used for urgent internal mobile alerts or approved
+  customer-safe replies in the demo.
 - Customer-facing WhatsApp replies should be approved, privacy-safe, and
   template/consent-aware.
+- The current visible Meta WhatsApp response is a receipt acknowledgement only:
+  it proves intake worked, but it is not yet a full agent conversation.
 - Email is useful for suppliers, insurers, vendors, or formal follow-up. The
   current repo has a protected mock vendor-email action; do not claim live
   email delivery until credentials and Anypoint/SMTP delivery are configured.
@@ -272,7 +275,8 @@ The current repo includes two intake paths for this pattern:
 
 - local harness/runtime proof through `MockIntegrationApi.ingest_twilio_whatsapp`;
 - deployable Mule app `mulesoft/north-star-twilio-webhook` that receives
-  Twilio Sandbox form posts and calls Salesforce Apex REST endpoint
+  Meta WhatsApp Cloud API payloads or legacy Twilio Sandbox form posts and
+  calls Salesforce Apex REST endpoint
   `/services/apexrest/northstar/v1/twilio/whatsapp`.
 
 The Salesforce endpoint creates a synthetic customer alias, safe evidence,
@@ -297,16 +301,15 @@ Mule route is provider-neutral. The friendly `/meta/whatsapp/inbound` listener
 exists in the Mule app for future CloudHub routing targets; the active public
 demo route is the URL above.
 
-If Twilio receives the inbound message but the WhatsApp user sees no reply,
-check the latest Twilio outbound-reply status. Error `63038` means Twilio
-blocked the reply because the account reached a rolling daily message limit or
-an account-level sending restriction. That is an account/provider limit, not a
-North Star webhook failure.
+Twilio-specific error `63038` is historical context only now. It meant Twilio
+blocked a reply because the account reached a rolling daily message limit or an
+account-level sending restriction. The active demo path should use official
+Meta WhatsApp Cloud API instead.
 
-Voice notes, images, and documents arrive from Twilio as media fields such as
-`MediaUrl0` and `MediaContentType0`. North Star stores only safe media metadata
-and a media URL hash. Transcript or document extraction remains pending
-evidence until a trusted transcription or extraction path is available.
+Voice notes, images, and documents arrive from Meta as typed message payloads.
+North Star stores only safe media metadata and a media hash. Transcript,
+OCR, or document extraction remains pending evidence until a trusted
+transcription or extraction path is available.
 
 ## Hospital Profile Demo IDs
 
@@ -397,6 +400,9 @@ Never commit Twilio recovery codes, Account SID plus Auth Token pairs, Slack
 webhook URLs, Slack signing secrets, real phone numbers, or screenshots that
 expose secrets.
 
+Use the Twilio section only for historical fallback. The hackathon demo should
+use official Meta WhatsApp Cloud API.
+
 ## Live Alert Text
 
 Use simple, non-dramatic wording.
@@ -436,11 +442,6 @@ $env:META_WHATSAPP_PHONE_NUMBER_ID = [Environment]::GetEnvironmentVariable("META
 $env:META_WHATSAPP_ACCESS_TOKEN = [Environment]::GetEnvironmentVariable("META_WHATSAPP_ACCESS_TOKEN", "User")
 $env:META_WHATSAPP_TO = [Environment]::GetEnvironmentVariable("META_WHATSAPP_TO", "User")
 $env:META_GRAPH_VERSION = [Environment]::GetEnvironmentVariable("META_GRAPH_VERSION", "User")
-$env:TWILIO_ACCOUNT_SID = [Environment]::GetEnvironmentVariable("TWILIO_ACCOUNT_SID", "User")
-$env:TWILIO_AUTH_TOKEN = [Environment]::GetEnvironmentVariable("TWILIO_AUTH_TOKEN", "User")
-$env:TWILIO_WHATSAPP_FROM = [Environment]::GetEnvironmentVariable("TWILIO_WHATSAPP_FROM", "User")
-$env:TWILIO_WHATSAPP_TO = [Environment]::GetEnvironmentVariable("TWILIO_WHATSAPP_TO", "User")
-
 npm run check:mulesoft
 npm run demo:run -- --target-org hfs-dev --output artifacts\demo-harness-result-live-channels.json
 ```
@@ -451,14 +452,16 @@ What this proves:
   Slack/WhatsApp mocks, signed Slack approval handling, live-provider adapter
   paths, protected vendor email queue, and inbound WhatsApp mapper tests.
 - `npm run demo:run` proves the connected Salesforce path, manager approval,
-  Twilio intake harness proof, Slack approval-gate proof, outbound Slack,
+  WhatsApp intake harness proof, Slack approval-gate proof, outbound Slack,
   outbound WhatsApp, protected vendor email queue, actions, outcomes, and
   clinical refusal.
 
 What it does not prove yet:
 
-- a live WhatsApp customer message reaching Salesforce through Twilio, unless
-  Twilio Sandbox has been pointed to the deployed CloudHub webhook URL;
+- full live WhatsApp agent chat; the current Meta response is a receipt
+  acknowledgement while the deeper recommendation and approval work is visible
+  in Salesforce and Agentforce;
+- live WhatsApp voice transcription or document extraction;
 - an in-command-center form where a judge types a fresh complaint;
 - live Slack button clicks unless the Slack App Interactivity Request URL is
   configured to reach the runtime endpoint.
@@ -490,40 +493,46 @@ The live channel demo is ready when the harness output shows:
 - `SEND_SLACK_ALERT.status = SENT`
 - `SEND_SLACK_ALERT.provider = slack-webhook`
 - `SEND_WHATSAPP_ALERT.status = SENT`
-- `SEND_WHATSAPP_ALERT.provider = twilio-whatsapp`
+- `SEND_WHATSAPP_ALERT.provider = meta-whatsapp-cloud`
 - `SEND_VENDOR_EMAIL.status = QUEUED`
 - `workItemStatus = COMPLETED`
 - `actionCount >= 11`
 - `outcomeCount >= 12`
 - `CLINICAL_DECISION_REFUSED`
 
-This proves approved outbound delivery plus local signed approval and Twilio
-intake harness proof. It does not prove a public Twilio webhook receiving live
-customer messages unless that Request URL has also been hosted and tested.
+This proves approved outbound delivery plus local signed approval and WhatsApp
+intake harness proof. It does not prove full live WhatsApp agent chat, voice
+transcription, or document extraction unless those paths are explicitly tested.
 
 ## Remaining Build Tasks
 
 Highest-value tasks still open:
 
-1. Point Meta WhatsApp Cloud API webhook callback URL to the active CloudHub
-   webhook URL:
+1. Keep the Meta WhatsApp Cloud API webhook callback URL pointed to the active
+   CloudHub webhook URL:
    `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
-2. Configure Slack App Interactivity with a public Request URL if the live demo
+2. Finish same-language Meta WhatsApp receipts and approved replies for
+   English, French, and Mauritian Creole.
+3. Add Meta WhatsApp voice-note transcription evidence or a clear
+   pending-transcript follow-up path.
+4. Add Meta WhatsApp image/document evidence extraction or low-confidence
+   follow-up handling.
+5. Configure Slack App Interactivity with a public Request URL if the live demo
    should use real Slack button clicks; otherwise use the signed harness proof
    and Salesforce command-center approval fallback.
-3. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
+6. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
-4. Add cross-sector cards showing how the same global primitives map to
+7. Add cross-sector cards showing how the same global primitives map to
    airport, hotel, banking, supermarket, and cruise operations.
 
 ## Team Ownership
 
-| Person  | Main area                                          |
-| ------- | -------------------------------------------------- |
-| Fahan   | Slack, channel setup, demo run, final coordination |
-| Hassan  | WhatsApp and voice mode                            |
-| Aarav   | Synthetic hospital data                            |
-| Ranveer | Agentforce/resource/capacity reasoning             |
+| Person  | Main area                                                                              |
+| ------- | -------------------------------------------------------------------------------------- |
+| Fahan   | Final testing and coordination only; no new implementation task in this split          |
+| Hassan  | Official Meta WhatsApp customer channel, same-language replies, voice/media evidence   |
+| Aarav   | Synthetic data review, complaint scripts, manual demo validation                       |
+| Ranveer | Slack approval proof, command-center action trace, resource/capacity/billing workflows |
 
 ## Final Warnings
 

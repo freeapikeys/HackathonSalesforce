@@ -68,7 +68,7 @@ source signals and should enter through `INGEST_EVENT`.
 
 Preferred intake examples:
 
-- WhatsApp inbound customer complaint from Twilio Sandbox;
+- WhatsApp inbound customer complaint from Meta WhatsApp Cloud API;
 - Salesforce command-center complaint or signal form;
 - system threshold event such as low pharmacy stock, queue spike, room blocked,
   lab delay, payment issue, or billing approval stalled;
@@ -76,8 +76,8 @@ Preferred intake examples:
 
 Inbound WhatsApp mapping:
 
-1. Twilio receives the customer or patient message.
-2. Twilio posts to a MuleSoft/source adapter endpoint.
+1. Meta WhatsApp Cloud API receives the customer or patient message.
+2. Meta posts to a MuleSoft/source adapter endpoint.
 3. The adapter maps the message to the `INGEST_EVENT` request shape with:
    source channel, synthetic customer alias, timestamp, safe message summary,
    department/resource hints, tenant ID, correlation ID, and content hash.
@@ -92,10 +92,11 @@ stock, reply with medical advice, or decide clinical priority.
 
 The local mock runtime includes a deterministic
 `MockIntegrationApi.ingest_twilio_whatsapp(...)` adapter for the hackathon demo.
-It maps Twilio-style payloads into `INGEST_EVENT`, masks the phone number,
-stores a synthetic alias, hashes the raw message body, adds complaint
-classification, follow-up questions, root-cause hypotheses, next-evidence
-needs, and affected primitives.
+The method name is historical. The active CloudHub route accepts Meta WhatsApp
+Cloud API payloads and the legacy Twilio-style payload shape. It maps inbound
+messages into `INGEST_EVENT`, masks the phone number, stores a synthetic alias,
+hashes the raw message body, adds complaint classification, follow-up
+questions, root-cause hypotheses, next-evidence needs, and affected primitives.
 
 ## Protected Action Rules
 
@@ -106,9 +107,9 @@ needs, and affected primitives.
 - Action and channel responses must preserve tenant, correlation, approval ID,
   action ID, evidence IDs, provider/status if applicable, fallback reason if
   applicable, and callback/outcome reference when available.
-- Slack can use `SLACK_WEBHOOK_URL`. WhatsApp can use Twilio Sandbox or a
-  WhatsApp-enabled Twilio sender through `TWILIO_ACCOUNT_SID`,
-  `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, and `TWILIO_WHATSAPP_TO`.
+- Slack can use `SLACK_WEBHOOK_URL`. WhatsApp should use official Meta
+  WhatsApp Cloud API for the hackathon demo. Twilio environment variables are
+  legacy backup only.
 - Slack approval buttons are a separate interaction path from the incoming
   webhook. Signed interactions require `SLACK_SIGNING_SECRET`, timestamp and
   signature validation, replay rejection, and a pending approval before the

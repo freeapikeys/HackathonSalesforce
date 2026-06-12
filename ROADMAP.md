@@ -191,7 +191,7 @@ are stuck.
 
 North Star should produce one action plan:
 
-- accept a customer or patient complaint through Twilio Sandbox WhatsApp;
+- accept a customer or patient complaint through Meta WhatsApp Cloud API;
 - identify whether the root issue is complaint, capacity, partner, billing,
   stock, staffing, or mixed;
 - check hospital resources and evidence;
@@ -232,12 +232,12 @@ file before editing.
 - [x] Fahan: preserve and hospitalize `SEND_SLACK_ALERT` behind approved
       MuleSoft action execution, with real webhook support only through
       `SLACK_WEBHOOK_URL` and honest `MOCK_SENT` fallback.
-- [x] Hassan: implement `SEND_WHATSAPP_ALERT` behind approval and add voice
-      transcript flow that creates a governed recommendation request without
-      bypassing approval or making clinical decisions.
-- [x] Ranveer: preserve completed Agentforce reasoning work and generalize
-      inventory/waste logic into resource, capacity, stock, queue, and SLA
-      reasoning for hospital operations.
+- [ ] Hassan: finish the official Meta WhatsApp customer channel: same-language
+      receipts and approved replies, voice-note evidence, image/document
+      evidence, and no clinical or protected action bypass.
+- [ ] Ranveer: finish the internal execution proof: live Slack approval
+      rehearsal, command-center action/outcome trace, protected vendor-email
+      mock proof, and resource/capacity workflows that show depth.
 - [ ] Merge owner: keep branches aligned, review conflicts, protect `main`, and
       verify the demo still tells one North Star story.
 
@@ -367,8 +367,8 @@ file before editing.
       outbound channels execute approved `Action` records.
 - [x] Document WhatsApp as the preferred customer/patient complaint intake
       story.
-- [x] Document Meta Cloud API as the preferred WhatsApp provider when ready and
-      Twilio Sandbox as the backup provider.
+- [x] Document Meta WhatsApp Cloud API as the active WhatsApp provider for the
+      hackathon. Twilio Sandbox is legacy backup only.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as either urgent internal mobile alert or
       approved customer acknowledgement.
@@ -376,15 +376,16 @@ file before editing.
       not a current live email capability.
 - [x] Verify live outbound Slack delivery when `SLACK_WEBHOOK_URL` is
       configured.
-- [x] Verify live outbound WhatsApp delivery when Twilio Sandbox credentials are
-      configured.
-- [x] Implement or simulate a Twilio inbound WhatsApp webhook that maps customer
-      complaint text to `INGEST_EVENT`.
+- [x] Verify live outbound WhatsApp delivery when Meta WhatsApp Cloud API
+      credentials are configured.
+- [x] Implement or simulate a provider-neutral inbound WhatsApp webhook that
+      maps customer complaint text to `INGEST_EVENT`.
 - [x] Add Salesforce Apex REST intake endpoint
       `/services/apexrest/northstar/v1/twilio/whatsapp` so live MuleSoft
       intake can create a command-center case.
-- [x] Add deployable Mule app `mulesoft/north-star-twilio-webhook` for Twilio
-      Sandbox inbound WhatsApp to Salesforce intake.
+- [x] Add deployable Mule app `mulesoft/north-star-twilio-webhook` for official
+      Meta WhatsApp Cloud API intake. The app name is inherited from the first
+      Twilio bridge, but the active route accepts Meta payloads.
 - [x] Keep the existing Salesforce command center as the visibility, approval,
       and fallback surface instead of adding a new complaint form.
 - [x] Convert inbound complaint text into a synthetic customer alias, source
@@ -405,7 +406,7 @@ file before editing.
 - [x] Add signed Slack approval buttons in the mock runtime and harness.
 - [ ] Configure a public Slack App interactivity Request URL for live button
       clicks during final rehearsal.
-- [x] Package/deploy the Twilio webhook Mule app to CloudHub and verify the
+- [x] Package/deploy the WhatsApp webhook Mule app to CloudHub and verify the
       public endpoint creates Salesforce event, evidence, recommendation, and
       approval records.
 - [x] Verify the CloudHub WhatsApp endpoint also accepts Meta WhatsApp Cloud API
@@ -416,26 +417,35 @@ file before editing.
       `meta.whatsappPhoneNumberId`.
 - [x] Agentforce and docs define English, French, and Mauritian Creole as safe
       same-language reply targets for short operational responses.
-- [x] Extend the live Twilio inbound mapper to persist detected language and
+- [x] Extend the live WhatsApp inbound mapper to persist detected language and
       reply-language preference for English, French, and Mauritian Creole.
 - [x] Extend WhatsApp intake records for voice, image, and document media
       metadata without storing raw media URLs; transcript or extraction
       confidence remains pending evidence before protected action.
-- [ ] Point Twilio Sandbox "When a message comes in" to the public CloudHub
-      webhook URL in Twilio Console:
-      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
-- [ ] Point Meta WhatsApp Cloud API callback URL to the same public CloudHub
-      webhook URL in Meta App Dashboard. Use verify token
-      `north-star-meta-verify`.
-- [ ] Refresh the Meta WhatsApp access token or replace it with a permanent
-      system-user token before expecting visible WhatsApp replies; the current
-      local token returned Meta OAuth error `190`.
+- [x] Point Meta WhatsApp Cloud API callback URL to the public CloudHub webhook
+      URL in Meta App Dashboard and subscribe the `messages` webhook field. Use
+      verify token `north-star-meta-verify`.
+- [ ] Replace the short-lived Meta WhatsApp access token with a permanent
+      system-user token before final rehearsal.
 - [ ] Replace the temporary Salesforce session token in CloudHub with a
       Connected App/JWT path or refresh the secure property immediately before
       final rehearsal.
-- [ ] Re-test WhatsApp replies after the Twilio rolling 24-hour daily message
-      limit resets or after Twilio raises the account limit; latest live reply
-      was blocked by Twilio error `63038`, not by the North Star webhook.
+- [x] Stop using Twilio as the primary WhatsApp demo path; keep it only as
+      legacy backup/context because the Mule app and Apex route still have
+      inherited Twilio names.
+- [ ] Hassan: convert the visible Meta WhatsApp acknowledgement from a fixed
+      receipt into a short same-language response for English, French, and
+      Mauritian Creole.
+- [ ] Hassan: add Meta WhatsApp voice-note download/transcription evidence, or
+      mark the voice note as pending transcript with one short follow-up.
+- [ ] Hassan: add Meta WhatsApp image/document evidence extraction or
+      low-confidence follow-up handling.
+- [ ] Ranveer: rehearse live Slack approve/reject/modify buttons with a public
+      Slack App interactivity Request URL, or document the command-center
+      fallback used in the demo.
+- [ ] Ranveer: make the command center visibly show that one WhatsApp complaint
+      expanded into customer trust, resource/capacity, stock, billing,
+      communication, approval, action, and outcome work.
 - [ ] Add WhatsApp approval templates only if approved templates are available;
       otherwise keep WhatsApp as intake/outbound alert, not approval surface.
 - [x] Add a demo script beat: WhatsApp complaint enters MuleSoft intake,
@@ -524,7 +534,7 @@ notifies a manager.
 - [x] Demo shows partner or capacity response changing the recommendation.
 - [x] Demo shows manager approval before action execution.
 - [x] Demo shows Slack and WhatsApp-style internal alerts.
-- [x] Demo harness shows Twilio Sandbox complaint intake before Agentforce
+- [x] Demo harness shows WhatsApp complaint intake before Agentforce
       recommendation and Slack approval.
 - [x] Demo harness shows protected mock vendor email after approval.
 - [x] Demo shows clinical-decision refusal.
@@ -585,9 +595,10 @@ artifacts/demo-harness-result-current.json` successfully. The connected run
   in `docs/agentforce-publish-recovery.md`.
 - Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` for outbound alerts
   and `SLACK_SIGNING_SECRET` plus a public Slack App interactivity URL for live
-  approve/reject buttons. WhatsApp uses Twilio Sandbox credentials only for the
-  hackathon demo. Missing credentials are acceptable only when the presenter
-  clearly says the result is `MOCK_SENT` or a signed local harness proof.
+  approve/reject buttons. WhatsApp uses official Meta WhatsApp Cloud API for
+  the hackathon demo. Twilio Sandbox is legacy backup only. Missing credentials
+  are acceptable only when the presenter clearly says the result is `MOCK_SENT`
+  or a signed local harness proof.
 - Final rehearsal gate: the whole team must run the three-minute pitch at least
   twice, use the timing table in `docs/north-star-demo-narrative.md`, confirm the
   backup recorded/mock path, and assign who speaks for Salesforce, Agentforce,

@@ -39,7 +39,7 @@ The ready state contains:
 
 North Star hospital ready state should additionally expose:
 
-- intake source, for example seeded fixture, Twilio WhatsApp inbound,
+- intake source, for example seeded fixture, Meta WhatsApp inbound,
   voice/manual transcript, command-center review note, or system event;
 - patient or visitor alias, never real patient data;
 - department and location context;

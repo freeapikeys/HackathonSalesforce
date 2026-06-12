@@ -11,7 +11,7 @@ batches, cruise cabins, and hospital beds.
 ## Three-Minute Judge Demo
 
 The demo opens with a morning operations surge at a private hospital. The
-signal can start from a Twilio Sandbox WhatsApp patient complaint or a system
+signal can start from an official Meta WhatsApp patient complaint or a system
 event. The Salesforce command center is the visibility, audit, and fallback
 approval surface. It shows rising patient
 complaints, blocked discharge rooms, a growing outpatient queue, pharmacy stock
@@ -129,7 +129,7 @@ The system boundary is the strongest part of the story:
 
 Show the exact flow the repo can run:
 
-1. start with one Twilio Sandbox WhatsApp/customer complaint or hospital
+1. start with one Meta WhatsApp/customer complaint or hospital
    operations surge event;
 2. show global primitive context and conflicting evidence;
 3. ask Agentforce for the action recommendation;
@@ -173,10 +173,11 @@ hospital demo:
 
 Be direct:
 
-- mocked in the hackathon: synthetic hospital data, local MuleSoft runtime,
-  provider channels when credentials are absent, real hospital systems, live
-  customer intake unless the public Twilio webhook is configured, and live email
-  unless an Anypoint or email provider is connected;
+- mocked or partial in the hackathon: synthetic hospital data, local MuleSoft
+  runtime, provider channels when credentials are absent, real hospital
+  systems, full WhatsApp agent chat, WhatsApp voice transcription, WhatsApp
+  document extraction, and live email unless an Anypoint or email provider is
+  connected;
 - production-shaped architecture: evidence records, approval gate, protected
   action execution, provider-neutral model gateway, Salesforce audit trail,
   clean-clone runbook, and deterministic refusal checks;

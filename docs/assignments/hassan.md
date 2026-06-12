@@ -1,12 +1,18 @@
-# Hassan Assignment: WhatsApp Integration And Voice Mode
+# Hassan Assignment: Meta WhatsApp Customer Channel And Voice Mode
 
 ## Goal
 
-Build the WhatsApp alert path and a realistic voice/transcript mode for North
-Star's private hospital operations demo. WhatsApp is a protected internal alert
-action. Voice mode is an operator input surface that turns a transcript into a
-governed recommendation request. Neither feature may bypass approval, evidence,
-MuleSoft action governance, or clinical-decision boundaries.
+Own the official Meta WhatsApp customer channel and the WhatsApp voice/media
+evidence path for North Star's private hospital operations demo. WhatsApp is
+the external customer intake surface; Slack is the internal staff and manager
+surface. Voice and media become governed evidence, not autonomous clinical or
+financial decisions.
+
+The current live Meta reply is only a short receipt acknowledgement. That is
+useful because it proves the webhook is alive, but it is not yet the full agent
+conversation. Your job is to make the customer-facing WhatsApp layer feel real
+without bypassing Salesforce evidence, Agentforce recommendation, business
+approval, MuleSoft action governance, or clinical-decision boundaries.
 
 ## What The Project Already Has
 
@@ -25,8 +31,8 @@ Start from the existing governed spine:
   current Lightning command center and fixtures.
 
 Do not build a separate WhatsApp product. Do not build a clinical voice
-assistant. Build a hackathon-realistic operations input and alert path that fits
-the existing MVP.
+assistant. Build a hackathon-realistic operations intake, acknowledgement,
+approved-reply, and voice/media evidence path that fits the existing MVP.
 
 ## Files To Inspect First
 
@@ -43,14 +49,33 @@ the existing MVP.
 - `force-app/main/default/lwc/hfsRelationshipCommandCenter/`
 - `intelligence/agentforce/fixtures/agentforce-scenarios-v1.json`
 
+## Current Reality
+
+- Meta WhatsApp Cloud API is the active hackathon provider.
+- Twilio Sandbox is legacy backup only.
+- CloudHub currently receives Meta payloads through an inherited route name:
+  `/twilio/whatsapp/inbound`.
+- A live customer message can create Salesforce intake evidence.
+- The visible WhatsApp reply is currently a simple receipt, not the full North
+  Star agent response.
+- Salesforce intake can store language hints for English, French, and
+  Mauritian Creole, but the live Meta receipt still needs same-language wording.
+- Voice, image, and document media can be represented as evidence metadata; live
+  Meta media download, transcription, OCR, and extraction are still remaining
+  work.
+
 ## WhatsApp Required Behavior
 
-WhatsApp must be modeled as the protected action type `SEND_WHATSAPP_ALERT`.
+Inbound WhatsApp must create `Signal` and `Evidence`.
+
+Outbound WhatsApp must be modeled as the protected action type
+`SEND_WHATSAPP_ALERT` when it sends a customer-safe reply, internal mobile
+alert, or approved follow-up.
 
 The action may execute only after a business manager approval exists. The
-hackathon demo should use Meta Cloud API when the app, phone number, token,
-test recipient, and webhook are ready. Keep Twilio Sandbox as backup. If no
-real provider is complete, label the result honestly.
+hackathon demo uses official Meta WhatsApp Cloud API. If the provider token,
+phone number, webhook subscription, or test recipient is incomplete, label the
+result honestly.
 
 The action request should preserve:
 
@@ -83,25 +108,34 @@ The action response should preserve:
 
 Use this rule:
 
-- Use Twilio Sandbox only when credentials are available.
+- Use Meta WhatsApp Cloud API for the demo provider.
+- Keep Twilio only as legacy backup/context, not as the main plan.
 - Keep all credentials in environment variables.
+- Replace short-lived test tokens with a permanent system-user token before the
+  final rehearsal.
 - Use aliases in fixtures, such as `role:bed-manager`, not real phone numbers.
 - If credentials are missing, return `MOCK_SENT`.
 - Never show `SENT` unless the provider actually accepted the message.
 - Never execute WhatsApp before approval.
 
-## Voice Mode Required Behavior
+## Voice And Media Required Behavior
 
-Voice mode should feel useful without pretending to be a clinical assistant.
+WhatsApp voice/media should feel useful without pretending to be a clinical
+assistant.
 
 Recommended MVP:
 
-1. Add a command-center voice panel or transcript input area.
-2. Support a manual transcript box first.
-3. Optionally use browser speech recognition when available.
-4. Convert the transcript into a structured hospital operations request.
-5. Send that request through the existing Agentforce/Salesforce context flow.
-6. Show the transcript, interpreted intent, refusal if needed, and resulting
+1. Detect Meta WhatsApp text, audio, image, and document message types.
+2. For text, create a safe `Signal` and `Evidence` record.
+3. For audio, download the media through Meta only at runtime, store safe
+   metadata, and create transcript evidence when transcription succeeds.
+4. If transcription confidence is low or unavailable, ask one short follow-up.
+5. For images and documents, store safe metadata and extraction confidence.
+6. Never commit raw media URLs, phone numbers, audio files, screenshots,
+   documents, or customer personal data.
+7. Convert transcript or extracted text into a structured operations request.
+8. Send that request through the existing Agentforce/Salesforce context flow.
+9. Show the transcript, interpreted intent, refusal if needed, and resulting
    recommendation.
 
 Example valid transcript:
@@ -158,6 +192,30 @@ Expected behavior:
       and clinical priority requests.
 - [x] Update fixtures for manual transcript, interpreted intent, clinical
       refusal, and resulting recommendation.
+- [ ] Update the live Meta acknowledgement so English complaints receive short
+      plain English receipts.
+- [ ] Update the live Meta acknowledgement so French complaints receive short
+      plain French receipts.
+- [ ] Update the live Meta acknowledgement so Mauritian Creole complaints
+      receive short plain Mauritian Creole receipts.
+- [ ] Make the receipt clear that North Star received the issue and a manager
+      will review it; do not promise the action is completed.
+- [ ] Add approved customer-facing WhatsApp reply execution after manager
+      approval. The reply must be privacy-safe and must not include diagnosis,
+      treatment, dosage, triage, refund approval, or legal/financial final
+      decisions.
+- [ ] Add Meta audio message handling: detect `audio`, retrieve media metadata,
+      avoid storing raw media in Git or Salesforce demo text fields, and create
+      pending transcript evidence when transcription is unavailable.
+- [ ] Add a transcription adapter path or stub that records transcript,
+      language, confidence, and evidence ID.
+- [ ] Add one short follow-up question when transcript confidence is low.
+- [ ] Add Meta image/document handling: detect `image` and `document`, record
+      safe metadata, create extraction evidence or pending extraction state,
+      and ask one short follow-up when extraction is low-confidence.
+- [ ] Add tests or harness proof for Meta text, French text, Mauritian Creole
+      text, audio pending transcript, audio transcript success, image/document
+      pending extraction, and no raw phone/media storage.
 
 ## Testing Checklist
 
@@ -176,10 +234,16 @@ Expected behavior:
 
 The WhatsApp and voice work is demo-ready when:
 
-- an approved WhatsApp alert returns `SENT` or `MOCK_SENT`;
+- a Meta WhatsApp customer text creates Salesforce signal/evidence;
+- the customer receives a short same-language receipt;
+- an approved WhatsApp alert or customer-safe response returns `SENT` or
+  `MOCK_SENT`;
 - an unapproved WhatsApp alert is denied;
 - the command center can show WhatsApp delivery status;
-- voice mode accepts a transcript or browser speech input;
+- WhatsApp voice mode creates transcript evidence or pending-transcript
+  evidence;
+- image/document messages create extraction evidence or pending-extraction
+  evidence;
 - the transcript produces an Agentforce recommendation request;
 - voice mode cannot bypass manager approval;
 - voice mode refuses clinical decisions and routes them to human review.
@@ -191,8 +255,9 @@ Use this when starting a fresh Codex task:
 ```text
 Read docs/assignments/hassan.md, docs/mulesoft-api-contract.md,
 docs/agentforce-action-contract.md, and docs/ui-state-contract.md. Implement
-the next smallest WhatsApp or voice-mode task for the private hospital
-operations demo. Preserve approval gating, honest mock fallback, and clinical
-decision refusal. Inspect existing files before editing, add tests, and run the
-focused checks.
+the next smallest official Meta WhatsApp task for North Star: same-language
+receipt, approved customer response, voice-note evidence, or image/document
+evidence. Preserve approval gating, honest mock fallback, no raw personal/media
+storage, and clinical decision refusal. Inspect existing files before editing,
+add tests, and run the focused checks.
 ```
