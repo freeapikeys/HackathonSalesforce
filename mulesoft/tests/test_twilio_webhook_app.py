@@ -23,8 +23,12 @@ class TwilioWebhookAppTest(unittest.TestCase):
         self.assertIn('allowedMethods="POST"', config)
         self.assertIn('/services/apexrest/northstar/v1/twilio/whatsapp', config)
         self.assertIn('Twilio Sandbox WhatsApp', config)
-        self.assertIn('variableName="responseFormat" value="twiml"', config)
+        self.assertIn("contains 'json'", config)
         self.assertIn('Thanks. North Star received this.', config)
+        self.assertIn(
+            "Submitting Meta WhatsApp acknowledgement to Graph API",
+            config,
+        )
 
     def test_mule_app_exposes_meta_intake_and_webhook_verification(self) -> None:
         config = (

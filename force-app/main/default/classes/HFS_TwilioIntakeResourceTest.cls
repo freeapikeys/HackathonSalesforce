@@ -68,6 +68,54 @@ private class HFS_TwilioIntakeResourceTest {
   }
 
   @IsTest
+  static void preservesMetaWhatsAppSourceChannel() {
+    System.runAs(createUser('metawp', 'HFS_Integration_User')) {
+      Map<String, Object> requestBody = basePayload();
+      requestBody.put('messageSid', 'wamid.meta-test-001');
+      requestBody.put('sourceChannel', 'Meta WhatsApp Cloud API');
+      requestBody.put(
+        'messageSummary',
+        'A WhatsApp Cloud API message was received.'
+      );
+      requestBody.put('rawBody', 'Hi, I have a billing problem.');
+      requestBody.put('from', '23057175190');
+
+      HFS_TwilioIntakeResource.IntakeResponse response = post(requestBody);
+
+      System.assertEquals(
+        true,
+        response.success,
+        JSON.serialize(response.error)
+      );
+
+      HFS_Event__c eventRecord = [
+        SELECT Source_URI__c, Payload_JSON__c
+        FROM HFS_Event__c
+        WHERE Id = :response.eventId
+        LIMIT 1
+      ];
+      System.assertEquals(
+        'urn:north-star:meta:whatsapp:cloud-api',
+        eventRecord.Source_URI__c
+      );
+      System.assert(
+        eventRecord.Payload_JSON__c.contains(
+          '"sourceChannel":"Meta WhatsApp Cloud API"'
+        )
+      );
+      System.assert(!eventRecord.Payload_JSON__c.contains('23057175190'));
+
+      HFS_Recommendation__c recommendation = [
+        SELECT Rationale__c
+        FROM HFS_Recommendation__c
+        WHERE Id = :response.recommendationId
+        LIMIT 1
+      ];
+      System.assert(!recommendation.Rationale__c.contains('Twilio Sandbox'));
+    }
+  }
+
+  @IsTest
   static void preservesSafeLanguageHintForCreoleIntake() {
     System.runAs(createUser('twiliom', 'HFS_Integration_User')) {
       Map<String, Object> requestBody = basePayload();

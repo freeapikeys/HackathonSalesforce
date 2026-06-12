@@ -2,7 +2,7 @@
 global with sharing class HFS_TwilioIntakeResource {
   private static final String DEFAULT_TENANT = 'demo-mauritius';
   private static final String DEFAULT_PURPOSE = 'RESOLVE_HOSPITAL_OPERATION_RISK';
-  private static final String SOURCE_CHANNEL = 'Twilio Sandbox WhatsApp';
+  private static final String DEFAULT_SOURCE_CHANNEL = 'Twilio Sandbox WhatsApp';
 
   global class IntakeResponse {
     public Boolean success;
@@ -61,6 +61,8 @@ global with sharing class HFS_TwilioIntakeResource {
       String languageCode = detectedLanguage(payload, rawBody + ' ' + summary);
       String replyLanguage = languageName(languageCode);
       Map<String, Object> mediaInfo = mediaInfo(payload);
+      String sourceChannel = sourceChannel(payload);
+      String sourceUri = sourceUri(sourceChannel);
 
       String correlationId = text(
         payload,
@@ -115,7 +117,7 @@ global with sharing class HFS_TwilioIntakeResource {
       Datetime observedAt = System.now();
 
       Map<String, Object> safePayload = new Map<String, Object>{
-        'sourceChannel' => SOURCE_CHANNEL,
+        'sourceChannel' => sourceChannel,
         'messageSid' => sourceRecordId,
         'customerAlias' => aliasKey,
         'fromHash' => fromHash,
@@ -160,7 +162,7 @@ global with sharing class HFS_TwilioIntakeResource {
       HFS_Event__c eventRecord = new HFS_Event__c(
         Event_Id__c = pseudoUuid('event:' + tenantKey + ':' + sourceRecordId),
         Tenant_Key__c = tenantKey,
-        Source_URI__c = 'urn:north-star:twilio:whatsapp:sandbox',
+        Source_URI__c = sourceUri,
         Source_Record_Id__c = sourceRecordId,
         Event_Type__c = clinicalRequest
           ? 'WHATSAPP_CLINICAL_REQUEST_ROUTED'
@@ -171,7 +173,7 @@ global with sharing class HFS_TwilioIntakeResource {
         Occurred_At__c = observedAt,
         Observed_At__c = observedAt,
         Source_Sequence__c = 1,
-        Idempotency_Key__c = 'twilio-whatsapp-' + sourceRecordId,
+        Idempotency_Key__c = 'whatsapp-intake-' + sourceRecordId,
         Correlation_Id__c = correlationId,
         Schema_Version__c = HFS_ServiceContract.VERSION,
         Content_Hash__c = safeHash,
@@ -185,7 +187,8 @@ global with sharing class HFS_TwilioIntakeResource {
         aliasKey,
         eventRecord.Id,
         observedAt,
-        fromHash
+        fromHash,
+        sourceChannel
       );
 
       insert new HFS_Event_Participant__c(
@@ -229,7 +232,7 @@ global with sharing class HFS_TwilioIntakeResource {
           mediaInfo
         ),
         Content_Hash__c = safeHash,
-        Source_URI__c = 'urn:north-star:twilio:whatsapp:sandbox',
+        Source_URI__c = sourceUri,
         Captured_At__c = observedAt
       );
       insert evidence;
@@ -394,7 +397,8 @@ global with sharing class HFS_TwilioIntakeResource {
     String aliasKey,
     Id sourceEventId,
     Datetime observedAt,
-    String fromHash
+    String fromHash,
+    String sourceChannel
   ) {
     List<HFS_Entity__c> aliases = [
       SELECT Id
@@ -416,7 +420,7 @@ global with sharing class HFS_TwilioIntakeResource {
       Attributes_JSON__c = JSON.serialize(
         new Map<String, Object>{
           'primitive' => 'Customer',
-          'sourceChannel' => SOURCE_CHANNEL,
+          'sourceChannel' => sourceChannel,
           'fromHash' => fromHash,
           'rawPhoneStored' => false
         }
@@ -498,7 +502,7 @@ global with sharing class HFS_TwilioIntakeResource {
     if (clinicalRequest) {
       return 'Facts: a WhatsApp message asks for a clinical decision or may contain clinical urgency. Inference: North Star must not decide diagnosis, treatment, dosage, triage, or clinical priority. Recommended next step: route to a clinician or duty manager and keep the operations audit trail.';
     }
-    return 'Facts: a WhatsApp complaint was received through Twilio Sandbox and mapped to safe evidence. Categories: ' +
+    return 'Facts: a WhatsApp complaint was received and mapped to safe evidence. Categories: ' +
       String.join(categories, ', ') +
       '. Root-cause hypotheses: ' +
       String.join(hypotheses, '; ') +
@@ -900,6 +904,29 @@ global with sharing class HFS_TwilioIntakeResource {
     return 'Open North Star Command Center with tenantKey=demo-mauritius, purpose=RESOLVE_HOSPITAL_OPERATION_RISK, workItemId=' +
       String.valueOf(workItemId) +
       ', mockMode=false.';
+  }
+
+  private static String sourceChannel(Map<String, Object> payload) {
+    String value = firstText(
+      payload,
+      new List<String>{ 'sourceChannel', 'channelProvider', 'provider' },
+      DEFAULT_SOURCE_CHANNEL
+    );
+    if (String.isBlank(value)) {
+      return DEFAULT_SOURCE_CHANNEL;
+    }
+    return clean(value, 120);
+  }
+
+  private static String sourceUri(String sourceChannel) {
+    String normalized = String.valueOf(sourceChannel).toLowerCase();
+    if (normalized.contains('meta')) {
+      return 'urn:north-star:meta:whatsapp:cloud-api';
+    }
+    if (normalized.contains('twilio')) {
+      return 'urn:north-star:twilio:whatsapp:sandbox';
+    }
+    return 'urn:north-star:whatsapp:intake';
   }
 
   private static String text(

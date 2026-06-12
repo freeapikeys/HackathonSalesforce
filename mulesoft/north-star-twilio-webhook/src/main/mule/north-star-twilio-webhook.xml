@@ -107,7 +107,10 @@
                 }]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <set-variable variableName="responseFormat" value="twiml" />
+        <set-variable
+      variableName="responseFormat"
+      value="#[if (((attributes.headers.'content-type' default '') as String) contains 'json') 'json' else 'twiml']"
+    />
         <flow-ref name="process-whatsapp-inbound" />
     </flow>
 
@@ -241,6 +244,10 @@ output application/json
 }]]></ee:set-payload>
                         </ee:message>
                     </ee:transform>
+                    <logger
+            level="INFO"
+            message="Submitting Meta WhatsApp acknowledgement to Graph API"
+          />
                     <http:request
             method="POST"
             config-ref="metaGraphRequest"
@@ -252,6 +259,11 @@ output application/json
                             'Content-Type': 'application/json'
                         }]]]></http:headers>
                     </http:request>
+                    <set-variable variableName="metaReplyStatus" value="SENT" />
+                    <logger
+            level="INFO"
+            message="Meta WhatsApp acknowledgement submitted"
+          />
                     <error-handler>
                         <on-error-continue
               enableNotifications="true"
