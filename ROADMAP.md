@@ -411,6 +411,9 @@ file before editing.
 - [x] Verify the CloudHub WhatsApp endpoint also accepts Meta WhatsApp Cloud API
       JSON, returns Meta webhook challenge text for a valid verify token, and
       creates Salesforce intake records.
+- [x] Add Meta Cloud API outbound acknowledgement path after Salesforce intake,
+      gated by CloudHub secure `meta.whatsappAccessToken` and
+      `meta.whatsappPhoneNumberId`.
 - [x] Agentforce and docs define English, French, and Mauritian Creole as safe
       same-language reply targets for short operational responses.
 - [x] Extend the live Twilio inbound mapper to persist detected language and
@@ -424,6 +427,9 @@ file before editing.
 - [ ] Point Meta WhatsApp Cloud API callback URL to the same public CloudHub
       webhook URL in Meta App Dashboard. Use verify token
       `north-star-meta-verify`.
+- [ ] Refresh the Meta WhatsApp access token or replace it with a permanent
+      system-user token before expecting visible WhatsApp replies; the current
+      local token returned Meta OAuth error `190`.
 - [ ] Replace the temporary Salesforce session token in CloudHub with a
       Connected App/JWT path or refresh the secure property immediately before
       final rehearsal.

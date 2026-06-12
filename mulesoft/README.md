@@ -128,6 +128,14 @@ configured in Anypoint is `north-star-meta-verify`. A healthy Meta verification
 request returns HTTP `200` with the raw `hub.challenge` body; an incorrect token
 returns HTTP `403`.
 
+Meta does not display the webhook HTTP response in the WhatsApp chat. A visible
+customer acknowledgement requires an outbound Messages API call. The deployable
+webhook app sends the neutral acknowledgement only when CloudHub has valid
+`meta.whatsappPhoneNumberId` and secure `meta.whatsappAccessToken` runtime
+properties. If the token expires, inbound evidence still stores safely in
+Salesforce, but the customer will not see a WhatsApp reply until the secure
+property is refreshed.
+
 Verify with:
 
 ```bash

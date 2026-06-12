@@ -42,6 +42,10 @@ class TwilioWebhookAppTest(unittest.TestCase):
         self.assertIn("meta.webhookVerifyToken", config)
         self.assertIn("Meta WhatsApp Cloud API", config)
         self.assertIn("contains 'json'", config)
+        self.assertIn("metaGraphRequest", config)
+        self.assertIn("meta.whatsappPhoneNumberId", config)
+        self.assertIn("meta.whatsappAccessToken", config)
+        self.assertIn("Thanks. North Star received this.", config)
         self.assertIn("status: \"received\"", config)
 
     def test_mule_app_does_not_commit_runtime_secrets(self) -> None:

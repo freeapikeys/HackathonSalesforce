@@ -85,6 +85,20 @@ Meta verification is healthy when a GET with `hub.mode=subscribe`, the matching
 `hub.verify_token`, and a `hub.challenge` returns HTTP `200` with the raw
 challenge body.
 
+Inbound webhook acknowledgements are not visible inside the WhatsApp chat. To
+send a visible customer acknowledgement, configure these CloudHub runtime
+properties outside Git:
+
+- `meta.whatsappPhoneNumberId`
+- secure `meta.whatsappAccessToken`
+
+When both are valid, Meta inbound messages receive this neutral acknowledgement
+after Salesforce intake succeeds:
+
+```text
+Thanks. North Star received this. A manager will review it.
+```
+
 Current deployed demo URL:
 
 ```text
