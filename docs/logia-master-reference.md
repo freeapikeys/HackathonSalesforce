@@ -195,12 +195,14 @@ Recommended hackathon stance:
   approve/reject/modify decisions, safe `/logia status <approval-id>` checks,
   and delivery/audit metadata in the local runtime.
 - Slack approve/reject buttons should be the manager approval story when the
-  Slack App interactivity Request URL is configured. Without a public URL, use
-  the signed harness proof and Salesforce command-center approval fallback.
-- Optional bot-token mode can later add live `chat.postMessage`,
-  `chat.update`, threaded replies, and ephemeral messages with
-  `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID`; do not claim those live features
-  unless the credentials are configured and tested.
+  Slack App interactivity Request URL is configured. The free CloudHub URL is:
+  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+- The `/logia` slash command Request URL is:
+  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+- Optional bot-token mode can add live `chat.postMessage`, `chat.update`,
+  threaded replies, and ephemeral messages with `SLACK_BOT_TOKEN` and
+  `SLACK_CHANNEL_ID`; do not claim message-update or thread features unless
+  those credentials are configured and tested.
 - WhatsApp outbound may be used for urgent internal mobile alerts or approved
   customer-safe replies in the demo.
 - Customer-facing WhatsApp replies should be approved, privacy-safe, and
@@ -382,8 +384,27 @@ $env:SLACK_CHANNEL_ID = [Environment]::GetEnvironmentVariable("SLACK_CHANNEL_ID"
 
 `SLACK_WEBHOOK_URL` is enough for approved outbound alerts.
 `SLACK_SIGNING_SECRET` is required for real approval buttons and `/logia`
-status commands. `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` are optional future
+status commands. `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` are optional
 enhancements for message updates, threads, and ephemeral replies.
+
+Bot-token mode also requires Slack channel access. If `chat.postMessage` returns
+`channel_not_found`, invite the app/bot to the channel or reinstall the app with
+the required channel scopes. The incoming webhook path is the simpler live demo
+path and has already proven outbound delivery.
+
+Slack app URLs to paste:
+
+```text
+Interactivity & Shortcuts Request URL:
+https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+
+Slash command /logia Request URL:
+https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+```
+
+This is the free route: it uses the deployed CloudHub Mule app. Do not use
+Slack Lists for hackathon task tracking; keep tasks and approvals in
+Salesforce.
 
 WhatsApp through Meta Cloud API:
 
@@ -541,8 +562,8 @@ Highest-value tasks still open:
 6. Hassan should build judge-sector WhatsApp/chat use cases for hospital,
    hotel, airport, and banking using the same global primitives.
 7. Configure Slack App Interactivity with a public Request URL if the live demo
-   should use real Slack button clicks; otherwise use the signed harness proof
-   and Salesforce command-center approval fallback.
+   should use real Slack button clicks:
+   `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
 8. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
 9. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for

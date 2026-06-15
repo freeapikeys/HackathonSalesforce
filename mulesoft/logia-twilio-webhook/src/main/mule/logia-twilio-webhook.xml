@@ -134,6 +134,121 @@
         <flow-ref name="process-whatsapp-inbound" />
     </flow>
 
+    <flow name="slack-interactions">
+        <http:listener
+      config-ref="logiaListener"
+      path="/slack/interactions"
+      allowedMethods="POST"
+    >
+            <http:response statusCode="200">
+                <http:headers
+        ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="200">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers
+        ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="Acknowledge Slack interaction">
+            <ee:message>
+                <ee:set-payload
+        ><![CDATA[%dw 2.0
+output application/json
+var rawInteraction = (payload.payload default "{}") as String
+var interaction = read(rawInteraction, "application/json")
+var action = interaction.actions[0] default {}
+var actionId = lower((action.action_id default "") as String)
+var valueText = (action.value default "") as String
+var value = if (valueText startsWith "{") read(valueText, "application/json") else {}
+var approvalId = (value.approvalId default valueText default "selected approval") as String
+var decision =
+    if (actionId contains "approve") "approval"
+    else if (actionId contains "reject") "rejection"
+    else "change request"
+---
+{
+    response_type: "ephemeral",
+    replace_original: false,
+    text:
+        if (actionId contains "modify")
+            "Logia noted the change request for `" ++ approvalId ++ "`. Open the Salesforce command center to adjust the recommendation safely."
+        else
+            "Logia received the " ++ decision ++ " for `" ++ approvalId ++ "`. Salesforce remains the system of record for the governed action."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <error-handler>
+            <on-error-continue enableNotifications="true" logException="true">
+                <ee:transform doc:name="Return safe Slack interaction fallback">
+                    <ee:message>
+                        <ee:set-payload
+            ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    response_type: "ephemeral",
+    replace_original: false,
+    text: "Logia received the Slack action. Open the Salesforce command center if the approval status does not update."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="slack-commands">
+        <http:listener
+      config-ref="logiaListener"
+      path="/slack/commands"
+      allowedMethods="POST"
+    >
+            <http:response statusCode="200">
+                <http:headers
+        ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="200">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers
+        ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <ee:transform doc:name="Return Slack command help">
+            <ee:message>
+                <ee:set-payload
+        ><![CDATA[%dw 2.0
+output application/json
+var text = trim((payload.text default "") as String)
+var normalized = lower(text)
+---
+{
+    response_type: "ephemeral",
+    text:
+        if (normalized startsWith "status")
+            "Logia status request received. Check the Salesforce command center for facts, approval state, actions, and outcomes."
+        else
+            "Try `/logia status <approval-id>`. Logia keeps tasks and approvals in Salesforce, while Slack is for safe coordination."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <error-handler>
+            <on-error-continue enableNotifications="true" logException="true">
+                <ee:transform doc:name="Return safe Slack command fallback">
+                    <ee:message>
+                        <ee:set-payload
+            ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    response_type: "ephemeral",
+    text: "Logia received the command. Check Salesforce for the governed approval and action trace."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
     <flow name="verify-meta-webhook">
         <choice doc:name="Verify Meta webhook token">
             <when

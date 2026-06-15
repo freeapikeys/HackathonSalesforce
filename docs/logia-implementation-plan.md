@@ -194,6 +194,10 @@ Slack approval:
 - use `SLACK_WEBHOOK_URL` for outbound internal alerts;
 - use `SLACK_SIGNING_SECRET` and Slack App Interactivity for true approve/reject
   buttons;
+- use the free CloudHub Interactivity & Shortcuts Request URL:
+  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`;
+- use the free CloudHub slash-command Request URL for `/logia`:
+  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`;
 - the local mock runtime and harness validate Slack signatures and keep
   protected actions blocked until a signed approve decision is processed;
 - add `/logia status <approval-id>` as a signed slash-command status check for
@@ -202,7 +206,7 @@ Slack approval:
   signed interactivity, approve/reject/modify, and thread-ready metadata;
 - Salesforce command-center approval remains the fallback when no public Slack
   Request URL is available;
-- `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` are optional future enhancers for
+- `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` are optional enhancers for
   live message updates, threads, and ephemeral replies. Do not claim those are
   live unless configured and tested.
 
@@ -430,8 +434,12 @@ Focused checks:
       signature tests.
 - [x] Add harness proof that pending approval blocks execution until Slack
       approve is processed.
-- [ ] Configure Slack App Interactivity Request URL for final live button
-      rehearsal.
+- [x] Define the free Slack App Interactivity Request URL:
+      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+- [x] Define the free `/logia` slash-command Request URL:
+      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+- [ ] Rehearse live Slack button clicks after the CloudHub app is redeployed
+      with the `/slack/interactions` route.
 
 ### Salesforce Core And Agentforce Recommendation
 

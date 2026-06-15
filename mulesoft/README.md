@@ -172,6 +172,28 @@ decision is accepted. The Modify button returns an ephemeral instruction to
 revise the recommendation in Salesforce because Salesforce currently supports
 only `APPROVED` and `REJECTED` approval decisions.
 
+For the free CloudHub route, use the same deployed Mule app. No paid Slack plan,
+Slack Lists, ngrok, or tunnel is required after the app is deployed.
+
+Slack App **Interactivity & Shortcuts** Request URL:
+
+```text
+https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+```
+
+Slack slash command Request URL for `/logia`:
+
+```text
+https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+```
+
+The CloudHub Slack endpoints return fast, privacy-safe ephemeral acknowledgements
+so Slack button clicks and commands do not time out. The governed Salesforce
+approval record remains the system of record for action execution. The signed
+local runtime is still the strongest proof of approval semantics until the
+CloudHub flow is extended to preserve Slack's exact raw form body and write the
+decision back to Salesforce.
+
 The runtime now records `slackFeatures` in delivery evidence, for example
 `incoming_webhook`, `mock_delivery`, `block_kit_approval`,
 `signed_interactivity`, `approve_reject_modify`, and `thread_ready`. These are
@@ -189,6 +211,9 @@ configuration, never in Git. Optional future bot-token mode can use
 `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` for `chat.postMessage`,
 `chat.update`, threaded replies, and ephemeral status messages; until those are
 configured, the webhook plus signed local harness remains the safe demo path.
+If bot-token `chat.postMessage` returns `channel_not_found`, invite the app to
+the target channel or reinstall it with the required channel scopes. The
+incoming webhook path is still the simplest live Slack delivery path.
 
 ## WhatsApp Alert Path
 

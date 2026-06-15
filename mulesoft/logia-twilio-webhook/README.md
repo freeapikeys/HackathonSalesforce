@@ -1,7 +1,8 @@
-# Logia WhatsApp Webhook Mule App
+# Logia Channel Webhook Mule App
 
-This Mule app is the public WhatsApp intake door for the hackathon demo. It
-supports both Twilio Sandbox and Meta WhatsApp Cloud API webhook shapes.
+This Mule app is the public channel door for the hackathon demo. It supports
+Twilio Sandbox and Meta WhatsApp Cloud API webhook shapes, plus Slack
+interactivity and slash-command acknowledgements.
 
 Twilio flow:
 
@@ -46,6 +47,11 @@ No secrets belong in this folder. Override these properties at runtime:
 - `logia.tenant`
 - `logia.purpose`
 - `meta.webhookVerifyToken`
+- `meta.whatsappPhoneNumberId`
+- secure `meta.whatsappAccessToken`
+- secure `slack.signingSecret`
+- secure `slack.botToken`, optional
+- `slack.channelId`, optional
 
 For the hackathon, Meta Cloud API is preferred when the app, test recipient,
 phone number ID, access token, and webhook are ready. Keep Twilio Sandbox as a
@@ -104,3 +110,26 @@ Current deployed demo URL:
 ```text
 https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
+
+## Slack Interactivity
+
+Use the same free CloudHub app for Slack. No paid Slack plan, Slack Lists,
+ngrok, or tunnel is needed after this Mule app is deployed.
+
+In the Slack app, set **Interactivity & Shortcuts** to this Request URL:
+
+```text
+https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+```
+
+For the `/logia` slash command, set the command Request URL to:
+
+```text
+https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+```
+
+The endpoints return fast ephemeral Slack acknowledgements. This prevents
+Slack timeouts and keeps the live demo free. The Salesforce command center
+remains the system of record for approval state, action execution, and outcome
+tracking until the CloudHub flow is extended to write signed approval decisions
+back to Salesforce.
