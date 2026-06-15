@@ -194,10 +194,13 @@ Slack approval:
 - use `SLACK_WEBHOOK_URL` for outbound internal alerts;
 - use `SLACK_SIGNING_SECRET` and Slack App Interactivity for true approve/reject
   buttons;
-- use the free CloudHub Interactivity & Shortcuts Request URL:
-  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`;
-- use the free CloudHub slash-command Request URL for `/logia`:
-  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`;
+- use the verified free CloudHub Request URL for both Slack Interactivity and
+  the `/logia` slash command:
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`;
+- keep the friendly `/slack/interactions` and `/slack/commands` Mule listeners
+  in source for routing targets that preserve public paths, but do not paste
+  them into Slack for the current shared CloudHub target because live HTTP tests
+  returned `404` there;
 - the local mock runtime and harness validate Slack signatures and keep
   protected actions blocked until a signed approve decision is processed;
 - add `/logia status <approval-id>` as a signed slash-command status check for
@@ -283,7 +286,7 @@ Implemented bridge:
 - Current deployed CloudHub webhook:
   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 - Use the same URL as the Meta WhatsApp Cloud API callback URL with verify token
-  `logia-meta-verify`.
+  `north-star-meta-verify`.
 - Public hosting requires packaging/deploying the Mule app to CloudHub and
   setting the active WhatsApp provider inbound Request URL to the public webhook
   URL.
@@ -434,12 +437,11 @@ Focused checks:
       signature tests.
 - [x] Add harness proof that pending approval blocks execution until Slack
       approve is processed.
-- [x] Define the free Slack App Interactivity Request URL:
-      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
-- [x] Define the free `/logia` slash-command Request URL:
-      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
-- [ ] Rehearse live Slack button clicks after the CloudHub app is redeployed
-      with the `/slack/interactions` route.
+- [x] Define the verified free Slack App Interactivity Request URL and `/logia`
+      slash-command Request URL:
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+- [x] Rehearse CloudHub Slack command and button payload acknowledgements
+      through the active rewritten ingress route.
 
 ### Salesforce Core And Agentforce Recommendation
 

@@ -592,11 +592,9 @@ file before editing.
       thread-ready status.
 - [x] Add signed `/logia status <approval-id>` slash-command handling in the
       MuleSoft mock runtime for safe internal approval/action status checks.
-- [x] Define the public free CloudHub Slack App Interactivity Request URL for
-      live button clicks:
-      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
-- [x] Define the public free CloudHub `/logia` slash-command Request URL:
-      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+- [x] Define the verified public free CloudHub Slack App Interactivity Request
+      URL and `/logia` slash-command Request URL:
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 - [x] Store optional `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` outside Git for
       live `chat.postMessage`, `chat.update`, threaded replies, or ephemeral
       Slack messages beyond the webhook/harness proof.
@@ -604,8 +602,8 @@ file before editing.
       channel or reinstall the app with the required channel scopes. Current
       live smoke test confirms webhook delivery; bot-token posting is blocked
       by Slack channel scope/membership.
-- [ ] Rehearse live Slack button clicks after the updated CloudHub Mule app is
-      redeployed with the `/slack/interactions` route.
+- [x] Rehearse CloudHub Slack command and button payload acknowledgements
+      through the active rewritten ingress route.
 - [x] Package/deploy the WhatsApp webhook Mule app to CloudHub and verify the
       public endpoint creates Salesforce event, evidence, recommendation, and
       approval records.
@@ -624,7 +622,7 @@ file before editing.
       confidence remains pending evidence before protected action.
 - [x] Point Meta WhatsApp Cloud API callback URL to the public CloudHub webhook
       URL in Meta App Dashboard and subscribe the `messages` webhook field. Use
-      verify token `logia-meta-verify`.
+      verify token `north-star-meta-verify`.
 - [ ] Replace the short-lived Meta WhatsApp access token with a permanent
       system-user token before final rehearsal.
 - [ ] Replace the temporary Salesforce session token in CloudHub with a

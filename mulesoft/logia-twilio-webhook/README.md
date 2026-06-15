@@ -63,6 +63,19 @@ Package locally:
 mvn -f mulesoft/logia-twilio-webhook/pom.xml clean package
 ```
 
+Windows Maven note:
+
+- Maven was installed for this workstation at
+  `C:\Users\fkaud\Tools\apache-maven-3.9.16`.
+- `MAVEN_HOME` points to that folder and the Maven `bin` folder was added to
+  the Windows user `PATH`.
+- If a fresh terminal still says `mvn` is missing, run:
+
+```powershell
+$env:Path = "$([Environment]::GetEnvironmentVariable('MAVEN_HOME','User'))\bin;$env:Path"
+mvn -version
+```
+
 Deploy the packaged app with Anypoint CLI or Anypoint Runtime Manager. Use
 Anypoint secure properties for the Salesforce access token.
 
@@ -84,7 +97,7 @@ For Meta, set the WhatsApp webhook callback URL to the active endpoint above and
 use this verify token value from Anypoint runtime properties:
 
 ```text
-logia-meta-verify
+north-star-meta-verify
 ```
 
 Meta verification is healthy when a GET with `hub.mode=subscribe`, the matching
@@ -116,17 +129,24 @@ https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twili
 Use the same free CloudHub app for Slack. No paid Slack plan, Slack Lists,
 ngrok, or tunnel is needed after this Mule app is deployed.
 
-In the Slack app, set **Interactivity & Shortcuts** to this Request URL:
+The verified live Slack Request URL is the same active CloudHub ingress used by
+WhatsApp:
 
 ```text
-https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
-For the `/logia` slash command, set the command Request URL to:
+Use that URL in both places:
 
-```text
-https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
-```
+- Slack App **Interactivity & Shortcuts** Request URL.
+- `/logia` slash command Request URL.
+
+Why this is not the prettier `/slack/...` URL: CloudHub 2 on the current
+shared target exposes the friendly `/slack/interactions` and `/slack/commands`
+entries in Runtime Manager, but live HTTP tests still return `404` at the edge.
+The inherited `/twilio/whatsapp/inbound` public route has `pathRewrite: "/"`,
+and the Mule app routes Slack form payloads by payload shape at the internal
+root path. That route is the proven no-cost demo URL.
 
 The endpoints return fast ephemeral Slack acknowledgements. This prevents
 Slack timeouts and keeps the live demo free. The Salesforce command center

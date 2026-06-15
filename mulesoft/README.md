@@ -124,7 +124,7 @@ https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twili
 ```
 
 Use that same URL as the Meta WhatsApp Cloud API callback URL. The verify token
-configured in Anypoint is `logia-meta-verify`. A healthy Meta verification
+configured in Anypoint is `north-star-meta-verify`. A healthy Meta verification
 request returns HTTP `200` with the raw `hub.challenge` body; an incorrect token
 returns HTTP `403`.
 
@@ -178,16 +178,22 @@ Slack Lists, ngrok, or tunnel is required after the app is deployed.
 Slack App **Interactivity & Shortcuts** Request URL:
 
 ```text
-https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
 Slack slash command Request URL for `/logia`:
 
 ```text
-https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
-The CloudHub Slack endpoints return fast, privacy-safe ephemeral acknowledgements
+Use the same verified CloudHub ingress URL for both Slack settings. The Mule
+app also has friendly `/slack/interactions` and `/slack/commands` listeners, but
+the current shared CloudHub target rewrites public ingress paths to `/` and live
+tests return `404` on the friendly paths. The active inherited ingress route is
+therefore the reliable free demo URL for Slack.
+
+The CloudHub Slack route returns fast, privacy-safe ephemeral acknowledgements
 so Slack button clicks and commands do not time out. The governed Salesforce
 approval record remains the system of record for action execution. The signed
 local runtime is still the strongest proof of approval semantics until the

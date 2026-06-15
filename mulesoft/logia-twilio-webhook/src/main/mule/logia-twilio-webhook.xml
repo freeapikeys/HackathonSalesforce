@@ -80,7 +80,19 @@
       variableName="responseFormat"
       value="#[if (((attributes.headers.'content-type' default '') as String) contains 'json') 'json' else 'twiml']"
     />
-        <flow-ref name="process-whatsapp-inbound" />
+        <choice doc:name="Route rewritten root POST">
+            <when expression="#[not isEmpty(payload.payload default '')]">
+                <set-variable variableName="responseFormat" value="json" />
+                <flow-ref name="process-slack-interaction" />
+            </when>
+            <when expression="#[not isEmpty(payload.command default '')]">
+                <set-variable variableName="responseFormat" value="json" />
+                <flow-ref name="process-slack-command" />
+            </when>
+            <otherwise>
+                <flow-ref name="process-whatsapp-inbound" />
+            </otherwise>
+        </choice>
     </flow>
 
     <flow name="twilio-whatsapp-inbound">
@@ -150,34 +162,8 @@
         ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <ee:transform doc:name="Acknowledge Slack interaction">
-            <ee:message>
-                <ee:set-payload
-        ><![CDATA[%dw 2.0
-output application/json
-var rawInteraction = (payload.payload default "{}") as String
-var interaction = read(rawInteraction, "application/json")
-var action = interaction.actions[0] default {}
-var actionId = lower((action.action_id default "") as String)
-var valueText = (action.value default "") as String
-var value = if (valueText startsWith "{") read(valueText, "application/json") else {}
-var approvalId = (value.approvalId default valueText default "selected approval") as String
-var decision =
-    if (actionId contains "approve") "approval"
-    else if (actionId contains "reject") "rejection"
-    else "change request"
----
-{
-    response_type: "ephemeral",
-    replace_original: false,
-    text:
-        if (actionId contains "modify")
-            "Logia noted the change request for `" ++ approvalId ++ "`. Open the Salesforce command center to adjust the recommendation safely."
-        else
-            "Logia received the " ++ decision ++ " for `" ++ approvalId ++ "`. Salesforce remains the system of record for the governed action."
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+        <set-variable variableName="responseFormat" value="json" />
+        <flow-ref name="process-slack-interaction" />
         <error-handler>
             <on-error-continue enableNotifications="true" logException="true">
                 <ee:transform doc:name="Return safe Slack interaction fallback">
@@ -213,6 +199,58 @@ output application/json
         ><![CDATA[#[{'Content-Type': 'application/json'}]]]></http:headers>
             </http:error-response>
         </http:listener>
+        <set-variable variableName="responseFormat" value="json" />
+        <flow-ref name="process-slack-command" />
+        <error-handler>
+            <on-error-continue enableNotifications="true" logException="true">
+                <ee:transform doc:name="Return safe Slack command fallback">
+                    <ee:message>
+                        <ee:set-payload
+            ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    response_type: "ephemeral",
+    text: "Logia received the command. Check Salesforce for the governed approval and action trace."
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+            </on-error-continue>
+        </error-handler>
+    </flow>
+
+    <flow name="process-slack-interaction">
+        <ee:transform doc:name="Acknowledge Slack interaction">
+            <ee:message>
+                <ee:set-payload
+        ><![CDATA[%dw 2.0
+output application/json
+var rawInteraction = (payload.payload default "{}") as String
+var interaction = read(rawInteraction, "application/json")
+var action = interaction.actions[0] default {}
+var actionId = lower((action.action_id default "") as String)
+var valueText = (action.value default "") as String
+var value = if (valueText startsWith "{") read(valueText, "application/json") else {}
+var approvalId = (value.approvalId default valueText default "selected approval") as String
+var decision =
+    if (actionId contains "approve") "approval"
+    else if (actionId contains "reject") "rejection"
+    else "change request"
+---
+{
+    response_type: "ephemeral",
+    replace_original: false,
+    text:
+        if (actionId contains "modify")
+            "Logia noted the change request for `" ++ approvalId ++ "`. Open the Salesforce command center to adjust the recommendation safely."
+        else
+            "Logia received the " ++ decision ++ " for `" ++ approvalId ++ "`. Salesforce remains the system of record for the governed action."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+
+    <flow name="process-slack-command">
         <ee:transform doc:name="Return Slack command help">
             <ee:message>
                 <ee:set-payload
@@ -231,22 +269,6 @@ var normalized = lower(text)
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        <error-handler>
-            <on-error-continue enableNotifications="true" logException="true">
-                <ee:transform doc:name="Return safe Slack command fallback">
-                    <ee:message>
-                        <ee:set-payload
-            ><![CDATA[%dw 2.0
-output application/json
----
-{
-    response_type: "ephemeral",
-    text: "Logia received the command. Check Salesforce for the governed approval and action trace."
-}]]></ee:set-payload>
-                    </ee:message>
-                </ee:transform>
-            </on-error-continue>
-        </error-handler>
     </flow>
 
     <flow name="verify-meta-webhook">

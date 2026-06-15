@@ -195,10 +195,11 @@ Recommended hackathon stance:
   approve/reject/modify decisions, safe `/logia status <approval-id>` checks,
   and delivery/audit metadata in the local runtime.
 - Slack approve/reject buttons should be the manager approval story when the
-  Slack App interactivity Request URL is configured. The free CloudHub URL is:
-  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
-- The `/logia` slash command Request URL is:
-  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+  Slack App interactivity Request URL is configured. The verified free CloudHub
+  URL is:
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+- The `/logia` slash command uses the same verified CloudHub Request URL:
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 - Optional bot-token mode can add live `chat.postMessage`, `chat.update`,
   threaded replies, and ephemeral messages with `SLACK_BOT_TOKEN` and
   `SLACK_CHANNEL_ID`; do not claim message-update or thread features unless
@@ -396,10 +397,10 @@ Slack app URLs to paste:
 
 ```text
 Interactivity & Shortcuts Request URL:
-https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 
 Slash command /logia Request URL:
-https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
 This is the free route: it uses the deployed CloudHub Mule app. Do not use
@@ -561,9 +562,9 @@ Highest-value tasks still open:
    follow-up handling.
 6. Hassan should build judge-sector WhatsApp/chat use cases for hospital,
    hotel, airport, and banking using the same global primitives.
-7. Configure Slack App Interactivity with a public Request URL if the live demo
-   should use real Slack button clicks:
-   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+7. Configure Slack App Interactivity and the `/logia` slash command with the
+   verified public Request URL if the live demo should use real Slack clicks:
+   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 8. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
 9. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for
