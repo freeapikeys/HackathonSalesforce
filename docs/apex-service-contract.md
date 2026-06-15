@@ -15,7 +15,7 @@ and integration adapters. It covers:
 - pending action logging;
 - outcome capture and verified work closure.
 
-The service remains domain-neutral. North Star maps global primitives and the
+The service remains domain-neutral. Logia maps global primitives and the
 private hospital demo profile onto the same context, recommendation, approval,
 action, and outcome boundary.
 
@@ -59,7 +59,7 @@ authorization, replay, and error behavior.
   stamps verified closure with the outcome proof in one rollback-protected
   transaction.
 
-## North Star Hospital Mapping
+## Logia Hospital Mapping
 
 The Apex service should be able to represent:
 

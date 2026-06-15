@@ -1,11 +1,11 @@
 {
-  "profile": "north-star-private-hospital-operations",
+  "profile": "logia-private-hospital-operations",
   "businessDate": "2026-06-13",
   "timezone": "Indian/Mauritius",
   "organization": {
-    "organizationId": "HOSP-NORTH-STAR-PRIVATE",
+    "organizationId": "HOSP-LOGIA-PRIVATE",
     "globalPrimitive": "Entity",
-    "displayName": "North Star Private Hospital",
+    "displayName": "Logia Private Hospital",
     "country": "Mauritius",
     "dataMode": "synthetic_demo_only",
     "evidenceId": "evidence-organization-001"

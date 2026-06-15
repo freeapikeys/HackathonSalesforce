@@ -27,6 +27,6 @@ on-prem environments.
 - Air-gapped models require an asynchronous customer-controlled integration
   boundary rather than direct Salesforce inference.
 - Provider fallback never overrides security or residency policy.
-- North Star must request retail reasoning through logical profiles and accessible
+- Logia must request retail reasoning through logical profiles and accessible
   evidence. Agentforce, prompts, UI state, and workflow code must not hard-code
   a provider, model, or product-specific model name.

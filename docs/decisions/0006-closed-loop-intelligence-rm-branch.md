@@ -29,7 +29,7 @@ replace it.
 
 - New work on this branch starts from
   `docs/closed-loop-intelligence-rm.md`.
-- `docs/north-star-*.md` files are treated as retail demo assets unless a later
+- `docs/logia-*.md` files are treated as retail demo assets unless a later
   decision promotes them again.
 - Shared contracts must stay adaptable across customers, employees, suppliers,
   partners, subsidiaries, regulators, shareholders, and other business

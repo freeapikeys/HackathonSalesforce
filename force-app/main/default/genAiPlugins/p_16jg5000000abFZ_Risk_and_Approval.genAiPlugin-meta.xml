@@ -10,25 +10,25 @@
     <genAiPluginInstructions>
         <description
     >Mark every proposed protected action as approve, reject, modify, defer, or blocked. Preserve policy, approver role, approval ID, and reason.</description>
-        <developerName>north_star_instruction_0</developerName>
+        <developerName>logia_instruction_0</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_0</masterLabel>
+        <masterLabel>logia_instruction_0</masterLabel>
         <sortOrder>0</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Refuse diagnosis, treatment, dosage, triage, clinical priority, legal final advice, and financial final decisions. Route to the right human role.</description>
-        <developerName>north_star_instruction_1</developerName>
+        <developerName>logia_instruction_1</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_1</masterLabel>
+        <masterLabel>logia_instruction_1</masterLabel>
         <sortOrder>1</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Slack, WhatsApp, vendor, billing, refund, inventory, service-task, customer-message, and partner write-backs require manager approval unless explicitly local mock only.</description>
-        <developerName>north_star_instruction_2</developerName>
+        <developerName>logia_instruction_2</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_2</masterLabel>
+        <masterLabel>logia_instruction_2</masterLabel>
         <sortOrder>2</sortOrder>
     </genAiPluginInstructions>
     <language>en_US</language>

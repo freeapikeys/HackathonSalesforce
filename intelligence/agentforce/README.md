@@ -2,14 +2,14 @@
 
 Version `1.0.0` defines three Agentforce-facing actions:
 
-- explain an accessible North Star operations case;
+- explain an accessible Logia operations case;
 - draft an evidence-backed operations recommendation;
 - request a pending human approval.
 
-For North Star, these actions should be presented to Agentforce through the
+For Logia, these actions should be presented to Agentforce through the
 global operating model and the private hospital demo topics:
 
-- North Star Orchestration;
+- Logia Orchestration;
 - Evidence and Context;
 - Customer Trust;
 - Resource and Capacity;

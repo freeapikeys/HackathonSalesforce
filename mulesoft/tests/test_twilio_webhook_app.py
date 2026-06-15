@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-APP = ROOT / "mulesoft" / "north-star-twilio-webhook"
+APP = ROOT / "mulesoft" / "logia-twilio-webhook"
 
 
 class TwilioWebhookAppTest(unittest.TestCase):
@@ -15,16 +15,16 @@ class TwilioWebhookAppTest(unittest.TestCase):
             / "src"
             / "main"
             / "mule"
-            / "north-star-twilio-webhook.xml"
+            / "logia-twilio-webhook.xml"
         ).read_text()
 
         self.assertIn('path="/"', config)
         self.assertIn('path="/twilio/whatsapp/inbound"', config)
         self.assertIn('allowedMethods="POST"', config)
-        self.assertIn('/services/apexrest/northstar/v1/twilio/whatsapp', config)
+        self.assertIn('/services/apexrest/logia/v1/twilio/whatsapp', config)
         self.assertIn('Twilio Sandbox WhatsApp', config)
         self.assertIn("contains 'json'", config)
-        self.assertIn('Thanks. North Star received this.', config)
+        self.assertIn('Thanks. Logia received this.', config)
         self.assertIn(
             "Submitting Meta WhatsApp acknowledgement to Graph API",
             config,
@@ -36,7 +36,7 @@ class TwilioWebhookAppTest(unittest.TestCase):
             / "src"
             / "main"
             / "mule"
-            / "north-star-twilio-webhook.xml"
+            / "logia-twilio-webhook.xml"
         ).read_text()
 
         self.assertIn('path="/"', config)
@@ -49,7 +49,7 @@ class TwilioWebhookAppTest(unittest.TestCase):
         self.assertIn("metaGraphRequest", config)
         self.assertIn("meta.whatsappPhoneNumberId", config)
         self.assertIn("meta.whatsappAccessToken", config)
-        self.assertIn("Thanks. North Star received this.", config)
+        self.assertIn("Thanks. Logia received this.", config)
         self.assertIn("status: \"received\"", config)
 
     def test_mule_app_does_not_commit_runtime_secrets(self) -> None:

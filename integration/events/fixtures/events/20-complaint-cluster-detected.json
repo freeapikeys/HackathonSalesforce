@@ -10,7 +10,7 @@
   "hfstenantid": "demo-mauritius",
   "hfsschemaversion": "1.0.0",
   "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
-  "hfsidempotencykey": "north-star-complaint-cluster-v1",
+  "hfsidempotencykey": "logia-complaint-cluster-v1",
   "hfssourcerecordid": "retail-event-complaints-001",
   "hfssourcesequence": 6,
   "hfsobservedat": "2026-06-06T09:14:02Z",

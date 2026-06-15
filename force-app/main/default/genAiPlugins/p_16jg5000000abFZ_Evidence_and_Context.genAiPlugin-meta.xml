@@ -10,25 +10,25 @@
     <genAiPluginInstructions>
         <description
     >Map every issue to Signal, Evidence, Customer, Resource, Location, Partner, Process, Risk, Policy, Recommendation, Approval, Action, Outcome, and Metric where relevant.</description>
-        <developerName>north_star_instruction_0</developerName>
+        <developerName>logia_instruction_0</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_0</masterLabel>
+        <masterLabel>logia_instruction_0</masterLabel>
         <sortOrder>0</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Flag missing, conflicting, late, duplicate, low-confidence, or restricted evidence. Ask one short follow-up when evidence is too thin.</description>
-        <developerName>north_star_instruction_1</developerName>
+        <developerName>logia_instruction_1</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_1</masterLabel>
+        <masterLabel>logia_instruction_1</masterLabel>
         <sortOrder>1</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Keep raw personal data out of demo responses. Preserve source evidence IDs, confidence, and next evidence needed.</description>
-        <developerName>north_star_instruction_2</developerName>
+        <developerName>logia_instruction_2</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_2</masterLabel>
+        <masterLabel>logia_instruction_2</masterLabel>
         <sortOrder>2</sortOrder>
     </genAiPluginInstructions>
     <language>en_US</language>

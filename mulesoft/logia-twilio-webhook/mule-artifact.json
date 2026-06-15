@@ -1,0 +1,17 @@
+{
+  "name": "logia-twilio-webhook",
+  "minMuleVersion": "4.6.0",
+  "requiredProduct": "MULE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "exportedPackages": [],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  },
+  "configs": ["logia-twilio-webhook.xml"]
+}

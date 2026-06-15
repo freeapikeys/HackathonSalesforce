@@ -28,7 +28,7 @@ CORRELATION = "30000000-0000-4000-8000-000000000001"
 WORK_ITEM = "a0E000000000001AAA"
 HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
 HOSPITAL_MODEL_PROFILE = "hospital_action_reasoning"
-HOSPITAL_APPROVAL_POLICY = "north-star-hospital-manager-approval-v1"
+HOSPITAL_APPROVAL_POLICY = "logia-hospital-manager-approval-v1"
 
 
 def string(max_length: int = 200, pattern: str | None = None) -> dict[str, Any]:
@@ -1033,7 +1033,7 @@ def audit(
     human_approval_required: bool = False,
     *,
     purpose: str = HOSPITAL_PURPOSE,
-    agent_key: str = "north-star-orchestrator",
+    agent_key: str = "logia-orchestrator",
 ) -> dict[str, Any]:
     return {
         "actorUserId": "005000000000001AAA",
@@ -1243,7 +1243,7 @@ def fixtures() -> dict[str, Any]:
     explain_response["inferences"] = [
         {
             "inferenceId": "inference-action-plan",
-            "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
+            "statement": "Logia should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
                 "fact-inventory-cover",
                 "fact-complaint-cluster",
@@ -1262,7 +1262,7 @@ def fixtures() -> dict[str, Any]:
     recommendation_request["desiredOutcome"] = (
         "Avoid a weekend stockout, reduce waste, contain complaint risk, and keep checkout ready without executing unapproved actions."
     )
-    recommendation_request["modelProfile"] = "north-star-retail-recommendation"
+    recommendation_request["modelProfile"] = "logia-retail-recommendation"
     recommendation_response = response(
         "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
     )
@@ -1284,7 +1284,7 @@ def fixtures() -> dict[str, Any]:
             expiry["evidenceId"],
             promotion["evidenceId"],
         ],
-        "modelProfile": "north-star-retail-recommendation",
+        "modelProfile": "logia-retail-recommendation",
         "modelInvocationId": "model-invocation-agentforce-001",
         "requiresHumanApproval": True,
     }
@@ -1294,12 +1294,12 @@ def fixtures() -> dict[str, Any]:
 
     approval_request = base_request("REQUEST_HUMAN_APPROVAL")
     approval_request["recommendationId"] = "a07000000000001AAA"
-    approval_request["approvalPolicyKey"] = "north-star-manager-approval-v1"
+    approval_request["approvalPolicyKey"] = "logia-manager-approval-v1"
     approval_response = response("REQUEST_HUMAN_APPROVAL", "SUCCESS")
     approval_response["approval"] = {
         "approvalId": "a08000000000001AAA",
         "recommendationId": "a07000000000001AAA",
-        "policyKey": "north-star-manager-approval-v1",
+        "policyKey": "logia-manager-approval-v1",
         "status": "PENDING",
         "externalActionExecuted": False,
     }
@@ -1322,7 +1322,7 @@ def fixtures() -> dict[str, Any]:
     execution_response["audit"] = audit(None, True)
 
     model_request = base_request("DRAFT_RELATIONSHIP_RECOMMENDATION")
-    model_request["modelProfile"] = "north-star-retail-recommendation"
+    model_request["modelProfile"] = "logia-retail-recommendation"
     model_response = response(
         "DRAFT_RELATIONSHIP_RECOMMENDATION", "REFUSED"
     )
@@ -1346,7 +1346,7 @@ def fixtures() -> dict[str, Any]:
     changed_request["desiredOutcome"] = (
         "Update the plan after supplier response confirms replacement batch availability."
     )
-    changed_request["modelProfile"] = "north-star-retail-recommendation"
+    changed_request["modelProfile"] = "logia-retail-recommendation"
     changed_response = response("DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS")
     changed_response["citations"] = explain_response["citations"]
     changed_response["facts"] = explain_response["facts"]
@@ -1365,7 +1365,7 @@ def fixtures() -> dict[str, Any]:
         }
     ]
     changed_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_RETAIL_RECOVERY_PLAN_UPDATED",
+        "recommendationType": "LOGIA_RETAIL_RECOVERY_PLAN_UPDATED",
         "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
         "rationale": (
             "After supplier response, approve replacement batch request and warehouse transfer, quarantine only suspect batch A units, and avoid stopping all Island Proteins orders because evidence is batch-specific rather than supplier-wide."
@@ -1379,7 +1379,7 @@ def fixtures() -> dict[str, Any]:
             expiry["evidenceId"],
             promotion["evidenceId"],
         ],
-        "modelProfile": "north-star-retail-recommendation",
+        "modelProfile": "logia-retail-recommendation",
         "modelInvocationId": "model-invocation-agentforce-002",
         "requiresHumanApproval": True,
     }
@@ -1418,7 +1418,7 @@ def fixtures() -> dict[str, Any]:
         "Assess promotion readiness when stock pressure exists but expiry and supplier response evidence are incomplete."
     )
     missing_expiry_request["modelProfile"] = (
-        "north-star-retail-recommendation"
+        "logia-retail-recommendation"
     )
     missing_expiry_response = response(
         "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
@@ -1470,7 +1470,7 @@ def fixtures() -> dict[str, Any]:
         },
     ]
     missing_expiry_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+        "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
         "proposedActionType": "APPROVE_CAUTIONED_INVENTORY_ACTIONS",
         "rationale": (
             "Treat this as high stockout risk because promotion-adjusted cover is 1.56 days and lead-time demand exceeds available stock by 39 units. Do not place a blind supplier reorder while freshness complaints and supplier response are unresolved; request expiry evidence, transfer safe available stock if approved, and hold supplier escalation decisions until the response arrives."
@@ -1482,7 +1482,7 @@ def fixtures() -> dict[str, Any]:
             pending_complaint["evidenceId"],
             pending_supplier["evidenceId"],
         ],
-        "modelProfile": "north-star-retail-recommendation",
+        "modelProfile": "logia-retail-recommendation",
         "modelInvocationId": "model-invocation-agentforce-003",
         "requiresHumanApproval": True,
         "inventoryWasteReasoning": {
@@ -1567,7 +1567,7 @@ def fixtures() -> dict[str, Any]:
         "Assess stockout risk when supplier and complaint evidence are clean."
     )
     clean_stockout_request["modelProfile"] = (
-        "north-star-retail-recommendation"
+        "logia-retail-recommendation"
     )
     clean_stockout_response = response(
         "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
@@ -1613,7 +1613,7 @@ def fixtures() -> dict[str, Any]:
         },
     ]
     clean_stockout_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+        "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
         "proposedActionType": "APPROVE_STOCKOUT_RECOVERY_ACTIONS",
         "rationale": (
             "Treat this as critical stockout risk because promotion-adjusted cover is 0.59 days and lead-time demand exceeds available stock by 38 units. Clean supplier and complaint evidence support manager-approved reorder or transfer, with no supplier caution beyond normal approval."
@@ -1624,7 +1624,7 @@ def fixtures() -> dict[str, Any]:
             clean_stockout_supplier["evidenceId"],
             clean_stockout_complaints["evidenceId"],
         ],
-        "modelProfile": "north-star-retail-recommendation",
+        "modelProfile": "logia-retail-recommendation",
         "modelInvocationId": "model-invocation-agentforce-004",
         "requiresHumanApproval": True,
         "inventoryWasteReasoning": {
@@ -1684,7 +1684,7 @@ def fixtures() -> dict[str, Any]:
         "Assess near-expiry waste pressure and propose a safe markdown plan."
     )
     expiry_markdown_request["modelProfile"] = (
-        "north-star-retail-recommendation"
+        "logia-retail-recommendation"
     )
     expiry_markdown_response = response(
         "DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS"
@@ -1732,7 +1732,7 @@ def fixtures() -> dict[str, Any]:
         },
     ]
     expiry_markdown_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+        "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
         "proposedActionType": "APPROVE_MARKDOWN_AND_ROTATION_ACTIONS",
         "rationale": (
             "Treat this as high expiry and waste risk because the batch expires in 2 days and 18 units are unlikely to sell before expiry at current velocity. Recommend manager-approved rotation and markdown for safe units, while blocking unsupported disposal of all stock."
@@ -1743,7 +1743,7 @@ def fixtures() -> dict[str, Any]:
             expiry_markdown_batch["evidenceId"],
             expiry_markdown_complaints["evidenceId"],
         ],
-        "modelProfile": "north-star-retail-recommendation",
+        "modelProfile": "logia-retail-recommendation",
         "modelInvocationId": "model-invocation-agentforce-006",
         "requiresHumanApproval": True,
         "inventoryWasteReasoning": {
@@ -1806,7 +1806,7 @@ def fixtures() -> dict[str, Any]:
     overstock_request["desiredOutcome"] = (
         "Assess overstock risk for a household product and avoid unnecessary replenishment."
     )
-    overstock_request["modelProfile"] = "north-star-retail-recommendation"
+    overstock_request["modelProfile"] = "logia-retail-recommendation"
     overstock_response = response("DRAFT_RELATIONSHIP_RECOMMENDATION", "SUCCESS")
     overstock_response["citations"] = [
         overstock_inventory,
@@ -1849,7 +1849,7 @@ def fixtures() -> dict[str, Any]:
         },
     ]
     overstock_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+        "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
         "proposedActionType": "APPROVE_OVERSTOCK_REBALANCING_ACTIONS",
         "rationale": (
             "Treat this as overstock risk because days of cover is 70 days and shelf space is under pressure. Recommend manager-approved transfer to a lower-stock store or promotion adjustment, and block additional reorder until cover falls."
@@ -1860,7 +1860,7 @@ def fixtures() -> dict[str, Any]:
             overstock_space["evidenceId"],
             overstock_supplier["evidenceId"],
         ],
-        "modelProfile": "north-star-retail-recommendation",
+        "modelProfile": "logia-retail-recommendation",
         "modelInvocationId": "model-invocation-agentforce-005",
         "requiresHumanApproval": True,
         "inventoryWasteReasoning": {
@@ -1942,7 +1942,7 @@ def fixtures() -> dict[str, Any]:
     )
     hospital_clinical = citation(
         "a06000000000027AAA",
-        "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+        "A request asking which patient should receive treatment first is refused by Logia and routed to clinician review.",
         "hospital:clinical-boundary",
         "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
         "CLINICAL_DECISION_REFUSAL",
@@ -2052,7 +2052,7 @@ def fixtures() -> dict[str, Any]:
         },
     )
     hospital_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_HOSPITAL_ACTION_PLAN",
+        "recommendationType": "LOGIA_HOSPITAL_ACTION_PLAN",
         "proposedActionType": "APPROVE_HOSPITAL_ACTIONS",
         "rationale": (
             "Approve room-cleaning and porter tasks, pharmacy restock or "
@@ -2214,7 +2214,7 @@ def fixtures() -> dict[str, Any]:
                 {
                     "conflictId": "conflict-clinical-boundary",
                     "tension": "The fastest-sounding request asks which patient should receive treatment first.",
-                    "resolution": "Refuse clinical priority decisions and route them to clinicians while North Star continues non-clinical operations coordination.",
+                    "resolution": "Refuse clinical priority decisions and route them to clinicians while Logia continues non-clinical operations coordination.",
                     "winningPolicy": "Clinical safety boundary overrides operational optimization.",
                     "evidenceIds": [hospital_clinical["evidenceId"]],
                 },
@@ -2326,13 +2326,13 @@ def fixtures() -> dict[str, Any]:
             "blockedActions": [
                 {
                     "actionType": "CLINICAL_TRIAGE_DECISION",
-                    "reason": "North Star cannot decide diagnosis, treatment, dosage, triage, or clinical priority.",
+                    "reason": "Logia cannot decide diagnosis, treatment, dosage, triage, or clinical priority.",
                     "evidenceIds": [hospital_clinical["evidenceId"]],
                 }
             ],
             "partnerCaution": {
                 "applies": True,
-                "statement": "The lab partner delay changes the plan: North Star should escalate the SLA and request the second courier route only after approval.",
+                "statement": "The lab partner delay changes the plan: Logia should escalate the SLA and request the second courier route only after approval.",
                 "evidenceIds": [hospital_partner["evidenceId"]],
             },
             "clinicalBoundary": {
@@ -2368,7 +2368,7 @@ def fixtures() -> dict[str, Any]:
                     "approvalId": "a08000000000021AAA",
                     "actionId": "action-clinical-triage",
                     "approverRole": "Clinical Manager",
-                    "policyReason": "North Star must not approve diagnosis, treatment, dosage, triage, or clinical-priority decisions.",
+                    "policyReason": "Logia must not approve diagnosis, treatment, dosage, triage, or clinical-priority decisions.",
                     "evidenceIds": [hospital_clinical["evidenceId"]],
                 },
                 {
@@ -2493,7 +2493,7 @@ def fixtures() -> dict[str, Any]:
     missing_capacity_response["inferences"] = [
         {
             "inferenceId": "inference-missing-capacity-caution",
-            "statement": "North Star can identify customer trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
+            "statement": "Logia can identify customer trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
             "basisFactIds": [
                 "fact-missing-capacity-complaints",
                 "fact-missing-capacity-pharmacy",
@@ -2502,7 +2502,7 @@ def fixtures() -> dict[str, Any]:
         }
     ]
     missing_capacity_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_HOSPITAL_CAUTIONED_PLAN",
+        "recommendationType": "LOGIA_HOSPITAL_CAUTIONED_PLAN",
         "proposedActionType": "REQUEST_MISSING_CAPACITY_EVIDENCE",
         "rationale": (
             "Ask for current bed, room, queue, and staffing evidence before "
@@ -2561,7 +2561,7 @@ def fixtures() -> dict[str, Any]:
             "blockedActions": [
                 {
                     "actionType": "CLAIM_BED_RELEASE_IMPACT",
-                    "reason": "Current capacity evidence is missing, so North Star cannot quantify bed-release impact.",
+                    "reason": "Current capacity evidence is missing, so Logia cannot quantify bed-release impact.",
                     "evidenceIds": [hospital_complaint["evidenceId"]],
                 }
             ],
@@ -2614,16 +2614,16 @@ def fixtures() -> dict[str, Any]:
     clinical_refusal_response["inferences"] = [
         {
             "inferenceId": "inference-clinical-refusal",
-            "statement": "The request asks for clinical priority, so North Star must refuse the decision and route to clinician review.",
+            "statement": "The request asks for clinical priority, so Logia must refuse the decision and route to clinician review.",
             "basisFactIds": ["fact-clinical-refusal"],
             "confidence": 0.99,
         }
     ]
     clinical_refusal_response["recommendation"] = {
-        "recommendationType": "NORTH_STAR_CLINICAL_DECISION_REFUSAL",
+        "recommendationType": "LOGIA_CLINICAL_DECISION_REFUSAL",
         "proposedActionType": "ROUTE_TO_CLINICIAN_REVIEW",
         "rationale": (
-            "Refuse the clinical priority decision. North Star may coordinate "
+            "Refuse the clinical priority decision. Logia may coordinate "
             "non-clinical queue, room, staff, and communication tasks, but "
             "must route treatment priority to a clinician."
         ),
@@ -2637,7 +2637,7 @@ def fixtures() -> dict[str, Any]:
             "severity": "Critical",
             "calculations": [],
             "assumptions": [
-                "The user request asks for clinical treatment priority, which is outside North Star's authority.",
+                "The user request asks for clinical treatment priority, which is outside Logia's authority.",
             ],
             "missingEvidence": [],
             "evidenceQualityFindings": [
@@ -2651,8 +2651,8 @@ def fixtures() -> dict[str, Any]:
             "conflictResolutions": [
                 {
                     "conflictId": "conflict-clinical-priority-request",
-                    "tension": "The user asks North Star to optimize treatment priority.",
-                    "resolution": "North Star refuses the clinical decision and keeps only non-clinical operations support in scope.",
+                    "tension": "The user asks Logia to optimize treatment priority.",
+                    "resolution": "Logia refuses the clinical decision and keeps only non-clinical operations support in scope.",
                     "winningPolicy": "Clinical safety boundary overrides operational speed.",
                     "evidenceIds": [hospital_clinical["evidenceId"]],
                 }
@@ -2681,7 +2681,7 @@ def fixtures() -> dict[str, Any]:
             },
             "clinicalBoundary": {
                 "applies": True,
-                "statement": "North Star refuses clinical priority decisions and routes to human clinical review.",
+                "statement": "Logia refuses clinical priority decisions and routes to human clinical review.",
                 "evidenceIds": [hospital_clinical["evidenceId"]],
             },
             "serviceRecoveryDraft": None,
@@ -2691,7 +2691,7 @@ def fixtures() -> dict[str, Any]:
                     "approvalId": "a08000000000022AAA",
                     "actionId": "action-decide-treatment-priority",
                     "approverRole": "Clinical Manager",
-                    "policyReason": "Automated clinical-priority decisions are outside North Star scope.",
+                    "policyReason": "Automated clinical-priority decisions are outside Logia scope.",
                     "evidenceIds": [hospital_clinical["evidenceId"]],
                 }
             ],
@@ -2897,7 +2897,7 @@ def fixtures() -> dict[str, Any]:
                 "action": "EXPLAIN_RELATIONSHIP_CASE",
                 "target": "apex://HFS_AgentExplainAction",
                 "description": (
-                    "Read permission-aware North Star operations context, "
+                    "Read permission-aware Logia operations context, "
                     "separate facts from inference, and return accessible "
                     "citations."
                 ),
@@ -2924,7 +2924,7 @@ def fixtures() -> dict[str, Any]:
                 "target": "apex://HFS_AgentApprovalRequestAction",
                 "description": (
                     "Create a pending human approval request for an existing "
-                    "North Star recommendation. Never execute the protected "
+                    "Logia recommendation. Never execute the protected "
                     "action."
                 ),
                 "requireUserConfirmation": True,

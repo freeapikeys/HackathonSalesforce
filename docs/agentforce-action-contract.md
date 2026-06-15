@@ -8,7 +8,7 @@ Agentforce can ask the product to:
 2. draft a grounded recommendation through a qualified model profile;
 3. create a pending human approval request.
 
-In the North Star MVP, "operations case" means the current private hospital demo
+In the Logia MVP, "operations case" means the current private hospital demo
 case mapped through global primitives: signal, evidence, customer alias,
 department, location, resource, partner, policy, recommendation, approval,
 action, outcome, and metric.
@@ -17,7 +17,7 @@ Agentforce cannot decide the approval or execute a protected external action.
 Those operations remain behind the current user's permissions, the Apex service
 contract, human approval, and the MuleSoft execution boundary.
 
-Protected North Star actions include Slack alerts, WhatsApp-style alerts,
+Protected Logia actions include Slack alerts, WhatsApp-style alerts,
 patient-service tasks, bed-cleaning requests, lab/vendor escalation, pharmacy
 restock requests, billing review, insurance follow-up, and outcome capture.
 
@@ -80,7 +80,7 @@ The deployed entry points are:
 | `REQUEST_HUMAN_APPROVAL`            | `HFS_AgentApprovalRequestAction` |
 
 The historical names remain for compatibility; their descriptions should now
-describe North Star operations cases, not retail-only relationship cases.
+describe Logia operations cases, not retail-only relationship cases.
 
 Each action returns typed status, citation, model-invocation, approval,
 refusal, error, and external-execution fields. `responseJson` is the canonical

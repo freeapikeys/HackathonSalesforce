@@ -14,7 +14,7 @@ Examples:
 - `embedding_general`
 - `sensitive_on_prem`
 
-North Star can reuse these logical profiles and add hospital/global aliases only
+Logia can reuse these logical profiles and add hospital/global aliases only
 when they describe a distinct capability. Candidate profiles:
 
 - `hospital_signal_classification`
@@ -133,7 +133,7 @@ generate(profile, messages, context, response_schema, invocation_policy)
 embed(profile, inputs, invocation_policy)
 ```
 
-For North Star, the generation context must distinguish source facts from
+For Logia, the generation context must distinguish source facts from
 inferences and include only the evidence the current user and purpose can see:
 customer alias, department, location, resource, complaint cluster, capacity
 record, partner response, pharmacy stock, billing case, staffing context,

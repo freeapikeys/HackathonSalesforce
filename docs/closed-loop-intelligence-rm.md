@@ -120,7 +120,7 @@ The supermarket command-center work can remain as a useful demo vertical. It
 should prove the loop with tangible records: product risk, supplier response,
 staff task, manager approval, channel alert, and outcome.
 
-But retail is not the branch north star. Retail is one scenario that exercises
+But retail is not the branch logia. Retail is one scenario that exercises
 the broader product architecture.
 
 ## Non-Goals

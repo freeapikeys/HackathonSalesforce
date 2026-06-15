@@ -5,8 +5,8 @@
 Before starting work:
 
 1. Read `ROADMAP.md`.
-2. Read `docs/north-star-mvp.md`.
-3. Read `docs/north-star-implementation-plan.md`.
+2. Read `docs/logia-mvp.md`.
+3. Read `docs/logia-implementation-plan.md`.
 4. If you are doing a teammate task, read the matching file in
    `docs/assignments/`.
 5. Read the relevant contract or source files for the surface you are changing.
@@ -24,14 +24,14 @@ tracking, but it is not required to understand the build.
 
 ## Branch Context
 
-North Star is the active product. It is a Salesforce, Agentforce, and MuleSoft
+Logia is the active product. It is a Salesforce, Agentforce, and MuleSoft
 operations command center that turns messy business signals into evidence-backed
 recommendations, approved actions, role-based alerts, and measurable outcomes.
 
 The product direction is now a global, plug-and-play operating model with one
 flagship demo profile: a large private hospital operations command center.
 
-Do not drift back into the old generic chatbot idea. North Star is not a broad
+Do not drift back into the old generic chatbot idea. Logia is not a broad
 Q&A bot. It is a governed multi-agent operating system with universal business
 primitives, business-specific profiles, manager approval, and outcome tracking.
 
@@ -88,11 +88,11 @@ The hospital demo solves non-clinical operations problems:
 - billing, refund, claim, and payment-review workflows;
 - manager approval, internal alerts, audit trail, and outcome tracking.
 
-North Star must not make diagnosis, treatment, dosage, triage, or clinical
+Logia must not make diagnosis, treatment, dosage, triage, or clinical
 priority decisions. If a user asks for a medical decision, the system must refuse
 the action and route the matter to an appropriate clinician or manager.
 
-## North Star Agents
+## Logia Agents
 
 The visible demo should feel like one coordinated product, not many disconnected
 chatbots. Agents may be implemented as Agentforce topics, prompt profiles,
@@ -118,7 +118,7 @@ intelligence loop.
 
 The retail demo agents are:
 
-- North Star Orchestrator Topic;
+- Logia Orchestrator Topic;
 - Evidence and Context Agent;
 - Customer Trust Agent;
 - Resource and Capacity Agent;
@@ -205,8 +205,8 @@ that must always execute deterministically.
 
 - Update `ROADMAP.md` when a checklist item is truly complete.
 - Keep `docs/closed-loop-intelligence-rm.md` as the branch product doctrine.
-- Treat `docs/north-star-mvp.md` as the retail demo vertical brief.
-- Treat `docs/north-star-implementation-plan.md` as the retail demo build plan.
+- Treat `docs/logia-mvp.md` as the retail demo vertical brief.
+- Treat `docs/logia-implementation-plan.md` as the retail demo build plan.
 - Record architecture decisions in `docs/decisions/` only when a real contract
   decision changes.
 - Never commit secrets, personal memory, downloaded copyrighted source files,

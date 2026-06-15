@@ -2,7 +2,7 @@
 
 ## Product Mental Model
 
-North Star turns scattered business signals into approved operational actions
+Logia turns scattered business signals into approved operational actions
 and measurable outcomes. The active demo profile is private hospital
 operations, built on universal primitives that can also map to hotels, airports,
 banking, retail, cruise, and other sectors.
@@ -109,7 +109,7 @@ flowchart TB
     subgraph Intelligence["Agentforce and Model Gateway"]
         CONTEXT["Permission-aware context"]
         ROUTER["Logical model routing"]
-        AGENT["North Star agents"]
+        AGENT["Logia agents"]
         REC["Action recommendation"]
         AGENT["Specialist agents"]
         REC["Evidence-backed recommendation"]
@@ -152,7 +152,7 @@ Agentforce contracts, a Lightning command center, Slack action support, and
 harness scripts.
 
 The next work is hospital-profile specialization: hospital fixtures, hospital
-labels, North Star Agentforce topics, approved mock write-backs, WhatsApp-style
+labels, Logia Agentforce topics, approved mock write-backs, WhatsApp-style
 alert results, clinical-refusal scenarios, and a polished command-center demo.
 The next work is to keep that spine broad enough for relationship-management
 intelligence while using the retail demo as one concrete vertical slice.

@@ -46,7 +46,7 @@ PREPARE_CONNECTED_SCRIPT = (
 HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
 HOSPITAL_ACTION_PURPOSE = "EXECUTE_APPROVED_HOSPITAL_ACTION"
 HOSPITAL_OUTCOME_PURPOSE = "CAPTURE_APPROVED_HOSPITAL_OUTCOME"
-HOSPITAL_RECOMMENDATION_TYPE = "NORTH_STAR_HOSPITAL_ACTION_PLAN"
+HOSPITAL_RECOMMENDATION_TYPE = "LOGIA_HOSPITAL_ACTION_PLAN"
 HOSPITAL_PROPOSED_ACTION_TYPE = "APPROVE_HOSPITAL_ACTIONS"
 HOSPITAL_SLACK_ACTION_TYPE = "SEND_SLACK_ALERT"
 HOSPITAL_WHATSAPP_ACTION_TYPE = "SEND_WHATSAPP_ALERT"
@@ -58,7 +58,7 @@ HOSPITAL_CHANNEL_ACTION_TYPES = {
 }
 HOSPITAL_TASK_ACTIONS = [
     {
-        "key": "action-north-star-hospital-task-service-001",
+        "key": "action-logia-hospital-task-service-001",
         "actionType": "CREATE_PATIENT_SERVICE_TASK",
         "targetEntityKey": "DEPT-OUTPATIENT-RECEPTION",
         "ownerRoleAlias": "role:patient-experience-lead",
@@ -70,7 +70,7 @@ HOSPITAL_TASK_ACTIONS = [
         "missedEscalationMinutes": 10,
     },
     {
-        "key": "action-north-star-hospital-task-bed-cleaning-001",
+        "key": "action-logia-hospital-task-bed-cleaning-001",
         "actionType": "REQUEST_BED_CLEANING",
         "targetEntityKey": "RESOURCE-WARD-A3-DISCHARGE-ROOMS",
         "ownerRoleAlias": "role:bed-manager",
@@ -82,7 +82,7 @@ HOSPITAL_TASK_ACTIONS = [
         "missedEscalationMinutes": 15,
     },
     {
-        "key": "action-north-star-hospital-task-pharmacy-001",
+        "key": "action-logia-hospital-task-pharmacy-001",
         "actionType": "CREATE_PHARMACY_RESTOCK_REQUEST",
         "targetEntityKey": "RESOURCE-PHARMACY-IV-KITS",
         "ownerRoleAlias": "role:pharmacy-lead",
@@ -94,7 +94,7 @@ HOSPITAL_TASK_ACTIONS = [
         "missedEscalationMinutes": 25,
     },
     {
-        "key": "action-north-star-hospital-task-porter-001",
+        "key": "action-logia-hospital-task-porter-001",
         "actionType": "REQUEST_PORTER_SUPPORT_TASK",
         "targetEntityKey": "RESOURCE-WARD-A3-DISCHARGE-ROOMS",
         "ownerRoleAlias": "role:porter-lead",
@@ -106,7 +106,7 @@ HOSPITAL_TASK_ACTIONS = [
         "missedEscalationMinutes": 12,
     },
     {
-        "key": "action-north-star-hospital-task-front-desk-001",
+        "key": "action-logia-hospital-task-front-desk-001",
         "actionType": "OPEN_FRONT_DESK_QUEUE_TASK",
         "targetEntityKey": "DEPT-OUTPATIENT-RECEPTION",
         "ownerRoleAlias": "role:front-desk-lead",
@@ -118,7 +118,7 @@ HOSPITAL_TASK_ACTIONS = [
         "missedEscalationMinutes": 8,
     },
     {
-        "key": "action-north-star-hospital-task-lab-001",
+        "key": "action-logia-hospital-task-lab-001",
         "actionType": "ESCALATE_LAB_VENDOR_CASE",
         "targetEntityKey": "PARTNER-ISLAND-DIAGNOSTICS",
         "ownerRoleAlias": "role:lab-coordination-lead",
@@ -130,7 +130,7 @@ HOSPITAL_TASK_ACTIONS = [
         "missedEscalationMinutes": 10,
     },
     {
-        "key": "action-north-star-hospital-task-billing-001",
+        "key": "action-logia-hospital-task-billing-001",
         "actionType": "OPEN_BILLING_REVIEW",
         "targetEntityKey": "PROCESS-BILLING-INSURANCE-REVIEW",
         "ownerRoleAlias": "role:billing-supervisor",
@@ -142,7 +142,7 @@ HOSPITAL_TASK_ACTIONS = [
         "missedEscalationMinutes": 30,
     },
     {
-        "key": "action-north-star-hospital-task-manager-review-001",
+        "key": "action-logia-hospital-task-manager-review-001",
         "actionType": "CREATE_MANAGER_REVIEW_TASK",
         "targetEntityKey": "PROCESS-BILLING-INSURANCE-REVIEW",
         "ownerRoleAlias": "role:operations-manager",
@@ -243,7 +243,7 @@ HOSPITAL_TASK_OUTCOME_TEMPLATES = {
         ),
     },
 }
-HOSPITAL_APPROVAL_POLICY_KEY = "north-star-hospital-manager-approval-v1"
+HOSPITAL_APPROVAL_POLICY_KEY = "logia-hospital-manager-approval-v1"
 CLINICAL_DECISION_REFUSED = "CLINICAL_DECISION_REFUSED"
 
 
@@ -1051,8 +1051,8 @@ vendorEmailCommand.contractVersion = HFS_ServiceContract.VERSION;
 vendorEmailCommand.correlationId = actionCommand.correlationId;
 vendorEmailCommand.tenantKey = actionCommand.tenantKey;
 vendorEmailCommand.purpose = actionCommand.purpose;
-vendorEmailCommand.externalKey = 'action-north-star-hospital-vendor-email-001';
-vendorEmailCommand.idempotencyKey = 'action-north-star-hospital-vendor-email-001-v1';
+vendorEmailCommand.externalKey = 'action-logia-hospital-vendor-email-001';
+vendorEmailCommand.idempotencyKey = 'action-logia-hospital-vendor-email-001-v1';
 vendorEmailCommand.recommendationId = actionCommand.recommendationId;
 vendorEmailCommand.approvalId = actionCommand.approvalId;
 vendorEmailCommand.targetEntityId =
@@ -1156,7 +1156,7 @@ System.debug(
                     "messageTitle": "Hospital operations update",
                     "messageBody": (
                         "Please check room readiness, pharmacy stock, lab "
-                        "response, and billing review. North Star has linked "
+                        "response, and billing review. Logia has linked "
                         "the evidence."
                     ),
                     "evidenceIds": [source["evidenceId"]],
@@ -1183,11 +1183,11 @@ System.debug(
             else:
                 payload = {
                     "targetRole": "Operations Manager",
-                    "targetChannel": "#north-star-demo",
+                    "targetChannel": "#logia-demo",
                     "messageTitle": "Hospital operations update",
                     "messageBody": (
                         "Please check room cleaning, pharmacy stock, lab "
-                        "delay, and billing review. North Star has linked "
+                        "delay, and billing review. Logia has linked "
                         "the evidence."
                     ),
                     "evidenceIds": [source["evidenceId"]],
@@ -1273,7 +1273,7 @@ System.debug(
             title="Hospital operations approval",
             body=(
                 "Approve protected Slack, WhatsApp, vendor email, and task "
-                "execution for the North Star hospital operations case."
+                "execution for the Logia hospital operations case."
             ),
         )
         approve_value = approval_blocks[-1]["elements"][0]["value"]
@@ -1282,7 +1282,7 @@ System.debug(
             "user": {"username": "operations-manager"},
             "actions": [
                 {
-                    "action_id": "north_star_approve",
+                    "action_id": "logia_approve",
                     "value": approve_value,
                 }
             ],

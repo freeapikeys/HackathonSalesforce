@@ -3,7 +3,7 @@
 ## Goal
 
 Preserve the completed Agentforce inventory/waste reasoning work from latest
-`main`, then own the internal proof that North Star does more than send a fake
+`main`, then own the internal proof that Logia does more than send a fake
 WhatsApp receipt. Your lane is the manager/team side: resource and capacity
 reasoning, live Slack approval rehearsal, command-center action/outcome trace,
 protected vendor-email mock proof, and clear evidence that one customer issue
@@ -19,7 +19,7 @@ approval boundaries, and refuse clinical decisions.
 
 Start from the existing governed spine:
 
-- `docs/north-star-mvp.md` defines the global operating model and hospital demo.
+- `docs/logia-mvp.md` defines the global operating model and hospital demo.
 - `docs/agentforce-action-contract.md` defines Agentforce-facing actions.
 - `docs/apex-service-contract.md` defines the Apex service boundary.
 - `docs/model-gateway-contract.md` and `docs/model-architecture.md` define
@@ -38,8 +38,8 @@ recommendation.
 
 ## Files To Inspect First
 
-- `docs/north-star-mvp.md`
-- `docs/north-star-implementation-plan.md`
+- `docs/logia-mvp.md`
+- `docs/logia-implementation-plan.md`
 - `docs/agentforce-action-contract.md`
 - `docs/apex-service-contract.md`
 - `docs/model-gateway-contract.md`

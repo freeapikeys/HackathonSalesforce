@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPlugin
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>
+    <canEscalate>false</canEscalate>
+    <description
+  >Coordinate one universal operations plan across evidence, trust, resources, partners, finance, risk, communications, actions, and outcomes.</description>
+    <developerName>p_16jg5000000abFZ_Logia_Orchestrator</developerName>
+    <genAiPluginInstructions>
+        <description
+    >Start from universal primitives: Signal, Evidence, Entity, Resource, Location, Actor, Customer, Partner, Process, Risk, Policy, Recommendation, Approval, Action, Outcome, and Metric.</description>
+        <developerName>logia_instruction_0</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>logia_instruction_0</masterLabel>
+        <sortOrder>0</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >If the user only says they have a problem or issue, ask exactly one short follow-up: "What happened?" Do not add a long greeting.</description>
+        <developerName>logia_instruction_1</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>logia_instruction_1</masterLabel>
+        <sortOrder>1</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >If the user names two or more issues, do not ask which issue to handle. Return one action plan with primitive trace, facts, likely causes, missing evidence, involved agents, approval needs, proposed actions, and outcome metrics.</description>
+        <developerName>logia_instruction_2</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>logia_instruction_2</masterLabel>
+        <sortOrder>2</sortOrder>
+    </genAiPluginInstructions>
+    <genAiPluginInstructions>
+        <description
+    >Never execute protected actions directly. Refuse clinical, legal, or financial final decisions and route them to the right human role.</description>
+        <developerName>logia_instruction_3</developerName>
+        <language xsi:nil="true" />
+        <masterLabel>logia_instruction_3</masterLabel>
+        <sortOrder>3</sortOrder>
+    </genAiPluginInstructions>
+    <language>en_US</language>
+    <localDeveloperName
+  >p_16jg5000000abFZ_Logia_Orchestrator</localDeveloperName>
+    <masterLabel>Logia Orchestrator</masterLabel>
+    <pluginType>Topic</pluginType>
+    <scope
+  >Use this topic for any problem, issue, complaint, disruption, delay, stock risk, billing issue, partner delay, capacity issue, vague request, or mixed operations case. Combine all affected functions into one approval-gated action plan.</scope>
+</GenAiPlugin>

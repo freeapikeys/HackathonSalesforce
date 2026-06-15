@@ -18,7 +18,7 @@ Two active mock deployments implement the same `hfs.generate.v1` adapter
 interface. The scenario demonstrates primary selection, qualified fallback, and
 fail-closed behavior when no deployment satisfies the data policy.
 
-For North Star, the same gateway should route hospital action
+For Logia, the same gateway should route hospital action
 recommendations and message drafts through logical profiles. A hospital
 action request should include only accessible complaint, capacity, resource,
 partner, pharmacy stock, billing, staffing, approval, and outcome evidence. It
@@ -32,7 +32,7 @@ Production DeepSeek use should sit behind Salesforce LLM Open Connector or an
 equivalent governed adapter with customer-approved credentials, budget, policy,
 and observability.
 
-For North Star, the same gateway should route retail recommendations and message
+For Logia, the same gateway should route retail recommendations and message
 drafts through logical profiles. A retail recommendation request should include
 only accessible product, store, supplier, batch, complaint, inventory,
 promotion, staff, and outcome evidence.

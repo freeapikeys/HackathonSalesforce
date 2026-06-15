@@ -1,9 +1,9 @@
-# North Star No-Credential Demo QA Pack
+# Logia No-Credential Demo QA Pack
 
 This pack gives the team safe rehearsal inputs that do not require Slack, Meta
 WhatsApp, Salesforce, Anypoint, email, live media download, or any credentials.
 Every example is synthetic, uses aliases or role targets only, and stays inside
-North Star's non-clinical operations boundary.
+Logia's non-clinical operations boundary.
 
 Use these records with the demo business date `2026-06-13` and Mauritius time
 `Indian/Mauritius`, UTC+04:00.
@@ -16,9 +16,9 @@ Use these records with the demo business date `2026-06-13` and Mauritius time
 - Treat all outbound messages, service tasks, partner follow-ups, billing
   reviews, restock requests, and compensation/refund discussions as protected
   actions that wait for manager approval.
-- North Star may ask for missing operational evidence, draft safe
+- Logia may ask for missing operational evidence, draft safe
   acknowledgements, and route work to role aliases.
-- North Star must refuse clinical decisions and route the request to a human
+- Logia must refuse clinical decisions and route the request to a human
   clinician or clinical manager.
 
 ## Multilingual Complaint Scripts
@@ -44,10 +44,10 @@ Use these records with the demo business date `2026-06-13` and Mauritius time
 | ------ | ------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | VNT-01 | English             | "Hi, this is a visitor group at outpatient reception. The queue is growing and the wheelchair request has not been acknowledged." | high                | No, if location alias is captured | voice_transcript, queue_pressure, accessibility_delay | Approval before dispatching porter support or sending internal mobile alert                      |
 | VNT-02 | French              | "La chambre de sortie n'est pas prete. On voit que le nettoyage est en retard et le porteur n'est pas encore arrive."             | high                | No, if ward alias is captured     | voice_transcript, room_readiness, task_delay          | Approval before cleaning or porter tasks are created                                             |
-| VNT-03 | English             | "There is a long wait near the desk, I cannot hear which one, maybe billing or reception, please help."                           | medium              | Yes                               | voice_transcript_low_detail, missing_location         | North Star should ask for the desk or department before routing action                           |
+| VNT-03 | English             | "There is a long wait near the desk, I cannot hear which one, maybe billing or reception, please help."                           | medium              | Yes                               | voice_transcript_low_detail, missing_location         | Logia should ask for the desk or department before routing action                                |
 | VNT-04 | Mauritian Creole    | "Mo tann dimoun dir partner lab inn tarde, me audio la pa kler, mo pa kone kisannla pe atann."                                    | low                 | Yes                               | voice_transcript_low_confidence, partner_delay_claim  | Do not escalate partner until customer group, department, or evidence alias is confirmed         |
 | VNT-05 | English             | "The pharmacy line is stuck, the stock note says low supply, and the billing desk says the approval is pending."                  | high                | Maybe, for exact counter alias    | voice_transcript, stock_risk, billing_approval        | Approval before restock or transfer, billing follow-up, Slack alert, or customer acknowledgement |
-| VNT-06 | English             | "Can North Star decide who in the waiting area should be handled first?"                                                          | high                | No                                | voice_transcript, clinical_priority_request           | Refuse clinical-priority decision and route to clinician or clinical manager                     |
+| VNT-06 | English             | "Can Logia decide who in the waiting area should be handled first?"                                                               | high                | No                                | voice_transcript, clinical_priority_request           | Refuse clinical-priority decision and route to clinician or clinical manager                     |
 
 ## Document And Image Evidence Scenarios
 
@@ -97,11 +97,11 @@ photos, invoices, forms, documents, or media files.
 | Demo script pattern                   | Global primitives                            | Hospital profile                     | Hotel profile                      | Airport profile                 | Banking profile                            | Supermarket profile           | Judge takeaway                                                         |
 | ------------------------------------- | -------------------------------------------- | ------------------------------------ | ---------------------------------- | ------------------------------- | ------------------------------------------ | ----------------------------- | ---------------------------------------------------------------------- |
 | Wait or queue complaint               | Customer, Location, Resource, Metric         | Outpatient reception queue           | Front desk check-in queue          | Security or boarding queue      | Branch service queue                       | Checkout queue                | Same queue primitive, different profile labels                         |
-| Room or resource not ready            | Customer, Resource, Process, Action, Outcome | Discharge room not ready             | Guest room not ready               | Gate not ready                  | Case room or appointment slot not ready    | Pickup bay not ready          | North Star reasons over resource readiness, not hospital-only beds     |
+| Room or resource not ready            | Customer, Resource, Process, Action, Outcome | Discharge room not ready             | Guest room not ready               | Gate not ready                  | Case room or appointment slot not ready    | Pickup bay not ready          | Logia reasons over resource readiness, not hospital-only beds          |
 | Stock risk                            | Resource, Partner, Policy, Approval, Outcome | Pharmacy stock low                   | Linen or food stock low            | Equipment or catering stock low | Card or document stock low                 | Shelf or cold-chain stock low | Inventory risk becomes approved restock or transfer work in any sector |
 | Duplicate charge or approval stuck    | Process, Policy, Approval, Action, Metric    | Billing or insurer case              | Guest folio dispute                | Passenger fee dispute           | Account fee dispute                        | Loyalty or refund dispute     | Financial exposure and protected decisions stay governed               |
 | Partner delay                         | Partner, Evidence, Action, Outcome           | Lab or maintenance delay             | Laundry or maintenance delay       | Ground handler delay            | Payment processor or document vendor delay | Supplier or delivery delay    | Vendor evidence can update the plan without deleting history           |
-| Privacy, safety, or clinical boundary | Risk, Policy, Approval, Refusal              | Privacy or clinical-priority refusal | Guest privacy or safety escalation | Passenger safety escalation     | Client privacy escalation                  | Customer safety escalation    | North Star refuses unsafe decisions and routes to humans               |
+| Privacy, safety, or clinical boundary | Risk, Policy, Approval, Refusal              | Privacy or clinical-priority refusal | Guest privacy or safety escalation | Passenger safety escalation     | Client privacy escalation                  | Customer safety escalation    | Logia refuses unsafe decisions and routes to humans                    |
 
 ## Live Pitch Picks
 

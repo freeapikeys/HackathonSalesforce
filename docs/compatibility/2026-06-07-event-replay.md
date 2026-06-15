@@ -34,7 +34,7 @@ The contract contains five operations and 35 executable examples. Runtime
 tests cover authorization, malformed-event quarantine, retry exhaustion,
 linked replay, permanent rejection, exact replay, and replay-key conflict.
 
-North Star should use this replay path for corrected retail source events, such
+Logia should use this replay path for corrected retail source events, such
 as malformed complaint clusters, corrected supplier responses, or late
 inventory events. Replays must never overwrite the original retail intake
 attempt.

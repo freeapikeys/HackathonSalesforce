@@ -10,7 +10,7 @@
   "hfstenantid": "demo-mauritius",
   "hfsschemaversion": "1.0.0",
   "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
-  "hfsidempotencykey": "north-star-expiry-risk-v1",
+  "hfsidempotencykey": "logia-expiry-risk-v1",
   "hfssourcerecordid": "retail-event-expiry-001",
   "hfssourcesequence": 4,
   "hfsobservedat": "2026-06-06T09:08:02Z",

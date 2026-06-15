@@ -15,7 +15,7 @@ Define:
 - constraints and permissions;
 - the roadmap capability and Beads issue when Beads is available.
 
-For North Star, also define the global primitives involved, the active business
+For Logia, also define the global primitives involved, the active business
 profile, the hospital operations risk, and whether the action is informational,
 operational, protected, or refused. Protected hospital actions include vendor
 case, pharmacy restock, billing review, insurance follow-up, bed/room task,
@@ -31,7 +31,7 @@ Define:
 - ownership and dependencies;
 - expected failures and recovery.
 
-For North Star, trace the source of each hospital operations signal:
+For Logia, trace the source of each hospital operations signal:
 
 - complaint or service response evidence;
 - bed, room, queue, staff, equipment, or capacity record;
@@ -52,7 +52,7 @@ Validate before broad implementation:
 - synthetic fixtures;
 - test and deployment commands.
 
-For North Star, validate whether Slack and WhatsApp are real configured channels
+For Logia, validate whether Slack and WhatsApp are real configured channels
 or mocked channel results. Do not write docs or demo scripts that imply a live
 channel exists when the current implementation uses the mock runtime.
 
@@ -72,7 +72,7 @@ Test:
 - evidence and audit history;
 - user acceptance and roadmap completion gates.
 
-For North Star, stress-test:
+For Logia, stress-test:
 
 - complaint clusters with missing capacity evidence;
 - partner response that resolves only one operational dependency;

@@ -6,7 +6,7 @@ when the code, fixture, UI, test, or demo evidence exists in the repo.
 Beads is not installed in the current local environment, so this roadmap is the
 active task tracker.
 
-## North Star
+## Logia
 
 ## Branch Direction
 
@@ -35,7 +35,7 @@ The active demo profile is a large private hospital operations command center.
 It solves non-clinical operations issues. It must not make diagnosis, treatment,
 dosage, triage, or clinical priority decisions.
 
-North Star is general first. Core agents, action contracts, primitives, and IDs
+Logia is general first. Core agents, action contracts, primitives, and IDs
 must stay sector-neutral; the hospital is one profile that renders those
 primitives with hospital words for the demo.
 
@@ -52,7 +52,7 @@ General profile and action IDs:
 - `action:create-service-task`
 - `action:request-partner-followup`
 
-North Star must answer:
+Logia must answer:
 
 - Which signal triggered the issue?
 - Which global primitives are involved: customer, resource, location, partner,
@@ -114,23 +114,23 @@ Research source:
 
 ## Supermarket Issues We Solve
 
-These modules are the problems North Star should solve across hospital, hotel,
+These modules are the problems Logia should solve across hospital, hotel,
 airport, banking, supermarket, cruise, and other profiles.
 
-| ID    | Issue module                     | Primary agent           | Hospital demo response                                                   |
-| ----- | -------------------------------- | ----------------------- | ------------------------------------------------------------------------ |
-| NS-01 | Complaint and trust              | Customer Trust          | Cluster complaints, classify cause, draft approved service response      |
-| NS-02 | Capacity and availability        | Resource and Capacity   | Check beds, rooms, queues, staff, pharmacy stock, and equipment          |
-| NS-03 | Staff coordination               | Operations Execution    | Assign tasks, owners, due times, acknowledgements, and escalation        |
-| NS-04 | Partner and vendor failure       | Partner and Vendor      | Escalate lab, laundry, insurer, food, payment, or maintenance delay      |
-| NS-05 | Inventory and supply             | Resource and Capacity   | Detect low pharmacy/linen/food stock and recommend restock or transfer   |
-| NS-06 | Billing and financial exposure   | Financial Impact        | Flag duplicate billing, claim delay, refund, voucher, or revenue risk    |
-| NS-07 | Risk, safety, and compliance     | Risk and Approval       | Gate protected actions and refuse clinical decisions                     |
-| NS-08 | Communication and escalation     | Communication           | Send approved Slack/WhatsApp-style alerts to role aliases                |
-| NS-09 | Disruption coordination          | North Star Orchestrator | Combine complaints, capacity, vendor, billing, and staff signals         |
-| NS-10 | Outcome learning                 | Outcome Learning        | Track wait-time, bed release, stockout avoidance, SLA, and task outcome  |
-| NS-11 | Evidence quality and uncertainty | Evidence and Context    | Detect missing, contradictory, late, duplicate, or restricted evidence   |
-| NS-12 | Policy and approval routing      | Risk and Approval       | Decide manager approval, refusal, defer, modification, or execution path |
+| ID    | Issue module                     | Primary agent         | Hospital demo response                                                   |
+| ----- | -------------------------------- | --------------------- | ------------------------------------------------------------------------ |
+| NS-01 | Complaint and trust              | Customer Trust        | Cluster complaints, classify cause, draft approved service response      |
+| NS-02 | Capacity and availability        | Resource and Capacity | Check beds, rooms, queues, staff, pharmacy stock, and equipment          |
+| NS-03 | Staff coordination               | Operations Execution  | Assign tasks, owners, due times, acknowledgements, and escalation        |
+| NS-04 | Partner and vendor failure       | Partner and Vendor    | Escalate lab, laundry, insurer, food, payment, or maintenance delay      |
+| NS-05 | Inventory and supply             | Resource and Capacity | Detect low pharmacy/linen/food stock and recommend restock or transfer   |
+| NS-06 | Billing and financial exposure   | Financial Impact      | Flag duplicate billing, claim delay, refund, voucher, or revenue risk    |
+| NS-07 | Risk, safety, and compliance     | Risk and Approval     | Gate protected actions and refuse clinical decisions                     |
+| NS-08 | Communication and escalation     | Communication         | Send approved Slack/WhatsApp-style alerts to role aliases                |
+| NS-09 | Disruption coordination          | Logia Orchestrator    | Combine complaints, capacity, vendor, billing, and staff signals         |
+| NS-10 | Outcome learning                 | Outcome Learning      | Track wait-time, bed release, stockout avoidance, SLA, and task outcome  |
+| NS-11 | Evidence quality and uncertainty | Evidence and Context  | Detect missing, contradictory, late, duplicate, or restricted evidence   |
+| NS-12 | Policy and approval routing      | Risk and Approval     | Decide manager approval, refusal, defer, modification, or execution path |
 
 ## Private Hospital Issues We Solve
 
@@ -153,7 +153,7 @@ airport, banking, supermarket, cruise, and other profiles.
 
 ## Agent Responsibilities
 
-### North Star Orchestrator
+### Logia Orchestrator
 
 - [x] Combine customer trust, resource capacity, partner/vendor, financial,
       communication, and outcome findings into one action plan.
@@ -257,7 +257,7 @@ increasing, discharge rooms are blocked, outpatient wait time is rising, pharmac
 stock is low, a lab partner response is delayed, and billing/insurance approvals
 are stuck.
 
-North Star should produce one action plan:
+Logia should produce one action plan:
 
 - accept a customer or patient complaint through Meta WhatsApp Cloud API;
 - identify whether the root issue is complaint, capacity, partner, billing,
@@ -273,7 +273,7 @@ North Star should produce one action plan:
 
 ### 1. Product Direction And Scope
 
-- [x] Product name remains North Star.
+- [x] Product name remains Logia.
 - [x] Active docs now define a global operating model with a private hospital
       demo profile.
 - [x] Universal primitive list added to active docs.
@@ -293,9 +293,9 @@ North Star should produce one action plan:
 - [x] Branch decision recorded in
       `docs/decisions/0006-closed-loop-intelligence-rm-branch.md`.
 - [x] Supermarket operations retained as a retail demo vertical.
-- [x] Retail MVP brief retained in `docs/north-star-mvp.md`.
+- [x] Retail MVP brief retained in `docs/logia-mvp.md`.
 - [x] Retail implementation plan retained in
-      `docs/north-star-implementation-plan.md`.
+      `docs/logia-implementation-plan.md`.
 - [x] Supermarket issue map retained as demo scenario coverage.
 - [ ] Retail roadmap items audited and mapped to reusable relationship
       intelligence capabilities.
@@ -328,7 +328,7 @@ file before editing.
       trace, protected vendor-email mock proof, and resource/capacity workflows
       that show depth.
 - [ ] Merge owner: keep branches aligned, review conflicts, protect `main`, and
-      verify the demo still tells one North Star story.
+      verify the demo still tells one Logia story.
 
 ### 3. Global Primitive And Hospital Data
 
@@ -436,7 +436,7 @@ file before editing.
 
 ### 6. Agentforce And Intelligence
 
-- [x] Define/update North Star Orchestrator topic for global primitives.
+- [x] Define/update Logia Orchestrator topic for global primitives.
 - [x] Define/update Evidence and Context topic.
 - [x] Define/update Customer Trust topic.
 - [x] Define/update Resource and Capacity topic.
@@ -465,7 +465,7 @@ file before editing.
       which agent executed or measured the outcome.
 - [x] Replace the generated 8-topic hospital labels with the universal 10-agent
       Agentforce source model.
-- [x] Replace the default Studio welcome/role text with North Star operations
+- [x] Replace the default Studio welcome/role text with Logia operations
       language.
 - [x] Agentforce source instructs "I have a problem" to ask one short follow-up.
 - [x] Agentforce source keeps hospital words inside the active profile and uses
@@ -490,7 +490,7 @@ file before editing.
 
 ### 7. Agentforce and Intelligence
 
-- [x] Define North Star Orchestrator topic.
+- [x] Define Logia Orchestrator topic.
 - [x] Define Inventory and Demand topic.
 - [x] Define Store Operations topic.
 - [x] Define Customer and Risk Intelligence topic.
@@ -564,9 +564,9 @@ file before editing.
 - [x] Implement or simulate a provider-neutral inbound WhatsApp webhook that
       maps customer complaint text to `INGEST_EVENT`.
 - [x] Add Salesforce Apex REST intake endpoint
-      `/services/apexrest/northstar/v1/twilio/whatsapp` so live MuleSoft
+      `/services/apexrest/logia/v1/twilio/whatsapp` so live MuleSoft
       intake can create a command-center case.
-- [x] Add deployable Mule app `mulesoft/north-star-twilio-webhook` for official
+- [x] Add deployable Mule app `mulesoft/logia-twilio-webhook` for official
       Meta WhatsApp Cloud API intake. The app name is inherited from the first
       Twilio bridge, but the active route accepts Meta payloads.
 - [x] Keep the existing Salesforce command center as the visibility, approval,
@@ -587,8 +587,16 @@ file before editing.
 - [ ] Add live email/vendor delivery only if Anypoint/SMTP credentials are
       configured safely outside Git.
 - [x] Add signed Slack approval buttons in the mock runtime and harness.
+- [x] Add Logia Slack delivery capability metadata for webhook/mock delivery,
+      Block Kit approval, signed interactivity, approve/reject/modify, and
+      thread-ready status.
+- [x] Add signed `/logia status <approval-id>` slash-command handling in the
+      MuleSoft mock runtime for safe internal approval/action status checks.
 - [ ] Configure a public Slack App interactivity Request URL for live button
       clicks during final rehearsal.
+- [ ] Configure optional `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` only if the
+      demo needs live `chat.postMessage`, `chat.update`, threaded replies, or
+      ephemeral Slack messages beyond the webhook/harness proof.
 - [x] Package/deploy the WhatsApp webhook Mule app to CloudHub and verify the
       public endpoint creates Salesforce event, evidence, recommendation, and
       approval records.
@@ -607,7 +615,7 @@ file before editing.
       confidence remains pending evidence before protected action.
 - [x] Point Meta WhatsApp Cloud API callback URL to the public CloudHub webhook
       URL in Meta App Dashboard and subscribe the `messages` webhook field. Use
-      verify token `north-star-meta-verify`.
+      verify token `logia-meta-verify`.
 - [ ] Replace the short-lived Meta WhatsApp access token with a permanent
       system-user token before final rehearsal.
 - [ ] Replace the temporary Salesforce session token in CloudHub with a
@@ -647,7 +655,7 @@ file before editing.
 
 ### 7B. Deep Resolution Differentiator
 
-This is how North Star should beat a normal assistant that only apologizes or
+This is how Logia should beat a normal assistant that only apologizes or
 notifies a manager.
 
 - [x] Define the deeper investigation pattern: classify, ask follow-up
@@ -690,7 +698,7 @@ notifies a manager.
 
 ### 9. Lightning Command Center
 
-- [x] UI title and labels use North Star global/hospital operations language.
+- [x] UI title and labels use Logia global/hospital operations language.
 - [x] UI shows universal primitive/profile mapping before the active hospital
       rendering.
 - [x] Risk pulse cards show complaint, bed capacity, queue, pharmacy stock,
@@ -706,9 +714,9 @@ notifies a manager.
 
 ### 9. Lightning Command Center
 
-- [x] UI title and labels use North Star.
+- [x] UI title and labels use Logia.
 - [x] Profile key switches visible titles, domain labels, recommendation copy,
-      approval copy, and outcome labels between North Star retail and Nexavenu
+      approval copy, and outcome labels between Logia retail and Nexavenu
       gift profiles.
 - [x] Command center includes prediction dashboards, KPI cards, daily brief,
       agent coordination threads, and shared employee/department chat panels for
@@ -791,7 +799,7 @@ These items remain intentionally unchecked until Fahan, Hassan, Aarav, and
 Ranveer have actually done them together. Do not check them just because the
 repo has code for the demo.
 
-- Final non-goals review: the whole team must agree to say that North Star is
+- Final non-goals review: the whole team must agree to say that Logia is
   not a generic chatbot, does not make clinical decisions, does not use real
   patient data, and uses mock hospital/channel integrations unless credentials
   are configured live.
@@ -816,9 +824,9 @@ artifacts/demo-harness-result-current.json` successfully. The connected run
   real outbound channel delivery still depends on credentials being visible to
   the running process.
 - Agentforce Studio gate: the universal 10-agent metadata is deployed and
-  activated as `North_Star_Hospital_Operations` version 2 in `hfs-dev`. The live
+  activated as `Logia_Hospital_Operations` version 2 in `hfs-dev`. The live
   preview now responds to "I have a problem" with "What happened?" and mixed
-  issues produce the North Star primitive trace, agent handoff, approval gate,
+  issues produce the Logia primitive trace, agent handoff, approval gate,
   proposed actions, and outcome metric. The Windows recovery path is documented
   in `docs/agentforce-publish-recovery.md`.
 - Channel credential gate: Slack uses `SLACK_WEBHOOK_URL` for outbound alerts
@@ -828,7 +836,7 @@ artifacts/demo-harness-result-current.json` successfully. The connected run
   are acceptable only when the presenter clearly says the result is `MOCK_SENT`
   or a signed local harness proof.
 - Final rehearsal gate: the whole team must run the three-minute pitch at least
-  twice, use the timing table in `docs/north-star-demo-narrative.md`, confirm the
+  twice, use the timing table in `docs/logia-demo-narrative.md`, confirm the
   backup recorded/mock path, and assign who speaks for Salesforce, Agentforce,
   MuleSoft, LWC, data, and business value.
 

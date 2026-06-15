@@ -748,7 +748,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
     if (CLINICAL_ACTION_TYPES.contains(actionType)) {
       HFS_ServiceSupport.fail(
         HFS_ServiceContract.CLINICAL_DECISION_REFUSED,
-        'North Star cannot store or execute diagnosis, treatment, dosage, triage, or clinical priority decisions.',
+        'Logia cannot store or execute diagnosis, treatment, dosage, triage, or clinical priority decisions.',
         fieldName
       );
     }

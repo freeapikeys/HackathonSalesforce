@@ -1,5 +1,5 @@
 {
-  "name": "north star universal operations case with hospital demo profile",
+  "name": "logia universal operations case with hospital demo profile",
   "maximumLatenessSeconds": 86400,
   "events": [
     {

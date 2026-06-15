@@ -23,7 +23,7 @@ FIXTURE_PATH = (
 )
 HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
 HOSPITAL_MODEL_PROFILE = "hospital_action_reasoning"
-RETAIL_MODEL_PROFILE = "north-star-retail-recommendation"
+RETAIL_MODEL_PROFILE = "logia-retail-recommendation"
 NEXAVENU_MODEL_PROFILE = "nexavenu-revenue-recommendation"
 
 

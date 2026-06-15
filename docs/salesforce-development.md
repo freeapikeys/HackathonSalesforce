@@ -49,7 +49,7 @@ sf project deploy preview --source-dir force-app
 sf project deploy start --source-dir force-app
 ```
 
-For the core metadata used by both HFS and North Star, assign the integration
+For the core metadata used by both HFS and Logia, assign the integration
 permission set to the connected integration identity and run the rollback smoke
 test:
 
@@ -84,9 +84,9 @@ git diff --check
 Skip `./scripts/sync-beads.sh` only when Beads is not installed and no Beads
 state changed.
 
-## North Star Demo Workflow
+## Logia Demo Workflow
 
-When the North Star seed and harness are implemented, use the same org alias and
+When the Logia seed and harness are implemented, use the same org alias and
 run:
 
 ```bash

@@ -3,7 +3,7 @@
 ## Goal
 
 Own the official Meta WhatsApp customer channel and the WhatsApp voice/media
-evidence path for North Star's private hospital operations demo. WhatsApp is
+evidence path for Logia's private hospital operations demo. WhatsApp is
 the external customer intake surface; Slack is the internal staff and manager
 surface. Voice and media become governed evidence, not autonomous clinical or
 financial decisions.
@@ -18,8 +18,8 @@ approval, MuleSoft action governance, or clinical-decision boundaries.
 
 Start from the existing governed spine:
 
-- `docs/north-star-mvp.md` defines the global operating model and hospital demo.
-- `docs/north-star-implementation-plan.md` defines generic build steps.
+- `docs/logia-mvp.md` defines the global operating model and hospital demo.
+- `docs/logia-implementation-plan.md` defines generic build steps.
 - `docs/mulesoft-api-contract.md` defines approved action execution.
 - `docs/agentforce-action-contract.md` defines Agentforce-facing governed
   actions.
@@ -36,8 +36,8 @@ approved-reply, and voice/media evidence path that fits the existing MVP.
 
 ## Files To Inspect First
 
-- `docs/north-star-mvp.md`
-- `docs/north-star-implementation-plan.md`
+- `docs/logia-mvp.md`
+- `docs/logia-implementation-plan.md`
 - `docs/mulesoft-api-contract.md`
 - `docs/agentforce-action-contract.md`
 - `docs/ui-state-contract.md`
@@ -76,7 +76,7 @@ approved-reply, and voice/media evidence path that fits the existing MVP.
 Use custom models as implementation details, not as product architecture.
 
 - Do not hard-code `DeepSeek`, a local model name, or a provider-specific model
-  ID into North Star core IDs, action IDs, primitive IDs, Agentforce topics, or
+  ID into Logia core IDs, action IDs, primitive IDs, Agentforce topics, or
   UI state.
 - Use logical capabilities instead, for example `language_detection`,
   `voice_transcription`, `message_drafting`, `customer_reply_drafting`, or
@@ -217,7 +217,7 @@ Which patient should receive treatment first?
 Expected behavior:
 
 - refuse clinical triage or treatment decision;
-- explain that North Star handles operations coordination only;
+- explain that Logia handles operations coordination only;
 - route to clinician or clinical manager review.
 
 ## Implementation Checklist
@@ -251,7 +251,7 @@ Expected behavior:
       plain French receipts.
 - [ ] Update the live Meta acknowledgement so Mauritian Creole complaints
       receive short plain Mauritian Creole receipts.
-- [ ] Make the receipt clear that North Star received the issue and a manager
+- [ ] Make the receipt clear that Logia received the issue and a manager
       will review it; do not promise the action is completed.
 - [ ] Add approved customer-facing WhatsApp reply execution after manager
       approval. The reply must be privacy-safe and must not include diagnosis,
@@ -319,7 +319,7 @@ Use this when starting a fresh Codex task:
 ```text
 Read docs/assignments/hassan.md, docs/mulesoft-api-contract.md,
 docs/agentforce-action-contract.md, and docs/ui-state-contract.md. Implement
-the next smallest official Meta WhatsApp task for North Star: same-language
+the next smallest official Meta WhatsApp task for Logia: same-language
 receipt, approved customer response, voice-note evidence, or image/document
 evidence. Hassan may use his pretrained multilingual/voice models and DeepSeek
 for chat drafting behind a safe adapter boundary. Preserve approval gating,

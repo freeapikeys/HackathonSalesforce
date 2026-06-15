@@ -46,9 +46,9 @@ runtime records immutable intake attempts, retries temporary source-store
 failures, quarantines exhausted or correctable failures, authorizes replay by
 purpose, and links each replay attempt to its original audit record.
 
-## North Star Mock Actions
+## Logia Mock Actions
 
-The active North Star demo uses the same mock runtime to simulate private
+The active Logia demo uses the same mock runtime to simulate private
 hospital operations systems and channels:
 
 - patient-service tasks;
@@ -106,25 +106,25 @@ phone number, hashes the raw message body, adds follow-up questions, adds
 root-cause hypotheses, and preserves the event through the same intake
 classifier used by the Process API.
 
-The repo also includes `mulesoft/north-star-twilio-webhook`, a deployable Mule
+The repo also includes `mulesoft/logia-twilio-webhook`, a deployable Mule
 app for live WhatsApp inbound messages. The current CloudHub public route is
 the inherited endpoint
 `https://<cloudhub-host>/twilio/whatsapp/inbound`; despite the path name, it is
 provider-neutral. Twilio Sandbox form posts return TwiML, and Meta WhatsApp
 Cloud API JSON posts return JSON. Both shapes map into a safe JSON payload and
 call the existing Salesforce Apex REST endpoint
-`/services/apexrest/northstar/v1/twilio/whatsapp`. Salesforce then creates the
+`/services/apexrest/logia/v1/twilio/whatsapp`. Salesforce then creates the
 event, synthetic customer alias, evidence, work item, recommendation, and
 pending approval.
 
 Current deployed demo webhook:
 
 ```text
-https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
+https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
 Use that same URL as the Meta WhatsApp Cloud API callback URL. The verify token
-configured in Anypoint is `north-star-meta-verify`. A healthy Meta verification
+configured in Anypoint is `logia-meta-verify`. A healthy Meta verification
 request returns HTTP `200` with the raw `hub.challenge` body; an incorrect token
 returns HTTP `403`.
 
@@ -149,6 +149,13 @@ Slack is modeled as the protected action type `SEND_SLACK_ALERT` behind
 action validates the role, target channel, message, evidence IDs, and source
 recommendation before producing a channel delivery record.
 
+Slack has four MVP roles:
+
+1. internal alert delivery through `SLACK_WEBHOOK_URL`;
+2. Block Kit approval cards with `Approve`, `Reject`, and `Modify`;
+3. signed interactivity handling through `SLACK_SIGNING_SECRET`;
+4. `/logia status <approval-id>` slash-command status checks.
+
 Use `SLACK_WEBHOOK_URL` only as a local or Anypoint secure property. If it is
 configured, the runtime posts the approved message to the webhook and records
 `SENT`. If it is missing, the runtime records `MOCK_SENT` with
@@ -161,14 +168,27 @@ App with Interactivity enabled, a public Request URL, and
 `SLACK_SIGNING_SECRET` stored outside Git. The local reference runtime validates
 Slack request signatures, rejects replayed interactions, supports Approve and
 Reject decisions, and keeps protected actions blocked until a signed approval
-decision is accepted. The Modify button returns a safe instruction to revise the
-recommendation in Salesforce because Salesforce currently supports only
-`APPROVED` and `REJECTED` approval decisions.
+decision is accepted. The Modify button returns an ephemeral instruction to
+revise the recommendation in Salesforce because Salesforce currently supports
+only `APPROVED` and `REJECTED` approval decisions.
+
+The runtime now records `slackFeatures` in delivery evidence, for example
+`incoming_webhook`, `mock_delivery`, `block_kit_approval`,
+`signed_interactivity`, `approve_reject_modify`, and `thread_ready`. These are
+presentation-safe capabilities, not proof that Slack has executed protected
+business work without approval.
+
+The `/logia status` slash command uses the same signed request validation as
+button interactions and returns only safe approval/action readiness details. It
+does not expose raw complaint text, phone numbers, patient details, or secrets.
 
 For an Anypoint build, keep the same Process API boundary and implement the
 Slack write-back as a Mule flow or connector-backed adapter behind
 `POST /v1/actions/executions`. Store the webhook URL in Anypoint secure
-configuration, never in Git.
+configuration, never in Git. Optional future bot-token mode can use
+`SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` for `chat.postMessage`,
+`chat.update`, threaded replies, and ephemeral status messages; until those are
+configured, the webhook plus signed local harness remains the safe demo path.
 
 ## WhatsApp Alert Path
 

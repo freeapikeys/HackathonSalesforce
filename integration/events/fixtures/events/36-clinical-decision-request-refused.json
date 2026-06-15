@@ -14,7 +14,7 @@
   "hfssourcerecordid": "hospital-clinical-boundary-001",
   "hfssourcesequence": 36,
   "hfsobservedat": "2026-06-06T09:34:04Z",
-  "hfscontenthash": "sha256:b74fa277d79d907b94a383b9f28479a77a7f268f43973151996319fc4940eff9",
+  "hfscontenthash": "sha256:00e7b72b45f19f444008160936953e7a7005a58792ed23b41907f21aa52bb4a9",
   "data": {
     "recordtype": "Issue",
     "operation": "UPDATE",
@@ -27,7 +27,7 @@
       "requestedDecision": "triage_priority",
       "refusalReason": "clinical_decision_out_of_scope",
       "routedToRole": "role:clinician",
-      "summary": "North Star refused a clinical triage decision and routed it to a clinician."
+      "summary": "Logia refused a clinical triage decision and routed it to a clinician."
     }
   }
 }

@@ -10,7 +10,7 @@
   "hfstenantid": "demo-mauritius",
   "hfsschemaversion": "1.0.0",
   "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
-  "hfsidempotencykey": "north-star-markdown-v1",
+  "hfsidempotencykey": "logia-markdown-v1",
   "hfssourcerecordid": "retail-event-markdown-001",
   "hfssourcesequence": 5,
   "hfsobservedat": "2026-06-06T09:10:02Z",

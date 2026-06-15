@@ -1,6 +1,6 @@
 # Closed-Loop Intelligence RM
 
-North Star is a Salesforce, Agentforce, and MuleSoft operations command center
+Logia is a Salesforce, Agentforce, and MuleSoft operations command center
 for messy cross-functional business issues. It is not a generic chatbot. It
 turns one operational signal into source-backed evidence, specialist-agent
 reasoning, manager-approved action, protected channel execution, and outcome
@@ -10,7 +10,7 @@ The hackathon demo profile is a large private hospital. The architecture is
 global: the same primitives can map to hotel rooms, airport gates, bank cases,
 supermarket batches, cruise cabins, and hospital beds.
 
-North Star handles non-clinical operations only. It must not diagnose, treat,
+Logia handles non-clinical operations only. It must not diagnose, treat,
 recommend dosage, triage patients, or decide clinical priority.
 This private local branch is recentered on the original product: a Salesforce,
 Agentforce, Data 360, and MuleSoft system that turns first-party business data
@@ -41,7 +41,7 @@ the checklist in [ROADMAP.md](ROADMAP.md).
 
 ## Current Build Target
 
-The first North Star hospital proof is:
+The first Logia hospital proof is:
 
 `customer/staff/system signal -> global primitives and evidence -> Agentforce
 action recommendation -> clinical-refusal guardrail -> manager approval ->
@@ -50,7 +50,7 @@ outcomes -> updated command center`
 
 The demo starts from rising patient complaints, blocked discharge rooms,
 outpatient queue pressure, low pharmacy stock, delayed lab response, and stuck
-billing or insurance approvals. North Star expands that one surge into patient
+billing or insurance approvals. Logia expands that one surge into patient
 trust, capacity, partner/vendor, financial, communication, risk, and outcome
 work.
 
@@ -58,14 +58,14 @@ work.
 
 - `ROADMAP.md`: hackathon checklist and completion gates.
 - `AGENTS.md`: rules for Codex and human contributors.
-- `docs/north-star-master-reference.md`: one-stop team reference for agents,
+- `docs/logia-master-reference.md`: one-stop team reference for agents,
   IDs, channels, commands, setup, and demo gates.
 - `docs/agentforce-publish-recovery.md`: Windows runbook for recovering and
   publishing the live Agentforce Studio agent.
-- `docs/north-star-mvp.md`: product brief, agent roles, demo story, and non-goals.
-- `docs/north-star-implementation-plan.md`: practical build plan for the team.
-- `docs/north-star-demo-narrative.md`: judge demo script and backup path.
-- `docs/north-star-demo-data.md`: synthetic private-hospital demo data summary.
+- `docs/logia-mvp.md`: product brief, agent roles, demo story, and non-goals.
+- `docs/logia-implementation-plan.md`: practical build plan for the team.
+- `docs/logia-demo-narrative.md`: judge demo script and backup path.
+- `docs/logia-demo-data.md`: synthetic private-hospital demo data summary.
   The first branch-level vertical slice is:
 
 `authorized source event -> preserved evidence -> semantic mapping -> facts and
@@ -84,8 +84,8 @@ regulators, shareholders, and other business relationships.
 - `docs/closed-loop-intelligence-rm.md`: branch product doctrine and loop.
 - `docs/research/jury-gift-dossiers-2026-06-10.md`: private OSINT-backed
   jury/company gift dossiers.
-- `docs/north-star-mvp.md`: retail demo vertical brief.
-- `docs/north-star-implementation-plan.md`: retail demo build plan.
+- `docs/logia-mvp.md`: retail demo vertical brief.
+- `docs/logia-implementation-plan.md`: retail demo build plan.
 - `docs/architecture.md`: system architecture and runtime flow.
 - `docs/demo-harness.md`: seed, reset, verification, and connected demo behavior.
 - `docs/clean-clone-runbook.md`: clean-clone verification path.

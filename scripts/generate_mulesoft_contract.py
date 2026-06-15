@@ -1178,26 +1178,26 @@ def build_examples() -> dict[str, Any]:
         "purpose": "EXECUTE_APPROVED_HOSPITAL_ACTION",
         "externalKey": "action-slack-alert-001",
         "idempotencyKey": action_key,
-        "recommendationId": "recommendation-north-star-001",
-        "approvalId": "approval-north-star-slack-001",
+        "recommendationId": "recommendation-logia-001",
+        "approvalId": "approval-logia-slack-001",
         "actionId": "action-slack-alert-001",
         "targetEntityId": "hospital-operations-command-001",
         "actionType": "SEND_SLACK_ALERT",
         "sourceSystem": "slack",
         "payload": {
             "targetRole": "Operations Manager",
-            "targetChannel": "#north-star-demo",
+            "targetChannel": "#logia-demo",
             "messageTitle": "Hospital operations update",
             "messageBody": (
                 "Please check room cleaning, pharmacy stock, lab delay, and "
-                "billing review. North Star has linked the evidence."
+                "billing review. Logia has linked the evidence."
             ),
             "evidenceIds": [
                 "hospital-complaint-cluster-001",
                 "hospital-capacity-pressure-001",
                 "hospital-lab-delay-001",
             ],
-            "sourceRecommendationId": "recommendation-north-star-001",
+            "sourceRecommendationId": "recommendation-logia-001",
         },
     }
     action_success = {
@@ -1345,7 +1345,7 @@ def build_examples() -> dict[str, Any]:
                             "status": "MOCK_SENT",
                             "provider": "mock-slack",
                             "targetRole": "Operations Manager",
-                            "targetChannel": "#north-star-demo",
+                            "targetChannel": "#logia-demo",
                         },
                     },
                 ),

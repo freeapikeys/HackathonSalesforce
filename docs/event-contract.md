@@ -82,7 +82,7 @@ resources, partners, agreements, work, evidence, and outcomes. The scenario then
 replays a duplicate, sends malformed input, delivers a late event, introduces a
 contradictory assertion, and sends an out-of-order event.
 
-The North Star private hospital demo should add hospital operations fixtures
+The Logia private hospital demo should add hospital operations fixtures
 using the same envelope and intake rules. Candidate event types:
 
 - `io.github.freeapikeys.hfs.hospital.patient-complaint-cluster-detected.v1`;

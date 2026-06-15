@@ -26,7 +26,7 @@ function canRun(command) {
 const python = candidates.find(canRun);
 
 if (!python) {
-  console.error("Unable to find a Python runtime for North Star scripts.");
+  console.error("Unable to find a Python runtime for Logia scripts.");
   process.exit(1);
 }
 
@@ -51,6 +51,8 @@ const tasks = {
   "harness-tests": [
     ["-m", "unittest", "discover", "-s", "scripts/tests", "-p", "test_*.py"]
   ],
+  identity: [["scripts/verify_identity_history.py"]],
+  mappings: [["scripts/validate_semantic_mappings.py"]],
   metadata: [["scripts/generate_core_salesforce_metadata.py", "--check"]],
   models: [
     ["scripts/generate_model_gateway_contract.py", "--check"],
@@ -80,7 +82,10 @@ const tasks = {
       { env: withPythonPath("mulesoft") }
     ]
   ],
-  ontology: [["scripts/validate_ontology.py"]]
+  ontology: [["scripts/validate_ontology.py"]],
+  "shared-semantics": [["scripts/verify_shared_semantics.py"]],
+  "source-intake": [["scripts/verify_source_intake.py"]],
+  temporal: [["scripts/validate_temporal_semantics.py"]]
 };
 
 if (!tasks[task]) {

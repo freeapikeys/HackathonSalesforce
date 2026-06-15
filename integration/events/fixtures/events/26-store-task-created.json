@@ -10,7 +10,7 @@
   "hfstenantid": "demo-mauritius",
   "hfsschemaversion": "1.0.0",
   "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
-  "hfsidempotencykey": "north-star-store-task-v1",
+  "hfsidempotencykey": "logia-store-task-v1",
   "hfssourcerecordid": "retail-event-task-001",
   "hfssourcesequence": 12,
   "hfsobservedat": "2026-06-06T09:35:01Z",

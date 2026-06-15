@@ -1,28 +1,28 @@
 export const UI_STATE_VERSION = "1.0.0";
 
-export const DEFAULT_PROFILE_KEY = "north-star-retail";
+export const DEFAULT_PROFILE_KEY = "logia-retail";
 
 const PROFILE_CONFIGS = {
-  "north-star-retail": {
-    key: "north-star-retail",
-    shortName: "North Star",
-    eyebrow: "North Star command center",
+  "logia-retail": {
+    key: "logia-retail",
+    shortName: "Logia",
+    eyebrow: "Logia command center",
     pageTitle: "Supermarket recovery plan",
-    loadingTitle: "Loading North Star context",
-    loadingMessage: "Assembling North Star retail context.",
-    emptyTitle: "No North Star work is assigned",
+    loadingTitle: "Loading Logia context",
+    loadingMessage: "Assembling Logia retail context.",
+    emptyTitle: "No Logia work is assigned",
     emptyMessage: "New supermarket risk work will appear here when assigned.",
-    deniedTitle: "North Star context is not available",
+    deniedTitle: "Logia context is not available",
     deniedMessage:
       "Your current permissions or declared purpose do not allow access to this retail context.",
-    errorTitle: "North Star could not load",
+    errorTitle: "Logia could not load",
     errorMessage:
       "The retail command service is temporarily unavailable. Retry the request.",
     ownerLabel: "Manager owner",
     deadlineLabel: "Rush deadline",
     updateLabel: "Next decision update",
     riskKicker: "Risk pulse",
-    riskHeading: "North Star retail signals",
+    riskHeading: "Logia retail signals",
     relationshipKicker: "Product context",
     relationshipHeading: "Product, batch, and stock",
     contextLabels: {
@@ -400,9 +400,9 @@ function operatingLayer({ kpis, trendTitle, trend, brief, agents, channels }) {
 }
 
 const caseState = {
-  id: "work-north-star-retail-risk-001",
-  externalKey: "CORR-NORTH-STAR-WEEKEND-GRILL-001",
-  title: "North Star weekend promotion recovery",
+  id: "work-logia-retail-risk-001",
+  externalKey: "CORR-LOGIA-WEEKEND-GRILL-001",
+  title: "Logia weekend promotion recovery",
   summary:
     "Fresh beef patties need a manager-approved recovery plan before the weekend rush.",
   severity: "High",
@@ -630,12 +630,12 @@ const caseState = {
       type: "Approval",
       title: "Manager decision requested",
       detail: "No protected action has executed.",
-      source: "North Star Orchestrator"
+      source: "Logia Orchestrator"
     }
   ],
   evidence: [
     {
-      id: "evidence-inventory-north-star-001",
+      id: "evidence-inventory-logia-001",
       label: "Inventory and demand",
       summary:
         "Shelf 18, backroom 24, warehouse 72, supplier 180, sales velocity 28 units per hour.",
@@ -645,7 +645,7 @@ const caseState = {
         "sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f"
     },
     {
-      id: "evidence-complaint-north-star-001",
+      id: "evidence-complaint-logia-001",
       label: "Complaint cluster",
       summary:
         "Five complaints mention smell, damaged packaging, refunds, and price mismatch.",
@@ -655,7 +655,7 @@ const caseState = {
         "sha256:b3d620f198f2db5cb1dd78751ba54fcd45ba040f4da22722b0fb508f840496cb"
     },
     {
-      id: "evidence-supplier-north-star-001",
+      id: "evidence-supplier-logia-001",
       label: "Supplier response",
       summary:
         "Replacement batch approved with 18-hour lead time and credit note.",
@@ -665,7 +665,7 @@ const caseState = {
         "sha256:3ec509577dfb0232926b50bbf7bc7b047f77c48665d1d15a067a7c548f17d588"
     },
     {
-      id: "evidence-staffing-north-star-001",
+      id: "evidence-staffing-logia-001",
       label: "Staffing forecast",
       summary:
         "Queue risk forecast from 16:30 to 18:30 with one extra lane recommended.",
@@ -676,7 +676,7 @@ const caseState = {
     }
   ],
   sop: {
-    name: "North Star retail recovery",
+    name: "Logia retail recovery",
     version: "1.0.0",
     status: "In progress",
     currentStep: "Await manager approval",
@@ -686,7 +686,7 @@ const caseState = {
     requiredEvidence: "Approved action set and channel delivery results"
   },
   recommendation: {
-    id: "recommendation-north-star-retail-001",
+    id: "recommendation-logia-retail-001",
     status: "Pending approval",
     title: "Approve retail recovery actions",
     recommendation:
@@ -704,24 +704,24 @@ const caseState = {
     ],
     confidence: 0.86,
     confidencePercent: "86%",
-    modelProfile: "north-star-retail-recommendation",
+    modelProfile: "logia-retail-recommendation",
     modelProfileVersion: "1.0.0",
-    policyVersion: "north-star-retail-routing-mauritius 1.0.0",
+    policyVersion: "logia-retail-routing-mauritius 1.0.0",
     evidenceIds: [
-      "evidence-inventory-north-star-001",
-      "evidence-complaint-north-star-001",
-      "evidence-supplier-north-star-001",
-      "evidence-staffing-north-star-001"
+      "evidence-inventory-logia-001",
+      "evidence-complaint-logia-001",
+      "evidence-supplier-logia-001",
+      "evidence-staffing-logia-001"
     ],
     requiresHumanApproval: true
   },
   approval: {
-    id: "approval-north-star-retail-001",
+    id: "approval-logia-retail-001",
     status: "Pending",
-    policy: "North Star manager approval",
+    policy: "Logia manager approval",
     policyVersion: "1.0.0",
     requestedAt: "2026-06-06T09:36:00Z",
-    requestedBy: "North Star Orchestrator",
+    requestedBy: "Logia Orchestrator",
     decisionDueAt: "2026-06-06T10:00:00Z"
   },
   actions: [
@@ -818,7 +818,7 @@ const caseState = {
     agents: [
       {
         id: "agent-retail-orchestrator",
-        name: "North Star Orchestrator",
+        name: "Logia Orchestrator",
         status: "Waiting on approval",
         lastMessage:
           "I combined stock, complaint, supplier, and staffing signals into one recovery plan."
@@ -2774,7 +2774,7 @@ const sunlifeGuestRecoveryCaseState = buildTerrainCaseState({
 });
 
 const CASE_STATES_BY_PROFILE = {
-  "north-star-retail": caseState,
+  "logia-retail": caseState,
   "nexavenu-revenue": nexavenuCaseState,
   "air-mauritius-passenger": airMauritiusCaseState,
   "constance-hospitality": constanceHospitalityCaseState,
@@ -2783,7 +2783,7 @@ const CASE_STATES_BY_PROFILE = {
 };
 
 const PROFILE_RUNTIME = {
-  "north-star-retail": {
+  "logia-retail": {
     correlationId: "20000000-0000-4000-8000-000000000001",
     userRole: "Duty Manager",
     purpose: "RESOLVE_RETAIL_RISK"

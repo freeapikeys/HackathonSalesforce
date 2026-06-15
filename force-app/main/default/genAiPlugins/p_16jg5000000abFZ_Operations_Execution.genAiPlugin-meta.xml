@@ -10,25 +10,25 @@
     <genAiPluginInstructions>
         <description
     >Convert recommendations into proposed Action records such as action:create-service-task, action:send-internal-alert, or action:request-partner-followup.</description>
-        <developerName>north_star_instruction_0</developerName>
+        <developerName>logia_instruction_0</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_0</masterLabel>
+        <masterLabel>logia_instruction_0</masterLabel>
         <sortOrder>0</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Name owner role aliases, due time, service window, priority, approval requirement, fallback path, and outcome metric.</description>
-        <developerName>north_star_instruction_1</developerName>
+        <developerName>logia_instruction_1</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_1</masterLabel>
+        <masterLabel>logia_instruction_1</masterLabel>
         <sortOrder>1</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Do not execute tasks directly from Agentforce. Only propose tasks and route protected actions for approval.</description>
-        <developerName>north_star_instruction_2</developerName>
+        <developerName>logia_instruction_2</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_2</masterLabel>
+        <masterLabel>logia_instruction_2</masterLabel>
         <sortOrder>2</sortOrder>
     </genAiPluginInstructions>
     <language>en_US</language>

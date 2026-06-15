@@ -2,7 +2,7 @@
 
 ## Goal
 
-Create realistic synthetic private hospital operations data for North Star's
+Create realistic synthetic private hospital operations data for Logia's
 agents, fixtures, command center, and demo flow. The data must feel like a
 large hospital operation in Mauritius, but it must not contain real patient,
 staff, phone, supplier, insurer, credential, or medical-record data.
@@ -27,8 +27,8 @@ base that lets the agents reason:
 
 Start from the existing project structure:
 
-- `docs/north-star-mvp.md` defines the global operating model and hospital demo.
-- `docs/north-star-implementation-plan.md` defines generic build checklists.
+- `docs/logia-mvp.md` defines the global operating model and hospital demo.
+- `docs/logia-implementation-plan.md` defines generic build checklists.
 - `docs/event-contract.md` defines source event expectations.
 - `docs/demo-harness.md` defines the demo proof path.
 - `docs/ui-state-contract.md` defines command-center state expectations.
@@ -333,7 +333,7 @@ Create these exact scenario types:
 7. Food or hospitality complaint requiring service response.
 8. Accessibility support delay requiring task assignment.
 9. Privacy or safety-sensitive complaint requiring escalation.
-10. Clinical triage/treatment request that North Star refuses.
+10. Clinical triage/treatment request that Logia refuses.
 11. Missing resource evidence causing a cautious recommendation.
 12. Late partner response updating the plan without overwriting audit history.
 
@@ -368,8 +368,8 @@ Create 12 to 15 expected recommendation notes:
 
 Each note should say:
 
-- what North Star should recommend;
-- what North Star should refuse to do;
+- what Logia should recommend;
+- what Logia should refuse to do;
 - which evidence IDs matter;
 - whether manager approval is needed;
 - which Slack or WhatsApp alert would be appropriate after approval.
@@ -580,7 +580,7 @@ phone numbers, emails, addresses, or medical details.
 - [x] Cover at least these issue types:
       wait time, room readiness, pharmacy stock, duplicate bill, food/service,
       accessibility, privacy/safety concern, partner delay, and mixed issue.
-- [x] For each prompt, add: - expected language; - one short follow-up question North Star should ask if evidence is
+- [x] For each prompt, add: - expected language; - one short follow-up question Logia should ask if evidence is
       missing; - affected primitives, for example `Customer`, `Resource`, `Partner`,
       `Policy`, `Approval`, `Action`, `Outcome`; - expected agents involved; - protected actions that must wait for approval; - safe customer acknowledgement wording.
 - [x] Keep wording simple and natural. Avoid corporate phrases, diagnosis,
@@ -592,7 +592,7 @@ These are fake transcripts for Hassan to test voice handling without needing
 live WhatsApp audio or API access.
 
 - [x] Add at least 6 voice-note transcript examples: - 2 clear operational complaints; - 2 messy/noisy transcripts with missing details; - 1 mixed issue touching complaint, stock, and billing; - 1 clinical-decision request that must be refused and routed to a human.
-- [x] For each transcript, add: - transcript language; - expected confidence: high, medium, or low; - whether North Star should ask a follow-up; - expected evidence type; - expected refusal or protected approval rule.
+- [x] For each transcript, add: - transcript language; - expected confidence: high, medium, or low; - whether Logia should ask a follow-up; - expected evidence type; - expected refusal or protected approval rule.
 
 ### Document And Image Evidence Scenarios
 
@@ -608,7 +608,7 @@ screenshots of real documents or any private data.
 - [x] Include at least three cases where one complaint expands into four or more
       functions, for example customer trust, resource/capacity, inventory,
       billing, communication, and outcome learning.
-- [x] Include at least two cases where North Star must not act because evidence
+- [x] Include at least two cases where Logia must not act because evidence
       is missing, restricted, clinical, or unsafe.
 
 ### Judge-Sector Mapping
@@ -618,7 +618,7 @@ screenshots of real documents or any private data.
 - [x] Keep the mapping based on global primitives, not separate product ideas.
       Example: hospital room, hotel room, airport gate, and bank case are all
       `Resource` examples.
-- [x] Make the judge takeaway clear: North Star is not a hospital-only bot; the
+- [x] Make the judge takeaway clear: Logia is not a hospital-only bot; the
       hospital is one profile proving the global operating model.
 
 ### Validation Checklist
@@ -637,7 +637,7 @@ screenshots of real documents or any private data.
 Use this when starting a fresh task:
 
 ```text
-Read docs/assignments/aarav.md, docs/north-star-mvp.md,
+Read docs/assignments/aarav.md, docs/logia-mvp.md,
 docs/event-contract.md, docs/salesforce-data-model.md, and docs/demo-harness.md.
 Create or refine synthetic private hospital operations data. Use deterministic
 IDs, global primitives, complaint clusters, resource/capacity records, partner

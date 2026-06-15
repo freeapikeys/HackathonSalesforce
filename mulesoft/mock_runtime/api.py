@@ -804,6 +804,21 @@ class MockWriteBackAdapter:
                 "mock-slack-" + canonical_hash(action)[:12]
             )
 
+        slack_features = [
+            "incoming_webhook" if self.slack_webhook_url else "mock_delivery",
+            "role_routed_alert",
+        ]
+        if slack_payload.get("approvalRequest"):
+            slack_features.extend(
+                [
+                    "block_kit_approval",
+                    "signed_interactivity",
+                    "approve_reject_modify",
+                ]
+            )
+        if slack_payload.get("threadKey"):
+            slack_features.append("thread_ready")
+
         delivery = {
             "status": status,
             "provider": provider,
@@ -818,6 +833,13 @@ class MockWriteBackAdapter:
             "sourceRecommendationId": slack_payload["sourceRecommendationId"],
             "correlationId": action["correlationId"],
             "actionId": action["actionId"],
+            "slackFeatures": slack_features,
+            "approvalMode": (
+                "SLACK_INTERACTIVITY"
+                if slack_payload.get("approvalRequest")
+                else "NOT_REQUIRED_FOR_ALERT"
+            ),
+            "threadKey": slack_payload.get("threadKey"),
         }
         source_record = {
             "sourceRecordId": source_record_id,
@@ -890,7 +912,7 @@ class MockWriteBackAdapter:
     def _slack_message_text(self, payload: dict[str, Any]) -> str:
         return "\n".join(
             [
-                f"North Star alert: {payload['messageTitle']}",
+                f"Logia alert: {payload['messageTitle']}",
                 payload["messageBody"],
                 f"Owner: {payload['targetRole']}",
                 f"Channel: {payload['targetChannel']}",
@@ -971,26 +993,26 @@ class MockWriteBackAdapter:
             },
             {
                 "type": "actions",
-                "block_id": "north_star_approval_actions",
+                "block_id": "logia_approval_actions",
                 "elements": [
                     {
                         "type": "button",
                         "text": {"type": "plain_text", "text": "Approve"},
                         "style": "primary",
-                        "action_id": "north_star_approve",
+                        "action_id": "logia_approve",
                         "value": button_value("APPROVED"),
                     },
                     {
                         "type": "button",
                         "text": {"type": "plain_text", "text": "Reject"},
                         "style": "danger",
-                        "action_id": "north_star_reject",
+                        "action_id": "logia_reject",
                         "value": button_value("REJECTED"),
                     },
                     {
                         "type": "button",
                         "text": {"type": "plain_text", "text": "Modify"},
-                        "action_id": "north_star_modify",
+                        "action_id": "logia_modify",
                         "value": button_value("MODIFY"),
                     },
                 ],
@@ -1121,7 +1143,7 @@ class SlackApprovalInteractionHandler:
             ) from error
 
         decision_status = value.get("decisionStatus")
-        if action_id == "north_star_modify" or decision_status == "MODIFY":
+        if action_id == "logia_modify" or decision_status == "MODIFY":
             self._seen_signatures.add(signature_value)
             return MockHttpResponse(
                 200,
@@ -1129,6 +1151,8 @@ class SlackApprovalInteractionHandler:
                     "ok": True,
                     "decisionStatus": "MODIFY_REQUESTED",
                     "approvalId": value.get("approvalId"),
+                    "replace_original": False,
+                    "response_type": "ephemeral",
                     "message": (
                         "Open the Salesforce command center to modify this "
                         "recommendation before approval."
@@ -1136,9 +1160,9 @@ class SlackApprovalInteractionHandler:
                 },
                 {},
             )
-        if action_id == "north_star_approve":
+        if action_id == "logia_approve":
             decision_status = "APPROVED"
-        elif action_id == "north_star_reject":
+        elif action_id == "logia_reject":
             decision_status = "REJECTED"
         if decision_status not in {"APPROVED", "REJECTED"}:
             raise SlackInteractionValidationError(
@@ -1179,9 +1203,168 @@ class SlackApprovalInteractionHandler:
                 "tenantKey": value["tenantKey"],
                 "correlationId": value.get("correlationId"),
                 "actionIds": decision.get("actionIds", []),
+                "replace_original": True,
+                "text": (
+                    f"Logia approval {decision_status.lower()} for "
+                    f"{value['approvalId']}."
+                ),
+                "channelId": (payload.get("channel") or {}).get("id"),
+                "messageTs": (payload.get("message") or {}).get("ts")
+                or (payload.get("container") or {}).get("message_ts"),
             },
             {},
         )
+
+
+class SlackStatusCommandHandler:
+    """Validates `/logia status` slash commands and returns safe case state."""
+
+    def __init__(
+        self,
+        *,
+        signing_secret: str,
+        write_back_adapter: MockWriteBackAdapter,
+        now_seconds: Callable[[], int] | None = None,
+        maximum_age_seconds: int = 300,
+    ) -> None:
+        if not signing_secret:
+            raise ValueError("signing_secret is required")
+        self.signing_secret = signing_secret
+        self.write_back_adapter = write_back_adapter
+        self.now_seconds = now_seconds or (lambda: int(time.time()))
+        self.maximum_age_seconds = maximum_age_seconds
+        self._seen_signatures: set[str] = set()
+
+    def handle(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> MockHttpResponse:
+        try:
+            return self._handle(headers, raw_body)
+        except SlackInteractionValidationError as error:
+            return MockHttpResponse(
+                error.status,
+                {
+                    "ok": False,
+                    "code": error.code,
+                    "message": str(error),
+                    "response_type": "ephemeral",
+                },
+                {},
+            )
+
+    def _handle(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> MockHttpResponse:
+        self._validate_signature(headers, raw_body)
+        form = {
+            key: values[0] if values else ""
+            for key, values in urllib.parse.parse_qs(
+                raw_body,
+                keep_blank_values=True,
+            ).items()
+        }
+        command = form.get("command", "")
+        if command and command != "/logia":
+            raise SlackInteractionValidationError(
+                "SLACK_COMMAND_UNSUPPORTED",
+                "Only /logia commands are supported.",
+            )
+        text = form.get("text", "").strip()
+        parts = text.split()
+        if len(parts) != 2 or parts[0].lower() != "status":
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "response_type": "ephemeral",
+                    "text": (
+                        "Use `/logia status <approval-id>` to check approval "
+                        "and action readiness."
+                    ),
+                },
+                {},
+            )
+
+        approval_id = parts[1]
+        approval = self.write_back_adapter.approvals.get(approval_id)
+        if approval is None:
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "response_type": "ephemeral",
+                    "text": f"Logia could not find approval `{approval_id}`.",
+                },
+                {},
+            )
+        status = approval.get("status", "UNKNOWN")
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "ephemeral",
+                "text": (
+                    f"Logia approval `{approval_id}` is `{status}`. "
+                    f"Recommendation `{approval.get('recommendationId')}`; "
+                    f"actions: {', '.join(approval.get('actionIds', []))}."
+                ),
+                "approvalId": approval_id,
+                "decisionStatus": status,
+                "actionIds": deepcopy(approval.get("actionIds", [])),
+            },
+            {},
+        )
+
+    def _validate_signature(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> None:
+        normalized_headers = {key.lower(): value for key, value in headers.items()}
+        timestamp_value = normalized_headers.get("x-slack-request-timestamp", "")
+        signature_value = normalized_headers.get("x-slack-signature", "")
+        if not timestamp_value or not signature_value:
+            raise SlackInteractionValidationError(
+                "SLACK_SIGNATURE_MISSING",
+                "Slack signature headers are required.",
+                status=401,
+            )
+        try:
+            request_time = int(timestamp_value)
+        except ValueError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_TIMESTAMP_INVALID",
+                "Slack request timestamp must be an integer.",
+                status=401,
+            ) from error
+        if abs(self.now_seconds() - request_time) > self.maximum_age_seconds:
+            raise SlackInteractionValidationError(
+                "SLACK_TIMESTAMP_EXPIRED",
+                "Slack request timestamp is outside the allowed window.",
+                status=401,
+            )
+        expected_signature = SlackApprovalInteractionHandler.signature(
+            signing_secret=self.signing_secret,
+            timestamp_value=timestamp_value,
+            raw_body=raw_body,
+        )
+        if not hmac.compare_digest(expected_signature, signature_value):
+            raise SlackInteractionValidationError(
+                "SLACK_SIGNATURE_INVALID",
+                "Slack request signature did not match.",
+                status=401,
+            )
+        if signature_value in self._seen_signatures:
+            raise SlackInteractionValidationError(
+                "SLACK_INTERACTION_REPLAYED",
+                "Slack command was already processed.",
+                status=409,
+            )
+        self._seen_signatures.add(signature_value)
 
 
 class MockIntegrationApi:
@@ -1250,7 +1433,7 @@ class MockIntegrationApi:
         correlation_id = str(
             uuid.uuid5(
                 uuid.NAMESPACE_URL,
-                f"north-star:twilio-whatsapp:{tenant_key}:{message_sid or body}",
+                f"logia:twilio-whatsapp:{tenant_key}:{message_sid or body}",
             )
         )
         headers = {
@@ -1329,7 +1512,7 @@ class MockIntegrationApi:
             "id": str(
                 uuid.uuid5(
                     uuid.NAMESPACE_URL,
-                    f"north-star:event:twilio-whatsapp:{tenant_key}:{message_sid}",
+                    f"logia:event:twilio-whatsapp:{tenant_key}:{message_sid}",
                 )
             ),
             "source": "urn:hfs:source:twilio-whatsapp",

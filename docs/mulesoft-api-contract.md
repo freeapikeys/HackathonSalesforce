@@ -38,9 +38,9 @@ contract is executable at
 - Callback delivery is retried independently and cannot change the original
   operation result.
 
-## North Star Hospital Actions
+## Logia Hospital Actions
 
-North Star should keep hospital actions behind the existing
+Logia should keep hospital actions behind the existing
 `EXECUTE_APPROVED_ACTION` operation unless a real integration requires a new
 contract version.
 
@@ -61,7 +61,7 @@ The same action boundary can later support hotel, airport, banking,
 supermarket, cruise, or other profiles by changing action types and payloads,
 not by adding a new endpoint.
 
-## North Star Signal Intake
+## Logia Signal Intake
 
 Inbound complaint and operations channels are not action executions. They are
 source signals and should enter through `INGEST_EVENT`.
@@ -114,6 +114,13 @@ questions, root-cause hypotheses, next-evidence needs, and affected primitives.
   webhook. Signed interactions require `SLACK_SIGNING_SECRET`, timestamp and
   signature validation, replay rejection, and a pending approval before the
   decision can be recorded.
+- Slack delivery evidence must say which Slack capabilities were used:
+  webhook or mock delivery, Block Kit approval, signed interactivity,
+  approve/reject/modify buttons, slash-command status, or thread-ready
+  metadata.
+- `/logia status <approval-id>` is an internal Slack status command. It may
+  report approval state and action readiness, but it must not expose raw
+  complaint text, contact data, patient details, secrets, or execute actions.
 - Vendor email notification is implemented as protected mock action
   `SEND_VENDOR_EMAIL`; do not claim live email delivery unless an Anypoint,
   SMTP, or email-provider connector is configured and tested.
@@ -142,7 +149,7 @@ back to Salesforce.
 `403 PERMISSION_DENIED` with no outcome, then executes the approved action,
 captures the callback, and writes the correlated outcome back to Salesforce.
 
-For North Star, approved mock write-backs should include retail action types such
+For Logia, approved mock write-backs should include retail action types such
 as supplier quality case, replacement-batch request, reorder request, warehouse
 transfer, markdown plan, store tasks, Slack alert, WhatsApp-style alert, and
 retail outcome capture. These can remain action payloads behind the existing

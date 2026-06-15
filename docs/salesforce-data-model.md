@@ -43,7 +43,7 @@ Source-derived records link to the immutable event that produced them.
 
 ## Global Primitive Mapping
 
-North Star should map business concepts onto global primitives before adding
+Logia should map business concepts onto global primitives before adding
 new custom objects. Add fields or types only when the generic model cannot
 express the demo requirement.
 

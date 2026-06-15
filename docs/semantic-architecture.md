@@ -105,9 +105,9 @@ the information available at the time.
 - `ExperimentCandidate`
 - `PromotionDecision`
 
-## North Star Semantic Extension
+## Logia Semantic Extension
 
-North Star should extend the core types through controlled terms before adding a
+Logia should extend the core types through controlled terms before adding a
 separate graph store. Candidate retail terms:
 
 - `Store`
@@ -203,7 +203,7 @@ SOPs, policies, constraints, and approval requirements.
 What was attempted, under which conditions, what happened, and how the result
 was measured.
 
-North Star outcome memory should capture which service option was chosen,
+Logia outcome memory should capture which service option was chosen,
 supplier response status, manager decision, channel delivery, staff completion,
 stockout result, waste result, complaint result, and any new risk created by
 the action.

@@ -69,7 +69,7 @@ const livePayload = {
       objectApiName: "HFS_Work_Item__c",
       externalKey: "work-live-test",
       recordType: "HIGH",
-      label: "Live North Star case",
+      label: "Live Logia case",
       status: "AWAITING_APPROVAL",
       summary: "A permitted user must decide the current recommendation.",
       occurredAt: "2026-06-07T07:00:00.000Z",
@@ -163,7 +163,7 @@ const livePayload = {
         summary: "Send a grounded service update.",
         confidence: 0.91,
         proposedActionType: "SEND_STATUS_UPDATE",
-        modelProfile: "north-star-retail-recommendation",
+        modelProfile: "logia-retail-recommendation",
         modelInvocationId: "invocation-live-test"
       }
     ],
@@ -190,12 +190,12 @@ describe("c-hfs-relationship-command-center", () => {
     }
   });
 
-  it("renders the complete synthetic North Star case", () => {
+  it("renders the complete synthetic Logia case", () => {
     const element = createComponent();
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("North Star weekend promotion recovery");
+    expect(root.textContent).toContain("Logia weekend promotion recovery");
     expect(root.textContent).toContain("RM Intel");
     expect(root.textContent).toContain("Dashboard");
     expect(root.textContent).toContain("Signals");
@@ -208,7 +208,7 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Chat with agents");
     expect(root.textContent).toContain("Employees and departments");
     expect(root.textContent).toContain("Predicted stockout avoided");
-    expect(root.textContent).toContain("North Star retail signals");
+    expect(root.textContent).toContain("Logia retail signals");
     expect(root.textContent).toContain("Product, batch, and stock");
     expect(root.textContent).toContain("Relationship inspection");
     expect(root.textContent).toContain("Contradictory claims");
@@ -219,7 +219,7 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Supplier response");
     expect(root.textContent).toContain("Source records");
     expect(root.textContent).toContain("Accessible source evidence");
-    expect(root.textContent).toContain("North Star retail recovery");
+    expect(root.textContent).toContain("Logia retail recovery");
     expect(root.textContent).toContain("Approve retail recovery actions");
     expect(root.textContent).toContain("Approval decision");
     expect(root.textContent).toContain("Store tasks and channel log");
@@ -237,7 +237,7 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.querySelectorAll(".history-card")).toHaveLength(2);
   });
 
-  it("renders the Nexavenu revenue gift profile without replacing North Star", () => {
+  it("renders the Nexavenu revenue gift profile without replacing Logia", () => {
     const element = createComponent("ready", "nexavenu-revenue");
     const root = element.shadowRoot;
 
@@ -251,7 +251,7 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Revenue approval decision");
     expect(root.textContent).toContain("Nurture actions and handoff log");
     expect(root.textContent).toContain("Readiness target");
-    expect(root.textContent).not.toContain("North Star retail signals");
+    expect(root.textContent).not.toContain("Logia retail signals");
   });
 
   it.each([
@@ -290,15 +290,15 @@ describe("c-hfs-relationship-command-center", () => {
 
       expect(root.textContent).toContain(expectedEyebrow);
       expect(root.textContent).toContain(expectedRiskHeading);
-      expect(root.textContent).not.toContain("North Star retail signals");
+      expect(root.textContent).not.toContain("Logia retail signals");
     }
   );
 
   it.each([
-    ["loading", "loading-view", "Loading North Star context"],
-    ["empty", "empty-view", "No North Star work is assigned"],
-    ["denied", "denied-view", "North Star context is not available"],
-    ["error", "error-view", "North Star could not load"]
+    ["loading", "loading-view", "Loading Logia context"],
+    ["empty", "empty-view", "No Logia work is assigned"],
+    ["denied", "denied-view", "Logia context is not available"],
+    ["error", "error-view", "Logia could not load"]
   ])("renders the %s material state", (stateName, testId, expectedText) => {
     const element = createComponent(stateName);
     const root = element.shadowRoot;
@@ -313,7 +313,7 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("North Star weekend promotion recovery");
+    expect(root.textContent).toContain("Logia weekend promotion recovery");
     expect(
       root.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();
@@ -361,8 +361,8 @@ describe("c-hfs-relationship-command-center", () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toEqual({
       decision,
-      recommendationId: "recommendation-north-star-retail-001",
-      approvalId: "approval-north-star-retail-001",
+      recommendationId: "recommendation-logia-retail-001",
+      approvalId: "approval-logia-retail-001",
       correlationId: "20000000-0000-4000-8000-000000000001",
       stateVersion: UI_STATE_VERSION
     });
@@ -417,7 +417,7 @@ describe("c-hfs-relationship-command-center", () => {
         includeProvenance: true
       })
     );
-    expect(element.shadowRoot.textContent).toContain("Live North Star case");
+    expect(element.shadowRoot.textContent).toContain("Live Logia case");
     expect(element.shadowRoot.textContent).toContain("Live customer");
     expect(element.shadowRoot.textContent).toContain("93%");
     expect(element.shadowRoot.textContent).toContain(
@@ -459,7 +459,7 @@ describe("c-hfs-relationship-command-center", () => {
     const element = createLiveComponent();
     await flushPromises();
 
-    expect(element.shadowRoot.textContent).toContain("Live North Star case");
+    expect(element.shadowRoot.textContent).toContain("Live Logia case");
     expect(
       element.shadowRoot.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();

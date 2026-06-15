@@ -10,7 +10,7 @@
   "hfstenantid": "demo-mauritius",
   "hfsschemaversion": "1.0.0",
   "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
-  "hfsidempotencykey": "north-star-warehouse-stock-v1",
+  "hfsidempotencykey": "logia-warehouse-stock-v1",
   "hfssourcerecordid": "retail-event-warehouse-001",
   "hfssourcesequence": 2,
   "hfsobservedat": "2026-06-06T09:03:03Z",

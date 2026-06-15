@@ -1,4 +1,4 @@
-@RestResource(urlMapping='/northstar/v1/twilio/whatsapp')
+@RestResource(urlMapping='/logia/v1/twilio/whatsapp')
 global with sharing class HFS_TwilioIntakeResource {
   private static final String DEFAULT_TENANT = 'demo-mauritius';
   private static final String DEFAULT_PURPOSE = 'RESOLVE_HOSPITAL_OPERATION_RISK';
@@ -209,7 +209,7 @@ global with sharing class HFS_TwilioIntakeResource {
         Summary__c = workSummary(categories, clinicalRequest),
         Due_At__c = observedAt.addHours(clinicalRequest ? 1 : 2),
         Blocked_Reason__c = clinicalRequest
-          ? 'North Star cannot make clinical decisions. Route this to a clinician or manager.'
+          ? 'Logia cannot make clinical decisions. Route this to a clinician or manager.'
           : 'Manager approval is required before Slack, WhatsApp, billing, pharmacy, vendor, room, staff-task, or patient-message write-back.'
       );
       insert workItem;
@@ -454,8 +454,8 @@ global with sharing class HFS_TwilioIntakeResource {
     command.subjectEntityId = String.valueOf(customerAliasId);
     command.primaryEvidenceId = String.valueOf(evidenceId);
     command.recommendationType = clinicalRequest
-      ? 'NORTH_STAR_CLINICAL_BOUNDARY_ROUTE'
-      : 'NORTH_STAR_HOSPITAL_ACTION_PLAN';
+      ? 'LOGIA_CLINICAL_BOUNDARY_ROUTE'
+      : 'LOGIA_HOSPITAL_ACTION_PLAN';
     command.proposedActionType = clinicalRequest
       ? 'ROUTE_TO_CLINICIAN_REVIEW'
       : 'APPROVE_HOSPITAL_ACTIONS';
@@ -466,7 +466,7 @@ global with sharing class HFS_TwilioIntakeResource {
       clinicalRequest
     );
     command.confidence = clinicalRequest ? 0.92 : 0.84;
-    command.modelProfile = 'north-star-hospital-operations';
+    command.modelProfile = 'logia-hospital-operations';
     command.modelInvocationId =
       'twilio-live-intake-' + shortHash(sourceRecordId);
     return new HFS_RelationshipServiceImpl().storeRecommendation(command);
@@ -488,8 +488,8 @@ global with sharing class HFS_TwilioIntakeResource {
     command.externalKey = 'approval-whatsapp-' + shortHash(sourceRecordId);
     command.recommendationId = recommendationId;
     command.policyKey = clinicalRequest
-      ? 'north-star-clinician-route-v1'
-      : 'north-star-hospital-manager-approval-v1';
+      ? 'logia-clinician-route-v1'
+      : 'logia-hospital-manager-approval-v1';
     return new HFS_RelationshipServiceImpl().requestApproval(command);
   }
 
@@ -500,7 +500,7 @@ global with sharing class HFS_TwilioIntakeResource {
     Boolean clinicalRequest
   ) {
     if (clinicalRequest) {
-      return 'Facts: a WhatsApp message asks for a clinical decision or may contain clinical urgency. Inference: North Star must not decide diagnosis, treatment, dosage, triage, or clinical priority. Recommended next step: route to a clinician or duty manager and keep the operations audit trail.';
+      return 'Facts: a WhatsApp message asks for a clinical decision or may contain clinical urgency. Inference: Logia must not decide diagnosis, treatment, dosage, triage, or clinical priority. Recommended next step: route to a clinician or duty manager and keep the operations audit trail.';
     }
     return 'Facts: a WhatsApp complaint was received and mapped to safe evidence. Categories: ' +
       String.join(categories, ', ') +
@@ -521,7 +521,7 @@ global with sharing class HFS_TwilioIntakeResource {
   ) {
     String mediaNote = mediaNote(mediaInfo);
     if (clinicalRequest) {
-      return 'WhatsApp message may need clinical judgement. North Star stored only a safe summary and routed the case to clinician or manager review. Language: ' +
+      return 'WhatsApp message may need clinical judgement. Logia stored only a safe summary and routed the case to clinician or manager review. Language: ' +
         replyLanguage +
         ' (' +
         languageCode +
@@ -550,20 +550,20 @@ global with sharing class HFS_TwilioIntakeResource {
   ) {
     if (clinicalRequest) {
       if (languageCode == 'fr') {
-        return 'Recu. North Star a envoye cela a un clinicien ou manager.';
+        return 'Recu. Logia a envoye cela a un clinicien ou manager.';
       }
       if (languageCode == 'mfe') {
-        return 'Resi. North Star inn avoy sa ar enn clinician ouswa manager.';
+        return 'Resi. Logia inn avoy sa ar enn clinician ouswa manager.';
       }
-      return 'Received. North Star routed this to a clinician or manager.';
+      return 'Received. Logia routed this to a clinician or manager.';
     }
     if (languageCode == 'fr') {
-      return 'Recu. North Star a cree un dossier operations pour revue manager.';
+      return 'Recu. Logia a cree un dossier operations pour revue manager.';
     }
     if (languageCode == 'mfe') {
-      return 'Resi. North Star inn kree enn case operasyon pou manager verifye.';
+      return 'Resi. Logia inn kree enn case operasyon pou manager verifye.';
     }
-    return 'Received. North Star created an operations case for manager review.';
+    return 'Received. Logia created an operations case for manager review.';
   }
 
   private static String workSummary(
@@ -901,7 +901,7 @@ global with sharing class HFS_TwilioIntakeResource {
   }
 
   private static String commandCenterHint(String workItemId) {
-    return 'Open North Star Command Center with tenantKey=demo-mauritius, purpose=RESOLVE_HOSPITAL_OPERATION_RISK, workItemId=' +
+    return 'Open Logia Command Center with tenantKey=demo-mauritius, purpose=RESOLVE_HOSPITAL_OPERATION_RISK, workItemId=' +
       String.valueOf(workItemId) +
       ', mockMode=false.';
   }
@@ -921,12 +921,12 @@ global with sharing class HFS_TwilioIntakeResource {
   private static String sourceUri(String sourceChannel) {
     String normalized = String.valueOf(sourceChannel).toLowerCase();
     if (normalized.contains('meta')) {
-      return 'urn:north-star:meta:whatsapp:cloud-api';
+      return 'urn:logia:meta:whatsapp:cloud-api';
     }
     if (normalized.contains('twilio')) {
-      return 'urn:north-star:twilio:whatsapp:sandbox';
+      return 'urn:logia:twilio:whatsapp:sandbox';
     }
-    return 'urn:north-star:whatsapp:intake';
+    return 'urn:logia:whatsapp:intake';
   }
 
   private static String text(

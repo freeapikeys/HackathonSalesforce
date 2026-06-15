@@ -260,7 +260,7 @@
     <hasActivationRequired>false</hasActivationRequired>
     <label>HFS Approver</label>
     <tabSettings>
-        <tab>North_Star_Command_Center</tab>
+        <tab>Logia_Command_Center</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <objectPermissions>

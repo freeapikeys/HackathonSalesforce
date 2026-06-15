@@ -22,6 +22,6 @@ make customer deployments irreproducible.
 - Product agent memory and orchestration require explicit product schemas,
   permissions, audit records, and retention rules.
 - CI will later check deployable packages for forbidden development artifacts.
-- North Star pitch notes, local-model drafts, Codex transcripts, demo rehearsal
+- Logia pitch notes, local-model drafts, Codex transcripts, demo rehearsal
   notes, and personal task coordination must not become runtime data unless
   they are intentionally converted into product records, fixtures, or docs.

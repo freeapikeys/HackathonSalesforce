@@ -49,7 +49,7 @@ private class HFS_TwilioIntakeResourceTest {
         LIMIT 1
       ];
       System.assertEquals(
-        'NORTH_STAR_HOSPITAL_ACTION_PLAN',
+        'LOGIA_HOSPITAL_ACTION_PLAN',
         recommendation.Recommendation_Type__c
       );
       System.assertEquals(
@@ -95,7 +95,7 @@ private class HFS_TwilioIntakeResourceTest {
         LIMIT 1
       ];
       System.assertEquals(
-        'urn:north-star:meta:whatsapp:cloud-api',
+        'urn:logia:meta:whatsapp:cloud-api',
         eventRecord.Source_URI__c
       );
       System.assert(
@@ -136,7 +136,7 @@ private class HFS_TwilioIntakeResourceTest {
       System.assertEquals('mfe', response.languageCode);
       System.assertEquals('Mauritian Creole', response.replyLanguage);
       System.assert(
-        response.message.contains('North Star inn kree enn case operasyon')
+        response.message.contains('Logia inn kree enn case operasyon')
       );
 
       HFS_Event__c eventRecord = [
@@ -281,7 +281,7 @@ private class HFS_TwilioIntakeResourceTest {
         LIMIT 1
       ];
       System.assertEquals(
-        'NORTH_STAR_CLINICAL_BOUNDARY_ROUTE',
+        'LOGIA_CLINICAL_BOUNDARY_ROUTE',
         recommendation.Recommendation_Type__c
       );
       System.assertEquals(
@@ -296,7 +296,7 @@ private class HFS_TwilioIntakeResourceTest {
     Map<String, Object> payload
   ) {
     RestRequest request = new RestRequest();
-    request.requestUri = '/services/apexrest/northstar/v1/twilio/whatsapp';
+    request.requestUri = '/services/apexrest/logia/v1/twilio/whatsapp';
     request.httpMethod = 'POST';
     request.requestBody = Blob.valueOf(JSON.serialize(payload));
     RestContext.request = request;

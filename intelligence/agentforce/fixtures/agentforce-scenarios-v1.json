@@ -5,7 +5,7 @@
       "developerName": "explain_relationship_case",
       "action": "EXPLAIN_RELATIONSHIP_CASE",
       "target": "apex://HFS_AgentExplainAction",
-      "description": "Read permission-aware North Star operations context, separate facts from inference, and return accessible citations.",
+      "description": "Read permission-aware Logia operations context, separate facts from inference, and return accessible citations.",
       "requireUserConfirmation": false,
       "inputContract": "#/$defs/actionRequest",
       "outputContract": "#/$defs/actionResponse"
@@ -23,7 +23,7 @@
       "developerName": "request_human_approval",
       "action": "REQUEST_HUMAN_APPROVAL",
       "target": "apex://HFS_AgentApprovalRequestAction",
-      "description": "Create a pending human approval request for an existing North Star recommendation. Never execute the protected action.",
+      "description": "Create a pending human approval request for an existing Logia recommendation. Never execute the protected action.",
       "requireUserConfirmation": true,
       "inputContract": "#/$defs/actionRequest",
       "outputContract": "#/$defs/actionResponse"
@@ -98,7 +98,7 @@
         "inferences": [
           {
             "inferenceId": "inference-action-plan",
-            "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
+            "statement": "Logia should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
               "fact-inventory-cover",
               "fact-complaint-cluster",
@@ -173,7 +173,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
@@ -194,7 +194,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": "Avoid a weekend stockout, reduce waste, contain complaint risk, and keep checkout ready without executing unapproved actions.",
-        "modelProfile": "north-star-retail-recommendation"
+        "modelProfile": "logia-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -250,7 +250,7 @@
         "inferences": [
           {
             "inferenceId": "inference-action-plan",
-            "statement": "North Star should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
+            "statement": "Logia should transfer safe stock, quarantine suspect batch units, preserve supplier evidence, and open one extra cashier lane.",
             "basisFactIds": [
               "fact-inventory-cover",
               "fact-complaint-cluster",
@@ -332,7 +332,7 @@
             "a06000000000005AAA",
             "a06000000000006AAA"
           ],
-          "modelProfile": "north-star-retail-recommendation",
+          "modelProfile": "logia-retail-recommendation",
           "modelInvocationId": "model-invocation-agentforce-001",
           "requiresHumanApproval": true
         },
@@ -341,7 +341,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-001",
@@ -360,7 +360,7 @@
         "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
         "workItemId": "a0E000000000001AAA",
         "recommendationId": "a07000000000001AAA",
-        "approvalPolicyKey": "north-star-manager-approval-v1",
+        "approvalPolicyKey": "logia-manager-approval-v1",
         "desiredOutcome": null,
         "modelProfile": null
       },
@@ -379,7 +379,7 @@
         "approval": {
           "approvalId": "a08000000000001AAA",
           "recommendationId": "a07000000000001AAA",
-          "policyKey": "north-star-manager-approval-v1",
+          "policyKey": "logia-manager-approval-v1",
           "status": "PENDING",
           "externalActionExecuted": false
         },
@@ -387,7 +387,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
@@ -432,7 +432,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
@@ -477,7 +477,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
@@ -498,7 +498,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": null,
-        "modelProfile": "north-star-retail-recommendation"
+        "modelProfile": "logia-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -522,7 +522,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
@@ -568,7 +568,7 @@
         ],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": null,
@@ -589,7 +589,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": "Update the plan after supplier response confirms replacement batch availability.",
-        "modelProfile": "north-star-retail-recommendation"
+        "modelProfile": "logia-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -714,7 +714,7 @@
         ],
         "contextCoverage": null,
         "recommendation": {
-          "recommendationType": "NORTH_STAR_RETAIL_RECOVERY_PLAN_UPDATED",
+          "recommendationType": "LOGIA_RETAIL_RECOVERY_PLAN_UPDATED",
           "proposedActionType": "APPROVE_RETAIL_RECOVERY_ACTIONS",
           "rationale": "After supplier response, approve replacement batch request and warehouse transfer, quarantine only suspect batch A units, and avoid stopping all Island Proteins orders because evidence is batch-specific rather than supplier-wide.",
           "confidence": 0.88,
@@ -726,7 +726,7 @@
             "a06000000000005AAA",
             "a06000000000006AAA"
           ],
-          "modelProfile": "north-star-retail-recommendation",
+          "modelProfile": "logia-retail-recommendation",
           "modelInvocationId": "model-invocation-agentforce-002",
           "requiresHumanApproval": true
         },
@@ -735,7 +735,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-002",
@@ -756,7 +756,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": "Assess promotion readiness when stock pressure exists but expiry and supplier response evidence are incomplete.",
-        "modelProfile": "north-star-retail-recommendation"
+        "modelProfile": "logia-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -855,7 +855,7 @@
         ],
         "contextCoverage": null,
         "recommendation": {
-          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_CAUTIONED_INVENTORY_ACTIONS",
           "rationale": "Treat this as high stockout risk because promotion-adjusted cover is 1.56 days and lead-time demand exceeds available stock by 39 units. Do not place a blind supplier reorder while freshness complaints and supplier response are unresolved; request expiry evidence, transfer safe available stock if approved, and hold supplier escalation decisions until the response arrives.",
           "confidence": 0.78,
@@ -865,7 +865,7 @@
             "a06000000000009AAA",
             "a06000000000010AAA"
           ],
-          "modelProfile": "north-star-retail-recommendation",
+          "modelProfile": "logia-retail-recommendation",
           "modelInvocationId": "model-invocation-agentforce-003",
           "requiresHumanApproval": true,
           "inventoryWasteReasoning": {
@@ -930,7 +930,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-003",
@@ -951,7 +951,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": "Assess stockout risk when supplier and complaint evidence are clean.",
-        "modelProfile": "north-star-retail-recommendation"
+        "modelProfile": "logia-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -1034,7 +1034,7 @@
         ],
         "contextCoverage": null,
         "recommendation": {
-          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_STOCKOUT_RECOVERY_ACTIONS",
           "rationale": "Treat this as critical stockout risk because promotion-adjusted cover is 0.59 days and lead-time demand exceeds available stock by 38 units. Clean supplier and complaint evidence support manager-approved reorder or transfer, with no supplier caution beyond normal approval.",
           "confidence": 0.86,
@@ -1043,7 +1043,7 @@
             "a06000000000012AAA",
             "a06000000000013AAA"
           ],
-          "modelProfile": "north-star-retail-recommendation",
+          "modelProfile": "logia-retail-recommendation",
           "modelInvocationId": "model-invocation-agentforce-004",
           "requiresHumanApproval": true,
           "inventoryWasteReasoning": {
@@ -1079,7 +1079,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-004",
@@ -1100,7 +1100,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": "Assess near-expiry waste pressure and propose a safe markdown plan.",
-        "modelProfile": "north-star-retail-recommendation"
+        "modelProfile": "logia-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -1183,7 +1183,7 @@
         ],
         "contextCoverage": null,
         "recommendation": {
-          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_MARKDOWN_AND_ROTATION_ACTIONS",
           "rationale": "Treat this as high expiry and waste risk because the batch expires in 2 days and 18 units are unlikely to sell before expiry at current velocity. Recommend manager-approved rotation and markdown for safe units, while blocking unsupported disposal of all stock.",
           "confidence": 0.83,
@@ -1192,7 +1192,7 @@
             "a06000000000018AAA",
             "a06000000000019AAA"
           ],
-          "modelProfile": "north-star-retail-recommendation",
+          "modelProfile": "logia-retail-recommendation",
           "modelInvocationId": "model-invocation-agentforce-006",
           "requiresHumanApproval": true,
           "inventoryWasteReasoning": {
@@ -1236,7 +1236,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-006",
@@ -1257,7 +1257,7 @@
         "recommendationId": null,
         "approvalPolicyKey": null,
         "desiredOutcome": "Assess overstock risk for a household product and avoid unnecessary replenishment.",
-        "modelProfile": "north-star-retail-recommendation"
+        "modelProfile": "logia-retail-recommendation"
       },
       "response": {
         "contractVersion": "1.0.0",
@@ -1340,7 +1340,7 @@
         ],
         "contextCoverage": null,
         "recommendation": {
-          "recommendationType": "NORTH_STAR_INVENTORY_WASTE_REASONING",
+          "recommendationType": "LOGIA_INVENTORY_WASTE_REASONING",
           "proposedActionType": "APPROVE_OVERSTOCK_REBALANCING_ACTIONS",
           "rationale": "Treat this as overstock risk because days of cover is 70 days and shelf space is under pressure. Recommend manager-approved transfer to a lower-stock store or promotion adjustment, and block additional reorder until cover falls.",
           "confidence": 0.84,
@@ -1349,7 +1349,7 @@
             "a06000000000015AAA",
             "a06000000000016AAA"
           ],
-          "modelProfile": "north-star-retail-recommendation",
+          "modelProfile": "logia-retail-recommendation",
           "modelInvocationId": "model-invocation-agentforce-005",
           "requiresHumanApproval": true,
           "inventoryWasteReasoning": {
@@ -1392,7 +1392,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-005",
@@ -1466,7 +1466,7 @@
           },
           {
             "factId": "fact-hospital-clinical-refusal",
-            "statement": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "statement": "A request asking which patient should receive treatment first is refused by Logia and routed to clinician review.",
             "evidenceIds": [
               "a06000000000027AAA"
             ]
@@ -1558,7 +1558,7 @@
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:clinical-boundary",
             "contentHash": "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
-            "summary": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "summary": "A request asking which patient should receive treatment first is refused by Logia and routed to clinician review.",
             "accessible": true
           }
         ],
@@ -1692,7 +1692,7 @@
           }
         },
         "recommendation": {
-          "recommendationType": "NORTH_STAR_HOSPITAL_ACTION_PLAN",
+          "recommendationType": "LOGIA_HOSPITAL_ACTION_PLAN",
           "proposedActionType": "APPROVE_HOSPITAL_ACTIONS",
           "rationale": "Approve room-cleaning and porter tasks, pharmacy restock or transfer, lab vendor escalation, billing and insurance review, privacy-safe Slack/WhatsApp internal alerts, and outcome capture. Refuse diagnosis, treatment, dosage, triage, and clinical priority decisions.",
           "confidence": 0.88,
@@ -1870,7 +1870,7 @@
               {
                 "conflictId": "conflict-clinical-boundary",
                 "tension": "The fastest-sounding request asks which patient should receive treatment first.",
-                "resolution": "Refuse clinical priority decisions and route them to clinicians while North Star continues non-clinical operations coordination.",
+                "resolution": "Refuse clinical priority decisions and route them to clinicians while Logia continues non-clinical operations coordination.",
                 "winningPolicy": "Clinical safety boundary overrides operational optimization.",
                 "evidenceIds": [
                   "a06000000000027AAA"
@@ -2006,7 +2006,7 @@
             "blockedActions": [
               {
                 "actionType": "CLINICAL_TRIAGE_DECISION",
-                "reason": "North Star cannot decide diagnosis, treatment, dosage, triage, or clinical priority.",
+                "reason": "Logia cannot decide diagnosis, treatment, dosage, triage, or clinical priority.",
                 "evidenceIds": [
                   "a06000000000027AAA"
                 ]
@@ -2014,7 +2014,7 @@
             ],
             "partnerCaution": {
               "applies": true,
-              "statement": "The lab partner delay changes the plan: North Star should escalate the SLA and request the second courier route only after approval.",
+              "statement": "The lab partner delay changes the plan: Logia should escalate the SLA and request the second courier route only after approval.",
               "evidenceIds": [
                 "a06000000000024AAA"
               ]
@@ -2056,7 +2056,7 @@
                 "approvalId": "a08000000000021AAA",
                 "actionId": "action-clinical-triage",
                 "approverRole": "Clinical Manager",
-                "policyReason": "North Star must not approve diagnosis, treatment, dosage, triage, or clinical-priority decisions.",
+                "policyReason": "Logia must not approve diagnosis, treatment, dosage, triage, or clinical-priority decisions.",
                 "evidenceIds": [
                   "a06000000000027AAA"
                 ]
@@ -2171,7 +2171,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-hospital-001",
@@ -2220,7 +2220,7 @@
         "inferences": [
           {
             "inferenceId": "inference-missing-capacity-caution",
-            "statement": "North Star can identify customer trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
+            "statement": "Logia can identify customer trust and stock risk, but should not claim bed-release or staffing impact without current capacity evidence.",
             "basisFactIds": [
               "fact-missing-capacity-complaints",
               "fact-missing-capacity-pharmacy"
@@ -2250,7 +2250,7 @@
         ],
         "contextCoverage": null,
         "recommendation": {
-          "recommendationType": "NORTH_STAR_HOSPITAL_CAUTIONED_PLAN",
+          "recommendationType": "LOGIA_HOSPITAL_CAUTIONED_PLAN",
           "proposedActionType": "REQUEST_MISSING_CAPACITY_EVIDENCE",
           "rationale": "Ask for current bed, room, queue, and staffing evidence before claiming a capacity action plan. Continue pharmacy restock review and customer trust monitoring behind approval.",
           "confidence": 0.68,
@@ -2311,7 +2311,7 @@
             "blockedActions": [
               {
                 "actionType": "CLAIM_BED_RELEASE_IMPACT",
-                "reason": "Current capacity evidence is missing, so North Star cannot quantify bed-release impact.",
+                "reason": "Current capacity evidence is missing, so Logia cannot quantify bed-release impact.",
                 "evidenceIds": [
                   "a06000000000021AAA"
                 ]
@@ -2348,7 +2348,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-hospital-002",
@@ -2380,7 +2380,7 @@
         "facts": [
           {
             "factId": "fact-clinical-refusal",
-            "statement": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "statement": "A request asking which patient should receive treatment first is refused by Logia and routed to clinician review.",
             "evidenceIds": [
               "a06000000000027AAA"
             ]
@@ -2390,7 +2390,7 @@
         "inferences": [
           {
             "inferenceId": "inference-clinical-refusal",
-            "statement": "The request asks for clinical priority, so North Star must refuse the decision and route to clinician review.",
+            "statement": "The request asks for clinical priority, so Logia must refuse the decision and route to clinician review.",
             "basisFactIds": [
               "fact-clinical-refusal"
             ],
@@ -2404,15 +2404,15 @@
             "sourceEventId": "a09000000000001AAA",
             "sourceUri": "urn:hfs:source:hospital:clinical-boundary",
             "contentHash": "sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e",
-            "summary": "A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.",
+            "summary": "A request asking which patient should receive treatment first is refused by Logia and routed to clinician review.",
             "accessible": true
           }
         ],
         "contextCoverage": null,
         "recommendation": {
-          "recommendationType": "NORTH_STAR_CLINICAL_DECISION_REFUSAL",
+          "recommendationType": "LOGIA_CLINICAL_DECISION_REFUSAL",
           "proposedActionType": "ROUTE_TO_CLINICIAN_REVIEW",
-          "rationale": "Refuse the clinical priority decision. North Star may coordinate non-clinical queue, room, staff, and communication tasks, but must route treatment priority to a clinician.",
+          "rationale": "Refuse the clinical priority decision. Logia may coordinate non-clinical queue, room, staff, and communication tasks, but must route treatment priority to a clinician.",
           "confidence": 0.99,
           "evidenceIds": [
             "a06000000000027AAA"
@@ -2425,7 +2425,7 @@
             "severity": "Critical",
             "calculations": [],
             "assumptions": [
-              "The user request asks for clinical treatment priority, which is outside North Star's authority."
+              "The user request asks for clinical treatment priority, which is outside Logia's authority."
             ],
             "missingEvidence": [],
             "evidenceQualityFindings": [
@@ -2441,8 +2441,8 @@
             "conflictResolutions": [
               {
                 "conflictId": "conflict-clinical-priority-request",
-                "tension": "The user asks North Star to optimize treatment priority.",
-                "resolution": "North Star refuses the clinical decision and keeps only non-clinical operations support in scope.",
+                "tension": "The user asks Logia to optimize treatment priority.",
+                "resolution": "Logia refuses the clinical decision and keeps only non-clinical operations support in scope.",
                 "winningPolicy": "Clinical safety boundary overrides operational speed.",
                 "evidenceIds": [
                   "a06000000000027AAA"
@@ -2477,7 +2477,7 @@
             },
             "clinicalBoundary": {
               "applies": true,
-              "statement": "North Star refuses clinical priority decisions and routes to human clinical review.",
+              "statement": "Logia refuses clinical priority decisions and routes to human clinical review.",
               "evidenceIds": [
                 "a06000000000027AAA"
               ]
@@ -2489,7 +2489,7 @@
                 "approvalId": "a08000000000022AAA",
                 "actionId": "action-decide-treatment-priority",
                 "approverRole": "Clinical Manager",
-                "policyReason": "Automated clinical-priority decisions are outside North Star scope.",
+                "policyReason": "Automated clinical-priority decisions are outside Logia scope.",
                 "evidenceIds": [
                   "a06000000000027AAA"
                 ]
@@ -2514,7 +2514,7 @@
         "errors": [],
         "audit": {
           "actorUserId": "005000000000001AAA",
-          "agentKey": "north-star-orchestrator",
+          "agentKey": "logia-orchestrator",
           "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
           "permissionEvaluated": true,
           "modelInvocationId": "model-invocation-agentforce-hospital-003",

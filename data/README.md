@@ -1,4 +1,4 @@
-# North Star Data Index
+# Logia Data Index
 
 This folder is the human and agent entry point for demo data.
 

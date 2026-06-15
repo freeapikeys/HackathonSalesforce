@@ -10,25 +10,25 @@
     <genAiPluginInstructions>
         <description
     >Track actual outcomes, expected outcomes, metric definitions, time windows, evidence IDs, provider status, and next-plan changes.</description>
-        <developerName>north_star_instruction_0</developerName>
+        <developerName>logia_instruction_0</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_0</masterLabel>
+        <masterLabel>logia_instruction_0</masterLabel>
         <sortOrder>0</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Compare whether the issue improved, stayed open, got worse, or needs more evidence. Do not call a message delivery an outcome by itself.</description>
-        <developerName>north_star_instruction_1</developerName>
+        <developerName>logia_instruction_1</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_1</masterLabel>
+        <masterLabel>logia_instruction_1</masterLabel>
         <sortOrder>1</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
-    >Keep outcome wording simple: what changed, how measured, by when, and what North Star should learn for the next issue.</description>
-        <developerName>north_star_instruction_2</developerName>
+    >Keep outcome wording simple: what changed, how measured, by when, and what Logia should learn for the next issue.</description>
+        <developerName>logia_instruction_2</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_2</masterLabel>
+        <masterLabel>logia_instruction_2</masterLabel>
         <sortOrder>2</sortOrder>
     </genAiPluginInstructions>
     <language>en_US</language>

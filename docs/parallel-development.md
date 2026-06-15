@@ -7,7 +7,7 @@ work without stepping on each other. Work should start from the relevant
 contract, fixture, or checklist item, then move through verification before
 handoff.
 
-For the hackathon, the active vertical is North Star: a global operations
+For the hackathon, the active vertical is Logia: a global operations
 command center with a private hospital demo profile. Keep coordination focused
 on the roadmap, teammate assignment docs, and existing contract boundaries.
 

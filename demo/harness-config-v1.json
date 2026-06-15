@@ -33,17 +33,17 @@
     "HFS_Evaluation__c": 12
   },
   "identifiers": {
-    "workItemExternalKey": "work-north-star-hospital-surge-001",
-    "recommendationExternalKey": "recommendation-north-star-hospital-001",
-    "approvalExternalKey": "approval-north-star-hospital-001",
-    "actionExternalKey": "action-north-star-hospital-slack-001",
-    "whatsappActionExternalKey": "action-north-star-hospital-whatsapp-001",
-    "vendorEmailActionExternalKey": "action-north-star-hospital-vendor-email-001",
-    "outcomeExternalKey": "outcome-action-north-star-hospital-slack-001",
-    "whatsappOutcomeExternalKey": "outcome-action-north-star-hospital-whatsapp-001",
-    "vendorEmailOutcomeExternalKey": "outcome-action-north-star-hospital-vendor-email-001",
-    "evaluationExternalKey": "evaluation-north-star-hospital-slack-001",
-    "whatsappEvaluationExternalKey": "evaluation-north-star-hospital-whatsapp-001",
-    "vendorEmailEvaluationExternalKey": "evaluation-north-star-hospital-vendor-email-001"
+    "workItemExternalKey": "work-logia-hospital-surge-001",
+    "recommendationExternalKey": "recommendation-logia-hospital-001",
+    "approvalExternalKey": "approval-logia-hospital-001",
+    "actionExternalKey": "action-logia-hospital-slack-001",
+    "whatsappActionExternalKey": "action-logia-hospital-whatsapp-001",
+    "vendorEmailActionExternalKey": "action-logia-hospital-vendor-email-001",
+    "outcomeExternalKey": "outcome-action-logia-hospital-slack-001",
+    "whatsappOutcomeExternalKey": "outcome-action-logia-hospital-whatsapp-001",
+    "vendorEmailOutcomeExternalKey": "outcome-action-logia-hospital-vendor-email-001",
+    "evaluationExternalKey": "evaluation-logia-hospital-slack-001",
+    "whatsappEvaluationExternalKey": "evaluation-logia-hospital-whatsapp-001",
+    "vendorEmailEvaluationExternalKey": "evaluation-logia-hospital-vendor-email-001"
   }
 }

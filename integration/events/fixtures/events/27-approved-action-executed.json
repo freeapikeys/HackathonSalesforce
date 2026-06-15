@@ -3,26 +3,26 @@
   "id": "00000000-0000-4000-8000-000000000027",
   "source": "urn:hfs:source:retail",
   "type": "io.github.freeapikeys.hfs.retail.approved.action.executed.v1",
-  "subject": "action:ACTION-NORTH-STAR-001",
+  "subject": "action:ACTION-LOGIA-001",
   "time": "2026-06-06T09:45:00Z",
   "datacontenttype": "application/json",
   "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
   "hfstenantid": "demo-mauritius",
   "hfsschemaversion": "1.0.0",
   "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
-  "hfsidempotencykey": "north-star-approved-action-v1",
+  "hfsidempotencykey": "logia-approved-action-v1",
   "hfssourcerecordid": "retail-event-action-001",
   "hfssourcesequence": 13,
   "hfsobservedat": "2026-06-06T09:45:03Z",
-  "hfscontenthash": "sha256:c248fceaa49a7910747df470907b58d68f39be52e2e88e823ca98a0f86ff4153",
+  "hfscontenthash": "sha256:9a29807bbbc882f8d6df7f6774aa1fd839624d6fd00b24869ba7d0d5b2ca6316",
   "data": {
     "recordtype": "SOP",
     "operation": "UPDATE",
-    "businesskey": "ACTION-NORTH-STAR-001",
+    "businesskey": "ACTION-LOGIA-001",
     "effectiveat": "2026-06-06T09:45:00Z",
     "attributes": {
       "eventcode": "APPROVED_ACTION_EXECUTED",
-      "approvalid": "APPROVAL-NORTH-STAR-001",
+      "approvalid": "APPROVAL-LOGIA-001",
       "actiontypes": [
         "CREATE_WAREHOUSE_TRANSFER",
         "CREATE_MARKDOWN_PLAN",
@@ -30,7 +30,7 @@
         "SEND_WHATSAPP_STYLE_ALERT"
       ],
       "executionstatus": "SUCCESS",
-      "correlationid": "CORR-NORTH-STAR-WEEKEND-GRILL-001"
+      "correlationid": "CORR-LOGIA-WEEKEND-GRILL-001"
     }
   }
 }

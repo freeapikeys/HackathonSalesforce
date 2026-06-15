@@ -5,7 +5,7 @@ Version `1.0.0` defines the mock-backed state consumed by
 from transport so the same component can use fixtures now and governed Apex
 services later.
 
-The North Star command center may reuse this component contract while changing
+The Logia command center may reuse this component contract while changing
 labels and fixtures. The state should describe universal private hospital
 operations work for the active demo, not a generic service interruption and not
 retail-only work.
@@ -44,7 +44,7 @@ The ready state contains:
 - action history and source-system correlation;
 - observed outcome and effectiveness state.
 
-North Star hospital ready state should additionally expose:
+Logia hospital ready state should additionally expose:
 
 - intake source, for example seeded fixture, Meta WhatsApp inbound,
   voice/manual transcript, command-center review note, or system event;

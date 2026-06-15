@@ -35,9 +35,7 @@ function serviceState(error, correlationId) {
     stateVersion: UI_STATE_VERSION,
     stateName: denied ? "denied" : "error",
     mode: denied ? "denied" : "error",
-    title: denied
-      ? "North Star context is not available"
-      : "North Star could not load",
+    title: denied ? "Logia context is not available" : "Logia could not load",
     message:
       error.message || "The operations command service returned an error.",
     errorCode: error.code,
@@ -261,7 +259,7 @@ export function mapCommandCenterPayload(payload, purpose) {
     return serviceState(
       {
         code: "INVALID_RESPONSE",
-        message: "The North Star service returned no context.",
+        message: "The Logia service returned no context.",
         retryable: true
       },
       null
@@ -278,7 +276,7 @@ export function mapCommandCenterPayload(payload, purpose) {
       stateVersion: UI_STATE_VERSION,
       stateName: "empty",
       mode: "empty",
-      title: "No North Star work is assigned",
+      title: "No Logia work is assigned",
       message:
         "No accessible operations work item matched this command center request."
     };
@@ -378,7 +376,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         resourceArea: relationship.relationshipType || "Not recorded"
       },
       profile: {
-        core: "North Star universal operations",
+        core: "Logia universal operations",
         activeProfile: "profile:hospital-private-large",
         displayName: "Active business profile",
         boundary:
@@ -461,7 +459,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         ],
         rootCauseHypotheses: [
           "Complaint pressure may connect to capacity, partner, billing, stock, or staffing evidence.",
-          "North Star treats hypotheses as inference until source evidence confirms them."
+          "Logia treats hypotheses as inference until source evidence confirms them."
         ],
         nextEvidenceNeeded: [
           "current queue or room status",
@@ -491,7 +489,7 @@ export function mapCommandCenterPayload(payload, purpose) {
       agentHandoffTrace: [
         {
           id: "handoff-orchestrator-live",
-          agent: "North Star Orchestrator",
+          agent: "Logia Orchestrator",
           contribution:
             "Combines accessible evidence into one manager-ready action plan.",
           output: "Recommendation and approval path"
@@ -654,7 +652,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         policy: humanize(approval.recordType, "No approval policy"),
         policyVersion: context.contractVersion,
         requestedAt: approval.requestedAt || approval.occurredAt,
-        requestedBy: "Governed North Star workflow",
+        requestedBy: "Governed Logia workflow",
         decisionDueAt: workItem.dueAt
       },
       actions: actions.map((action) => ({
@@ -689,7 +687,7 @@ export function mapTransportError(error, correlationId) {
   const message =
     error?.body?.message ||
     error?.message ||
-    "The North Star service could not be reached.";
+    "The Logia service could not be reached.";
   return serviceState(
     {
       code: "RETRYABLE_DEPENDENCY_FAILURE",

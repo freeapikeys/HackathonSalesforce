@@ -9,7 +9,7 @@ Salesforce user the `HFS_Approver` and `HFS_Integration_User` permission sets.
 That keeps execute-anonymous seeding aligned with object and field-level
 permissions before the seed script compiles.
 
-For North Star, the harness should evolve from the existing foundation case into
+For Logia, the harness should evolve from the existing foundation case into
 one deterministic private hospital operations case. The seed should include
 patient/visitor complaints, resource/capacity evidence, pharmacy stock, partner
 responses, billing/insurance evidence, staffing evidence, and approval context.
@@ -43,7 +43,7 @@ responses, billing/insurance evidence, staffing evidence, and approval context.
     customer alias, department/location, resources, partner, process, evidence,
     recommendation, approval, actions, outcomes, and outcome metrics.
 
-North Star hospital assertions:
+Logia hospital assertions:
 
 - the case uses global primitives, not one-off hospital-only objects;
 - customer or patient complaint intake is represented by WhatsApp inbound
@@ -100,9 +100,9 @@ repeatedly therefore produces the same counts and external keys without
 touching records from another tenant.
 
 The seed report includes the Salesforce IDs for
-`work-north-star-hospital-surge-001`,
-`recommendation-north-star-hospital-001`, and
-`approval-north-star-hospital-001`. The connected report also includes the
+`work-logia-hospital-surge-001`,
+`recommendation-logia-hospital-001`, and
+`approval-logia-hospital-001`. The connected report also includes the
 hospital Slack, WhatsApp, and vendor-email action, outcome, and evaluation IDs,
 and the final action count includes eight Salesforce task action records plus
 three channel action records. The report also includes the model deployment,

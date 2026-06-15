@@ -2,7 +2,7 @@
 
 ## Goal
 
-Own the Slack alert path for North Star's private hospital operations demo.
+Own the Slack alert path for Logia's private hospital operations demo.
 Slack is a protected communication action behind Salesforce approval,
 Agentforce recommendation, and MuleSoft execution. It is not a standalone
 chatbot and it must not carry clinical decision-making.
@@ -11,10 +11,10 @@ chatbot and it must not carry clinical decision-making.
 
 Start from the existing governed spine:
 
-- `docs/north-star-mvp.md` defines the global operating model and hospital demo.
-- `docs/north-star-implementation-plan.md` defines the practical build plan.
+- `docs/logia-mvp.md` defines the global operating model and hospital demo.
+- `docs/logia-implementation-plan.md` defines the practical build plan.
 - `docs/mulesoft-api-contract.md` defines the integration boundary.
-- `mulesoft/README.md` explains the mock runtime and North Star mock actions.
+- `mulesoft/README.md` explains the mock runtime and Logia mock actions.
 - `mulesoft/mock_runtime/` contains the Python reference runtime.
 - `mulesoft/api/hfs-integration-v1.openapi.json` is the generated Process API
   contract.
@@ -32,8 +32,8 @@ fixtures from retail roles to hospital operations roles.
 
 ## Files To Inspect First
 
-- `docs/north-star-mvp.md`
-- `docs/north-star-implementation-plan.md`
+- `docs/logia-mvp.md`
+- `docs/logia-implementation-plan.md`
 - `docs/mulesoft-api-contract.md`
 - `docs/ui-state-contract.md`
 - `mulesoft/README.md`
@@ -62,7 +62,7 @@ The action request should preserve:
 - `actionType` equal to `SEND_SLACK_ALERT`
 - `targetRole`, such as `Operations Manager`, `Bed Manager`, `Pharmacy Lead`,
   `Billing Supervisor`, or `Patient Experience Lead`
-- `targetChannel`, such as `#north-star-demo` or `hospital-ops-alerts`
+- `targetChannel`, such as `#logia-demo` or `hospital-ops-alerts`
 - `messageTitle`
 - `messageBody`
 - `evidenceIds`
@@ -98,7 +98,7 @@ The demo is allowed to use mock mode. It must be honest on screen.
 A Slack alert should be short, operational, and privacy-safe:
 
 ```text
-North Star alert: Bed capacity and patient wait risk
+Logia alert: Bed capacity and patient wait risk
 Department: Outpatient reception and discharge ward
 Action: Release cleaned rooms, move porter task forward, review billing hold
 Owner: Operations Manager

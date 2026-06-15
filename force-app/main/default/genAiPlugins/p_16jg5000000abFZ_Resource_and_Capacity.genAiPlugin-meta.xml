@@ -10,25 +10,25 @@
     <genAiPluginInstructions>
         <description
     >Use Resource as the core primitive. A hospital room, hotel room, airport gate, bank case, supermarket batch, and cruise cabin are typed resources.</description>
-        <developerName>north_star_instruction_0</developerName>
+        <developerName>logia_instruction_0</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_0</masterLabel>
+        <masterLabel>logia_instruction_0</masterLabel>
         <sortOrder>0</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Calculate pressure, availability, stock cover, queue risk, SLA risk, missing evidence, and recommended resource actions.</description>
-        <developerName>north_star_instruction_1</developerName>
+        <developerName>logia_instruction_1</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_1</masterLabel>
+        <masterLabel>logia_instruction_1</masterLabel>
         <sortOrder>1</sortOrder>
     </genAiPluginInstructions>
     <genAiPluginInstructions>
         <description
     >Recommend restock, transfer, staffing, service counter, or resource release actions only as approval-gated proposals.</description>
-        <developerName>north_star_instruction_2</developerName>
+        <developerName>logia_instruction_2</developerName>
         <language xsi:nil="true" />
-        <masterLabel>north_star_instruction_2</masterLabel>
+        <masterLabel>logia_instruction_2</masterLabel>
         <sortOrder>2</sortOrder>
     </genAiPluginInstructions>
     <language>en_US</language>

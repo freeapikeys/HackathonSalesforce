@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
   <apiVersion>66.0</apiVersion>
   <isExposed>true</isExposed>
-  <masterLabel>North Star Command Center</masterLabel>
+  <masterLabel>Logia Command Center</masterLabel>
   <description
   >Permission-aware global operations context, recommendation, approval, action, and outcome command center.</description>
   <targets>
@@ -18,7 +18,7 @@
         name="tenantKey"
         type="String"
         label="Tenant key"
-        description="Tenant key enforced by the North Star service."
+        description="Tenant key enforced by the Logia service."
       />
       <property
         name="purpose"
@@ -31,7 +31,7 @@
         name="profileKey"
         type="String"
         label="Demo profile key"
-        default="north-star-retail"
+        default="logia-retail"
         description="Synthetic profile key used when mock mode is enabled."
       />
       <property

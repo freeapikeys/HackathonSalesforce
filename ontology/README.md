@@ -69,9 +69,9 @@ record, source activity, and source agent evidence.
 `npm run verify:shared-semantics` runs the ontology, mapping, and temporal gates
 together and emits a JSON evidence summary for the checkpoint.
 
-## North Star Extension Plan
+## Logia Extension Plan
 
-North Star should extend the semantic contract only when implementation needs
+Logia should extend the semantic contract only when implementation needs
 retail concepts that the current ontology cannot express. Candidate additions
 include store, product category, product batch, shelf location, inventory
 position, promotion window, complaint cluster, supplier response, markdown

@@ -792,7 +792,7 @@ def build_fixture() -> dict[str, Any]:
     policy = {
         "contractVersion": CONTRACT_VERSION,
         "version": "1.0.0",
-        "policyKey": "north-star-hospital-routing-mauritius",
+        "policyKey": "logia-hospital-routing-mauritius",
         "tenantKey": TENANT,
         "businessUnit": None,
         "profileKey": profile_key,
@@ -829,7 +829,7 @@ def build_fixture() -> dict[str, Any]:
         "correlationId": CORRELATION,
         "tenantKey": TENANT,
         "businessUnit": None,
-        "agentKey": "north-star-orchestrator",
+        "agentKey": "logia-orchestrator",
         "subagentKey": "hospital-action-analysis",
         "userId": "integration-user-001",
         "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
@@ -925,11 +925,11 @@ def build_fixture() -> dict[str, Any]:
         "tenantKey": TENANT,
         "userId": "integration-user-001",
         "purpose": "RESOLVE_HOSPITAL_OPERATION_RISK",
-        "agentKey": "north-star-orchestrator",
+        "agentKey": "logia-orchestrator",
         "profileKey": profile_key,
         "profileVersion": profile["version"],
-        "promptVersion": "north-star-hospital-action-prompt-1.0.0",
-        "retrievalVersion": "north-star-hospital-context-1.0.0",
+        "promptVersion": "logia-hospital-action-prompt-1.0.0",
+        "retrievalVersion": "logia-hospital-context-1.0.0",
         "messages": [
             {
                 "role": "SYSTEM",
@@ -945,7 +945,7 @@ def build_fixture() -> dict[str, Any]:
             {
                 "role": "USER",
                 "content": (
-                    "Recommend the next action for the North Star private "
+                    "Recommend the next action for the Logia private "
                     "hospital morning operations surge."
                 ),
             },

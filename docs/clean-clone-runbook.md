@@ -2,14 +2,14 @@
 
 ## Purpose
 
-This runbook proves that a repository ref can reproduce the current North Star
+This runbook proves that a repository ref can reproduce the current Logia
 hospital MVP without manual Salesforce record edits:
 
 `hospital operations surge -> global primitives and evidence -> model-routed
 Agentforce recommendation -> clinical-refusal guardrail -> manager approval ->
 eight approved Salesforce task action records plus Slack, WhatsApp, and
 protected vendor-email MuleSoft channel actions -> hospital outcomes and evaluations -> refreshed
-North Star command center`
+Logia command center`
 
 The verifier creates a temporary clone, installs locked dependencies, runs all
 repository checks, deploys Salesforce metadata with the four Apex test suites,

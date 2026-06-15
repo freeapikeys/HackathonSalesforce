@@ -36,9 +36,9 @@ Recommended versions at project bootstrap:
 Overstory was archived upstream on May 28, 2026. It is optional and must not
 become necessary to build, test, or deploy the product.
 
-## North Star Hackathon Usage
+## Logia Hackathon Usage
 
-For the hackathon, use the tools to preserve the North Star build path:
+For the hackathon, use the tools to preserve the Logia build path:
 
 - Beads tracks tasks and dependencies when available.
 - Contributors should pull latest `main`, inspect the relevant contract, make a

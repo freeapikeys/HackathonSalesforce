@@ -211,6 +211,10 @@ class DemoHarnessTest(unittest.TestCase):
         }
         channel_env_names = [
             "SLACK_WEBHOOK_URL",
+            "META_WHATSAPP_PHONE_NUMBER_ID",
+            "META_WHATSAPP_ACCESS_TOKEN",
+            "META_WHATSAPP_TO",
+            "META_GRAPH_VERSION",
             "TWILIO_ACCOUNT_SID",
             "TWILIO_AUTH_TOKEN",
             "TWILIO_WHATSAPP_FROM",

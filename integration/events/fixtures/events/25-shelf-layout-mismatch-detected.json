@@ -10,7 +10,7 @@
   "hfstenantid": "demo-mauritius",
   "hfsschemaversion": "1.0.0",
   "hfscorrelationid": "20000000-0000-4000-8000-000000000001",
-  "hfsidempotencykey": "north-star-shelf-layout-v1",
+  "hfsidempotencykey": "logia-shelf-layout-v1",
   "hfssourcerecordid": "retail-event-shelf-layout-001",
   "hfssourcesequence": 11,
   "hfsobservedat": "2026-06-06T09:32:01Z",

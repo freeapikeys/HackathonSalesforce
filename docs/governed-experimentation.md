@@ -26,7 +26,7 @@ into the production product.
 - local fine-tuning recipes when an organization operates its own model;
 - deterministic pipeline latency or cost improvements.
 
-North Star hospital suitable experiments:
+Logia hospital suitable experiments:
 
 - complaint-cluster threshold compared with service response outcome;
 - capacity-pressure threshold compared with wait-time reduction;
@@ -50,7 +50,7 @@ The loop must not autonomously:
 - optimize only engagement when the relevant outcome includes harm, fairness,
   privacy, or service quality.
 
-For North Star, the loop must not autonomously change clinical decision rules,
+For Logia, the loop must not autonomously change clinical decision rules,
 approval rules, privacy policy, billing policy, staff allocation policy, or
 patient-facing messages. It can propose candidates for review.
 
@@ -86,7 +86,7 @@ No model is promoted on one quality score alone.
 - robustness to prompt injection and malformed context;
 - downstream business outcome where a reliable measure exists.
 
-North Star evaluation should include wait time reduced, bed released, stockout
+Logia evaluation should include wait time reduced, bed released, stockout
 avoided, complaint contained, billing issue resolved, partner SLA state,
 staff-task completion, alert delivery, approval accuracy, clinical-refusal
 accuracy, and whether the selected action created a new operational risk.

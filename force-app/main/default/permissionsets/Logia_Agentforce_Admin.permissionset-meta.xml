@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Allows Logia builders to publish and preview Agentforce authoring bundles.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Logia Agentforce Admin</label>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>AIWorkbenchUser</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>BotManageBots</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>EinsteinAgentPlatformBuilder</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ManageAgentforceServiceAgent</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ManagePromptTemplates</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ViewRoles</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>ViewSetup</name>
+    </userPermissions>
+</PermissionSet>

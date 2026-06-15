@@ -3,7 +3,7 @@ HFS_Work_Item__c workItem = [
   FROM HFS_Work_Item__c
   WHERE
     Tenant_Key__c = 'demo-mauritius'
-    AND External_Key__c = 'work-north-star-hospital-surge-001'
+    AND External_Key__c = 'work-logia-hospital-surge-001'
   LIMIT 1
 ];
 
@@ -20,7 +20,7 @@ HFS_ContextResponse context = new HFS_RelationshipServiceImpl()
   .getContext(request);
 System.assertEquals(0, context.errors.size());
 System.assertEquals(
-  'work-north-star-hospital-surge-001',
+  'work-logia-hospital-surge-001',
   context.workItem.externalKey
 );
 System.assertEquals(7, context.entities.size());
@@ -30,7 +30,7 @@ System.assertEquals(1, context.recommendations.size());
 System.assertEquals(1, context.approvals.size());
 System.assertEquals('PENDING', context.approvals[0].status);
 System.assertEquals(
-  'NORTH_STAR_HOSPITAL_ACTION_PLAN',
+  'LOGIA_HOSPITAL_ACTION_PLAN',
   context.recommendations[0].recordType
 );
 

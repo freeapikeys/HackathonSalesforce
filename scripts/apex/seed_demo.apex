@@ -3,29 +3,29 @@ String correlationId = '10000000-0000-4000-8000-000000000001';
 Datetime baseTime = Datetime.newInstanceGmt(2026, 6, 13, 5, 0, 0);
 
 HFS_Event__c sourceEvent = new HFS_Event__c(
-  Event_Id__c = 'event-north-star-hospital-surge-001',
+  Event_Id__c = 'event-logia-hospital-surge-001',
   Tenant_Key__c = tenantKey,
   Source_URI__c = 'urn:hfs:source:hospital:operations-surge',
   Source_Record_Id__c = 'hospital-ops-surge-2026-06-13-morning',
   Event_Type__c = 'HOSPITAL_OPERATIONS_SURGE_DETECTED',
-  Subject__c = 'North Star private hospital morning operations surge',
+  Subject__c = 'Logia private hospital morning operations surge',
   Occurred_At__c = baseTime,
   Observed_At__c = baseTime.addMinutes(1),
   Source_Sequence__c = 1,
-  Idempotency_Key__c = 'event-north-star-hospital-surge-001-v1',
+  Idempotency_Key__c = 'event-logia-hospital-surge-001-v1',
   Correlation_Id__c = correlationId,
   Schema_Version__c = '1.0.0',
   Content_Hash__c = 'sha256:86a1b1848320a798ea3df9b248f12b86976b8d6c4d86c31bbef5d2a26e49df5f',
-  Payload_JSON__c = '{"eventcode":"HOSPITAL_OPERATIONS_SURGE_DETECTED","organizationid":"HOSP-NORTH-STAR-PRIVATE","window":"2026-06-13T08:45:00+04:00/2026-06-13T11:15:00+04:00"}',
+  Payload_JSON__c = '{"eventcode":"HOSPITAL_OPERATIONS_SURGE_DETECTED","organizationid":"HOSP-LOGIA-PRIVATE","window":"2026-06-13T08:45:00+04:00/2026-06-13T11:15:00+04:00"}',
   Intake_Result__c = 'ACCEPTED'
 );
 insert sourceEvent;
 
 HFS_Entity__c hospital = new HFS_Entity__c(
-  External_Key__c = 'HOSP-NORTH-STAR-PRIVATE',
+  External_Key__c = 'HOSP-LOGIA-PRIVATE',
   Tenant_Key__c = tenantKey,
   Entity_Type__c = 'ORGANIZATION',
-  Display_Name__c = 'North Star Private Hospital',
+  Display_Name__c = 'Logia Private Hospital',
   Source_Event__c = sourceEvent.Id,
   Valid_From__c = baseTime.addDays(-365),
   Confidence__c = 1,
@@ -231,7 +231,7 @@ insert new HFS_Agreement__c(
 );
 
 HFS_Work_Item__c workItem = new HFS_Work_Item__c(
-  External_Key__c = 'work-north-star-hospital-surge-001',
+  External_Key__c = 'work-logia-hospital-surge-001',
   Tenant_Key__c = tenantKey,
   Primary_Entity__c = hospital.Id,
   Trigger_Event__c = sourceEvent.Id,
@@ -244,10 +244,10 @@ HFS_Work_Item__c workItem = new HFS_Work_Item__c(
 insert workItem;
 
 insert new HFS_SOP_Execution__c(
-  External_Key__c = 'sop-north-star-hospital-surge-001',
+  External_Key__c = 'sop-logia-hospital-surge-001',
   Tenant_Key__c = tenantKey,
   Work_Item__c = workItem.Id,
-  Definition_Key__c = 'north-star-hospital-operations-action',
+  Definition_Key__c = 'logia-hospital-operations-action',
   Definition_Version__c = '1.0.0',
   Current_Step_Key__c = 'AWAIT_MANAGER_APPROVAL',
   Status__c = 'RUNNING',
@@ -333,7 +333,7 @@ HFS_Evidence__c clinicalBoundaryEvidence = new HFS_Evidence__c(
   Related_Entity__c = hospital.Id,
   Source_Event__c = sourceEvent.Id,
   Evidence_Type__c = 'CLINICAL_DECISION_REFUSAL',
-  Summary__c = 'A request asking which patient should receive treatment first is refused by North Star and routed to clinician review.',
+  Summary__c = 'A request asking which patient should receive treatment first is refused by Logia and routed to clinician review.',
   Content_Hash__c = 'sha256:a4da995bc39a2a89d45bc28398c12edc8af4f895449fffc8f54195baee4b9d5e',
   Source_URI__c = 'urn:hfs:source:hospital:clinical-boundary',
   Captured_At__c = baseTime.addMinutes(35)
@@ -349,29 +349,29 @@ insert new List<HFS_Evidence__c>{
 };
 
 HFS_Recommendation__c recommendation = new HFS_Recommendation__c(
-  External_Key__c = 'recommendation-north-star-hospital-001',
+  External_Key__c = 'recommendation-logia-hospital-001',
   Tenant_Key__c = tenantKey,
   Work_Item__c = workItem.Id,
   Subject_Entity__c = hospital.Id,
   Primary_Evidence__c = complaintEvidence.Id,
   Status__c = 'PENDING_APPROVAL',
-  Recommendation_Type__c = 'NORTH_STAR_HOSPITAL_ACTION_PLAN',
+  Recommendation_Type__c = 'LOGIA_HOSPITAL_ACTION_PLAN',
   Proposed_Action_Type__c = 'APPROVE_HOSPITAL_ACTIONS',
-  Rationale__c = 'Facts: patient complaints are clustered, discharge rooms are blocked, pharmacy stock cover is below threshold, lab acknowledgement is late, billing/insurance reviews are stalled, and staffing coverage is short. Inference: one approved operations action plan should coordinate room cleaning, porter movement, pharmacy restock or transfer, lab escalation, billing review, internal Slack and WhatsApp alerts, and outcome tracking. North Star refuses clinical diagnosis, treatment, dosage, triage, or clinical priority decisions.',
+  Rationale__c = 'Facts: patient complaints are clustered, discharge rooms are blocked, pharmacy stock cover is below threshold, lab acknowledgement is late, billing/insurance reviews are stalled, and staffing coverage is short. Inference: one approved operations action plan should coordinate room cleaning, porter movement, pharmacy restock or transfer, lab escalation, billing review, internal Slack and WhatsApp alerts, and outcome tracking. Logia refuses clinical diagnosis, treatment, dosage, triage, or clinical priority decisions.',
   Confidence__c = 0.88,
-  Model_Profile__c = 'north-star-hospital-operations',
-  Model_Invocation_Id__c = 'model-invocation-north-star-hospital-001',
+  Model_Profile__c = 'logia-hospital-operations',
+  Model_Invocation_Id__c = 'model-invocation-logia-hospital-001',
   Generated_At__c = baseTime.addMinutes(36)
 );
 insert recommendation;
 
 insert new HFS_Approval__c(
-  External_Key__c = 'approval-north-star-hospital-001',
+  External_Key__c = 'approval-logia-hospital-001',
   Tenant_Key__c = tenantKey,
   Recommendation__c = recommendation.Id,
   Status__c = 'PENDING',
   Requested_At__c = baseTime.addMinutes(37),
-  Policy_Key__c = 'north-star-hospital-manager-approval-v1'
+  Policy_Key__c = 'logia-hospital-manager-approval-v1'
 );
 
 System.debug('HFS_DEMO_SEED:' + workItem.Id);

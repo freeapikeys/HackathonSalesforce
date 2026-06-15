@@ -25,6 +25,6 @@ DAG would either lose real relationships or make workflow execution ambiguous.
 - OWL files define meaning and validation but do not replace Salesforce and
   Data 360 operational storage.
 - A separate graph database is deferred until measurements justify it.
-- North Star retail concepts such as product, batch, supplier response, staff
+- Logia retail concepts such as product, batch, supplier response, staff
   task, channel alert, and outcome should map into these structures rather than
   becoming one untyped demo blob.

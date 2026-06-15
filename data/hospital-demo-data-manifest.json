@@ -1,5 +1,5 @@
 {
-  "name": "North Star private hospital demo data",
+  "name": "Logia private hospital demo data",
   "sourceOfTruth": "data/hospital",
   "safety": {
     "mode": "synthetic_demo_only",

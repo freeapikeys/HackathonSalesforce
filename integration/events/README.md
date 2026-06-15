@@ -7,9 +7,9 @@
 
 Validate from the repository root with `npm run check:events`.
 
-## North Star Fixtures
+## Logia Fixtures
 
-North Star should add retail source events under the same envelope instead of
+Logia should add retail source events under the same envelope instead of
 creating a separate intake path. Candidate examples:
 
 - stockout risk detected;

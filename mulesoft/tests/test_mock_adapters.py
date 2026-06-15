@@ -9,6 +9,7 @@ from unittest.mock import patch
 from mock_runtime import (
     RetryPolicy,
     SlackApprovalInteractionHandler,
+    SlackStatusCommandHandler,
     WhatsAppProviderConfig,
     build_default_api,
 )
@@ -63,6 +64,26 @@ class MockAdapterTest(unittest.TestCase):
         raw_body = urllib.parse.urlencode(
             {"payload": json.dumps(payload, separators=(",", ":"))}
         )
+        return (
+            {
+                "X-Slack-Request-Timestamp": timestamp,
+                "X-Slack-Signature": SlackApprovalInteractionHandler.signature(
+                    signing_secret=signing_secret,
+                    timestamp_value=timestamp,
+                    raw_body=raw_body,
+                ),
+            },
+            raw_body,
+        )
+
+    def signed_slack_form_request(
+        self,
+        *,
+        signing_secret: str,
+        form: dict[str, str],
+        timestamp: str = "1710000000",
+    ) -> tuple[dict[str, str], str]:
+        raw_body = urllib.parse.urlencode(form)
         return (
             {
                 "X-Slack-Request-Timestamp": timestamp,
@@ -298,12 +319,16 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(202, response.status)
         self.assertEqual(1, len(transport.posts))
         self.assertIn(
-            "North Star alert",
+            "Logia alert",
             transport.posts[0]["payload"]["text"],
         )
         record = next(iter(api.write_back_adapter.source_records.values()))
         self.assertEqual("SENT", record["delivery"]["status"])
         self.assertEqual("slack-webhook", record["delivery"]["provider"])
+        self.assertEqual(
+            ["incoming_webhook", "role_routed_alert"],
+            record["delivery"]["slackFeatures"],
+        )
         self.assertEqual(
             "slack-message-001",
             record["delivery"]["providerMessageId"],
@@ -338,11 +363,20 @@ class MockAdapterTest(unittest.TestCase):
         }
         self.assertEqual(
             {
-                "north_star_approve",
-                "north_star_reject",
-                "north_star_modify",
+                "logia_approve",
+                "logia_reject",
+                "logia_modify",
             },
             action_ids,
+        )
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        self.assertIn(
+            "block_kit_approval",
+            record["delivery"]["slackFeatures"],
+        )
+        self.assertEqual(
+            "SLACK_INTERACTIVITY",
+            record["delivery"]["approvalMode"],
         )
 
     def test_slack_interaction_approves_pending_action_before_execution(self) -> None:
@@ -361,9 +395,9 @@ class MockAdapterTest(unittest.TestCase):
         body["actionId"] = "action-slack-interactive-001"
         body["payload"] = {
             "targetRole": "Operations Manager",
-            "targetChannel": "#north-star-demo",
+            "targetChannel": "#logia-demo",
             "messageTitle": "Hospital operations approval",
-            "messageBody": "Approve protected North Star operations actions.",
+            "messageBody": "Approve protected Logia operations actions.",
             "evidenceIds": ["evidence-hospital-001"],
             "sourceRecommendationId": body["recommendationId"],
             "approvalRequest": True,
@@ -395,7 +429,7 @@ class MockAdapterTest(unittest.TestCase):
                 approval_id=body["approvalId"],
                 action_ids=[body["actionId"]],
                 title="Hospital operations approval",
-                body="Approve protected North Star operations actions.",
+                body="Approve protected Logia operations actions.",
             )[-1]["elements"][0]["value"]
         )
         slack_payload = {
@@ -403,7 +437,7 @@ class MockAdapterTest(unittest.TestCase):
             "user": {"username": "ops-manager"},
             "actions": [
                 {
-                    "action_id": "north_star_approve",
+                    "action_id": "logia_approve",
                     "value": json.dumps(button_value),
                 }
             ],
@@ -420,6 +454,8 @@ class MockAdapterTest(unittest.TestCase):
         decision = handler.handle(signed_headers, raw_body)
         self.assertEqual(200, decision.status)
         self.assertEqual("APPROVED", decision.body["decisionStatus"])
+        self.assertTrue(decision.body["replace_original"])
+        self.assertIn("Logia approval approved", decision.body["text"])
 
         approved = api.request(
             "POST",
@@ -445,6 +481,56 @@ class MockAdapterTest(unittest.TestCase):
         headers, raw_body = self.signed_slack_request(
             signing_secret=signing_secret,
             payload={"actions": []},
+        )
+        headers["X-Slack-Signature"] = "v0=invalid"
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(401, response.status)
+        self.assertEqual("SLACK_SIGNATURE_INVALID", response.body["code"])
+
+    def test_slack_status_command_reports_approval_state(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        api.write_back_adapter.register_approval(
+            approval_id="approval-logia-command-001",
+            tenant_key="tenant-hfs-demo",
+            recommendation_id="recommendation-logia-command-001",
+            action_id="action-logia-command-001",
+            status="PENDING",
+        )
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": "status approval-logia-command-001",
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("ephemeral", response.body["response_type"])
+        self.assertEqual("PENDING", response.body["decisionStatus"])
+        self.assertIn("approval-logia-command-001", response.body["text"])
+
+    def test_slack_status_command_rejects_invalid_signature(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={"command": "/logia", "text": "status approval-demo"},
         )
         headers["X-Slack-Signature"] = "v0=invalid"
 
@@ -548,7 +634,7 @@ class MockAdapterTest(unittest.TestCase):
         body["payload"] = {
             "targetRole": "Patient Experience Lead",
             "targetChannel": "wa-role-patient-experience-lead",
-            "messageTitle": "North Star hospital action",
+            "messageTitle": "Logia hospital action",
             "messageBody": "Coordinate approved internal hospital update.",
             "evidenceIds": ["evidence-hospital-001"],
             "sourceRecommendationId": body["recommendationId"],
@@ -605,7 +691,7 @@ class MockAdapterTest(unittest.TestCase):
         body["payload"] = {
             "targetRole": "Operations Manager",
             "targetChannel": "wa-role-operations-manager",
-            "messageTitle": "North Star action",
+            "messageTitle": "Logia action",
             "messageBody": "Please check the approved stock request.",
             "evidenceIds": ["evidence-hospital-001"],
             "sourceRecommendationId": body["recommendationId"],
@@ -690,9 +776,9 @@ class MockAdapterTest(unittest.TestCase):
             if action_type == "SEND_SLACK_ALERT":
                 body["payload"] = {
                     "targetRole": "Operations Manager",
-                    "targetChannel": "#north-star-demo",
-                    "messageTitle": "North Star hospital action",
-                    "messageBody": f"North Star hospital action {action_type}",
+                    "targetChannel": "#logia-demo",
+                    "messageTitle": "Logia hospital action",
+                    "messageBody": f"Logia hospital action {action_type}",
                     "evidenceIds": ["evidence-hospital-001"],
                     "sourceRecommendationId": body["recommendationId"],
                 }
@@ -701,8 +787,8 @@ class MockAdapterTest(unittest.TestCase):
                 body["payload"] = {
                     "targetRole": "Pharmacy Lead",
                     "targetChannel": "wa-role-pharmacy-lead",
-                    "messageTitle": "North Star pharmacy restock",
-                    "messageBody": f"North Star hospital action {action_type}",
+                    "messageTitle": "Logia pharmacy restock",
+                    "messageBody": f"Logia hospital action {action_type}",
                     "evidenceIds": ["evidence-hospital-001"],
                     "sourceRecommendationId": body["recommendationId"],
                 }
@@ -712,7 +798,7 @@ class MockAdapterTest(unittest.TestCase):
                     "targetRole": "Vendor Coordinator",
                     "targetChannel": "email-role-vendor-coordinator",
                     "messageTitle": "Hospital stock follow-up",
-                    "messageBody": f"North Star hospital action {action_type}",
+                    "messageBody": f"Logia hospital action {action_type}",
                     "supplierAlias": "partner-pharmacy-supplier",
                     "evidenceIds": ["evidence-hospital-001"],
                     "sourceRecommendationId": body["recommendationId"],
@@ -720,7 +806,7 @@ class MockAdapterTest(unittest.TestCase):
             else:
                 body["payload"] = {
                     "targetRole": "Operations Manager",
-                    "messageBody": f"North Star hospital action {action_type}",
+                    "messageBody": f"Logia hospital action {action_type}",
                 }
             headers = deepcopy(example["x-hfs-headers"])
             headers["X-Idempotency-Key"] = body["idempotencyKey"]

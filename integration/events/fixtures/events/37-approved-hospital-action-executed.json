@@ -14,7 +14,7 @@
   "hfssourcerecordid": "hospital-approved-action-001",
   "hfssourcesequence": 37,
   "hfsobservedat": "2026-06-06T09:45:06Z",
-  "hfscontenthash": "sha256:d6946f9148c710bf3b2a7ed4512c86e802c17c678e52adadf5df6406bfbf5687",
+  "hfscontenthash": "sha256:f0230528671dc648655ab551b529aa83a34850478c49d5e0c11e43a4a2a83402",
   "data": {
     "recordtype": "Issue",
     "operation": "UPDATE",
@@ -24,7 +24,7 @@
       "profile": "private-hospital",
       "primitive": "Action",
       "module": "Communication and escalation",
-      "approvalId": "approval-north-star-hospital-001",
+      "approvalId": "approval-logia-hospital-001",
       "actionTypes": [
         "REQUEST_BED_CLEANING",
         "SEND_SLACK_ALERT",
