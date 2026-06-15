@@ -188,7 +188,7 @@ Working context expires and is not automatically promoted to long-term memory.
 
 ## Learning Loop
 
-The local memory research memory system demonstrates useful patterns:
+The local memory research system demonstrates useful patterns:
 
 - source text, claims, rules, concepts, and evidence are separate;
 - graph recall narrows relevant context;
