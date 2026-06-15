@@ -1,0 +1,40 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000034",
+  "source": "urn:hfs:source:nexavenu-revenue",
+  "type": "io.github.freeapikeys.hfs.nexavenu.revenue.retention.risk.detected.v1",
+  "subject": "customer:SYNTH-SERVICE-ALPHA",
+  "time": "2026-06-10T08:50:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "30000000-0000-4000-8000-000000000001",
+  "hfscausationid": "00000000-0000-4000-8000-000000000033",
+  "hfsidempotencykey": "nexavenu-retention-risk-detected-v1",
+  "hfssourcerecordid": "nexavenu-revenue-event-retention-risk-001",
+  "hfssourcesequence": 6,
+  "hfsobservedat": "2026-06-10T08:50:02Z",
+  "hfscontenthash": "sha256:8733ad175aa9a44fdc16c22bf553e2fecfc2421145b1357e7f0a3132f83bbd67",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "OPEN",
+    "businesskey": "ISSUE-NEXAVENU-RETENTION-RISK-001",
+    "effectiveat": "2026-06-10T08:50:00Z",
+    "attributes": {
+      "eventcode": "NEXAVENU_RETENTION_RISK_DETECTED",
+      "relationshiptype": "existing_customer",
+      "pipeline_stage": "retention_ascension",
+      "buyer_journey_stage": "first_impressions",
+      "relationship_health_signal": "synthetic previous-loyalty account now showing adoption friction and executive dissatisfaction",
+      "risk_level": "HIGH",
+      "risk_drivers": [
+        "executive sponsor has not seen value proof",
+        "admin adoption is below target",
+        "post-go-live success criteria were not revisited",
+        "next expansion use case has no owner"
+      ],
+      "recommended_recovery_motion": "Run value-proof review, reset adoption owner, and map expansion path before renewal conversation."
+    }
+  }
+}

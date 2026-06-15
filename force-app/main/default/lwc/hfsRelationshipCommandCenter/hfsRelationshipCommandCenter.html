@@ -1,837 +1,913 @@
 <template>
   <article class="command-center" aria-labelledby="command-center-title">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">North Star command center</p>
-        <h1 id="command-center-title">Universal operations action plan</h1>
+    <aside class="trade-rail" aria-label="Command center navigation">
+      <div class="trade-rail__brand">
+        <span>NS</span>
+        <strong>North Star</strong>
       </div>
-      <span class="version">{uiVersionLabel}</span>
-    </header>
+      <nav class="trade-rail__nav" aria-label="Dashboard sections">
+        <a href="#ops-dashboard-heading" class="trade-rail__item is-active">
+          Dashboard
+        </a>
+        <a href="#risk-pulse-heading" class="trade-rail__item">Signals</a>
+        <a href="#recommendation-heading" class="trade-rail__item">Agents</a>
+        <a href="#approval-heading" class="trade-rail__item">Approvals</a>
+        <a href="#outcome-heading" class="trade-rail__item">Outcomes</a>
+      </nav>
+      <div class="trade-rail__footer">
+        <span>RM Intel</span>
+        <strong>Live demo</strong>
+      </div>
+    </aside>
 
-    <template lwc:if={isLoading}>
-      <section
-        class="state-panel"
-        data-testid="loading-view"
-        aria-busy="true"
-        aria-live="polite"
-      >
-        <lightning-spinner
-          alternative-text="Loading North Star context"
-          size="medium"
-        ></lightning-spinner>
-        <h2>Loading North Star context</h2>
-        <p>{state.message}</p>
-      </section>
-    </template>
+    <div class="command-main">
+      <header class="hero">
+        <div class="hero__copy">
+          <p class="eyebrow">{state.profile.eyebrow}</p>
+          <h1 id="command-center-title">{state.profile.pageTitle}</h1>
+          <p class="hero__subline">
+            Evidence-backed decisions, approved actions, and outcome feedback in
+            one operating surface.
+          </p>
+        </div>
+        <div class="hero__chrome" aria-label="System status">
+          <span class="version">{uiVersionLabel}</span>
+          <span class="hero__signal">Evidence &gt; approval &gt; outcome</span>
+        </div>
+      </header>
 
-    <template lwc:elseif={isEmpty}>
-      <section class="state-panel" data-testid="empty-view">
-        <div class="state-icon" aria-hidden="true">0</div>
-        <h2>{state.title}</h2>
-        <p>{state.message}</p>
-      </section>
-    </template>
-
-    <template lwc:elseif={isDenied}>
-      <section
-        class="state-panel state-panel_denied"
-        data-testid="denied-view"
-        role="alert"
-      >
-        <div class="state-icon" aria-hidden="true">!</div>
-        <h2>{state.title}</h2>
-        <p>{state.message}</p>
-        <p class="correlation">Correlation: {state.correlationId}</p>
-      </section>
-    </template>
-
-    <template lwc:elseif={isError}>
-      <section
-        class="state-panel state-panel_error"
-        data-testid="error-view"
-        role="alert"
-      >
-        <div class="state-icon" aria-hidden="true">!</div>
-        <h2>{state.title}</h2>
-        <p>{state.message}</p>
-        <p class="correlation">
-          {state.errorCode} | Correlation: {state.correlationId}
-        </p>
-        <lightning-button
-          data-testid="retry-button"
-          label="Retry"
-          variant="brand"
-          onclick={handleRetry}
-        ></lightning-button>
-      </section>
-    </template>
-
-    <template lwc:elseif={isReady}>
-      <div data-testid="ready-view">
-        <section class="case-banner" aria-labelledby="case-title">
-          <div class="case-heading">
-            <div>
-              <p class="eyebrow">{state.case.externalKey}</p>
-              <h2 id="case-title">{state.case.title}</h2>
-              <p class="case-summary">{state.case.summary}</p>
-            </div>
-            <div class="badges" aria-label="Case status">
-              <lightning-badge label={state.case.severity}></lightning-badge>
-              <lightning-badge label={state.case.status}></lightning-badge>
-            </div>
-          </div>
-
-          <dl class="case-metrics">
-            <div>
-              <dt>Manager owner</dt>
-              <dd>{state.case.owner.name}</dd>
-            </div>
-            <div>
-              <dt>Rush deadline</dt>
-              <dd>
-                <lightning-formatted-date-time
-                  value={state.case.serviceDeadline}
-                  year="numeric"
-                  month="short"
-                  day="2-digit"
-                  hour="2-digit"
-                  minute="2-digit"
-                ></lightning-formatted-date-time>
-              </dd>
-            </div>
-            <div>
-              <dt>Next decision update</dt>
-              <dd>
-                <lightning-formatted-date-time
-                  value={state.case.nextUpdateDue}
-                  year="numeric"
-                  month="short"
-                  day="2-digit"
-                  hour="2-digit"
-                  minute="2-digit"
-                ></lightning-formatted-date-time>
-              </dd>
-            </div>
-            <div>
-              <dt>Current role</dt>
-              <dd>{state.userRole}</dd>
-            </div>
-          </dl>
+      <template lwc:if={isLoading}>
+        <section
+          class="state-panel"
+          data-testid="loading-view"
+          aria-busy="true"
+          aria-live="polite"
+        >
+          <lightning-spinner
+            alternative-text={state.profile.loadingTitle}
+            size="medium"
+          ></lightning-spinner>
+          <h2>{state.profile.loadingTitle}</h2>
+          <p>{state.message}</p>
         </section>
+      </template>
 
-        <section class="panel" aria-labelledby="risk-pulse-heading">
-          <div class="panel-heading">
-            <div>
-              <p class="section-kicker">Risk pulse</p>
-              <h2 id="risk-pulse-heading">North Star operations signals</h2>
-            </div>
-          </div>
-          <ul class="entity-grid" aria-label="Risk pulse cards">
-            <template for:each={state.case.riskPulses} for:item="risk">
-              <li key={risk.id}>
-                <span class="entity-type">{risk.label}</span>
-                <strong>{risk.status}</strong>
-              </li>
-            </template>
-          </ul>
+      <template lwc:elseif={isEmpty}>
+        <section class="state-panel" data-testid="empty-view">
+          <div class="state-icon" aria-hidden="true">0</div>
+          <h2>{state.title}</h2>
+          <p>{state.message}</p>
         </section>
+      </template>
 
-        <template lwc:if={state.case.profileMappings}>
-          <section
-            class="panel"
-            data-testid="profile-mapping-cards"
-            aria-labelledby="profile-mapping-heading"
-          >
-            <div class="panel-heading">
+      <template lwc:elseif={isDenied}>
+        <section
+          class="state-panel state-panel_denied"
+          data-testid="denied-view"
+          role="alert"
+        >
+          <div class="state-icon" aria-hidden="true">!</div>
+          <h2>{state.title}</h2>
+          <p>{state.message}</p>
+          <p class="correlation">Correlation: {state.correlationId}</p>
+        </section>
+      </template>
+
+      <template lwc:elseif={isError}>
+        <section
+          class="state-panel state-panel_error"
+          data-testid="error-view"
+          role="alert"
+        >
+          <div class="state-icon" aria-hidden="true">!</div>
+          <h2>{state.title}</h2>
+          <p>{state.message}</p>
+          <p class="correlation">
+            {state.errorCode} | Correlation: {state.correlationId}
+          </p>
+          <lightning-button
+            data-testid="retry-button"
+            label="Retry"
+            variant="brand"
+            onclick={handleRetry}
+          ></lightning-button>
+        </section>
+      </template>
+
+      <template lwc:elseif={isReady}>
+        <div data-testid="ready-view">
+          <section class="case-banner" aria-labelledby="case-title">
+            <div class="case-heading">
               <div>
-                <p class="section-kicker">Universal core</p>
-                <h2 id="profile-mapping-heading">
-                  {state.case.profile.activeProfile}
-                </h2>
-                <p class="profile-boundary">{state.case.profile.boundary}</p>
+                <p class="eyebrow">{state.case.externalKey}</p>
+                <h2 id="case-title">{state.case.title}</h2>
+                <p class="case-summary">{state.case.summary}</p>
               </div>
-              <span class="status-pill">{state.case.profile.displayName}</span>
+              <div class="badges" aria-label="Case status">
+                <lightning-badge label={state.case.severity}></lightning-badge>
+                <lightning-badge label={state.case.status}></lightning-badge>
+              </div>
             </div>
-            <div class="mapping-grid">
-              <template
-                for:each={state.case.profileMappings}
-                for:item="mapping"
-              >
-                <article key={mapping.id} class="mapping-card">
-                  <span class="entity-type">{mapping.primitive}</span>
-                  <h3>{mapping.issue}</h3>
-                  <dl>
-                    <div>
-                      <dt>Hospital</dt>
-                      <dd>{mapping.hospital}</dd>
-                    </div>
-                    <div>
-                      <dt>Hotel</dt>
-                      <dd>{mapping.hotel}</dd>
-                    </div>
-                    <div>
-                      <dt>Airport</dt>
-                      <dd>{mapping.airport}</dd>
-                    </div>
-                    <div>
-                      <dt>Banking</dt>
-                      <dd>{mapping.banking}</dd>
-                    </div>
-                    <div>
-                      <dt>Supermarket</dt>
-                      <dd>{mapping.supermarket}</dd>
-                    </div>
-                    <div>
-                      <dt>Cruise</dt>
-                      <dd>{mapping.cruise}</dd>
-                    </div>
-                  </dl>
+
+            <dl class="case-metrics">
+              <div>
+                <dt>{state.profile.ownerLabel}</dt>
+                <dd>{state.case.owner.name}</dd>
+              </div>
+              <div>
+                <dt>{state.profile.deadlineLabel}</dt>
+                <dd>
+                  <lightning-formatted-date-time
+                    value={state.case.serviceDeadline}
+                    year="numeric"
+                    month="short"
+                    day="2-digit"
+                    hour="2-digit"
+                    minute="2-digit"
+                  ></lightning-formatted-date-time>
+                </dd>
+              </div>
+              <div>
+                <dt>{state.profile.updateLabel}</dt>
+                <dd>
+                  <lightning-formatted-date-time
+                    value={state.case.nextUpdateDue}
+                    year="numeric"
+                    month="short"
+                    day="2-digit"
+                    hour="2-digit"
+                    minute="2-digit"
+                  ></lightning-formatted-date-time>
+                </dd>
+              </div>
+              <div>
+                <dt>Current role</dt>
+                <dd>{state.userRole}</dd>
+              </div>
+            </dl>
+
+            <ol class="loop-rail" aria-label="Closed-loop intelligence stages">
+              <li>
+                <span>01</span>
+                <strong>Evidence</strong>
+                <small>Source records preserved</small>
+              </li>
+              <li>
+                <span>02</span>
+                <strong>Intelligence</strong>
+                <small>Facts, claims, predictions</small>
+              </li>
+              <li>
+                <span>03</span>
+                <strong>Approval</strong>
+                <small>Human decision boundary</small>
+              </li>
+              <li>
+                <span>04</span>
+                <strong>Action</strong>
+                <small>Slack, WhatsApp, tasks, cases</small>
+              </li>
+              <li>
+                <span>05</span>
+                <strong>Outcome</strong>
+                <small>Feedback updates the picture</small>
+              </li>
+            </ol>
+          </section>
+
+          <template lwc:if={hasProfileOptions}>
+            <section
+              class="profile-deck"
+              aria-labelledby="profile-deck-heading"
+            >
+              <div class="profile-deck__intro">
+                <p class="section-kicker">Business terrains</p>
+                <h2 id="profile-deck-heading">
+                  One closed loop, multiple relationship systems
+                </h2>
+                <p>
+                  Switch the demo surface without changing the underlying
+                  evidence, approval, action, and outcome spine.
+                </p>
+              </div>
+              <div class="profile-grid">
+                <template for:each={profileOptions} for:item="profileOption">
+                  <button
+                    key={profileOption.key}
+                    class="profile-card"
+                    data-profile-key={profileOption.key}
+                    data-selected={profileOption.selected}
+                    aria-pressed={profileOption.selected}
+                    onclick={handleProfileSelect}
+                  >
+                    <span>{profileOption.shortName}</span>
+                    <strong>{profileOption.pageTitle}</strong>
+                    <small>{profileOption.eyebrow}</small>
+                  </button>
+                </template>
+              </div>
+            </section>
+          </template>
+
+          <section
+            class="ops-dashboard"
+            aria-labelledby="ops-dashboard-heading"
+          >
+            <div class="ops-dashboard__header">
+              <div>
+                <p class="section-kicker">Daily operating picture</p>
+                <h2 id="ops-dashboard-heading">
+                  Dashboards, KPIs, and predictions
+                </h2>
+                <p>
+                  Minimal command view using linear comparisons, explicit
+                  confidence, and approval-safe next actions.
+                </p>
+              </div>
+              <span class="status-pill">Predicted next state</span>
+            </div>
+
+            <div class="kpi-strip">
+              <template for:each={operatingKpis} for:item="kpi">
+                <article key={kpi.id} class="kpi-card">
+                  <div class="kpi-card__topline">
+                    <span>{kpi.label}</span>
+                    <strong>{kpi.status}</strong>
+                  </div>
+                  <div class="kpi-card__value">{kpi.value}</div>
+                  <p>{kpi.prediction}</p>
+                  <div class="prediction-meter" aria-hidden="true">
+                    <span style={kpi.predictionStyle}></span>
+                  </div>
+                  <div class="kpi-card__footer">
+                    <span>{kpi.delta}</span>
+                    <strong>{kpi.confidence}</strong>
+                  </div>
                 </article>
               </template>
             </div>
-          </section>
-        </template>
 
-        <template lwc:if={showRestrictedNotice}>
-          <div class="permission-notice" data-testid="restricted-notice">
-            You can inspect the accessible case facts. Approval controls are not
-            available for your current role.
-          </div>
-        </template>
-
-        <template lwc:if={commandMessage}>
-          <div
-            class="command-feedback command-feedback_success"
-            data-testid="command-success"
-            role="status"
-          >
-            {commandMessage}
-          </div>
-        </template>
-
-        <template lwc:if={commandError}>
-          <div
-            class="command-feedback command-feedback_error"
-            data-testid="command-error"
-            role="alert"
-          >
-            {commandError}
-          </div>
-        </template>
-
-        <div class="workspace">
-          <main class="primary-column">
-            <section class="panel" aria-labelledby="relationship-heading">
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Operations context</p>
-                  <h2 id="relationship-heading">
-                    Resource, partner, and capacity
-                  </h2>
-                </div>
-                <span class="status-pill"
-                  >{state.case.affectedRelationship.status}</span
-                >
-              </div>
-              <div class="relationship-line">
-                <strong>{state.case.affectedRelationship.subject}</strong>
-                <span>{state.case.affectedRelationship.type}</span>
-                <strong>{state.case.affectedRelationship.object}</strong>
-              </div>
-              <ul class="entity-grid" aria-label="Connected entities">
-                <template
-                  for:each={state.case.connectedEntities}
-                  for:item="entity"
-                >
-                  <li key={entity.id}>
-                    <span class="entity-type">{entity.type}</span>
-                    <strong>{entity.label}</strong>
-                    <span>{entity.role}</span>
-                  </li>
-                </template>
-              </ul>
-              <dl class="case-metrics">
-                <div>
-                  <dt>Organization</dt>
-                  <dd>{state.case.operationsContext.organization}</dd>
-                </div>
-                <div>
-                  <dt>Resource</dt>
-                  <dd>{state.case.operationsContext.resource}</dd>
-                </div>
-                <div>
-                  <dt>Operational focus</dt>
-                  <dd>{state.case.operationsContext.operationalFocus}</dd>
-                </div>
-                <div>
-                  <dt>Operations window</dt>
-                  <dd>{state.case.operationsContext.recoveryWindow}</dd>
-                </div>
-              </dl>
-              <ul class="entity-grid" aria-label="Resource positions">
-                <template
-                  for:each={state.case.resourcePositions}
-                  for:item="resource"
-                >
-                  <li key={resource.id}>
-                    <span class="entity-type">{resource.label}</span>
-                    <strong>{resource.value}</strong>
-                  </li>
-                </template>
-              </ul>
-            </section>
-
-            <section class="panel" aria-labelledby="complaint-heading">
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Customer trust</p>
-                  <h2 id="complaint-heading">Complaint cluster</h2>
-                </div>
-              </div>
-              <dl class="case-metrics">
-                <div>
-                  <dt>Type</dt>
-                  <dd>{state.case.complaintCluster.type}</dd>
-                </div>
-                <div>
-                  <dt>Count</dt>
-                  <dd>{state.case.complaintCluster.count}</dd>
-                </div>
-                <div>
-                  <dt>Partner</dt>
-                  <dd>{state.case.complaintCluster.partner}</dd>
-                </div>
-                <div>
-                  <dt>Window</dt>
-                  <dd>{state.case.complaintCluster.window}</dd>
-                </div>
-              </dl>
-              <template lwc:if={state.case.inboundComplaintIntake}>
-                <div class="outcome" data-testid="inbound-complaint-intake">
-                  <div>
-                    <span class="entity-type">WhatsApp intake</span>
-                    <h3>{state.case.inboundComplaintIntake.sourceChannel}</h3>
-                  </div>
-                  <p>{state.case.inboundComplaintIntake.summary}</p>
-                  <strong
-                    >{state.case.inboundComplaintIntake.protectedActionState}</strong
-                  >
-                </div>
-                <div class="evidence-list evidence-list_compact">
-                  <article class="evidence-card">
-                    <h3>Follow-up questions</h3>
-                    <ul class="fact-list">
-                      <template
-                        for:each={state.case.inboundComplaintIntake.followUpQuestions}
-                        for:item="question"
-                      >
-                        <li key={question}>{question}</li>
-                      </template>
-                    </ul>
-                  </article>
-                  <article class="evidence-card">
-                    <h3>Root-cause hypotheses</h3>
-                    <ul class="inference-list">
-                      <template
-                        for:each={state.case.inboundComplaintIntake.rootCauseHypotheses}
-                        for:item="hypothesis"
-                      >
-                        <li key={hypothesis}>{hypothesis}</li>
-                      </template>
-                    </ul>
-                  </article>
-                  <article class="evidence-card">
-                    <h3>Next evidence needed</h3>
-                    <ul class="fact-list">
-                      <template
-                        for:each={state.case.inboundComplaintIntake.nextEvidenceNeeded}
-                        for:item="evidence"
-                      >
-                        <li key={evidence}>{evidence}</li>
-                      </template>
-                    </ul>
-                  </article>
-                </div>
-              </template>
-            </section>
-
-            <section class="panel" aria-labelledby="supplier-heading">
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Partner</p>
-                  <h2 id="supplier-heading">Partner response</h2>
-                </div>
-                <span class="status-pill"
-                  >{state.case.partnerResponse.status}</span
-                >
-              </div>
-              <dl class="case-metrics">
-                <div>
-                  <dt>Lead time</dt>
-                  <dd>{state.case.partnerResponse.responseDelay}</dd>
-                </div>
-                <div>
-                  <dt>Replacement</dt>
-                  <dd>{state.case.partnerResponse.recoveryOption}</dd>
-                </div>
-                <div>
-                  <dt>Financial impact</dt>
-                  <dd>{state.case.partnerResponse.financialImpact}</dd>
-                </div>
-                <div>
-                  <dt>Boundary</dt>
-                  <dd>{state.case.partnerResponse.boundary}</dd>
-                </div>
-              </dl>
-            </section>
-
-            <template lwc:if={state.case.orchestrationConflicts}>
-              <section class="panel" aria-labelledby="conflicts-heading">
+            <div class="ops-grid">
+              <article class="forecast-panel">
                 <div class="panel-heading">
                   <div>
-                    <p class="section-kicker">Orchestration</p>
-                    <h2 id="conflicts-heading">
-                      Conflicts before orchestration
-                    </h2>
+                    <p class="section-kicker">Forecast graph</p>
+                    <h3>{operatingTrendTitle}</h3>
+                  </div>
+                  <div class="legend">
+                    <span><i class="actual-dot"></i>Actual</span>
+                    <span><i class="predicted-dot"></i>Predicted</span>
                   </div>
                 </div>
-                <ul class="action-list">
-                  <template
-                    for:each={state.case.orchestrationConflicts}
-                    for:item="conflict"
-                  >
-                    <li key={conflict.id}>
-                      <div>
-                        <strong>{conflict.agent}</strong>
-                        <span>{conflict.conflict}</span>
-                        <span>{conflict.resolution}</span>
+                <div class="forecast-chart" aria-label={operatingTrendTitle}>
+                  <template for:each={operatingTrend} for:item="point">
+                    <div key={point.id} class="forecast-point">
+                      <div class="forecast-bars">
+                        <span
+                          class="forecast-bar forecast-bar_actual"
+                          style={point.actualStyle}
+                          title="Actual"
+                        ></span>
+                        <span
+                          class="forecast-bar forecast-bar_predicted"
+                          style={point.predictedStyle}
+                          title="Predicted"
+                        ></span>
                       </div>
-                    </li>
-                  </template>
-                </ul>
-              </section>
-            </template>
-
-            <template lwc:if={state.case.agentHandoffTrace}>
-              <section
-                class="panel"
-                data-testid="agent-handoff-trace"
-                aria-labelledby="handoff-heading"
-              >
-                <div class="panel-heading">
-                  <div>
-                    <p class="section-kicker">Agent handoff</p>
-                    <h2 id="handoff-heading">10-agent coordination trace</h2>
-                  </div>
-                </div>
-                <ul class="action-list">
-                  <template
-                    for:each={state.case.agentHandoffTrace}
-                    for:item="handoff"
-                  >
-                    <li key={handoff.id}>
-                      <div>
-                        <strong>{handoff.agent}</strong>
-                        <span>{handoff.contribution}</span>
-                        <span>Output: {handoff.output}</span>
-                      </div>
-                    </li>
-                  </template>
-                </ul>
-              </section>
-            </template>
-
-            <template lwc:if={state.case.recommendationUpdates}>
-              <section class="panel" aria-labelledby="updates-heading">
-                <div class="panel-heading">
-                  <div>
-                    <p class="section-kicker">Recommendation update</p>
-                    <h2 id="updates-heading">
-                      Partner and capacity response changed the plan
-                    </h2>
-                  </div>
-                </div>
-                <ul class="action-list">
-                  <template
-                    for:each={state.case.recommendationUpdates}
-                    for:item="update"
-                  >
-                    <li key={update.id}>
-                      <div>
-                        <strong>{update.trigger}</strong>
-                        <span>{update.before}</span>
-                        <span>{update.after}</span>
-                        <span>Evidence: {update.evidence}</span>
-                      </div>
-                    </li>
-                  </template>
-                </ul>
-              </section>
-            </template>
-
-            <section class="panel" aria-labelledby="timeline-heading">
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Evidence timeline</p>
-                  <h2 id="timeline-heading">Source records</h2>
-                </div>
-              </div>
-              <ol class="timeline">
-                <template for:each={state.case.timeline} for:item="item">
-                  <li key={item.id}>
-                    <div class="timeline-marker" aria-hidden="true"></div>
-                    <div class="timeline-content">
-                      <div class="timeline-meta">
-                        <span>{item.type}</span>
-                        <lightning-formatted-date-time
-                          value={item.occurredAt}
-                          hour="2-digit"
-                          minute="2-digit"
-                        ></lightning-formatted-date-time>
-                      </div>
-                      <h3>{item.title}</h3>
-                      <p>{item.detail}</p>
-                      <span class="source">{item.source}</span>
+                      <strong>{point.label}</strong>
                     </div>
-                  </li>
-                </template>
-              </ol>
-            </section>
-
-            <section class="panel" aria-labelledby="evidence-heading">
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Provenance</p>
-                  <h2 id="evidence-heading">Accessible source evidence</h2>
+                  </template>
                 </div>
+              </article>
+
+              <article class="brief-panel">
+                <p class="section-kicker">Daily brief</p>
+                <h3>What changed and what to do</h3>
+                <ol>
+                  <template for:each={operatingBrief} for:item="briefItem">
+                    <li key={briefItem}>{briefItem}</li>
+                  </template>
+                </ol>
+              </article>
+            </div>
+
+            <div class="coordination-grid">
+              <article class="agent-panel">
+                <p class="section-kicker">Agent coordination</p>
+                <h3>Chat with agents</h3>
+                <template for:each={operatingAgents} for:item="agent">
+                  <div key={agent.id} class="agent-thread">
+                    <div>
+                      <strong>{agent.name}</strong>
+                      <span>{agent.status}</span>
+                    </div>
+                    <p>{agent.lastMessage}</p>
+                  </div>
+                </template>
+              </article>
+
+              <article class="team-chat-panel">
+                <p class="section-kicker">Shared chats</p>
+                <h3>Employees and departments</h3>
+                <template for:each={operatingChannels} for:item="channel">
+                  <div key={channel.id} class="team-channel">
+                    <div>
+                      <strong>{channel.name}</strong>
+                      <span>{channel.owner}</span>
+                    </div>
+                    <p>{channel.lastMessage}</p>
+                    <span class="unread-pill">{channel.unread} updates</span>
+                  </div>
+                </template>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="risk-pulse-heading">
+            <div class="panel-heading">
+              <div>
+                <p class="section-kicker">{state.profile.riskKicker}</p>
+                <h2 id="risk-pulse-heading">{state.profile.riskHeading}</h2>
               </div>
-              <div class="evidence-list">
-                <template for:each={state.case.evidence} for:item="evidence">
-                  <article key={evidence.id} class="evidence-card">
-                    <h3>{evidence.label}</h3>
-                    <p>{evidence.summary}</p>
-                    <dl>
-                      <div>
-                        <dt>Source</dt>
-                        <dd>{evidence.sourceUri}</dd>
-                      </div>
-                      <div>
-                        <dt>Captured</dt>
-                        <dd>
+            </div>
+            <ul class="entity-grid" aria-label="Risk pulse cards">
+              <template for:each={state.case.riskPulses} for:item="risk">
+                <li key={risk.id}>
+                  <span class="entity-type">{risk.label}</span>
+                  <strong>{risk.status}</strong>
+                </li>
+              </template>
+            </ul>
+          </section>
+
+          <template lwc:if={showRestrictedNotice}>
+            <div class="permission-notice" data-testid="restricted-notice">
+              {state.profile.restrictedNotice}
+            </div>
+          </template>
+
+          <template lwc:if={commandMessage}>
+            <div
+              class="command-feedback command-feedback_success"
+              data-testid="command-success"
+              role="status"
+            >
+              {commandMessage}
+            </div>
+          </template>
+
+          <template lwc:if={commandError}>
+            <div
+              class="command-feedback command-feedback_error"
+              data-testid="command-error"
+              role="alert"
+            >
+              {commandError}
+            </div>
+          </template>
+
+          <div class="workspace">
+            <main class="primary-column">
+              <section class="panel" aria-labelledby="relationship-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">
+                      {state.profile.relationshipKicker}
+                    </p>
+                    <h2 id="relationship-heading">
+                      {state.profile.relationshipHeading}
+                    </h2>
+                  </div>
+                  <span class="status-pill"
+                    >{state.case.affectedRelationship.status}</span
+                  >
+                </div>
+                <div class="relationship-line">
+                  <strong>{state.case.affectedRelationship.subject}</strong>
+                  <span>{state.case.affectedRelationship.type}</span>
+                  <strong>{state.case.affectedRelationship.object}</strong>
+                </div>
+                <ul class="entity-grid" aria-label="Connected entities">
+                  <template
+                    for:each={state.case.connectedEntities}
+                    for:item="entity"
+                  >
+                    <li key={entity.id}>
+                      <span class="entity-type">{entity.type}</span>
+                      <strong>{entity.label}</strong>
+                      <span>{entity.role}</span>
+                    </li>
+                  </template>
+                </ul>
+                <dl class="case-metrics">
+                  <div>
+                    <dt>{state.profile.contextLabels.primary}</dt>
+                    <dd>{state.case.relationshipContext.store}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.contextLabels.secondary}</dt>
+                    <dd>{state.case.relationshipContext.product}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.contextLabels.tertiary}</dt>
+                    <dd>{state.case.relationshipContext.batch}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.contextLabels.quaternary}</dt>
+                    <dd>{state.case.relationshipContext.promotion}</dd>
+                  </div>
+                </dl>
+                <ul class="entity-grid" aria-label="Stock positions">
+                  <template for:each={state.case.stock} for:item="stock">
+                    <li key={stock.id}>
+                      <span class="entity-type">{stock.label}</span>
+                      <strong>{stock.value}</strong>
+                    </li>
+                  </template>
+                </ul>
+              </section>
+
+              <section class="panel" aria-labelledby="history-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">Identity history</p>
+                    <h2 id="history-heading">
+                      Relationship inspection and correction
+                    </h2>
+                  </div>
+                  <span class="status-pill">Human review</span>
+                </div>
+
+                <template lwc:if={hasRelationshipHistory}>
+                  <div class="history-grid" data-testid="relationship-history">
+                    <template
+                      for:each={state.case.relationshipHistory}
+                      for:item="history"
+                    >
+                      <article key={history.id} class="history-card">
+                        <span class="entity-type">{history.type}</span>
+                        <h3>{history.subject} -> {history.object}</h3>
+                        <dl>
+                          <div>
+                            <dt>Status</dt>
+                            <dd>{history.status}</dd>
+                          </div>
+                          <div>
+                            <dt>Confidence</dt>
+                            <dd>{history.confidencePercent}</dd>
+                          </div>
+                          <div>
+                            <dt>Source event</dt>
+                            <dd>{history.sourceEventId}</dd>
+                          </div>
+                          <div>
+                            <dt>Correction state</dt>
+                            <dd>{history.correctionState}</dd>
+                          </div>
+                          <div>
+                            <dt>Supersession approval</dt>
+                            <dd>{history.supersessionApprovalId}</dd>
+                          </div>
+                          <div>
+                            <dt>Superseded by</dt>
+                            <dd>{history.supersededByUserId}</dd>
+                          </div>
+                        </dl>
+                        <p>{history.evidenceSummary}</p>
+                      </article>
+                    </template>
+                  </div>
+                </template>
+
+                <template lwc:if={hasIdentityLinks}>
+                  <h3>Source participant links</h3>
+                  <ul class="source-links">
+                    <template
+                      for:each={state.case.identityLinks}
+                      for:item="link"
+                    >
+                      <li key={link.id}>
+                        <strong>{link.entity}</strong>
+                        <span>{link.role} | {link.sourceEventId}</span>
+                        <p>{link.evidenceSummary}</p>
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+
+                <template lwc:if={hasRelationshipContradictions}>
+                  <h3>Contradictory claims</h3>
+                  <ul class="contradiction-list">
+                    <template
+                      for:each={state.case.relationshipContradictions}
+                      for:item="contradiction"
+                    >
+                      <li key={contradiction.id}>
+                        <strong>{contradiction.claim}</strong>
+                        <span>{contradiction.counterclaim}</span>
+                        <p>{contradiction.resolution}</p>
+                      </li>
+                    </template>
+                  </ul>
+                </template>
+
+                <template lwc:if={hasCorrectionActions}>
+                  <div class="correction-list">
+                    <template
+                      for:each={state.case.correctionActions}
+                      for:item="action"
+                    >
+                      <article key={action.id} class="correction-card">
+                        <div>
+                          <span class="entity-type">{action.target}</span>
+                          <p>{action.reason}</p>
+                        </div>
+                        <lightning-button
+                          data-testid="correction-button"
+                          data-action-id={action.id}
+                          label={action.label}
+                          disabled={disableCorrectionControls}
+                          onclick={handleCorrectionRequest}
+                        ></lightning-button>
+                      </article>
+                    </template>
+                  </div>
+                </template>
+              </section>
+
+              <section class="panel" aria-labelledby="complaint-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">{state.profile.clusterKicker}</p>
+                    <h2 id="complaint-heading">
+                      {state.profile.clusterHeading}
+                    </h2>
+                  </div>
+                </div>
+                <dl class="case-metrics">
+                  <div>
+                    <dt>{state.profile.clusterLabels.type}</dt>
+                    <dd>{state.case.complaintCluster.type}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.clusterLabels.count}</dt>
+                    <dd>{state.case.complaintCluster.count}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.clusterLabels.supplier}</dt>
+                    <dd>{state.case.complaintCluster.supplier}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.clusterLabels.window}</dt>
+                    <dd>{state.case.complaintCluster.window}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section class="panel" aria-labelledby="supplier-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">{state.profile.responseKicker}</p>
+                    <h2 id="supplier-heading">
+                      {state.profile.responseHeading}
+                    </h2>
+                  </div>
+                  <span class="status-pill"
+                    >{state.case.partnerResponse.status}</span
+                  >
+                </div>
+                <dl class="case-metrics">
+                  <div>
+                    <dt>{state.profile.responseLabels.leadTime}</dt>
+                    <dd>{state.case.partnerResponse.leadTime}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.responseLabels.replacement}</dt>
+                    <dd>{state.case.partnerResponse.replacement}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.responseLabels.creditNote}</dt>
+                    <dd>{state.case.partnerResponse.creditNote}</dd>
+                  </div>
+                  <div>
+                    <dt>{state.profile.responseLabels.qualityIssue}</dt>
+                    <dd>{state.case.partnerResponse.qualityIssue}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section class="panel" aria-labelledby="timeline-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">Evidence timeline</p>
+                    <h2 id="timeline-heading">Source records</h2>
+                  </div>
+                </div>
+                <ol class="timeline">
+                  <template for:each={state.case.timeline} for:item="item">
+                    <li key={item.id}>
+                      <div class="timeline-marker" aria-hidden="true"></div>
+                      <div class="timeline-content">
+                        <div class="timeline-meta">
+                          <span>{item.type}</span>
                           <lightning-formatted-date-time
-                            value={evidence.capturedAt}
-                            year="numeric"
-                            month="short"
-                            day="2-digit"
+                            value={item.occurredAt}
                             hour="2-digit"
                             minute="2-digit"
                           ></lightning-formatted-date-time>
-                        </dd>
+                        </div>
+                        <h3>{item.title}</h3>
+                        <p>{item.detail}</p>
+                        <span class="source">{item.source}</span>
                       </div>
-                    </dl>
-                    <code>{evidence.contentHash}</code>
-                  </article>
-                </template>
-              </div>
-            </section>
+                    </li>
+                  </template>
+                </ol>
+              </section>
 
-            <section class="panel" aria-labelledby="actions-heading">
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Execution</p>
-                  <h2 id="actions-heading">Operations tasks and channel log</h2>
-                </div>
-              </div>
-              <ul class="action-list">
-                <template for:each={state.case.actions} for:item="action">
-                  <li key={action.id}>
-                    <div>
-                      <strong>{action.type}</strong>
-                      <span>{action.sourceSystem}</span>
-                    </div>
-                    <span class="status-pill">{action.status}</span>
-                  </li>
-                </template>
-              </ul>
-              <div class="outcome">
-                <div>
-                  <span class="entity-type">Execution plan</span>
-                  <h3>
-                    {state.case.operationsExecution.primaryRecommendation}
-                  </h3>
-                </div>
-              </div>
-              <ul class="action-list">
-                <template
-                  for:each={state.case.operationsExecution.tasks}
-                  for:item="task"
-                >
-                  <li key={task.id}>
-                    <div>
-                      <strong>{task.label}</strong>
-                      <span>{task.owner}</span>
-                    </div>
-                    <span class="status-pill">{task.status}</span>
-                  </li>
-                </template>
-              </ul>
-              <ul class="action-list">
-                <template for:each={state.case.channelLog} for:item="channel">
-                  <li key={channel.id}>
-                    <div>
-                      <strong>{channel.channel}</strong>
-                      <span>{channel.detail}</span>
-                    </div>
-                    <span class="status-pill">{channel.status}</span>
-                  </li>
-                </template>
-              </ul>
-              <div class="outcome">
-                <div>
-                  <span class="entity-type">Outcome</span>
-                  <h3>{state.case.outcome.status}</h3>
-                </div>
-                <p>{state.case.outcome.summary}</p>
-                <strong>{state.case.outcome.effectiveness}</strong>
-              </div>
-              <ul class="entity-grid" aria-label="Outcome metrics">
-                <template
-                  for:each={state.case.outcomeMetrics}
-                  for:item="metric"
-                >
-                  <li key={metric.id}>
-                    <span class="entity-type">{metric.label}</span>
-                    <strong>{metric.value}</strong>
-                  </li>
-                </template>
-              </ul>
-            </section>
-          </main>
-
-          <aside class="secondary-column" aria-label="Decision controls">
-            <section class="panel sticky-panel" aria-labelledby="sop-heading">
-              <p class="section-kicker">Operating procedure</p>
-              <h2 id="sop-heading">{state.case.sop.name}</h2>
-              <div class="sop-meta">
-                <span>Version {state.case.sop.version}</span>
-                <span>{state.case.sop.status}</span>
-              </div>
-              <lightning-progress-bar
-                value={state.case.sop.progress}
-                size="large"
-              ></lightning-progress-bar>
-              <p class="progress-label">
-                {state.case.sop.completedSteps} of {state.case.sop.totalSteps}
-                steps complete
-              </p>
-              <div class="current-step">
-                <span>Current step</span>
-                <strong>{state.case.sop.currentStep}</strong>
-              </div>
-              <p class="required-evidence">
-                Required evidence: {state.case.sop.requiredEvidence}
-              </p>
-            </section>
-
-            <section
-              class="panel recommendation"
-              aria-labelledby="recommendation-heading"
-            >
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Recommendation</p>
-                  <h2 id="recommendation-heading">
-                    {state.case.recommendation.title}
-                  </h2>
-                </div>
-                <strong>{state.case.recommendation.confidencePercent}</strong>
-              </div>
-              <p class="recommendation-copy">
-                {state.case.recommendation.recommendation}
-              </p>
-
-              <h3>Source facts</h3>
-              <ul class="fact-list">
-                <template
-                  for:each={state.case.recommendation.facts}
-                  for:item="fact"
-                >
-                  <li key={fact}>{fact}</li>
-                </template>
-              </ul>
-
-              <h3>Model inference</h3>
-              <ul class="inference-list">
-                <template
-                  for:each={state.case.recommendation.inferences}
-                  for:item="inference"
-                >
-                  <li key={inference}>{inference}</li>
-                </template>
-              </ul>
-
-              <dl class="model-meta">
-                <div>
-                  <dt>Logical profile</dt>
-                  <dd>{state.case.recommendation.modelProfile}</dd>
-                </div>
-                <div>
-                  <dt>Routing policy</dt>
-                  <dd>{state.case.recommendation.policyVersion}</dd>
-                </div>
-              </dl>
-            </section>
-
-            <template lwc:if={showVoiceMode}>
-              <section
-                class="panel voice-mode"
-                data-testid="voice-mode-panel"
-                aria-labelledby="voice-mode-heading"
-              >
+              <section class="panel" aria-labelledby="evidence-heading">
                 <div class="panel-heading">
                   <div>
-                    <p class="section-kicker">Voice request</p>
-                    <h2 id="voice-mode-heading">{voiceMode.status}</h2>
+                    <p class="section-kicker">Provenance</p>
+                    <h2 id="evidence-heading">Accessible source evidence</h2>
                   </div>
                 </div>
-                <p class="voice-summary">{voiceMode.summary}</p>
-                <template lwc:if={showVoiceCaptureControls}>
-                  <div
-                    class="voice-capture"
-                    data-testid="voice-capture-controls"
-                  >
-                    <lightning-button
-                      label={voiceCaptureButtonLabel}
-                      onclick={handleToggleVoiceCapture}
-                    ></lightning-button>
-                    <span>{voiceCaptureStatus}</span>
-                  </div>
-                </template>
-                <template lwc:if={voiceTranscript}>
-                  <p
-                    class="voice-transcript voice-transcript_captured"
-                    data-testid="voice-captured-transcript"
-                  >
-                    {voiceTranscript}
-                  </p>
-                </template>
-                <template lwc:if={voiceCaptureError}>
-                  <p
-                    class="voice-capture-error"
-                    data-testid="voice-capture-error"
-                  >
-                    {voiceCaptureError}
-                  </p>
-                </template>
-                <div class="voice-request-list">
-                  <template for:each={voiceMode.requests} for:item="request">
-                    <article key={request.id} class="voice-card">
-                      <p class="voice-transcript">{request.transcript}</p>
-                      <dl class="voice-meta">
+                <div class="evidence-list">
+                  <template for:each={state.case.evidence} for:item="evidence">
+                    <article key={evidence.id} class="evidence-card">
+                      <h3>{evidence.label}</h3>
+                      <p>{evidence.summary}</p>
+                      <dl>
                         <div>
-                          <dt>Intent</dt>
-                          <dd>{request.interpretedIntent}</dd>
+                          <dt>Source</dt>
+                          <dd>{evidence.sourceUri}</dd>
                         </div>
                         <div>
-                          <dt>Agentforce action</dt>
-                          <dd>{request.agentforceAction}</dd>
-                        </div>
-                        <div>
-                          <dt>Status</dt>
-                          <dd>{request.status}</dd>
-                        </div>
-                        <div>
-                          <dt>Execution</dt>
-                          <dd>{request.protectedActionState}</dd>
+                          <dt>Captured</dt>
+                          <dd>
+                            <lightning-formatted-date-time
+                              value={evidence.capturedAt}
+                              year="numeric"
+                              month="short"
+                              day="2-digit"
+                              hour="2-digit"
+                              minute="2-digit"
+                            ></lightning-formatted-date-time>
+                          </dd>
                         </div>
                       </dl>
-                      <ul class="voice-fields">
-                        <template
-                          for:each={request.structuredFields}
-                          for:item="field"
-                        >
-                          <li key={field.id}>
-                            <span>{field.label}</span>
-                            <strong>{field.value}</strong>
-                          </li>
-                        </template>
-                      </ul>
-                      <template lwc:if={request.refusal}>
-                        <p
-                          class="clinical-refusal"
-                          data-testid="voice-clinical-refusal"
-                        >
-                          {request.refusal}
-                        </p>
-                      </template>
+                      <code>{evidence.contentHash}</code>
                     </article>
                   </template>
                 </div>
               </section>
-            </template>
 
-            <section class="panel approval" aria-labelledby="approval-heading">
-              <div class="panel-heading">
-                <div>
-                  <p class="section-kicker">Human control</p>
-                  <h2 id="approval-heading">Approval decision</h2>
+              <section class="panel" aria-labelledby="actions-heading">
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">
+                      {state.profile.executionKicker}
+                    </p>
+                    <h2 id="actions-heading">
+                      {state.profile.executionHeading}
+                    </h2>
+                  </div>
                 </div>
-                <span class="status-pill">{state.case.approval.status}</span>
-              </div>
-              <p>{state.case.approval.policy}</p>
-              <p class="approval-note">
-                Approval authorizes execution; it does not mark the external
-                action as completed.
-              </p>
-              <template lwc:if={showApprovalControls}>
-                <div class="approval-controls" data-testid="approval-controls">
-                  <template lwc:if={showRejectControl}>
-                    <lightning-button
-                      data-testid="reject-button"
-                      label="Reject"
-                      disabled={decisionPending}
-                      onclick={handleReject}
-                    ></lightning-button>
+                <ul class="action-list">
+                  <template for:each={state.case.actions} for:item="action">
+                    <li key={action.id}>
+                      <div>
+                        <strong>{action.type}</strong>
+                        <span>{action.sourceSystem}</span>
+                      </div>
+                      <span class="status-pill">{action.status}</span>
+                    </li>
                   </template>
-                  <template lwc:if={showModifyControl}>
-                    <lightning-button
-                      data-testid="modify-button"
-                      label="Modify"
-                      disabled={decisionPending}
-                      onclick={handleModify}
-                    ></lightning-button>
-                  </template>
-                  <template lwc:if={showApproveControl}>
-                    <lightning-button
-                      data-testid="approve-button"
-                      label="Approve"
-                      variant="brand"
-                      disabled={decisionPending}
-                      onclick={handleApprove}
-                    ></lightning-button>
-                  </template>
+                </ul>
+                <div class="outcome">
+                  <div>
+                    <span class="entity-type"
+                      >{state.profile.executionPlanLabel}</span
+                    >
+                    <h3>
+                      {state.case.operationsExecution.primaryRecommendation}
+                    </h3>
+                  </div>
                 </div>
-              </template>
-            </section>
+                <ul class="action-list">
+                  <template
+                    for:each={state.case.operationsExecution.tasks}
+                    for:item="task"
+                  >
+                    <li key={task.id}>
+                      <div>
+                        <strong>{task.label}</strong>
+                        <span>{task.owner}</span>
+                      </div>
+                      <span class="status-pill">{task.status}</span>
+                    </li>
+                  </template>
+                </ul>
+                <ul class="action-list">
+                  <template for:each={state.case.channelLog} for:item="channel">
+                    <li key={channel.id}>
+                      <div>
+                        <strong>{channel.channel}</strong>
+                        <span>{channel.detail}</span>
+                      </div>
+                      <span class="status-pill">{channel.status}</span>
+                    </li>
+                  </template>
+                </ul>
+                <div class="outcome">
+                  <div>
+                    <span class="entity-type">Outcome</span>
+                    <h3>{state.case.outcome.status}</h3>
+                  </div>
+                  <p>{state.case.outcome.summary}</p>
+                  <strong>{state.case.outcome.effectiveness}</strong>
+                </div>
+                <ul
+                  class="entity-grid"
+                  aria-label={state.profile.outcomeMetricLabel}
+                >
+                  <template
+                    for:each={state.case.outcomeMetrics}
+                    for:item="metric"
+                  >
+                    <li key={metric.id}>
+                      <span class="entity-type">{metric.label}</span>
+                      <strong>{metric.value}</strong>
+                    </li>
+                  </template>
+                </ul>
+              </section>
+            </main>
 
-            <section class="panel blockers" aria-labelledby="blockers-heading">
-              <p class="section-kicker">Dependencies</p>
-              <h2 id="blockers-heading">Current blockers</h2>
-              <ul>
-                <template for:each={state.case.blockers} for:item="blocker">
-                  <li key={blocker.id}>
-                    <div>
-                      <strong>{blocker.label}</strong>
-                      <span>{blocker.owner}</span>
-                    </div>
-                    <span>{blocker.status}</span>
-                  </li>
+            <aside class="secondary-column" aria-label="Decision controls">
+              <section class="panel sticky-panel" aria-labelledby="sop-heading">
+                <p class="section-kicker">Operating procedure</p>
+                <h2 id="sop-heading">{state.case.sop.name}</h2>
+                <div class="sop-meta">
+                  <span>Version {state.case.sop.version}</span>
+                  <span>{state.case.sop.status}</span>
+                </div>
+                <lightning-progress-bar
+                  value={state.case.sop.progress}
+                  size="large"
+                ></lightning-progress-bar>
+                <p class="progress-label">
+                  {state.case.sop.completedSteps} of {state.case.sop.totalSteps}
+                  steps complete
+                </p>
+                <div class="current-step">
+                  <span>Current step</span>
+                  <strong>{state.case.sop.currentStep}</strong>
+                </div>
+                <p class="required-evidence">
+                  Required evidence: {state.case.sop.requiredEvidence}
+                </p>
+                <template lwc:if={state.case.sop.escalationRule}>
+                  <p class="required-evidence">
+                    Escalation: {state.case.sop.escalationRule}
+                  </p>
                 </template>
-              </ul>
-            </section>
-          </aside>
+              </section>
+
+              <section
+                class="panel recommendation"
+                aria-labelledby="recommendation-heading"
+              >
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">
+                      {state.profile.recommendationKicker}
+                    </p>
+                    <h2 id="recommendation-heading">
+                      {state.case.recommendation.title}
+                    </h2>
+                  </div>
+                  <strong>{state.case.recommendation.confidencePercent}</strong>
+                </div>
+                <p class="recommendation-copy">
+                  {state.case.recommendation.recommendation}
+                </p>
+
+                <h3>{state.profile.factsHeading}</h3>
+                <ul class="fact-list">
+                  <template
+                    for:each={state.case.recommendation.facts}
+                    for:item="fact"
+                  >
+                    <li key={fact}>{fact}</li>
+                  </template>
+                </ul>
+
+                <template lwc:if={hasRecommendationAssumptions}>
+                  <h3>{state.profile.assumptionsHeading}</h3>
+                  <ul class="inference-list">
+                    <template
+                      for:each={state.case.recommendation.assumptions}
+                      for:item="assumption"
+                    >
+                      <li key={assumption}>{assumption}</li>
+                    </template>
+                  </ul>
+                </template>
+
+                <h3>{state.profile.inferencesHeading}</h3>
+                <ul class="inference-list">
+                  <template
+                    for:each={state.case.recommendation.inferences}
+                    for:item="inference"
+                  >
+                    <li key={inference}>{inference}</li>
+                  </template>
+                </ul>
+
+                <dl class="model-meta">
+                  <div>
+                    <dt>Logical profile</dt>
+                    <dd>{state.case.recommendation.modelProfile}</dd>
+                  </div>
+                  <div>
+                    <dt>Routing policy</dt>
+                    <dd>{state.case.recommendation.policyVersion}</dd>
+                  </div>
+                </dl>
+              </section>
+
+              <section
+                class="panel approval"
+                aria-labelledby="approval-heading"
+              >
+                <div class="panel-heading">
+                  <div>
+                    <p class="section-kicker">{state.profile.approvalKicker}</p>
+                    <h2 id="approval-heading">
+                      {state.profile.approvalHeading}
+                    </h2>
+                  </div>
+                  <span class="status-pill">{state.case.approval.status}</span>
+                </div>
+                <p>{state.case.approval.policy}</p>
+                <p class="approval-note">{state.profile.approvalNote}</p>
+                <template lwc:if={showApprovalControls}>
+                  <div
+                    class="approval-controls"
+                    data-testid="approval-controls"
+                  >
+                    <template lwc:if={showRejectControl}>
+                      <lightning-button
+                        data-testid="reject-button"
+                        label="Reject"
+                        disabled={decisionPending}
+                        onclick={handleReject}
+                      ></lightning-button>
+                    </template>
+                    <template lwc:if={showModifyControl}>
+                      <lightning-button
+                        data-testid="modify-button"
+                        label="Modify"
+                        disabled={decisionPending}
+                        onclick={handleModify}
+                      ></lightning-button>
+                    </template>
+                    <template lwc:if={showApproveControl}>
+                      <lightning-button
+                        data-testid="approve-button"
+                        label="Approve"
+                        variant="brand"
+                        disabled={decisionPending}
+                        onclick={handleApprove}
+                      ></lightning-button>
+                    </template>
+                  </div>
+                </template>
+              </section>
+
+              <section
+                class="panel blockers"
+                aria-labelledby="blockers-heading"
+              >
+                <p class="section-kicker">{state.profile.blockersKicker}</p>
+                <h2 id="blockers-heading">{state.profile.blockersHeading}</h2>
+                <ul>
+                  <template for:each={state.case.blockers} for:item="blocker">
+                    <li key={blocker.id}>
+                      <div>
+                        <strong>{blocker.label}</strong>
+                        <span>{blocker.owner}</span>
+                      </div>
+                      <span>{blocker.status}</span>
+                    </li>
+                  </template>
+                </ul>
+              </section>
+            </aside>
+          </div>
         </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </article>
 </template>

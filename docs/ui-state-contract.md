@@ -29,11 +29,18 @@ The ready state contains:
 - affected customer alias, department, location, resources, partners, and
   connected entities;
 - blockers and cross-functional ownership;
+- affected relationship and connected entities;
+- blockers, dependencies, handoff state, escalation role, and cross-functional
+  ownership;
 - chronological source-backed timeline;
 - evidence citations and content hashes;
-- SOP version, current step, progress, and required evidence;
+- SOP version, current step, progress, required evidence, and escalation rule;
 - recommendation facts, inferences, confidence, and model profile;
 - approval policy, current status, and permitted decisions;
+- relationship history, participant links, contradictory claims, correction
+  state, supersession approval metadata, superseding reviewer, and
+  correction-review controls;
+- verified closure state when an outcome completes the accountable work item;
 - action history and source-system correlation;
 - observed outcome and effectiveness state.
 
@@ -64,9 +71,13 @@ external action.
 ## Live Transport
 
 Live mode calls `HFS_RelationshipController`, which delegates context reads and
-approval decisions to `HFS_RelationshipServiceImpl`. The component maps the
-frozen Apex DTOs into this UI state and refreshes after a successful decision.
-It renders controls only when the server reports the matching capability.
+approval decisions to `HFS_RelationshipServiceImpl`. The controller also accepts
+relationship correction-review intents and persists them as governed review work
+with pending approval. Approved correction decisions can return relationship
+history cards marked as superseded with the approval and reviewer surfaced in
+the state. The component maps the frozen Apex DTOs into this UI state and
+refreshes after a successful decision or correction-review request. It renders
+controls only when the server reports the matching capability.
 
 Synthetic fixture mode remains available for deterministic tests and demos.
 Live mode is the default.

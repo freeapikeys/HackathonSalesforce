@@ -62,6 +62,13 @@ stateful classifier. Idempotency is scoped by tenant, source, and idempotency
 key, and exact replay compares the canonical `data` hash rather than
 transport-level fields such as event occurrence ID or observation time.
 
+Salesforce persistence uses `PERSIST_EVENT` with `HFS_EventIntakeCommand` after
+deterministic intake classification. It writes only `ACCEPTED`,
+`ACCEPTED_LATE`, `ACCEPTED_OUT_OF_ORDER`, and `CONFLICT_REVIEW` results to
+`HFS_Event__c`, preserves the normalized payload JSON, replays exact content
+matches, and rejects changed content under the same tenant/source idempotency
+or event identity scope.
+
 Schema/hash failures and accepted events whose source-store retries are
 exhausted enter an immutable `QUARANTINED` intake attempt. An authorized replay
 submits a complete corrected envelope to `POST /v1/events/replays`, links the
@@ -98,6 +105,8 @@ Run:
 ```bash
 npm run check:events
 npm run check:mulesoft
+npm run verify:source-intake
+npm run verify:source-intake -- --target-org dev-ed
 ```
 
 Contract basis:

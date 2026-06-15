@@ -26,6 +26,32 @@
       "maximumCostUsd": 0.08,
       "fallbackMode": "QUALIFIED_ONLY",
       "status": "ACTIVE"
+    },
+    {
+      "contractVersion": "1.0.0",
+      "version": "1.0.0",
+      "profileKey": "nexavenu-revenue-recommendation",
+      "taskType": "RECOMMENDATION",
+      "inputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/generateRequest",
+      "outputSchemaRef": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/recommendationOutput",
+      "requiredCapabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "minimumContextTokens": 6000,
+      "permittedDataClassifications": [
+        "INTERNAL",
+        "CONFIDENTIAL"
+      ],
+      "qualityObjective": {
+        "metricKey": "grounded_recommendation_score",
+        "minimumScore": 0.82,
+        "evaluationSuiteVersion": "revenue-recommendation-eval-1.0.0"
+      },
+      "maximumLatencyMs": 9000,
+      "maximumCostUsd": 0.09,
+      "fallbackMode": "QUALIFIED_ONLY",
+      "status": "ACTIVE"
     }
   ],
   "deployments": [
@@ -58,7 +84,8 @@
       ],
       "contextWindowTokens": 32768,
       "qualifiedProfiles": [
-        "hospital_action_reasoning"
+        "hospital_action_reasoning",
+        "nexavenu-revenue-recommendation"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.91
@@ -96,7 +123,8 @@
       ],
       "contextWindowTokens": 16384,
       "qualifiedProfiles": [
-        "hospital_action_reasoning"
+        "hospital_action_reasoning",
+        "nexavenu-revenue-recommendation"
       ],
       "qualityScores": {
         "grounded_recommendation_score": 0.88
@@ -104,6 +132,44 @@
       "estimatedLatencyMs": 3100,
       "estimatedCostUsd": 0.041,
       "operationalStatus": "ACTIVE",
+      "activeFrom": "2026-06-01T00:00:00Z",
+      "activeUntil": null
+    },
+    {
+      "contractVersion": "1.0.0",
+      "version": "1.0.0",
+      "deploymentKey": "deepseek-cloud-disabled",
+      "adapterKey": "deepseek-openai-compatible-adapter",
+      "adapterInterfaceVersion": "hfs.generate.v1",
+      "providerIdentifier": "deepseek",
+      "modelIdentifier": "deepseek-chat",
+      "configuredModelIdentifier": null,
+      "hostingClass": "CLOUD",
+      "residencyRegions": [
+        "global"
+      ],
+      "supportedLanguages": [
+        "en",
+        "fr"
+      ],
+      "permittedDataClassifications": [
+        "INTERNAL"
+      ],
+      "capabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "contextWindowTokens": 64000,
+      "qualifiedProfiles": [
+        "hospital_action_reasoning",
+        "nexavenu-revenue-recommendation"
+      ],
+      "qualityScores": {
+        "grounded_recommendation_score": 0.86
+      },
+      "estimatedLatencyMs": 7000,
+      "estimatedCostUsd": 0.02,
+      "operationalStatus": "UNAVAILABLE",
       "activeFrom": "2026-06-01T00:00:00Z",
       "activeUntil": null
     }
@@ -121,7 +187,43 @@
       ],
       "candidatePriority": [
         "mock-alpha-primary",
-        "mock-beta-private"
+        "mock-beta-private",
+        "deepseek-cloud-disabled"
+      ],
+      "requiredChecks": [
+        "TENANT",
+        "BUSINESS_UNIT",
+        "PURPOSE",
+        "PROFILE",
+        "DATA_CLASSIFICATION",
+        "RESIDENCY",
+        "LANGUAGE",
+        "CAPABILITY",
+        "CONTEXT_WINDOW",
+        "QUALITY",
+        "LATENCY",
+        "COST",
+        "STATUS",
+        "AVAILABILITY"
+      ],
+      "fallbackMode": "QUALIFIED_ONLY",
+      "effectiveFrom": "2026-06-01T00:00:00Z",
+      "effectiveUntil": null
+    },
+    {
+      "contractVersion": "1.0.0",
+      "version": "1.0.0",
+      "policyKey": "nexavenu-revenue-routing-mauritius",
+      "tenantKey": "demo-mauritius",
+      "businessUnit": null,
+      "profileKey": "nexavenu-revenue-recommendation",
+      "permittedPurposes": [
+        "QUALIFY_B2B_REVENUE_PIPELINE"
+      ],
+      "candidatePriority": [
+        "mock-alpha-primary",
+        "mock-beta-private",
+        "deepseek-cloud-disabled"
       ],
       "requiredChecks": [
         "TENANT",
@@ -211,6 +313,28 @@
       "requiredContextTokens": 6000,
       "maximumLatencyMs": 8000,
       "maximumCostUsd": 0.08,
+      "unavailableDeploymentKeys": []
+    },
+    "nexavenuRevenue": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "businessUnit": null,
+      "agentKey": "nexavenu-revenue-orchestrator",
+      "subagentKey": "b2b-revenue-qualification",
+      "userId": "integration-user-001",
+      "purpose": "QUALIFY_B2B_REVENUE_PIPELINE",
+      "profileKey": "nexavenu-revenue-recommendation",
+      "dataClassification": "CONFIDENTIAL",
+      "residencyRegion": "mu",
+      "language": "en",
+      "requiredCapabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "requiredContextTokens": 7200,
+      "maximumLatencyMs": 9000,
+      "maximumCostUsd": 0.09,
       "unavailableDeploymentKeys": []
     }
   },
@@ -445,9 +569,115 @@
           "check": "DATA_CLASSIFICATION",
           "passed": false,
           "reasonCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        },
+        {
+          "deploymentKey": "deepseek-cloud-disabled",
+          "check": "DATA_CLASSIFICATION",
+          "passed": false,
+          "reasonCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
         }
       ],
       "decidedAt": "2026-06-05T08:30:11Z"
+    },
+    "nexavenuRevenue": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "policyKey": "nexavenu-revenue-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "profileKey": "nexavenu-revenue-recommendation",
+      "profileVersion": "1.0.0",
+      "decision": "SELECTED",
+      "selectedDeploymentKey": "mock-alpha-primary",
+      "selectedDeploymentVersion": "1.2.0",
+      "fallback": false,
+      "fallbackFromDeploymentKey": null,
+      "checks": [
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "TENANT",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "BUSINESS_UNIT",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "PURPOSE",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "PROFILE",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "DATA_CLASSIFICATION",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "RESIDENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "LANGUAGE",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "CAPABILITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "CONTEXT_WINDOW",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "QUALITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "LATENCY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "COST",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "STATUS",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        },
+        {
+          "deploymentKey": "mock-alpha-primary",
+          "check": "AVAILABILITY",
+          "passed": true,
+          "reasonCode": "QUALIFIED"
+        }
+      ],
+      "decidedAt": "2026-06-10T09:05:11Z"
     }
   },
   "generateRequest": {
@@ -494,6 +724,60 @@
       "requireCitations": true
     }
   },
+  "generateRequests": {
+    "nexavenuRevenue": {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "userId": "integration-user-001",
+      "purpose": "QUALIFY_B2B_REVENUE_PIPELINE",
+      "agentKey": "nexavenu-revenue-orchestrator",
+      "profileKey": "nexavenu-revenue-recommendation",
+      "profileVersion": "1.0.0",
+      "promptVersion": "nexavenu-revenue-recommendation-prompt-1.0.0",
+      "retrievalVersion": "nexavenu-revenue-context-1.0.0",
+      "messages": [
+        {
+          "role": "SYSTEM",
+          "content": "Separate B2B revenue facts, contact-sourced assumptions, inferences, and governed recommendations. Cite lead source, buyer education, champion map, discovery readiness, close plan, retention risk, and outcome evidence. Never present private diagnostic signal as public proof, and do not execute external outreach."
+        },
+        {
+          "role": "USER",
+          "content": "Recommend the next governed actions for the Nexavenu Revenue Intelligence and Champion Nurture Tower."
+        }
+      ],
+      "context": {
+        "dataClassification": "CONFIDENTIAL",
+        "evidenceIds": [
+          "evidence-nexavenu-lead-source-001",
+          "evidence-nexavenu-education-gap-001",
+          "evidence-nexavenu-buying-committee-001",
+          "evidence-nexavenu-readiness-001",
+          "evidence-nexavenu-close-plan-001",
+          "evidence-nexavenu-retention-risk-001",
+          "evidence-nexavenu-outcome-001"
+        ],
+        "sourceContentHashes": [
+          "sha256:15ec846204c98c2dcd963a904d85633b5b0ad3bb7b8d44e4b0582ac3f592f4d9",
+          "sha256:a79d23357b2e5c0e5f11b9a5f4ea65cffd02971e8229b107896bc55d5672ed3d",
+          "sha256:5c81292ae1d9a73de4219c06a230a31cd3a7d08e0477095edb1b49241dcd46a5",
+          "sha256:45ffe60a85a761be8db5fae6ca1858ad7ae8786770b100ffb4ef9121ac3bcfe5",
+          "sha256:cc8225815cd95c3a2ddbf4b8571503137a96ca3449d35fe6cf41e1429f05016d",
+          "sha256:8733ad175aa9a44fdc16c22bf553e2fecfc2421145b1357e7f0a3132f83bbd67",
+          "sha256:82a2d3f5e30cbdeb5a48be25c05a822d85101593452e443074a91441cde34644"
+        ]
+      },
+      "responseSchema": {
+        "$ref": "https://freeapikeys.github.io/HackathonSalesforce/models/model-gateway-v1.schema.json#/$defs/recommendationOutput"
+      },
+      "invocationPolicy": {
+        "maximumOutputTokens": 1400,
+        "temperature": 0.1,
+        "retainContent": false,
+        "requireCitations": true
+      }
+    }
+  },
   "normalizedResponses": [
     {
       "contractVersion": "1.0.0",
@@ -508,6 +792,7 @@
         "facts": [
           "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
+        "assumptions": [],
         "inferences": [
           "The safest next step is an operations action plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
@@ -539,6 +824,7 @@
         "facts": [
           "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
+        "assumptions": [],
         "inferences": [
           "The safest next step is an operations action plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
@@ -550,6 +836,48 @@
           "evidence-pharmacy-hospital-001",
           "evidence-partner-hospital-001",
           "evidence-billing-hospital-001"
+        ],
+        "requiresHumanApproval": true
+      },
+      "finishReason": "STOP",
+      "outputSchemaValid": true,
+      "safetyStatus": "PASSED"
+    },
+    {
+      "contractVersion": "1.0.0",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "invocationId": "invocation-alpha-nexavenu-001",
+      "profileKey": "nexavenu-revenue-recommendation",
+      "profileVersion": "1.0.0",
+      "deploymentKey": "mock-alpha-primary",
+      "deploymentVersion": "1.2.0",
+      "adapterInterfaceVersion": "hfs.generate.v1",
+      "output": {
+        "facts": [
+          "Synthetic prospect has ICP score 72/100 and is engaged through webinar, outbound, and landing-page touches.",
+          "Buyer education gaps remain around system inventory, executive decision owner, budget range, and AI-to-process translation.",
+          "Operations manager is likely champion; CFO and CIO are high-influence buyers; executive sponsor and data owner are missing.",
+          "Discovery readiness is 48/100 with handoff gate HOLD."
+        ],
+        "assumptions": [
+          "Contact-sourced signal suggests lead quality and buyer education need stronger system support; treat as private diagnostic assumption, not public proof.",
+          "Contact-sourced signal suggests long discovery should be compressed with readiness gates before senior solution-consultant handoff."
+        ],
+        "inferences": [
+          "The lead is promising but should remain in nurture until stakeholder, budget, system inventory, and success metric gaps are resolved.",
+          "Champion enablement and content sequencing should precede CFO/CIO alignment.",
+          "Retention risk should be monitored after fulfillment because previous loyalty can coexist with new executive dissatisfaction."
+        ],
+        "recommendation": "Route a champion-nurture plan for human approval: send readiness and MuleSoft education content, equip the operations champion, request system inventory and success metrics, wait for readiness score above 70 before solution-consultant handoff, and create a retention review for the existing-customer risk. Expected outcomes are qualified discovery, protected solution-consultant time, champion-equipped CFO/CIO alignment, and early retention recovery.",
+        "confidence": 0.83,
+        "evidenceIds": [
+          "evidence-nexavenu-lead-source-001",
+          "evidence-nexavenu-education-gap-001",
+          "evidence-nexavenu-buying-committee-001",
+          "evidence-nexavenu-readiness-001",
+          "evidence-nexavenu-close-plan-001",
+          "evidence-nexavenu-retention-risk-001",
+          "evidence-nexavenu-outcome-001"
         ],
         "requiresHumanApproval": true
       },
@@ -576,7 +904,7 @@
       "promptVersion": "north-star-hospital-action-prompt-1.0.0",
       "retrievalVersion": "north-star-hospital-context-1.0.0",
       "inputHash": "sha256:be756af21425acd649ca75aa5196bce4fac401be87cb6e7f78526de6312ec620",
-      "outputHash": "sha256:1ab5579ce4740cb7ca372410ab2cd688d7f5e5299e2211b0a0e87086c09a3b6e",
+      "outputHash": "sha256:a334944a4f91267ece2e023d2b78008e000c8556152015ca4d76983a6fc46b94",
       "evidenceIds": [
         "evidence-complaint-hospital-001",
         "evidence-capacity-hospital-001",
@@ -625,7 +953,7 @@
       "promptVersion": "north-star-hospital-action-prompt-1.0.0",
       "retrievalVersion": "north-star-hospital-context-1.0.0",
       "inputHash": "sha256:be756af21425acd649ca75aa5196bce4fac401be87cb6e7f78526de6312ec620",
-      "outputHash": "sha256:1ab5579ce4740cb7ca372410ab2cd688d7f5e5299e2211b0a0e87086c09a3b6e",
+      "outputHash": "sha256:a334944a4f91267ece2e023d2b78008e000c8556152015ca4d76983a6fc46b94",
       "evidenceIds": [
         "evidence-complaint-hospital-001",
         "evidence-capacity-hospital-001",
@@ -670,6 +998,57 @@
     },
     {
       "contractVersion": "1.0.0",
+      "invocationId": "invocation-alpha-nexavenu-001",
+      "correlationId": "20000000-0000-4000-8000-000000000001",
+      "tenantKey": "demo-mauritius",
+      "userId": "integration-user-001",
+      "purpose": "QUALIFY_B2B_REVENUE_PIPELINE",
+      "agentKey": "nexavenu-revenue-orchestrator",
+      "profileKey": "nexavenu-revenue-recommendation",
+      "profileVersion": "1.0.0",
+      "policyKey": "nexavenu-revenue-routing-mauritius",
+      "policyVersion": "1.0.0",
+      "selectedDeploymentKey": "mock-alpha-primary",
+      "selectedDeploymentVersion": "1.2.0",
+      "promptVersion": "nexavenu-revenue-recommendation-prompt-1.0.0",
+      "retrievalVersion": "nexavenu-revenue-context-1.0.0",
+      "inputHash": "sha256:07a84314fd0c801fa090dae362620d51860b3b89fc6e042027ff2c1e20e709fd",
+      "outputHash": "sha256:bf3d5a0c5b50cdf38a005691f88db26b389571dcbfaae7ed112b277232642633",
+      "evidenceIds": [
+        "evidence-nexavenu-lead-source-001",
+        "evidence-nexavenu-education-gap-001",
+        "evidence-nexavenu-buying-committee-001",
+        "evidence-nexavenu-readiness-001",
+        "evidence-nexavenu-close-plan-001",
+        "evidence-nexavenu-retention-risk-001",
+        "evidence-nexavenu-outcome-001"
+      ],
+      "attempts": [
+        {
+          "sequence": 1,
+          "deploymentKey": "mock-alpha-primary",
+          "deploymentVersion": "1.2.0",
+          "adapterKey": "mock-alpha-adapter",
+          "startedAt": "2026-06-10T09:05:12Z",
+          "completedAt": "2026-06-10T09:05:14Z",
+          "status": "SUCCEEDED",
+          "retryable": false,
+          "failureCode": null
+        }
+      ],
+      "fallbackUsed": false,
+      "inputTokens": 1120,
+      "outputTokens": 214,
+      "latencyMs": 2400,
+      "costUsd": 0.038,
+      "safetyStatus": "PASSED",
+      "outputSchemaValid": true,
+      "retentionMode": "HASHES_ONLY",
+      "status": "SUCCEEDED",
+      "completedAt": "2026-06-10T09:05:14Z"
+    },
+    {
+      "contractVersion": "1.0.0",
       "invocationId": "invocation-no-qualified-001",
       "correlationId": "20000000-0000-4000-8000-000000000001",
       "tenantKey": "demo-mauritius",
@@ -710,6 +1089,17 @@
           "deploymentKey": "mock-beta-private",
           "deploymentVersion": "2.0.0",
           "adapterKey": "mock-beta-adapter",
+          "startedAt": "2026-06-05T08:30:12Z",
+          "completedAt": "2026-06-05T08:30:12Z",
+          "status": "POLICY_REJECTED",
+          "retryable": false,
+          "failureCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        },
+        {
+          "sequence": 3,
+          "deploymentKey": "deepseek-cloud-disabled",
+          "deploymentVersion": "1.0.0",
+          "adapterKey": "deepseek-openai-compatible-adapter",
           "startedAt": "2026-06-05T08:30:12Z",
           "completedAt": "2026-06-05T08:30:12Z",
           "status": "POLICY_REJECTED",

@@ -1,12 +1,31 @@
-# North Star Roadmap
+# Closed-Loop Intelligence RM Roadmap
 
-This roadmap is the hackathon checklist. Keep it honest: mark an item complete
-only when the code, fixture, UI, test, or demo evidence exists in the repo.
+This roadmap is the branch checklist. Keep it honest: mark an item complete only
+when the code, fixture, UI, test, or demo evidence exists in the repo.
 
 Beads is not installed in the current local environment, so this roadmap is the
 active task tracker.
 
 ## North Star
+
+## Branch Direction
+
+Build a permissioned enterprise intelligence and relationship-management loop
+on Salesforce, Agentforce, Data 360, and MuleSoft.
+
+The product collects authorized first-party business data, preserves source
+evidence, maps fragmented terminology, forms conclusions and recommendations,
+coordinates humans and agents across relationships, records outcomes, and feeds
+those outcomes back into the next cycle.
+
+The supermarket command-center material is one demo vertical. It must prove the
+loop, not replace the broader product direction.
+
+See [docs/closed-loop-intelligence-rm.md](docs/closed-loop-intelligence-rm.md)
+and
+[docs/decisions/0006-closed-loop-intelligence-rm-branch.md](docs/decisions/0006-closed-loop-intelligence-rm-branch.md).
+
+## Retail Demo Vertical
 
 Build a Salesforce, Agentforce, and MuleSoft command center that lets a business
 plug in a profile and coordinate messy operational issues across evidence,
@@ -45,6 +64,55 @@ North Star must answer:
 - What MuleSoft action or channel mock executed, and what happened next?
 
 ## Universal Issue Modules
+
+## Jury Gift Verticals
+
+The jury gifts are tailored demo verticals that reuse the same closed-loop
+evidence/action spine. They should feel specific to the company, but they must
+not become five separate products.
+
+Research source:
+[docs/research/jury-gift-dossiers-2026-06-10.md](docs/research/jury-gift-dossiers-2026-06-10.md).
+
+### Flagship Gifts
+
+- [ ] Air Mauritius Passenger Recovery Command Center: claims, disruption,
+      baggage, compensation triage, approval, passenger updates, and outcome
+      feedback.
+- [ ] Constance Guest Revenue and Operations Loop: reservations email
+      extraction, FX-to-ERP, sentiment-to-occupancy, approved hospitality
+      actions, and outcome feedback.
+- [ ] Nexavenu Revenue Intelligence and Champion Nurture Tower: attribution,
+      lead qualification, buyer education, champion mapping, discovery
+      readiness, close plan, retention/ascension signals, and content gaps.
+
+### Tailored Overlays
+
+- [ ] AfrAsia Relationship Intelligence Control Tower: private banking, KYC/AML
+      guardrails, cross-border RM, FX/wealth signals, approval, and outcome
+      feedback.
+- [ ] Sunlife Guest Recovery and Experience Intelligence Loop: WhatsApp-style
+      guest recovery, staff task coordination, sustainability evidence, service
+      quality, and repeat-stay risk.
+
+### Nexavenu Business-System Notes
+
+- [x] Contact-sourced signals captured privately: 10% close rate, 6-month
+      discovery, big client churn, and dissatisfaction despite previous loyalty.
+- [x] Public OSINT confluence captured: BDR hiring, qualification/nurture
+      responsibilities, C-level engagement, marketing handoffs, CRM pipeline
+      reporting, AI/Data 360 readiness positioning, MuleSoft modernization, and
+      long-run customer success language.
+- [x] Build synthetic Nexavenu revenue pipeline fixtures without presenting
+      contact-sourced metrics as public fact.
+- [x] Show the full business pipeline:
+      `lead generation -> lead nurture -> sales -> fulfillment -> retention/ascension`.
+- [x] Show the buyer journey:
+      `problem -> awareness -> struggle -> education -> search -> comparison -> test -> purchase -> first impressions`.
+- [x] Recommendation separates public facts, contact-sourced assumptions,
+      inferences, next actions, approval requirements, and expected outcomes.
+
+## Supermarket Issues We Solve
 
 These modules are the problems North Star should solve across hospital, hotel,
 airport, banking, supermarket, cruise, and other profiles.
@@ -220,6 +288,22 @@ North Star should produce one action plan:
 - [x] Five-minute extended demo narrative updated.
 - [x] Backup recorded-demo path updated for hospital scenario.
 - [ ] Final non-goals reviewed by whole team.
+- [x] Closed-loop intelligence RM selected as the private branch direction.
+- [x] Branch doctrine created in `docs/closed-loop-intelligence-rm.md`.
+- [x] Branch decision recorded in
+      `docs/decisions/0006-closed-loop-intelligence-rm-branch.md`.
+- [x] Supermarket operations retained as a retail demo vertical.
+- [x] Retail MVP brief retained in `docs/north-star-mvp.md`.
+- [x] Retail implementation plan retained in
+      `docs/north-star-implementation-plan.md`.
+- [x] Supermarket issue map retained as demo scenario coverage.
+- [ ] Retail roadmap items audited and mapped to reusable relationship
+      intelligence capabilities.
+- [ ] One-sentence branch product pitch finalized.
+- [x] Three-minute retail judge demo narrative drafted.
+- [x] Five-minute retail extended demo narrative drafted.
+- [x] Backup recorded-demo path defined in case live integrations fail.
+- [ ] Final branch non-goals reviewed before any publication.
 
 ### 2. Team Assignment Checkpoints
 
@@ -285,8 +369,53 @@ file before editing.
 - [x] Add `HOSPITAL_OUTCOME_CAPTURED` fixture.
 - [x] Keep duplicate, malformed, late, out-of-order, replay, hash, and
       idempotency-conflict cases passing.
+- [x] Source-intake verifier emits a machine-readable report for fixture
+      classification, MuleSoft replay/quarantine behavior, and Salesforce
+      check-only persistence tests.
 
 ### 5. Salesforce Core
+
+### 4. Shared Semantics and Provenance
+
+- [x] Extend ontology and JSON-LD context for source-local terminology,
+      canonical concepts, PROV-compatible source agents, and source activities.
+- [x] Model source assertions and derived inferences with valid time, recorded
+      time, attribution, generation provenance, and explicit supersession.
+- [x] Valid fixture proves source terminology, provenance, assertion kind, valid
+      time, recorded time, and supersession.
+- [x] Invalid fixture proves missing provenance, missing terminology mapping,
+      missing assertion kind, missing relationship validity, missing
+      recommendation support, and unsuperseded contradictions are rejected.
+- [x] Map event, Salesforce, and Data 360 semantics with versioned ownership,
+      transformation rules, and ambiguity notes.
+- [x] Add deterministic current-state and historical-belief queries over
+      versioned assertions.
+- [x] Add a shared semantics verification harness that proves ontology,
+      mappings, temporal queries, source terminology, supersession, and source
+      evidence together.
+- [x] Add versioned metric definitions and deterministic outcome-attribution
+      verification from source fixtures.
+
+### 5. Identity Relationships and History
+
+- [x] Add an identity-history verifier over preserved source fixtures.
+- [x] Resolve source identities from subjects, business keys, and relationship
+      attributes without dropping source record IDs.
+- [x] Build relationship edges with visible confidence and source evidence.
+- [x] Preserve participant links for events and source-derived entities.
+- [x] Preserve late, out-of-order, update, and conflicting correction history.
+- [x] Keep contradictory agreement status assertions visible instead of
+      overwriting them.
+- [x] Prove a traversable person-to-organization-to-supplier path.
+- [x] Expose event participant identity links in Salesforce context and
+      provenance responses.
+- [x] Add user-facing relationship inspection and correction affordances.
+- [x] Persist correction-review work items, source evidence, recommendations,
+      and pending approvals.
+- [x] Persist approved supersession decisions onto relationship/assertion
+      history.
+
+### 6. Salesforce Core
 
 - [x] Map hospital and departments to existing Salesforce entity records.
 - [x] Map resources such as bed, room, pharmacy stock, queue, service counter,
@@ -344,6 +473,43 @@ file before editing.
 
 ### 7. MuleSoft And Channel Mocks
 
+- [x] Persist accepted and review-required intake results to immutable
+      `HFS_Event__c` records with scoped idempotency and source payload
+      preservation.
+- [ ] Map store tasks to action records and/or Salesforce task records.
+- [x] Add optional metadata only when current records cannot express demo needs.
+- [x] Work items preserve owner role, dependency, handoff, escalation, and
+      outcome-verified closure state.
+- [ ] Apex context includes product, batch, store, supplier, promotion,
+      complaint, stock, staffing, recommendation, approval, action, and outcome.
+- [ ] Manager approval is enforced before reorder, supplier case, markdown,
+      quarantine, staff alert, or customer-facing message.
+- [ ] Action and outcome records preserve correlation IDs and evidence IDs.
+- [ ] Apex tests cover success, denial, inaccessible evidence, approval
+      mismatch, and invalid state.
+
+### 7. Agentforce and Intelligence
+
+- [x] Define North Star Orchestrator topic.
+- [x] Define Inventory and Demand topic.
+- [x] Define Store Operations topic.
+- [x] Define Customer and Risk Intelligence topic.
+- [x] Recommendation request includes inventory, expiry, supplier, complaint,
+      promotion, and staffing evidence.
+- [x] Recommendation response separates facts, inferences, assumptions,
+      recommended actions, approval requirements, and expected outcomes.
+- [x] Supplier decision follows the rule: do not blindly stop all supplier
+      orders because complaints exist.
+- [x] Agentforce updates recommendation after supplier response arrives.
+- [x] Agentforce refuses restricted or missing evidence.
+- [x] Model gateway uses logical profile names, not provider-specific or
+      product-specific names.
+- [x] Agentforce fixtures include a denied-action scenario.
+- [x] Agentforce fixtures include a changed-recommendation scenario.
+- [x] Agentforce fixtures include a Nexavenu revenue-intelligence scenario.
+
+### 8. MuleSoft and Channel Mocks
+
 - [x] Mock `CREATE_PATIENT_SERVICE_TASK`.
 - [x] Mock `REQUEST_BED_CLEANING`.
 - [x] Mock `ESCALATE_LAB_VENDOR_CASE`.
@@ -354,6 +520,12 @@ file before editing.
 - [x] Mock `SEND_WHATSAPP_ALERT`.
 - [x] Mock `SEND_VENDOR_EMAIL` as an approved protected vendor/supplier follow-up.
 - [x] Mock `CAPTURE_HOSPITAL_OUTCOME`.
+- [x] Mock `SEND_WHATSAPP_STYLE_ALERT`.
+- [x] Mock `CAPTURE_RETAIL_OUTCOME`.
+- [x] Mock Nexavenu revenue actions: `CREATE_NURTURE_TASK`,
+      `DRAFT_CHAMPION_EMAIL`, `UPDATE_OPPORTUNITY_STAGE`,
+      `ASSIGN_CONTENT_ASSET`, `CREATE_SOLUTION_CONSULTANT_HANDOFF`, and
+      `CAPTURE_RETENTION_ASCENSION_OUTCOME`.
 - [x] Unapproved execution returns denial.
 - [x] Approved execution returns queued or success response with correlation.
 - [x] If `SLACK_WEBHOOK_URL` exists, send real Slack webhook message.
@@ -531,6 +703,32 @@ notifies a manager.
       maintenance, or transport status.
 - [x] Operations panel shows task queue, owner role, acknowledgement, and due
       time.
+
+### 9. Lightning Command Center
+
+- [x] UI title and labels use North Star.
+- [x] Profile key switches visible titles, domain labels, recommendation copy,
+      approval copy, and outcome labels between North Star retail and Nexavenu
+      gift profiles.
+- [x] Command center includes prediction dashboards, KPI cards, daily brief,
+      agent coordination threads, and shared employee/department chat panels for
+      the synthetic demo profiles.
+- [x] Command center UI polish is grounded in saved design-source notes for
+      shadcn-style composition, dashboard cognition, chart choice, decluttering,
+      monochrome hierarchy, and honest interactions.
+- [x] Command center has a TradeZella-inspired analytics shell with a dark
+      navigation rail, dense metric cards, chart/log panels, and Dribbble-style
+      dark SaaS dashboard accents while preserving the relationship
+      intelligence model.
+- [x] Risk pulse cards show stockout, expiry, overstock, complaint, supplier,
+      queue, shelf-layout, price, promotion, and staff readiness.
+- [x] Product and batch context is visible.
+- [x] Shelf, backroom, warehouse, and supplier stock are visible.
+- [x] Complaint cluster panel shows complaint type, count, product, batch,
+      supplier, and time window.
+- [x] Supplier response panel shows status, lead time, replacement, credit note,
+      or unresolved quality issue.
+- [x] Store execution panel shows cashier recommendation and task queue.
 - [x] Evidence timeline cites source records.
 - [x] Agent reasoning panel separates facts from inference.
 - [x] Approval cockpit supports approve, reject, modify, defer, and executed
@@ -546,6 +744,8 @@ notifies a manager.
       approval, action, outcome, voice, and clinical-refusal states.
 
 ### 10. End-To-End Demo
+
+### 10. End-to-End Demo
 
 - [x] `npm run check` passes in the intended demo environment.
 - [x] `npm run demo:reset` works.
@@ -565,6 +765,8 @@ notifies a manager.
 - [ ] Final rehearsal completed with the whole team.
 
 ### 11. Pitch And Presentation
+
+### 11. Pitch and Presentation
 
 - [x] Problem slide explains universal issue modules and the hospital demo.
 - [x] Agent slide explains the orchestrator, global primitives, and specialist

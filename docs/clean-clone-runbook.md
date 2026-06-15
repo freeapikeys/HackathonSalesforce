@@ -73,6 +73,10 @@ npm run verify:clean-clone -- \
 | Salesforce deploy   | `sf project deploy start ... --test-level RunSpecifiedTests` | Metadata succeeds; all Apex test classes run with zero failures                                                          |
 | Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes, including clinical refusal plus Slack, WhatsApp, and protected vendor-email mock delivery   |
 | Evidence validation | `scripts/verify_clean_clone_result.py`                       | Required success, refusal, approval, channel, and outcome invariants pass                                                |
+| Source intake proof | `npm run verify:source-intake -- --target-org hfs-dev`       | Event fixtures, MuleSoft quarantine/replay, and Salesforce event-persistence tests pass with a JSON report               |
+| Salesforce deploy   | `sf project deploy start ... --test-level RunSpecifiedTests` | Metadata succeeds; all four Apex test classes run with zero failures                                                     |
+| Connected demo      | `npm run demo:run -- --target-org hfs-dev ...`               | Every connected step passes and emits a sanitized demo report                                                            |
+| Evidence validation | `scripts/verify_clean_clone_result.py`                       | Required success and refusal invariants pass                                                                             |
 
 The final terminal line contains `Clean-clone verification passed`. The JSON
 artifact has:

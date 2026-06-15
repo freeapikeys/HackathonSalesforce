@@ -1,0 +1,1633 @@
+{
+  "version": "1.0.0",
+  "owner": "semantic-core",
+  "updatedAt": "2026-06-10",
+  "contracts": {
+    "eventEnvelopeSchema": "integration/events/schemas/event-envelope-v1.schema.json",
+    "salesforceModel": "config/core-salesforce-model.json",
+    "ontology": "ontology/hfs-core.ttl",
+    "context": "ontology/context.jsonld"
+  },
+  "coveragePolicy": {
+    "eventEnvelope": "Every schema-defined envelope, business-record, and assertion field must be mapped.",
+    "eventAttributes": "Every fixture attribute key is preserved with its source-local term and mapped to the closest canonical payload or concept.",
+    "eventTypes": "Every fixture event type must match exactly one semantic event-type pattern.",
+    "salesforce": "Every generated HFS Salesforce field must appear in exactly one mapping target."
+  },
+  "eventEnvelopeMappings": [
+    {
+      "id": "event.envelope.cloudevents-core",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "CloudEvents transport fields",
+        "locators": [
+          "$.specversion",
+          "$.id",
+          "$.source",
+          "$.type",
+          "$.subject",
+          "$.time",
+          "$.datacontenttype",
+          "$.dataschema"
+        ]
+      },
+      "data360": {
+        "object": "SourceEvent",
+        "field": "cloudEventsEnvelope"
+      },
+      "ontology": {
+        "class": "hfs:Event",
+        "property": "hfs:identifier"
+      },
+      "transformation": {
+        "rule": "Copy CloudEvents fields exactly into the immutable source-event record and retain the full envelope for replay.",
+        "loss": "none",
+        "ambiguity": "CloudEvents id is unique inside the preserved tenant/source scope, not a universal business object identifier."
+      }
+    },
+    {
+      "id": "event.envelope.hfs-governance-extensions",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "HFS intake governance extensions",
+        "locators": [
+          "$.hfstenantid",
+          "$.hfsschemaversion",
+          "$.hfscorrelationid",
+          "$.hfscausationid",
+          "$.hfsidempotencykey",
+          "$.hfssourcerecordid",
+          "$.hfssourcesequence",
+          "$.hfsobservedat",
+          "$.hfscontenthash"
+        ]
+      },
+      "data360": {
+        "object": "SourceEvent",
+        "field": "governanceExtensions"
+      },
+      "ontology": {
+        "class": "hfs:Event",
+        "property": "prov:wasGeneratedBy"
+      },
+      "transformation": {
+        "rule": "Copy HFS extension fields exactly and use them for tenant isolation, replay detection, ordering, hashing, and lineage.",
+        "loss": "none",
+        "ambiguity": "Source sequence is only comparable within a tenant/source boundary."
+      }
+    },
+    {
+      "id": "event.envelope.business-record",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "Normalized business record",
+        "locators": [
+          "$.data",
+          "$.data.recordtype",
+          "$.data.operation",
+          "$.data.businesskey",
+          "$.data.effectiveat",
+          "$.data.attributes"
+        ]
+      },
+      "data360": {
+        "object": "SourceRecord",
+        "field": "normalizedBusinessRecord"
+      },
+      "ontology": {
+        "class": "hfs:ProvenancedRecord",
+        "property": "hfs:sourceRecordId"
+      },
+      "transformation": {
+        "rule": "Preserve the normalized source payload as JSON, then project selected fields into Salesforce records by record type.",
+        "loss": "none for preservation; selected projections may be narrower than the full payload",
+        "ambiguity": "Record type is a platform-normalized category; source-local terminology remains in attributes and terminology mappings."
+      }
+    },
+    {
+      "id": "event.envelope.assertions",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "Source assertions",
+        "locators": [
+          "$.data.assertions",
+          "$.data.assertions[].conflictkey",
+          "$.data.assertions[].predicate",
+          "$.data.assertions[].value"
+        ]
+      },
+      "data360": {
+        "object": "AssertionHistory",
+        "field": "sourceAssertions"
+      },
+      "ontology": {
+        "class": "hfs:Assertion",
+        "property": "hfs:assertionPredicate"
+      },
+      "transformation": {
+        "rule": "Convert source assertions into versioned claims keyed by conflict key, predicate, value, valid time, and recorded time.",
+        "loss": "none for scalar assertion values",
+        "ambiguity": "Conflicting values are preserved as competing assertions until review creates an explicit supersession."
+      }
+    }
+  ],
+  "eventTypePatterns": [
+    {
+      "id": "event-type.person",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "person events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.person\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "Individual",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Person",
+        "property": "rdf:type"
+      },
+      "transformation": {
+        "rule": "Map person source events to the person entity projection.",
+        "loss": "none",
+        "ambiguity": "Contact channels remain source attributes until consent and identity rules are added."
+      }
+    },
+    {
+      "id": "event-type.organization",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "organization events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.organization\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "Account",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Organization",
+        "property": "rdf:type"
+      },
+      "transformation": {
+        "rule": "Map organization source events to the organization entity projection.",
+        "loss": "none",
+        "ambiguity": "A source organization may represent a legal entity, operating unit, supplier, or prospect depending on context."
+      }
+    },
+    {
+      "id": "event-type.employee",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "employee relationship events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.employee\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "Relationship",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Relationship",
+        "property": "hfs:relationshipType"
+      },
+      "transformation": {
+        "rule": "Map employee observations into person-to-organization relationship records.",
+        "loss": "none",
+        "ambiguity": "Role names are source-local labels until mapped to a controlled organization role scheme."
+      }
+    },
+    {
+      "id": "event-type.supplier",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "supplier events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.(supplier|retail\\.supplier)\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "SupplierRelationship",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Organization",
+        "property": "hfs:relationshipType"
+      },
+      "transformation": {
+        "rule": "Map supplier identity, response, lead-time, and reliability signals into organization and relationship context.",
+        "loss": "none",
+        "ambiguity": "Supplier response events can update relationship context without automatically changing reorder policy."
+      }
+    },
+    {
+      "id": "event-type.agreement",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "agreement events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.agreement\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "Agreement",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Agreement",
+        "property": "rdf:type"
+      },
+      "transformation": {
+        "rule": "Map agreement events to agreement records and assertion histories.",
+        "loss": "none",
+        "ambiguity": "A changed agreement status may be a source claim until reviewed against contradictory records."
+      }
+    },
+    {
+      "id": "event-type.sop",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "SOP and coordinated-work events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.(sop|retail\\.(shelf|store|approved)|nexavenu\\.revenue\\.(discovery|close|approved))\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "WorkExecution",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:SOPExecution",
+        "property": "rdf:type"
+      },
+      "transformation": {
+        "rule": "Map SOP, readiness, approval, and task execution events into work and SOP execution records.",
+        "loss": "none",
+        "ambiguity": "Execution status is separate from business outcome; outcomes arrive as their own evidence."
+      }
+    },
+    {
+      "id": "event-type.issue",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "generic issue events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.issue\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "CaseOrIssue",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:WorkItem",
+        "property": "hfs:supportedBy"
+      },
+      "transformation": {
+        "rule": "Map issue events into work items, evidence, and recommendations as appropriate.",
+        "loss": "none",
+        "ambiguity": "Issue severity and priority are related but not identical; priority is assigned by policy."
+      }
+    },
+    {
+      "id": "event-type.retail-issue",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "retail risk and outcome events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.retail\\.(stockout|warehouse|expiry|nearexpiry|complaint|price|damaged|queue|outcome)\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "OperationalInsight",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Evidence",
+        "property": "hfs:supportedBy"
+      },
+      "transformation": {
+        "rule": "Map retail signals into evidence, work, recommendation, action, and outcome context without hard-coding retail as the product boundary.",
+        "loss": "none",
+        "ambiguity": "Retail terms such as batch, shelf, and promotion remain vertical terms layered over the shared relationship spine."
+      }
+    },
+    {
+      "id": "event-type.nexavenu-revenue-issue",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "Nexavenu revenue intelligence events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.nexavenu\\.revenue\\.(lead|buyer|buying|retention|outcome)\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "RevenueRelationshipInsight",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Evidence",
+        "property": "hfs:supportedBy"
+      },
+      "transformation": {
+        "rule": "Map revenue-pipeline and relationship-health signals into the same evidence and recommendation spine used by other verticals.",
+        "loss": "none",
+        "ambiguity": "Contact-sourced assumptions are evidence-labeled assumptions, not public facts."
+      }
+    },
+    {
+      "id": "event-type.hospital",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "hospital operations events",
+        "typePattern": "^io\\.github\\.freeapikeys\\.hfs\\.hospital\\..+\\.v1$"
+      },
+      "data360": {
+        "object": "OperationalInsight",
+        "field": "sourceEventType"
+      },
+      "ontology": {
+        "class": "hfs:Evidence",
+        "property": "rdf:type"
+      },
+      "transformation": {
+        "rule": "Map hospital complaint, capacity, pharmacy, partner, billing, staff, approval, refusal, action, and outcome signals into operational evidence and work context.",
+        "loss": "none",
+        "ambiguity": "Hospital operations events can recommend coordination work, but clinical diagnosis, treatment, triage, and priority decisions remain explicitly out of scope."
+      }
+    }
+  ],
+  "eventAttributeMappings": [
+    {
+      "id": "attributes.person",
+      "owner": "semantic-core",
+      "recordType": "Person",
+      "attributes": ["displayname", "email", "phone"],
+      "source": {
+        "localTerm": "person source attributes",
+        "locatorPrefix": "$.data.attributes"
+      },
+      "data360": {
+        "object": "Individual",
+        "field": "profileAttributes"
+      },
+      "ontology": {
+        "class": "hfs:Person",
+        "property": "hfs:sourceRecordId"
+      },
+      "transformation": {
+        "rule": "Project display name into entity display name and preserve contact fields in the source payload until consent and channel policies are added.",
+        "loss": "none for payload preservation",
+        "ambiguity": "Email and phone are identifiers/contact channels, not proof of reachable consent."
+      }
+    },
+    {
+      "id": "attributes.organization",
+      "owner": "semantic-core",
+      "recordType": "Organization",
+      "attributes": ["country", "legalname"],
+      "source": {
+        "localTerm": "organization source attributes",
+        "locatorPrefix": "$.data.attributes"
+      },
+      "data360": {
+        "object": "Account",
+        "field": "organizationAttributes"
+      },
+      "ontology": {
+        "class": "hfs:Organization",
+        "property": "hfs:sourceRecordId"
+      },
+      "transformation": {
+        "rule": "Project legal name into entity display name and preserve jurisdictional attributes.",
+        "loss": "none",
+        "ambiguity": "Country is source-declared and may require normalization before regulated reporting."
+      }
+    },
+    {
+      "id": "attributes.employee",
+      "owner": "semantic-core",
+      "recordType": "Employee",
+      "attributes": ["organizationkey", "personkey", "role"],
+      "source": {
+        "localTerm": "employee relationship attributes",
+        "locatorPrefix": "$.data.attributes"
+      },
+      "data360": {
+        "object": "Relationship",
+        "field": "employmentAttributes"
+      },
+      "ontology": {
+        "class": "hfs:Relationship",
+        "property": "hfs:relationshipType"
+      },
+      "transformation": {
+        "rule": "Resolve person and organization keys to entity lookups and preserve role as source-local terminology.",
+        "loss": "none",
+        "ambiguity": "Role labels need an organization-specific terminology map before cross-tenant comparison."
+      }
+    },
+    {
+      "id": "attributes.supplier",
+      "owner": "semantic-core",
+      "recordType": "Supplier",
+      "attributes": [
+        "category",
+        "creditnote",
+        "customerorganizationkey",
+        "eventcode",
+        "normalleadtimehours",
+        "qualityissueunresolved",
+        "reliabilitystate",
+        "replacementbatchid",
+        "replacementleadtimehours",
+        "responseoptions",
+        "responsestatus",
+        "supplierorganizationkey"
+      ],
+      "source": {
+        "localTerm": "supplier relationship and response attributes",
+        "locatorPrefix": "$.data.attributes"
+      },
+      "data360": {
+        "object": "SupplierRelationship",
+        "field": "supplierSignals"
+      },
+      "ontology": {
+        "class": "hfs:Relationship",
+        "property": "hfs:relationshipStatus"
+      },
+      "transformation": {
+        "rule": "Project supplier parties into relationship context and preserve lead time, response, and reliability facts as evidence.",
+        "loss": "none",
+        "ambiguity": "Supplier response signals inform but do not automatically approve reorder, quarantine, or replacement actions."
+      }
+    },
+    {
+      "id": "attributes.agreement",
+      "owner": "semantic-core",
+      "recordType": "Agreement",
+      "attributes": [
+        "organizationkey",
+        "renewaldate",
+        "reviewnote",
+        "supplierkey"
+      ],
+      "source": {
+        "localTerm": "agreement attributes",
+        "locatorPrefix": "$.data.attributes"
+      },
+      "data360": {
+        "object": "Agreement",
+        "field": "agreementAttributes"
+      },
+      "ontology": {
+        "class": "hfs:Agreement",
+        "property": "hfs:sourceRecordId"
+      },
+      "transformation": {
+        "rule": "Resolve parties, preserve source terms, and convert renewal dates into agreement validity/review evidence when available.",
+        "loss": "none",
+        "ambiguity": "Review notes are claims or evidence summaries, not final reviewed decisions."
+      }
+    },
+    {
+      "id": "attributes.sop",
+      "owner": "semantic-core",
+      "recordType": "SOP",
+      "attributes": [
+        "acknowledgementstatus",
+        "actiontypes",
+        "agreementkey",
+        "approval_required_for",
+        "approvalid",
+        "approved_by_role",
+        "assignedrole",
+        "buyer_journey_stage",
+        "contact_sourced_assumptions",
+        "correlationid",
+        "definitionkey",
+        "eventcode",
+        "executionstatus",
+        "expected_outcomes",
+        "expectedproductid",
+        "facts",
+        "failure_path",
+        "handoff_gate",
+        "inferences",
+        "missing_readiness_requirements",
+        "observedissue",
+        "ownerkey",
+        "pipeline_stage",
+        "priority",
+        "protected_external_actions",
+        "readiness_score",
+        "recommended_next_actions",
+        "tasks",
+        "tasktype"
+      ],
+      "source": {
+        "localTerm": "SOP execution and coordinated-work attributes",
+        "locatorPrefix": "$.data.attributes"
+      },
+      "data360": {
+        "object": "WorkExecution",
+        "field": "executionAttributes"
+      },
+      "ontology": {
+        "class": "hfs:SOPExecution",
+        "property": "prov:wasGeneratedBy"
+      },
+      "transformation": {
+        "rule": "Project definition, status, owner, priority, and approval facts into work/SOP/action context and preserve the full source attribute set.",
+        "loss": "none for payload preservation",
+        "ambiguity": "Facts and inferences are kept distinct in source attributes until promoted into reviewed evidence and recommendations."
+      }
+    },
+    {
+      "id": "attributes.issue",
+      "owner": "semantic-core",
+      "recordType": "Issue",
+      "attributes": [
+        "actual_outcomes",
+        "agent",
+        "agreementkey",
+        "approvalrequired",
+        "backroomquantity",
+        "badbatchrisk",
+        "baselinecashiers",
+        "batchid",
+        "business_pipeline_path",
+        "buyer_journey_path",
+        "buyer_journey_stage",
+        "champion_map",
+        "companyid",
+        "companyname",
+        "complaintcount",
+        "complaintriskstate",
+        "complainttypes",
+        "content_touches",
+        "currency",
+        "damagedpackagingcount",
+        "daysofcover",
+        "education_gaps",
+        "eligiblequantity",
+        "eventcode",
+        "evidence_grade",
+        "expected_vs_actual",
+        "expirydate",
+        "feedback_for_next_cycle",
+        "giftprofile",
+        "icp_score",
+        "industry",
+        "lead_source_touchpoints",
+        "managerapprovalpolicy",
+        "markdownpercent",
+        "missing_stakeholders",
+        "nearexpiryquantity",
+        "next_touchpoint",
+        "pipeline_stage",
+        "posprice",
+        "productid",
+        "promotionid",
+        "qualification_signal",
+        "queuereadiness",
+        "recommendation",
+        "recommended_nurture_action",
+        "recommended_recovery_motion",
+        "recommendedcashiers",
+        "refundcount",
+        "relationship_health_signal",
+        "relationshiptype",
+        "risk_drivers",
+        "risk_level",
+        "riskwindowend",
+        "riskwindowstart",
+        "salesvelocityperhour",
+        "severity",
+        "shelfareaid",
+        "shelfprice",
+        "shelfquantity",
+        "stafftaskcompletion",
+        "stockoutavoidedunits",
+        "storeid",
+        "summary",
+        "supplierid",
+        "supplierkey",
+        "supplierleadtimehours",
+        "supplierquantity",
+        "supplierslastate",
+        "warehouseleadtimehours",
+        "warehousequantity",
+        "wasteatriskunits",
+        "wastereductionunits",
+        "actionTypes",
+        "approvalId",
+        "bedsReleased",
+        "blockedReason",
+        "blockedRooms",
+        "complaintContainment",
+        "complaintCount",
+        "complaintTypes",
+        "customerAliasGroup",
+        "department",
+        "duplicateInvoiceReviews",
+        "estimatedExposureMUR",
+        "insuranceFollowUps",
+        "location",
+        "module",
+        "ownerRole",
+        "partnerId",
+        "pressureScore",
+        "primitive",
+        "process",
+        "profile",
+        "queueWaitMinutes",
+        "readyBeds",
+        "recommendedActionType",
+        "recommendedActionTypes",
+        "refusalReason",
+        "requestedDecision",
+        "requiresApproval",
+        "resourceId",
+        "routedToRole",
+        "safeStaffMove",
+        "slaMinutesLate",
+        "status",
+        "stockHoursRemaining",
+        "stockoutAvoided",
+        "thresholdHours",
+        "totalBeds",
+        "waitTimeReducedPercent"
+      ],
+      "source": {
+        "localTerm": "issue, risk, recommendation, and outcome attributes",
+        "locatorPrefix": "$.data.attributes"
+      },
+      "data360": {
+        "object": "OperationalInsight",
+        "field": "issueAttributes"
+      },
+      "ontology": {
+        "class": "hfs:Evidence",
+        "property": "hfs:supportedBy"
+      },
+      "transformation": {
+        "rule": "Preserve issue attributes as source evidence and project selected identifiers, summaries, recommendations, approvals, actions, and outcomes into operational records.",
+        "loss": "none for payload preservation; projections intentionally keep vertical-specific detail in JSON when no stable shared field exists",
+        "ambiguity": "Retail and Nexavenu terms are vertical overlays; they must not redefine the shared relationship-intelligence spine."
+      }
+    }
+  ],
+  "salesforceFieldMappings": [
+    {
+      "id": "salesforce.HFS_Event__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "immutable event envelope",
+        "locators": ["$"]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Event__c",
+            "field": "Event_Id__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Event_Type__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Source_URI__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Subject__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Source_Record_Id__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Schema_Version__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Correlation_Id__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Causation_Id__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Idempotency_Key__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Source_Sequence__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Occurred_At__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Observed_At__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Content_Hash__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Payload_JSON__c"
+          },
+          {
+            "object": "HFS_Event__c",
+            "field": "Intake_Result__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "SourceEvent",
+        "field": "eventEnvelope"
+      },
+      "ontology": {
+        "class": "hfs:Event",
+        "property": "hfs:sourceRecordId"
+      },
+      "transformation": {
+        "rule": "Persist the envelope, content hash, normalized payload JSON, and deterministic intake disposition.",
+        "loss": "none",
+        "ambiguity": "Rejected events are intake attempts and are not persisted as accepted source events."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Entity__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "entity projection",
+        "locators": [
+          "$.data.recordtype",
+          "$.data.businesskey",
+          "$.data.attributes"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Entity__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Source_Event__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Entity_Type__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Display_Name__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Valid_From__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Valid_To__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Confidence__c"
+          },
+          {
+            "object": "HFS_Entity__c",
+            "field": "Attributes_JSON__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "UnifiedEntity",
+        "field": "entityProfile"
+      },
+      "ontology": {
+        "class": "hfs:Entity",
+        "property": "hfs:identifier"
+      },
+      "transformation": {
+        "rule": "Create or update an entity from business key, tenant, source event, record type, display label, validity, confidence, and preserved attributes.",
+        "loss": "none for payload preservation",
+        "ambiguity": "Entity type is normalized; subtype decisions such as supplier or prospect may depend on relationship context."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Relationship__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "relationship projection",
+        "locators": [
+          "$.data.recordtype",
+          "$.data.businesskey",
+          "$.data.attributes"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Relationship__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Source_Event__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Subject_Entity__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Object_Entity__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Relationship_Type__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Valid_From__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Valid_To__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Confidence__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Superseded_By__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Supersession_Approval__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Superseded_By_User__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Superseded_At__c"
+          },
+          {
+            "object": "HFS_Relationship__c",
+            "field": "Supersession_Reason__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "RelationshipGraph",
+        "field": "relationshipEdge"
+      },
+      "ontology": {
+        "class": "hfs:Relationship",
+        "property": "hfs:relationshipType"
+      },
+      "transformation": {
+        "rule": "Resolve subject and object entities, assign relationship type, preserve validity and confidence, and retain any explicit human-approved supersession decision.",
+        "loss": "none",
+        "ambiguity": "Relationship type values may be source-local until mapped to SKOS controlled concepts; a superseded relationship remains queryable as historical belief."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Event_Participant__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "event participant projection",
+        "locators": ["$.subject", "$.data.attributes"]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Event_Participant__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Event_Participant__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Event_Participant__c",
+            "field": "Event__c"
+          },
+          {
+            "object": "HFS_Event_Participant__c",
+            "field": "Entity__c"
+          },
+          {
+            "object": "HFS_Event_Participant__c",
+            "field": "Participant_Role__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "SourceEventParticipant",
+        "field": "participantRole"
+      },
+      "ontology": {
+        "class": "hfs:Event",
+        "property": "hfs:involvesEntity"
+      },
+      "transformation": {
+        "rule": "Derive participants from subject and recognized entity keys in the payload.",
+        "loss": "none when entity keys resolve",
+        "ambiguity": "Participant role is derived from payload position unless a source provides an explicit role."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Agreement__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "agreement projection",
+        "locators": [
+          "$.data.businesskey",
+          "$.data.effectiveat",
+          "$.data.attributes"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Agreement__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Source_Event__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Party_One__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Party_Two__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Agreement_Type__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Status__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Effective_From__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Effective_To__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Terms_Summary__c"
+          },
+          {
+            "object": "HFS_Agreement__c",
+            "field": "Material_Terms_JSON__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "Agreement",
+        "field": "agreementRecord"
+      },
+      "ontology": {
+        "class": "hfs:Agreement",
+        "property": "hfs:identifier"
+      },
+      "transformation": {
+        "rule": "Resolve parties and preserve status, effective dates, summaries, and material terms.",
+        "loss": "none for material terms JSON",
+        "ambiguity": "Agreement status may be a claim if contradictory source assertions are present."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Work_Item__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "work item projection",
+        "locators": ["$.data.businesskey", "$.data.attributes"]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Primary_Entity__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Trigger_Event__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Target_Relationship__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Depends_On_Work_Item__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Owner_Role__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Escalation_Role__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Handoff_Target_Role__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Handoff_State__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Closure_Verification_Status__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Closure_Verified_At__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Closure_Outcome__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Status__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Priority__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Summary__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Due_At__c"
+          },
+          {
+            "object": "HFS_Work_Item__c",
+            "field": "Blocked_Reason__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "WorkItem",
+        "field": "workRecord"
+      },
+      "ontology": {
+        "class": "hfs:WorkItem",
+        "property": "prov:wasGeneratedBy"
+      },
+      "transformation": {
+        "rule": "Create accountable work from the triggering event, primary entity, optional target relationship, dependency, owner role, handoff state, escalation role, closure verification, status, priority, summary, due time, and blocker state.",
+        "loss": "none",
+        "ambiguity": "Priority is a policy output, not simply severity copied from source; handoff roles are business responsibilities until bound to concrete users or queues."
+      }
+    },
+    {
+      "id": "salesforce.HFS_SOP_Execution__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "SOP execution projection",
+        "locators": [
+          "$.data.businesskey",
+          "$.data.attributes.definitionkey",
+          "$.data.attributes.executionstatus"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Work_Item__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Definition_Key__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Definition_Version__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Status__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Current_Step_Key__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Required_Evidence__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Escalation_Rule__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Started_At__c"
+          },
+          {
+            "object": "HFS_SOP_Execution__c",
+            "field": "Completed_At__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "WorkExecution",
+        "field": "sopExecution"
+      },
+      "ontology": {
+        "class": "hfs:SOPExecution",
+        "property": "prov:wasGeneratedBy"
+      },
+      "transformation": {
+        "rule": "Track SOP definition, version, current step, required evidence, escalation rule, and lifecycle timestamps for coordinated work.",
+        "loss": "none",
+        "ambiguity": "The SOP DAG definition remains separate from the execution record; evidence requirements are policy text until evaluated by service logic."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Evidence__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "evidence projection",
+        "locators": [
+          "$.data.attributes",
+          "$.hfscontenthash",
+          "$.source",
+          "$.time"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Evidence__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Source_Event__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Work_Item__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Related_Entity__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Evidence_Type__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Summary__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Content_Hash__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Source_URI__c"
+          },
+          {
+            "object": "HFS_Evidence__c",
+            "field": "Captured_At__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "Evidence",
+        "field": "sourceEvidence"
+      },
+      "ontology": {
+        "class": "hfs:Evidence",
+        "property": "hfs:supportedBy"
+      },
+      "transformation": {
+        "rule": "Create citable evidence from source payload, hash, source URI, captured timestamp, related work, and related entity.",
+        "loss": "none",
+        "ambiguity": "Evidence summary is a digest; source payload remains the authoritative record."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Recommendation__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "recommendation projection",
+        "locators": [
+          "$.data.attributes.recommendation",
+          "$.data.attributes.recommended_next_actions",
+          "$.data.attributes.agent"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Work_Item__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Subject_Entity__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Primary_Evidence__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Status__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Recommendation_Type__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Proposed_Action_Type__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Rationale__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Confidence__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Model_Profile__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Model_Invocation_Id__c"
+          },
+          {
+            "object": "HFS_Recommendation__c",
+            "field": "Generated_At__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "DecisionRecommendation",
+        "field": "recommendationRecord"
+      },
+      "ontology": {
+        "class": "hfs:Recommendation",
+        "property": "hfs:recommendsAction"
+      },
+      "transformation": {
+        "rule": "Create recommendations only from accessible evidence, model/rule output, confidence, rationale, and proposed action type.",
+        "loss": "none",
+        "ambiguity": "Recommendation text is not approval and cannot execute protected external actions."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Approval__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "human approval projection",
+        "locators": [
+          "$.data.attributes.approvalrequired",
+          "$.data.attributes.managerapprovalpolicy",
+          "$.data.attributes.approvalid"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Approval__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Recommendation__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Status__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Requested_At__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Decision_By__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Decided_At__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Decision_Notes__c"
+          },
+          {
+            "object": "HFS_Approval__c",
+            "field": "Policy_Key__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "ApprovalDecision",
+        "field": "approvalRecord"
+      },
+      "ontology": {
+        "class": "hfs:Approval",
+        "property": "hfs:approvalFor"
+      },
+      "transformation": {
+        "rule": "Record responsible human decision, status, policy, notes, and timestamps for protected actions.",
+        "loss": "none",
+        "ambiguity": "Approval means responsible business role approval, not developer or Salesforce admin permission."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Action__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "approved action projection",
+        "locators": [
+          "$.data.attributes.actiontypes",
+          "$.data.attributes.protected_external_actions",
+          "$.hfscorrelationid",
+          "$.hfsidempotencykey"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Action__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Recommendation__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Approval__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Target_Entity__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Status__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Action_Type__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Requested_At__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Executed_At__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Correlation_Id__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Idempotency_Key__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "External_Reference__c"
+          },
+          {
+            "object": "HFS_Action__c",
+            "field": "Failure_Detail__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "ActionExecution",
+        "field": "actionRecord"
+      },
+      "ontology": {
+        "class": "hfs:Action",
+        "property": "hfs:producedOutcome"
+      },
+      "transformation": {
+        "rule": "Record requested and executed actions only after policy and approval checks, preserving correlation, idempotency, external reference, and failure details.",
+        "loss": "none",
+        "ambiguity": "Drafted outreach is not an executed channel action until approval and write-back succeed."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Outcome__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "outcome projection",
+        "locators": [
+          "$.data.attributes.actual_outcomes",
+          "$.data.attributes.expected_vs_actual",
+          "$.data.attributes.feedback_for_next_cycle"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Outcome__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Source_Event__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Action__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Outcome_Type__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Status__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Observed_At__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Summary__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Metric_Key__c"
+          },
+          {
+            "object": "HFS_Outcome__c",
+            "field": "Metric_Value__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "ActionOutcome",
+        "field": "outcomeRecord"
+      },
+      "ontology": {
+        "class": "hfs:Outcome",
+        "property": "prov:wasGeneratedBy"
+      },
+      "transformation": {
+        "rule": "Record observed result, status, summary, metric key/value, source event, and action lineage.",
+        "loss": "none",
+        "ambiguity": "Outcome metrics require explicit definitions before cross-customer comparison."
+      }
+    },
+    {
+      "id": "salesforce.HFS_Evaluation__c",
+      "owner": "semantic-core",
+      "source": {
+        "localTerm": "evaluation projection",
+        "locators": [
+          "$.data.attributes.expected_vs_actual",
+          "$.data.attributes.feedback_for_next_cycle",
+          "model-evaluation:*"
+        ]
+      },
+      "salesforce": {
+        "targets": [
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "External_Key__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Tenant_Key__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Outcome__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Evaluation_Type__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Evaluator_Type__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Evaluator_Id__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Score__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Verdict__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Evaluated_At__c"
+          },
+          {
+            "object": "HFS_Evaluation__c",
+            "field": "Notes__c"
+          }
+        ]
+      },
+      "data360": {
+        "object": "OutcomeEvaluation",
+        "field": "evaluationRecord"
+      },
+      "ontology": {
+        "class": "hfs:Evaluation",
+        "property": "prov:wasDerivedFrom"
+      },
+      "transformation": {
+        "rule": "Record human, rule, model, or system evaluation of an outcome with score, verdict, timestamp, and notes.",
+        "loss": "none",
+        "ambiguity": "Evaluation can propose policy or model changes but must not silently mutate production behavior."
+      }
+    }
+  ]
+}

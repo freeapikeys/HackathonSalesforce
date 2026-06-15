@@ -28,6 +28,20 @@
         description="Declared purpose used for governed context and decisions."
       />
       <property
+        name="profileKey"
+        type="String"
+        label="Demo profile key"
+        default="north-star-retail"
+        description="Synthetic profile key used when mock mode is enabled."
+      />
+      <property
+        name="stateName"
+        type="String"
+        label="Demo state name"
+        default="ready"
+        description="Synthetic UI state used when mock mode is enabled."
+      />
+      <property
         name="workItemId"
         type="String"
         label="Work item ID"

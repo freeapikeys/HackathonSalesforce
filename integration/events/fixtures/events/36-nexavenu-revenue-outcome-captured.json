@@ -1,0 +1,63 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000036",
+  "source": "urn:hfs:source:nexavenu-revenue",
+  "type": "io.github.freeapikeys.hfs.nexavenu.revenue.outcome.captured.v1",
+  "subject": "outcome:OUTCOME-NEXAVENU-REVENUE-001",
+  "time": "2026-06-10T12:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "30000000-0000-4000-8000-000000000001",
+  "hfscausationid": "00000000-0000-4000-8000-000000000035",
+  "hfsidempotencykey": "nexavenu-revenue-outcome-captured-v1",
+  "hfssourcerecordid": "nexavenu-revenue-event-outcome-001",
+  "hfssourcesequence": 8,
+  "hfsobservedat": "2026-06-10T12:00:04Z",
+  "hfscontenthash": "sha256:82a2d3f5e30cbdeb5a48be25c05a822d85101593452e443074a91441cde34644",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "CLOSE",
+    "businesskey": "ISSUE-NEXAVENU-PIPELINE-LEAK-001",
+    "effectiveat": "2026-06-10T12:00:00Z",
+    "attributes": {
+      "eventcode": "NEXAVENU_REVENUE_OUTCOME_CAPTURED",
+      "pipeline_stage": "feedback_loop",
+      "buyer_journey_stage": "qualified_discovery",
+      "business_pipeline_path": [
+        "lead_generation",
+        "lead_nurture",
+        "sales",
+        "fulfillment_delivery",
+        "retention_ascension",
+        "feedback_loop"
+      ],
+      "buyer_journey_path": [
+        "problem",
+        "awareness",
+        "struggle",
+        "education",
+        "search",
+        "comparison",
+        "test",
+        "purchase",
+        "first_impressions",
+        "qualified_discovery"
+      ],
+      "actual_outcomes": [
+        "readiness score increased from 48 to 76",
+        "operations champion replied with system inventory",
+        "CFO and CIO alignment call accepted",
+        "solution-consultant handoff scheduled after readiness gate passed",
+        "retention review created for existing customer risk"
+      ],
+      "expected_vs_actual": "Nurture and champion work moved the lead into qualified discovery without presenting private contact-sourced metrics as public fact.",
+      "feedback_for_next_cycle": [
+        "Content gap: add one-page CFO ROI proof.",
+        "SOP gap: require executive sponsor before full discovery.",
+        "Retention gap: first-impressions review should trigger within 14 days after go-live."
+      ]
+    }
+  }
+}

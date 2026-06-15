@@ -1,0 +1,52 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000031",
+  "source": "urn:hfs:source:nexavenu-revenue",
+  "type": "io.github.freeapikeys.hfs.nexavenu.revenue.buying.committee.mapped.v1",
+  "subject": "prospect:SYNTH-LIFTOPS-MANUFACTURING",
+  "time": "2026-06-10T08:20:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "30000000-0000-4000-8000-000000000001",
+  "hfscausationid": "00000000-0000-4000-8000-000000000030",
+  "hfsidempotencykey": "nexavenu-buying-committee-mapped-v1",
+  "hfssourcerecordid": "nexavenu-revenue-event-committee-001",
+  "hfssourcesequence": 3,
+  "hfsobservedat": "2026-06-10T08:20:02Z",
+  "hfscontenthash": "sha256:5c81292ae1d9a73de4219c06a230a31cd3a7d08e0477095edb1b49241dcd46a5",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "ISSUE-NEXAVENU-PIPELINE-LEAK-001",
+    "effectiveat": "2026-06-10T08:20:00Z",
+    "attributes": {
+      "eventcode": "NEXAVENU_BUYING_COMMITTEE_MAPPED",
+      "pipeline_stage": "lead_nurture",
+      "buyer_journey_stage": "comparison",
+      "champion_map": [
+        {
+          "role": "operations manager",
+          "relationship": "likely champion",
+          "influence": "medium",
+          "pain": "manual dispatch and asset-service visibility"
+        },
+        {
+          "role": "CFO",
+          "relationship": "economic buyer",
+          "influence": "high",
+          "pain": "unclear ROI and implementation cost"
+        },
+        {
+          "role": "CIO",
+          "relationship": "technical approver",
+          "influence": "high",
+          "pain": "ERP, field-service, and data integration risk"
+        }
+      ],
+      "missing_stakeholders": ["executive sponsor", "data owner"],
+      "next_touchpoint": "Equip operations manager with ROI, integration inventory, and executive-sponsor briefing before discovery."
+    }
+  }
+}

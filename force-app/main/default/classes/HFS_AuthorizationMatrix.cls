@@ -43,6 +43,14 @@ public class HFS_AuthorizationMatrix {
         );
         policy.transactionBoundary = 'READ_ONLY';
       }
+      when 'PERSIST_EVENT' {
+        policy.allowedBaselineRoles = roles(INTEGRATION_USER);
+        policy.readableObjects = values('HFS_Event__c');
+        policy.creatableObjects = values('HFS_Event__c');
+        policy.readableFields = allFields(policy.readableObjects);
+        policy.writableFields = eventFields();
+        policy.transactionBoundary = 'ALL_OR_NOTHING_DML';
+      }
       when 'STORE_RECOMMENDATION' {
         policy.allowedBaselineRoles = roles(
           RELATIONSHIP_USER,
@@ -71,9 +79,14 @@ public class HFS_AuthorizationMatrix {
         policy.allowedBaselineRoles = roles(APPROVER);
         policy.readableObjects = values(
           'HFS_Approval__c',
-          'HFS_Recommendation__c'
+          'HFS_Recommendation__c',
+          'HFS_Work_Item__c',
+          'HFS_Relationship__c'
         );
-        policy.updatableObjects = values('HFS_Approval__c');
+        policy.updatableObjects = values(
+          'HFS_Approval__c',
+          'HFS_Relationship__c'
+        );
         policy.readableFields = allFields(policy.readableObjects);
         policy.writableFields = approvalDecisionFields();
         policy.customPermissions = values('HFS_Approve_Recommendation');
@@ -175,6 +188,27 @@ public class HFS_AuthorizationMatrix {
     };
   }
 
+  private static List<String> eventFields() {
+    return new List<String>{
+      'HFS_Event__c.Event_Id__c',
+      'HFS_Event__c.Tenant_Key__c',
+      'HFS_Event__c.Event_Type__c',
+      'HFS_Event__c.Source_URI__c',
+      'HFS_Event__c.Subject__c',
+      'HFS_Event__c.Source_Record_Id__c',
+      'HFS_Event__c.Schema_Version__c',
+      'HFS_Event__c.Correlation_Id__c',
+      'HFS_Event__c.Causation_Id__c',
+      'HFS_Event__c.Idempotency_Key__c',
+      'HFS_Event__c.Source_Sequence__c',
+      'HFS_Event__c.Occurred_At__c',
+      'HFS_Event__c.Observed_At__c',
+      'HFS_Event__c.Content_Hash__c',
+      'HFS_Event__c.Payload_JSON__c',
+      'HFS_Event__c.Intake_Result__c'
+    };
+  }
+
   private static List<String> approvalRequestFields() {
     return values(
       'HFS_Approval__c.External_Key__c',
@@ -187,12 +221,17 @@ public class HFS_AuthorizationMatrix {
   }
 
   private static List<String> approvalDecisionFields() {
-    return values(
+    return new List<String>{
       'HFS_Approval__c.Status__c',
       'HFS_Approval__c.Decision_By__c',
       'HFS_Approval__c.Decided_At__c',
-      'HFS_Approval__c.Decision_Notes__c'
-    );
+      'HFS_Approval__c.Decision_Notes__c',
+      'HFS_Relationship__c.Valid_To__c',
+      'HFS_Relationship__c.Supersession_Approval__c',
+      'HFS_Relationship__c.Superseded_By_User__c',
+      'HFS_Relationship__c.Superseded_At__c',
+      'HFS_Relationship__c.Supersession_Reason__c'
+    };
   }
 
   private static List<String> actionFields() {
@@ -226,7 +265,11 @@ public class HFS_AuthorizationMatrix {
       'HFS_Action__c.Executed_At__c',
       'HFS_Action__c.External_Reference__c',
       'HFS_Action__c.Failure_Detail__c',
-      'HFS_Work_Item__c.Status__c'
+      'HFS_Work_Item__c.Status__c',
+      'HFS_Work_Item__c.Handoff_State__c',
+      'HFS_Work_Item__c.Closure_Verification_Status__c',
+      'HFS_Work_Item__c.Closure_Verified_At__c',
+      'HFS_Work_Item__c.Closure_Outcome__c'
     };
   }
 

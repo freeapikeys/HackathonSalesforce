@@ -82,16 +82,37 @@ private class HFS_RelationshipServiceImplTest {
       Effective_From__c = nowValue.date().addDays(-30)
     );
 
+    HFS_Work_Item__c dependencyWork = new HFS_Work_Item__c(
+      External_Key__c = 'work-supplier-handoff-test',
+      Tenant_Key__c = TENANT,
+      Primary_Entity__c = supplier.Id,
+      Trigger_Event__c = sourceEvent.Id,
+      Status__c = 'IN_PROGRESS',
+      Priority__c = 'MEDIUM',
+      Summary__c = 'Confirm supplier status before customer update.',
+      Due_At__c = nowValue.addHours(1),
+      Owner_Role__c = 'Supplier Desk',
+      Handoff_State__c = 'ACCEPTED',
+      Closure_Verification_Status__c = 'PENDING_EVIDENCE'
+    );
+    insert dependencyWork;
+
     HFS_Work_Item__c workItem = new HFS_Work_Item__c(
       External_Key__c = 'work-service-test',
       Tenant_Key__c = TENANT,
       Primary_Entity__c = customer.Id,
       Trigger_Event__c = sourceEvent.Id,
+      Depends_On_Work_Item__c = dependencyWork.Id,
       Status__c = 'IN_PROGRESS',
       Priority__c = 'HIGH',
       Summary__c = 'Prepare and approve a proactive customer update.',
       Due_At__c = nowValue.addHours(2),
-      Blocked_Reason__c = 'Human approval is required before outreach.'
+      Blocked_Reason__c = 'Human approval is required before outreach.',
+      Owner_Role__c = 'Customer Success Lead',
+      Escalation_Role__c = 'Duty Manager',
+      Handoff_Target_Role__c = 'Store Operations Lead',
+      Handoff_State__c = 'REQUESTED',
+      Closure_Verification_Status__c = 'PENDING_EVIDENCE'
     );
     insert workItem;
     insert new HFS_SOP_Execution__c(
@@ -101,6 +122,8 @@ private class HFS_RelationshipServiceImplTest {
       Definition_Key__c = 'proactive-update',
       Definition_Version__c = '1.0.0',
       Current_Step_Key__c = 'REVIEW_EVIDENCE',
+      Required_Evidence__c = 'Customer promise, source event, approved recommendation, and outcome proof.',
+      Escalation_Rule__c = 'Escalate to Duty Manager if approval or supplier status is missing before the due time.',
       Status__c = 'RUNNING',
       Started_At__c = nowValue.addMinutes(-8)
     );
@@ -115,6 +138,184 @@ private class HFS_RelationshipServiceImplTest {
       Content_Hash__c = 'sha256:evidence-service-test',
       Source_URI__c = 'urn:test:crm:case-001',
       Captured_At__c = nowValue.addMinutes(-7)
+    );
+  }
+
+  @IsTest
+  static void persistsEventIntakeProvenanceAndReplaysSameContent() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+    HFS_EventIntakeCommand command = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100001',
+      'urn:hfs:source:intake-test',
+      'intake-test-001-v1',
+      hashFor('intake-test-001'),
+      'ACCEPTED'
+    );
+
+    HFS_CommandResult result = service.persistEvent(command);
+    System.assertEquals(true, result.success);
+    System.assertEquals(false, result.replayed);
+    System.assertEquals(HFS_ServiceContract.PERSIST_EVENT, result.operation);
+    System.assertEquals('ACCEPTED', result.status);
+
+    HFS_Event__c stored = [
+      SELECT
+        Event_Id__c,
+        Tenant_Key__c,
+        Source_URI__c,
+        Source_Record_Id__c,
+        Event_Type__c,
+        Subject__c,
+        Schema_Version__c,
+        Idempotency_Key__c,
+        Source_Sequence__c,
+        Content_Hash__c,
+        Payload_JSON__c,
+        Intake_Result__c
+      FROM HFS_Event__c
+      WHERE Id = :result.recordId
+      LIMIT 1
+    ];
+    System.assertEquals(command.eventId, stored.Event_Id__c);
+    System.assertEquals(command.tenantKey, stored.Tenant_Key__c);
+    System.assertEquals(command.sourceUri, stored.Source_URI__c);
+    System.assertEquals(command.sourceRecordId, stored.Source_Record_Id__c);
+    System.assertEquals(command.eventType, stored.Event_Type__c);
+    System.assertEquals(command.subject, stored.Subject__c);
+    System.assertEquals(command.schemaVersion, stored.Schema_Version__c);
+    System.assertEquals(command.idempotencyKey, stored.Idempotency_Key__c);
+    System.assertEquals(command.sourceSequence, stored.Source_Sequence__c);
+    System.assertEquals(command.contentHash, stored.Content_Hash__c);
+    System.assertEquals(command.payloadJson, stored.Payload_JSON__c);
+    System.assertEquals(command.intakeResult, stored.Intake_Result__c);
+
+    HFS_CommandResult replayedByKey = service.persistEvent(command);
+    System.assertEquals(true, replayedByKey.success);
+    System.assertEquals(true, replayedByKey.replayed);
+    System.assertEquals(result.recordId, replayedByKey.recordId);
+
+    HFS_EventIntakeCommand replayByIdentity = eventIntakeCommand(
+      command.eventId,
+      command.sourceUri,
+      'intake-test-001-retry-v2',
+      command.contentHash,
+      'ACCEPTED'
+    );
+    HFS_CommandResult identityReplay = service.persistEvent(replayByIdentity);
+    System.assertEquals(true, identityReplay.success);
+    System.assertEquals(true, identityReplay.replayed);
+    System.assertEquals(result.recordId, identityReplay.recordId);
+  }
+
+  @IsTest
+  static void recordsLateOutOfOrderAndConflictReviewDispositions() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+    List<String> statuses = new List<String>{
+      'ACCEPTED_LATE',
+      'ACCEPTED_OUT_OF_ORDER',
+      'CONFLICT_REVIEW'
+    };
+
+    for (Integer index = 0; index < statuses.size(); index++) {
+      HFS_EventIntakeCommand command = eventIntakeCommand(
+        '00000000-0000-4000-8000-00000010010' + String.valueOf(index),
+        'urn:hfs:source:intake-review',
+        'intake-review-' + String.valueOf(index) + '-v1',
+        hashFor('intake-review-' + String.valueOf(index)),
+        statuses[index]
+      );
+      HFS_CommandResult result = service.persistEvent(command);
+      System.assertEquals(true, result.success);
+      System.assertEquals(statuses[index], result.status);
+    }
+
+    System.assertEquals(
+      3,
+      [
+        SELECT COUNT()
+        FROM HFS_Event__c
+        WHERE Source_URI__c = 'urn:hfs:source:intake-review'
+      ]
+    );
+  }
+
+  @IsTest
+  static void scopesIdempotencyByTenantAndSource() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+    String sharedIdempotencyKey = 'shared-source-key-v1';
+
+    HFS_EventIntakeCommand first = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100201',
+      'urn:hfs:source:intake-source-a',
+      sharedIdempotencyKey,
+      hashFor('scoped-source-a'),
+      'ACCEPTED'
+    );
+    HFS_EventIntakeCommand second = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100202',
+      'urn:hfs:source:intake-source-b',
+      sharedIdempotencyKey,
+      hashFor('scoped-source-b'),
+      'ACCEPTED'
+    );
+
+    HFS_CommandResult firstResult = service.persistEvent(first);
+    HFS_CommandResult secondResult = service.persistEvent(second);
+
+    System.assertEquals(true, firstResult.success);
+    System.assertEquals(true, secondResult.success);
+    System.assertEquals(false, firstResult.replayed);
+    System.assertEquals(false, secondResult.replayed);
+    System.assertNotEquals(firstResult.recordId, secondResult.recordId);
+  }
+
+  @IsTest
+  static void rejectsRejectedResultsAndChangedContentUnderSameScope() {
+    HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+
+    HFS_EventIntakeCommand rejected = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100301',
+      'urn:hfs:source:intake-conflict',
+      'intake-rejected-v1',
+      hashFor('rejected-source-data'),
+      'REJECTED_HASH'
+    );
+    assertError(
+      service.persistEvent(rejected),
+      HFS_ServiceContract.INVALID_STATE
+    );
+
+    HFS_EventIntakeCommand original = eventIntakeCommand(
+      '00000000-0000-4000-8000-000000100302',
+      'urn:hfs:source:intake-conflict',
+      'intake-conflict-v1',
+      hashFor('original-source-data'),
+      'ACCEPTED'
+    );
+    System.assertEquals(true, service.persistEvent(original).success);
+
+    HFS_EventIntakeCommand sameKeyChangedHash = eventIntakeCommand(
+      original.eventId,
+      original.sourceUri,
+      original.idempotencyKey,
+      hashFor('changed-source-data'),
+      'ACCEPTED'
+    );
+    assertError(
+      service.persistEvent(sameKeyChangedHash),
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
+    );
+
+    HFS_EventIntakeCommand sameEventChangedHash = eventIntakeCommand(
+      original.eventId,
+      original.sourceUri,
+      'intake-conflict-v2',
+      hashFor('changed-source-data-v2'),
+      'ACCEPTED'
+    );
+    assertError(
+      service.persistEvent(sameEventChangedHash),
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT
     );
   }
 
@@ -211,8 +412,35 @@ private class HFS_RelationshipServiceImplTest {
         'Human approval is required before outreach.',
         context.workItem.blockedReason
       );
+      HFS_Work_Item__c dependency = [
+        SELECT Id
+        FROM HFS_Work_Item__c
+        WHERE External_Key__c = 'work-supplier-handoff-test'
+        LIMIT 1
+      ];
+      System.assertEquals(
+        String.valueOf(dependency.Id),
+        context.workItem.dependsOnWorkItemId
+      );
+      System.assertEquals('Customer Success Lead', context.workItem.ownerRole);
+      System.assertEquals('Duty Manager', context.workItem.escalationRole);
+      System.assertEquals(
+        'Store Operations Lead',
+        context.workItem.handoffTargetRole
+      );
+      System.assertEquals('COMPLETED', context.workItem.handoffState);
+      System.assertEquals(
+        'VERIFIED',
+        context.workItem.closureVerificationStatus
+      );
+      System.assertNotEquals(null, context.workItem.closureVerifiedAt);
+      System.assertEquals(
+        outcomeResult.recordId,
+        context.workItem.closureOutcomeId
+      );
       System.assert(context.entities.size() >= 3);
       System.assertEquals(1, context.relationships.size());
+      System.assertEquals(1, context.eventParticipants.size());
       System.assertEquals(1, context.agreements.size());
       System.assertEquals(1, context.sopExecutions.size());
       System.assertEquals(1, context.evidence.size());
@@ -223,8 +451,32 @@ private class HFS_RelationshipServiceImplTest {
       System.assert(context.timeline.size() >= 5);
       System.assertEquals('1.0.0', context.sopExecutions[0].definitionVersion);
       System.assertEquals(
+        'Customer promise, source event, approved recommendation, and outcome proof.',
+        context.sopExecutions[0].requiredEvidence
+      );
+      System.assertEquals(
+        'Escalate to Duty Manager if approval or supplier status is missing before the due time.',
+        context.sopExecutions[0].escalationRule
+      );
+      System.assertEquals(
         'SEND_STATUS_UPDATE',
         context.recommendations[0].proposedActionType
+      );
+      System.assertEquals(
+        'EVENT_PARTICIPANT',
+        context.eventParticipants[0].recordType
+      );
+      System.assertEquals(
+        'SUBJECT',
+        context.eventParticipants[0].participantRole
+      );
+      System.assertEquals(
+        String.valueOf(customer.Id),
+        context.eventParticipants[0].subjectEntityId
+      );
+      System.assertEquals(
+        String.valueOf(sourceEvent.Id),
+        context.eventParticipants[0].sourceEventId
       );
       System.assertEquals(
         'relationship-recommendation',
@@ -254,6 +506,41 @@ private class HFS_RelationshipServiceImplTest {
       );
       System.assertEquals(1, provenance.citations.size());
       System.assert(provenance.lineage.size() >= 2);
+
+      HFS_Event_Participant__c participant = [
+        SELECT Id
+        FROM HFS_Event_Participant__c
+        WHERE External_Key__c = 'participant-customer-test'
+        LIMIT 1
+      ];
+      HFS_ProvenanceRequest participantProvenanceRequest = new HFS_ProvenanceRequest();
+      participantProvenanceRequest.contractVersion = HFS_ServiceContract.VERSION;
+      participantProvenanceRequest.tenantKey = TENANT;
+      participantProvenanceRequest.objectApiName = 'HFS_Event_Participant__c';
+      participantProvenanceRequest.recordId = participant.Id;
+      participantProvenanceRequest.purpose = 'EXPLAIN_EVENT_PARTICIPANT';
+      participantProvenanceRequest.correlationId = CORRELATION;
+      participantProvenanceRequest.maxDepth = 4;
+
+      HFS_ProvenanceResponse participantProvenance = service.getProvenance(
+        participantProvenanceRequest
+      );
+      System.assertEquals(0, participantProvenance.errors.size());
+      System.assertEquals(
+        'EVENT_PARTICIPANT',
+        participantProvenance.rootRecord.recordType
+      );
+      System.assertEquals(
+        'SUBJECT',
+        participantProvenance.rootRecord.participantRole
+      );
+      System.assertEquals(
+        String.valueOf(sourceEvent.Id),
+        participantProvenance.rootRecord.sourceEventId
+      );
+      System.assert(
+        containsObject(participantProvenance.lineage, 'HFS_Event__c')
+      );
 
       HFS_Action__c storedAction = [
         SELECT Status__c, Executed_At__c
@@ -760,6 +1047,18 @@ private class HFS_RelationshipServiceImplTest {
     return command;
   }
 
+  private static Boolean containsObject(
+    List<HFS_ContextItem> items,
+    String objectApiName
+  ) {
+    for (HFS_ContextItem item : items) {
+      if (item.objectApiName == objectApiName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private static HFS_ContextRequest contextRequest(Id workItemId) {
     HFS_ContextRequest request = new HFS_ContextRequest();
     request.contractVersion = HFS_ServiceContract.VERSION;
@@ -839,6 +1138,52 @@ private class HFS_RelationshipServiceImplTest {
     command.metricKey = 'delivery_success';
     command.metricValue = 1;
     return command;
+  }
+
+  private static HFS_EventIntakeCommand eventIntakeCommand(
+    String eventId,
+    String sourceUri,
+    String idempotencyKey,
+    String contentHash,
+    String intakeResult
+  ) {
+    HFS_EventIntakeCommand command = new HFS_EventIntakeCommand();
+    command.contractVersion = HFS_ServiceContract.VERSION;
+    command.correlationId = CORRELATION;
+    command.tenantKey = TENANT;
+    command.purpose = 'INGEST_SOURCE_EVENT';
+    command.eventId = eventId;
+    command.sourceUri = sourceUri;
+    command.sourceRecordId = 'source-record-' + rightmost(eventId, 6);
+    command.eventType = 'io.github.freeapikeys.hfs.intake.test.v1';
+    command.subject = 'source-record:' + rightmost(eventId, 6);
+    command.schemaVersion = '1.0.0';
+    command.idempotencyKey = idempotencyKey;
+    command.sourceSequence = 1;
+    command.occurredAt = Datetime.newInstanceGmt(2026, 6, 10, 8, 0, 0);
+    command.observedAt = Datetime.newInstanceGmt(2026, 6, 10, 8, 0, 5);
+    command.contentHash = contentHash;
+    command.payloadJson = JSON.serialize(
+      new Map<String, Object>{
+        'recordtype' => 'Issue',
+        'operation' => 'UPSERT',
+        'businesskey' => command.sourceRecordId,
+        'effectiveat' => '2026-06-10T08:00:00Z'
+      }
+    );
+    command.intakeResult = intakeResult;
+    return command;
+  }
+
+  private static String hashFor(String seed) {
+    return 'sha256:' +
+      EncodingUtil.convertToHex(
+        Crypto.generateDigest('SHA-256', Blob.valueOf(seed))
+      );
+  }
+
+  private static String rightmost(String value, Integer length) {
+    return value.substring(value.length() - length);
   }
 
   private static void assertError(HFS_CommandResult result, String code) {

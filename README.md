@@ -1,4 +1,4 @@
-# North Star
+# Closed-Loop Intelligence RM
 
 North Star is a Salesforce, Agentforce, and MuleSoft operations command center
 for messy cross-functional business issues. It is not a generic chatbot. It
@@ -12,12 +12,26 @@ supermarket batches, cruise cabins, and hospital beds.
 
 North Star handles non-clinical operations only. It must not diagnose, treat,
 recommend dosage, triage patients, or decide clinical priority.
+This private local branch is recentered on the original product: a Salesforce,
+Agentforce, Data 360, and MuleSoft system that turns first-party business data
+into evidence-backed decisions, coordinates people and agents across business
+relationships, captures outcomes, and feeds those outcomes back into the next
+cycle.
+
+The supermarket command-center work is useful as a demo vertical, but it is not
+the product boundary for this branch. Treat retail as one scenario that proves
+the broader relationship-management intelligence loop.
+
+Start with [docs/closed-loop-intelligence-rm.md](docs/closed-loop-intelligence-rm.md)
+for the branch doctrine and
+[docs/decisions/0006-closed-loop-intelligence-rm-branch.md](docs/decisions/0006-closed-loop-intelligence-rm-branch.md)
+for the branch decision.
 
 ## Start Here
 
 1. Read [ROADMAP.md](ROADMAP.md).
-2. Read [docs/north-star-mvp.md](docs/north-star-mvp.md).
-3. Read [docs/north-star-implementation-plan.md](docs/north-star-implementation-plan.md).
+2. Read [docs/closed-loop-intelligence-rm.md](docs/closed-loop-intelligence-rm.md).
+3. Read [docs/architecture.md](docs/architecture.md).
 4. Read [AGENTS.md](AGENTS.md).
 5. Run `npm run check` when the local shell can execute the project scripts.
 
@@ -52,6 +66,26 @@ work.
 - `docs/north-star-implementation-plan.md`: practical build plan for the team.
 - `docs/north-star-demo-narrative.md`: judge demo script and backup path.
 - `docs/north-star-demo-data.md`: synthetic private-hospital demo data summary.
+  The first branch-level vertical slice is:
+
+`authorized source event -> preserved evidence -> semantic mapping -> facts and
+inferences -> recommendation -> human approval -> coordinated task or outreach
+-> outcome -> updated relationship intelligence`
+
+Retail fixtures can instantiate this flow with product, supplier, store, staff,
+complaint, promotion, and outcome records. Shared contracts should remain
+adaptable to customers, employees, suppliers, partners, subsidiaries,
+regulators, shareholders, and other business relationships.
+
+## Repository Map
+
+- `ROADMAP.md`: branch roadmap and completion gates.
+- `AGENTS.md`: rules for Codex and human contributors.
+- `docs/closed-loop-intelligence-rm.md`: branch product doctrine and loop.
+- `docs/research/jury-gift-dossiers-2026-06-10.md`: private OSINT-backed
+  jury/company gift dossiers.
+- `docs/north-star-mvp.md`: retail demo vertical brief.
+- `docs/north-star-implementation-plan.md`: retail demo build plan.
 - `docs/architecture.md`: system architecture and runtime flow.
 - `docs/demo-harness.md`: seed, reset, verification, and connected demo behavior.
 - `docs/clean-clone-runbook.md`: clean-clone verification path.
@@ -68,7 +102,7 @@ work.
 
 ## Demo Promise
 
-North Star should show five things clearly:
+The branch demo should show five things clearly:
 
 1. messy hospital operations signals becoming one coordinated action plan;
 2. a credible intake story: WhatsApp/customer complaint, Salesforce fallback,
@@ -91,4 +125,19 @@ North Star should show five things clearly:
 - Do not let Agentforce execute protected external actions directly.
 - Do not commit real patient, staff, vendor, insurer, phone, email, credential,
   or medical-record data.
+
+1. fragmented first-party data becoming one operational picture;
+2. Agentforce and models separating facts from inference;
+3. new evidence changing the recommendation;
+4. human approval before consequential actions;
+5. Salesforce records preserving evidence, actions, and outcomes.
+
+## Non-Goals
+
+- Do not reduce this branch to a retail-only product.
+- Do not pitch surveillance, scraping, or unauthorized data harvesting.
+- Do not claim live POS, supplier, Slack, WhatsApp, or ERP integrations unless
+  they are configured and demonstrated.
+- Do not let Agentforce execute protected external actions directly.
+- Do not hard-code the product, supplier, relationship type, or scenario.
 - Do not hide uncertainty behind one unexplained score.

@@ -1218,7 +1218,7 @@ def build_examples() -> dict[str, Any]:
         "tenantKey": TENANT,
         "correlationId": CORRELATION,
         "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
-        "externalKey": "outcome-message-delivered-001",
+        "externalKey": "outcome-slack-alert-001",
         "idempotencyKey": outcome_key,
         "actionId": "action-slack-alert-001",
         "sourceEventId": "event-slack-alert-001",

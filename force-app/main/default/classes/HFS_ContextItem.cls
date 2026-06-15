@@ -57,7 +57,55 @@ public class HFS_ContextItem {
   public String blockedReason { get; set; }
 
   @AuraEnabled
+  public String targetRelationshipId { get; set; }
+
+  @AuraEnabled
+  public String dependsOnWorkItemId { get; set; }
+
+  @AuraEnabled
+  public String ownerRole { get; set; }
+
+  @AuraEnabled
+  public String escalationRole { get; set; }
+
+  @AuraEnabled
+  public String handoffTargetRole { get; set; }
+
+  @AuraEnabled
+  public String handoffState { get; set; }
+
+  @AuraEnabled
+  public String closureVerificationStatus { get; set; }
+
+  @AuraEnabled
+  public Datetime closureVerifiedAt { get; set; }
+
+  @AuraEnabled
+  public String closureOutcomeId { get; set; }
+
+  @AuraEnabled
+  public String supersededByRelationshipId { get; set; }
+
+  @AuraEnabled
+  public String supersessionApprovalId { get; set; }
+
+  @AuraEnabled
+  public String supersededByUserId { get; set; }
+
+  @AuraEnabled
+  public Datetime supersededAt { get; set; }
+
+  @AuraEnabled
+  public String supersessionReason { get; set; }
+
+  @AuraEnabled
   public String definitionVersion { get; set; }
+
+  @AuraEnabled
+  public String requiredEvidence { get; set; }
+
+  @AuraEnabled
+  public String escalationRule { get; set; }
 
   @AuraEnabled
   public String proposedActionType { get; set; }

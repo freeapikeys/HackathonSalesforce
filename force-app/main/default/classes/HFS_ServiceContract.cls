@@ -3,6 +3,7 @@ public class HFS_ServiceContract {
 
   public static final String READ_CONTEXT = 'READ_CONTEXT';
   public static final String READ_PROVENANCE = 'READ_PROVENANCE';
+  public static final String PERSIST_EVENT = 'PERSIST_EVENT';
   public static final String STORE_RECOMMENDATION = 'STORE_RECOMMENDATION';
   public static final String REQUEST_APPROVAL = 'REQUEST_APPROVAL';
   public static final String DECIDE_APPROVAL = 'DECIDE_APPROVAL';
@@ -27,6 +28,7 @@ public class HFS_ServiceContract {
   public static final Set<String> OPERATIONS = new Set<String>{
     READ_CONTEXT,
     READ_PROVENANCE,
+    PERSIST_EVENT,
     STORE_RECOMMENDATION,
     REQUEST_APPROVAL,
     DECIDE_APPROVAL,

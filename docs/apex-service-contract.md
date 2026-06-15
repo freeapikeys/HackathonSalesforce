@@ -7,10 +7,13 @@ and integration adapters. It covers:
 
 - permission-aware relationship/context retrieval;
 - source provenance and evidence citations;
+- relationship correction review requests from the command center;
+- approved relationship supersession decisions from correction reviews;
+- accepted and review-required event intake persistence;
 - recommendation storage;
 - approval requests and human decisions;
 - pending action logging;
-- outcome capture.
+- outcome capture and verified work closure.
 
 The service remains domain-neutral. North Star maps global primitives and the
 private hospital demo profile onto the same context, recommendation, approval,
@@ -25,10 +28,24 @@ authorization, replay, and error behavior.
 ## Implemented Behavior
 
 - Context reads start from a work item or subject entity and assemble the
-  connected entity, relationship, agreement, SOP, evidence, recommendation,
-  approval, action, outcome, evaluation, and event graph.
+  connected entity, relationship, event-participant, agreement, SOP, evidence,
+  recommendation, approval, action, outcome, evaluation, and event graph.
 - Provenance reads use an explicit object allowlist and trace records back to
   citable evidence and immutable source events.
+- Event participants are exposed as first-class context items so users and
+  agents can inspect which source event linked an entity into the relationship
+  graph.
+- Command-center correction review creates a governed work item, evidence,
+  recommendation, and pending approval. It does not supersede or delete the
+  original relationship assertion by itself.
+- An approved correction-review decision marks the target relationship as
+  superseded by setting its validity end, approval, deciding user, decision
+  timestamp, and reason. Rejected correction reviews leave relationship history
+  unchanged.
+- Event persistence stores accepted, late, out-of-order, and conflict-review
+  intake results as immutable `HFS_Event__c` records, preserves the normalized
+  payload JSON, and rejects changed content under the same tenant/source
+  idempotency or event identity scope.
 - Queries use user mode; command DML uses user mode and the service runs with
   sharing.
 - Every referenced record is checked against the request tenant.
@@ -37,8 +54,10 @@ authorization, replay, and error behavior.
 - Approval decisions and action execution require their named custom
   permissions.
 - Human decisions derive the deciding user and timestamp on the server.
-- Outcome capture records the outcome, marks the action executed, and completes
-  terminal work in one rollback-protected transaction.
+- Outcome capture records the outcome, marks the action executed, and for
+  terminal outcomes completes the work item, marks the handoff completed, and
+  stamps verified closure with the outcome proof in one rollback-protected
+  transaction.
 
 ## North Star Hospital Mapping
 
@@ -87,11 +106,19 @@ denial before approval.
 | ---------------------- | ----------------------------- | ------------------------ |
 | `READ_CONTEXT`         | `HFS_ContextRequest`          | `HFS_ContextResponse`    |
 | `READ_PROVENANCE`      | `HFS_ProvenanceRequest`       | `HFS_ProvenanceResponse` |
+| `PERSIST_EVENT`        | `HFS_EventIntakeCommand`      | `HFS_CommandResult`      |
 | `STORE_RECOMMENDATION` | `HFS_RecommendationCommand`   | `HFS_CommandResult`      |
 | `REQUEST_APPROVAL`     | `HFS_ApprovalRequestCommand`  | `HFS_CommandResult`      |
 | `DECIDE_APPROVAL`      | `HFS_ApprovalDecisionCommand` | `HFS_CommandResult`      |
 | `LOG_ACTION`           | `HFS_ActionCommand`           | `HFS_CommandResult`      |
 | `CAPTURE_OUTCOME`      | `HFS_OutcomeCommand`          | `HFS_CommandResult`      |
+
+`HFS_RelationshipController.requestCorrectionReview` is a Lightning-facing
+controller endpoint for the command center. It accepts
+`HFS_CorrectionReviewCommand` and persists review work through the same
+`HFS_Work_Item__c -> HFS_Evidence__c -> HFS_Recommendation__c ->
+HFS_Approval__c` chain. It is intentionally not an external action and does not
+modify relationship history without later human approval.
 
 Every request carries `contractVersion`, `tenantKey`, `correlationId`, and a
 non-empty `purpose`. Write commands use stable external keys or action
@@ -104,15 +131,17 @@ evaluate the current user's sharing, object CRUD, field permissions, and custom
 permissions. Assigning multiple permission sets may expand access, but no
 implementation may authorize from a role-name string alone.
 
-| Operation            | Relationship user | Approver | Integration user | Additional gate                                       |
-| -------------------- | ----------------- | -------- | ---------------- | ----------------------------------------------------- |
-| Read context         | Allow             | Allow    | Allow            | Accessible records and fields only                    |
-| Read provenance      | Allow             | Allow    | Allow            | Root record and cited evidence must remain accessible |
-| Store recommendation | Allow             | Deny     | Allow            | Recommendation create or update access                |
-| Request approval     | Deny              | Allow    | Allow            | Approval create access                                |
-| Decide approval      | Deny              | Allow    | Deny             | `HFS_Approve_Recommendation`                          |
-| Log action           | Deny              | Deny     | Allow            | `HFS_Execute_Action` and approved approval            |
-| Capture outcome      | Deny              | Deny     | Allow            | `HFS_Execute_Action`                                  |
+| Operation            | Relationship user | Approver | Integration user | Additional gate                                                                                   |
+| -------------------- | ----------------- | -------- | ---------------- | ------------------------------------------------------------------------------------------------- |
+| Read context         | Allow             | Allow    | Allow            | Accessible records and fields only                                                                |
+| Read provenance      | Allow             | Allow    | Allow            | Root record and cited evidence must remain accessible                                             |
+| Persist event        | Deny              | Deny     | Allow            | Event create access                                                                               |
+| Store recommendation | Allow             | Deny     | Allow            | Recommendation create or update access                                                            |
+| Request approval     | Deny              | Allow    | Allow            | Approval create access                                                                            |
+| Decide approval      | Deny              | Allow    | Deny             | `HFS_Approve_Recommendation`; relationship update access when approving a correction supersession |
+| Log action           | Deny              | Deny     | Allow            | `HFS_Execute_Action` and approved approval                                                        |
+| Capture outcome      | Deny              | Deny     | Allow            | `HFS_Execute_Action`; terminal outcomes verify work closure                                       |
+| Correction review    | CRUD/FLS          | CRUD/FLS | CRUD/FLS         | Work, evidence, recommendation, and approval create                                               |
 
 `HFS_AuthorizationMatrix` is the executable policy definition. It names the
 objects, fields, custom permissions, sharing mode, user-mode data access, and
@@ -133,18 +162,26 @@ transaction boundary for every operation.
   callout in the DML transaction.
 - External action execution requires an approved approval linked to the same
   recommendation.
+- Terminal outcome capture completes the linked work item and records closure
+  verification on the work item with the outcome as proof.
+- Correction review requests create pending review work only. Approved
+  correction decisions persist explicit supersession state on the target
+  relationship and keep the original assertion, source evidence, reviewer, and
+  approval queryable.
 - No partial record graph is committed when a command fails.
 
 ## Transaction Boundaries
 
-| Operation                    | Boundary                                           |
-| ---------------------------- | -------------------------------------------------- |
-| Context and provenance reads | Read-only user-mode transaction                    |
-| Recommendation storage       | All-or-nothing DML                                 |
-| Approval request             | All-or-nothing DML                                 |
-| Approval decision            | All-or-nothing DML                                 |
-| Action logging               | All-or-nothing pending-action DML; no callout      |
-| Outcome capture              | All-or-nothing outcome, action, and work-state DML |
+| Operation                    | Boundary                                                                                                                   |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Context and provenance reads | Read-only user-mode transaction                                                                                            |
+| Event persistence            | All-or-nothing DML                                                                                                         |
+| Recommendation storage       | All-or-nothing DML                                                                                                         |
+| Approval request             | All-or-nothing DML                                                                                                         |
+| Approval decision            | All-or-nothing approval DML; approved correction supersession also updates the target relationship in the same transaction |
+| Action logging               | All-or-nothing pending-action DML; no callout                                                                              |
+| Outcome capture              | All-or-nothing outcome, action, work-state, handoff, and closure-verification DML                                          |
+| Correction review request    | All-or-nothing review work, evidence, recommendation, and approval DML                                                     |
 
 The implementation may return `PARTIAL_FAILURE` only for an explicitly batched
 future endpoint. The version `1.0.0` single-command methods roll back on any

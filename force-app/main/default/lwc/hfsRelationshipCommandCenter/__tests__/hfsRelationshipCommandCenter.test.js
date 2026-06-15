@@ -2,6 +2,7 @@ import { createElement } from "lwc";
 import HfsRelationshipCommandCenter from "c/hfsRelationshipCommandCenter";
 import loadCommandCenter from "@salesforce/apex/HFS_RelationshipController.loadCommandCenter";
 import decideApproval from "@salesforce/apex/HFS_RelationshipController.decideApproval";
+import requestCorrectionReview from "@salesforce/apex/HFS_RelationshipController.requestCorrectionReview";
 import { UI_STATE_VERSION } from "../fixtures";
 
 jest.mock(
@@ -14,13 +15,21 @@ jest.mock(
   () => ({ default: jest.fn() }),
   { virtual: true }
 );
+jest.mock(
+  "@salesforce/apex/HFS_RelationshipController.requestCorrectionReview",
+  () => ({ default: jest.fn() }),
+  { virtual: true }
+);
 
-function createComponent(stateName = "ready") {
+function createComponent(stateName = "ready", profileKey) {
   const element = createElement("c-hfs-relationship-command-center", {
     is: HfsRelationshipCommandCenter
   });
   element.mockMode = true;
   element.stateName = stateName;
+  if (profileKey) {
+    element.profileKey = profileKey;
+  }
   document.body.appendChild(element);
   return element;
 }
@@ -31,7 +40,7 @@ function createLiveComponent() {
   });
   element.recordId = "a01000000000001AAA";
   element.tenantKey = "tenant-live-test";
-  element.purpose = "RESOLVE_HOSPITAL_OPERATION_RISK";
+  element.purpose = "RESOLVE_RETAIL_RISK";
   document.body.appendChild(element);
   return element;
 }
@@ -66,7 +75,14 @@ const livePayload = {
       occurredAt: "2026-06-07T07:00:00.000Z",
       subjectEntityId: "a02000000000001AAA",
       ownerLabel: "Relationship Operations",
-      dueAt: "2026-06-07T10:00:00.000Z"
+      dueAt: "2026-06-07T10:00:00.000Z",
+      blockedReason: "Manager approval is required before outreach.",
+      dependsOnWorkItemId: "a01000000000002AAA",
+      ownerRole: "Relationship owner",
+      escalationRole: "Duty Manager",
+      handoffTargetRole: "Store Operations Lead",
+      handoffState: "REQUESTED",
+      closureVerificationStatus: "PENDING_EVIDENCE"
     },
     entities: [
       {
@@ -78,11 +94,6 @@ const livePayload = {
         recordId: "a02000000000002AAA",
         recordType: "ORGANIZATION",
         label: "Live business"
-      },
-      {
-        recordId: "a02000000000003AAA",
-        recordType: "RESOURCE",
-        label: "Ward A3 discharge rooms"
       }
     ],
     relationships: [
@@ -90,9 +101,24 @@ const livePayload = {
         recordId: "a03000000000001AAA",
         objectApiName: "HFS_Relationship__c",
         label: "Customer relationship",
+        status: "ACTIVE",
+        summary: "Live source evidence links customer and business.",
         relationshipType: "CUSTOMER_OF",
         subjectEntityId: "a02000000000001AAA",
-        objectEntityId: "a02000000000002AAA"
+        objectEntityId: "a02000000000002AAA",
+        sourceEventId: "a05000000000001AAA",
+        confidence: 0.93
+      }
+    ],
+    eventParticipants: [
+      {
+        recordId: "a09000000000001AAA",
+        objectApiName: "HFS_Event_Participant__c",
+        recordType: "EVENT_PARTICIPANT",
+        participantRole: "SUBJECT",
+        subjectEntityId: "a02000000000001AAA",
+        sourceEventId: "a05000000000001AAA",
+        summary: "Live customer participated in the source status event."
       }
     ],
     agreements: [],
@@ -102,7 +128,10 @@ const livePayload = {
         recordType: "PROACTIVE_UPDATE",
         status: "RUNNING",
         summary: "REVIEW_AND_APPROVE",
-        definitionVersion: "1.0.0"
+        definitionVersion: "1.0.0",
+        requiredEvidence:
+          "Source event, recommendation, approval, and outcome.",
+        escalationRule: "Escalate to Duty Manager if approval is still pending."
       }
     ],
     timeline: [
@@ -134,7 +163,7 @@ const livePayload = {
         summary: "Send a grounded service update.",
         confidence: 0.91,
         proposedActionType: "SEND_STATUS_UPDATE",
-        modelProfile: "north-star-hospital-operations",
+        modelProfile: "north-star-retail-recommendation",
         modelInvocationId: "invocation-live-test"
       }
     ],
@@ -146,24 +175,7 @@ const livePayload = {
         requestedAt: "2026-06-07T07:05:00.000Z"
       }
     ],
-    actions: [
-      {
-        recordId: "a09000000000001AAA",
-        recordType: "REQUEST_BED_CLEANING",
-        status: "PENDING",
-        requestedAt: "2026-06-07T07:06:00.000Z",
-        subjectEntityId: "a02000000000003AAA",
-        correlationId: "20000000-0000-4000-8000-000000099001"
-      },
-      {
-        recordId: "a09000000000002AAA",
-        recordType: "SEND_SLACK_ALERT",
-        status: "EXECUTED",
-        requestedAt: "2026-06-07T07:07:00.000Z",
-        externalReference: "mock-slack",
-        correlationId: "20000000-0000-4000-8000-000000099001"
-      }
-    ],
+    actions: [],
     outcomes: [],
     evaluations: [],
     errors: []
@@ -173,8 +185,6 @@ const livePayload = {
 describe("c-hfs-relationship-command-center", () => {
   afterEach(() => {
     jest.clearAllMocks();
-    delete window.SpeechRecognition;
-    delete window.webkitSpeechRecognition;
     while (document.body.firstChild) {
       document.body.removeChild(document.body.firstChild);
     }
@@ -185,154 +195,104 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("North Star hospital operations surge");
-    expect(root.textContent).toContain("North Star operations signals");
-    expect(root.textContent).toContain("profile:hospital-private-large");
-    expect(root.textContent).toContain("Guest room readiness");
-    expect(root.textContent).toContain("Passenger fee dispute");
-    expect(root.textContent).toContain("Client complaint");
-    expect(root.textContent).toContain("Shopper complaint");
-    expect(root.textContent).toContain("Cabin readiness");
-    expect(root.textContent).toContain("Resource, partner, and capacity");
-    expect(root.textContent).toContain("Complaint cluster");
-    expect(root.textContent).toContain("WhatsApp intake");
-    expect(root.textContent).toContain("Follow-up questions");
-    expect(root.textContent).toContain("Root-cause hypotheses");
-    expect(root.textContent).toContain("Next evidence needed");
-    expect(root.textContent).toContain("Partner response");
-    expect(root.textContent).toContain("Conflicts before orchestration");
-    expect(root.textContent).toContain("10-agent coordination trace");
-    expect(root.textContent).toContain("North Star Orchestrator");
-    expect(root.textContent).toContain("Customer Trust");
-    expect(root.textContent).toContain("Outcome Learning");
-    expect(root.textContent).toContain(
-      "Partner and capacity response changed the plan"
+    expect(root.textContent).toContain("North Star weekend promotion recovery");
+    expect(root.textContent).toContain("RM Intel");
+    expect(root.textContent).toContain("Dashboard");
+    expect(root.textContent).toContain("Signals");
+    expect(root.textContent).toContain("Dashboards, KPIs, and predictions");
+    expect(root.textContent).toContain("Evidence > approval > outcome");
+    expect(root.textContent).toContain("Source records preserved");
+    expect(root.textContent).toContain("Human decision boundary");
+    expect(root.textContent).toContain("Predicted next state");
+    expect(root.textContent).toContain("Weekend recovery trend");
+    expect(root.textContent).toContain("Chat with agents");
+    expect(root.textContent).toContain("Employees and departments");
+    expect(root.textContent).toContain("Predicted stockout avoided");
+    expect(root.textContent).toContain("North Star retail signals");
+    expect(root.textContent).toContain("Product, batch, and stock");
+    expect(root.textContent).toContain("Relationship inspection");
+    expect(root.textContent).toContain("Contradictory claims");
+    expect(root.querySelector('[data-testid="correction-button"]').label).toBe(
+      "Request correction review"
     );
-    expect(root.textContent).toContain("Second courier route");
+    expect(root.textContent).toContain("Complaint cluster");
+    expect(root.textContent).toContain("Supplier response");
     expect(root.textContent).toContain("Source records");
     expect(root.textContent).toContain("Accessible source evidence");
-    expect(root.textContent).toContain("North Star hospital operations plan");
-    expect(root.textContent).toContain("Approve hospital operations actions");
+    expect(root.textContent).toContain("North Star retail recovery");
+    expect(root.textContent).toContain("Approve retail recovery actions");
     expect(root.textContent).toContain("Approval decision");
-    expect(root.textContent).toContain("Operations tasks and channel log");
-    expect(root.textContent).toContain("Voice request");
+    expect(root.textContent).toContain("Store tasks and channel log");
     expect(root.textContent).toContain("Slack");
     expect(root.textContent).toContain("WhatsApp-style");
-    expect(root.textContent).toContain("Beds released");
+    expect(root.textContent).toContain("Stockout avoided");
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
+    expect(root.querySelectorAll(".profile-card")).toHaveLength(6);
+    expect(root.querySelectorAll(".kpi-card")).toHaveLength(3);
+    expect(root.querySelectorAll(".forecast-point")).toHaveLength(4);
+    expect(root.querySelectorAll(".agent-thread")).toHaveLength(3);
+    expect(root.querySelectorAll(".team-channel")).toHaveLength(2);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
-    expect(root.querySelectorAll(".evidence-card")).toHaveLength(7);
-    expect(
-      root.querySelectorAll(
-        '[data-testid="agent-handoff-trace"] .action-list li'
-      )
-    ).toHaveLength(10);
-    expect(
-      root.querySelectorAll('[data-testid="profile-mapping-cards"] article')
-    ).toHaveLength(5);
+    expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
+    expect(root.querySelectorAll(".history-card")).toHaveLength(2);
   });
 
-  it("renders the post-approval action and outcome proof state", () => {
-    const element = createComponent("completed");
+  it("renders the Nexavenu revenue gift profile without replacing North Star", () => {
+    const element = createComponent("ready", "nexavenu-revenue");
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain(
-      "Completed after approved mock execution"
-    );
-    expect(root.textContent).toContain("Meta WhatsApp Cloud API");
-    expect(root.textContent).toContain(
-      "Protected actions executed only after manager approval"
-    );
-    expect(root.textContent).toContain("CREATE_PATIENT_SERVICE_TASK");
-    expect(root.textContent).toContain("CREATE_PHARMACY_RESTOCK_REQUEST");
-    expect(root.textContent).toContain("OPEN_BILLING_REVIEW");
-    expect(root.textContent).toContain("SEND_VENDOR_EMAIL");
-    expect(root.textContent).toContain("Vendor email");
-    expect(root.textContent).toContain("Mock queued");
-    expect(root.textContent).toContain("3 rooms released");
-    expect(root.textContent).toContain("Stockout avoided");
-    expect(root.textContent).toContain("Review opened");
-    expect(root.textContent).toContain("12 outcomes recorded");
-    expect(root.querySelector('[data-testid="approval-controls"]')).toBeNull();
-    expect(
-      root.querySelectorAll(".action-list li").length
-    ).toBeGreaterThanOrEqual(25);
+    expect(root.textContent).toContain("Nexavenu champion nurture tower");
+    expect(root.textContent).toContain("Revenue and buyer-readiness signals");
+    expect(root.textContent).toContain("Prospect, champion, and opportunity");
+    expect(root.textContent).toContain("Champion role");
+    expect(root.textContent).toContain("Contact-sourced assumptions");
+    expect(root.textContent).toContain("Approve champion nurture actions");
+    expect(root.textContent).toContain("Revenue approval decision");
+    expect(root.textContent).toContain("Nurture actions and handoff log");
+    expect(root.textContent).toContain("Readiness target");
+    expect(root.textContent).not.toContain("North Star retail signals");
   });
 
-  it("renders governed voice transcript requests without protected execution", () => {
-    const element = createComponent();
-    const root = element.shadowRoot;
+  it.each([
+    [
+      "air-mauritius-passenger",
+      "Air Mauritius passenger recovery tower",
+      "Claims, baggage, and disruption signals"
+    ],
+    [
+      "constance-hospitality",
+      "Constance guest revenue and operations loop",
+      "Reservations, FX, and sentiment signals"
+    ],
+    [
+      "afrasia-private-banking",
+      "AfrAsia relationship intelligence control tower",
+      "KYC, FX, and wealth relationship signals"
+    ],
+    [
+      "sunlife-guest-recovery",
+      "Sunlife guest recovery and experience loop",
+      "Guest recovery, staff, and service signals"
+    ]
+  ])(
+    "switches the demo terrain to %s without changing component code",
+    async (profileKey, expectedEyebrow, expectedRiskHeading) => {
+      const element = createComponent();
+      const root = element.shadowRoot;
+      const profileButton = Array.from(
+        root.querySelectorAll(".profile-card")
+      ).find((button) => button.dataset.profileKey === profileKey);
 
-    expect(
-      root.querySelector('[data-testid="voice-mode-panel"]')
-    ).not.toBeNull();
-    expect(root.querySelectorAll(".voice-card")).toHaveLength(2);
-    expect(root.textContent).toContain("ASK_HOSPITAL_ACTION_PLAN");
-    expect(root.textContent).toContain("DRAFT_RELATIONSHIP_RECOMMENDATION");
-    expect(root.textContent).toContain("No protected action executed");
-    expect(root.textContent).toContain(
-      "Blocked discharge beds and outpatient queue risk"
-    );
-    expect(root.textContent).toContain("evidence-capacity-hospital-001");
-    expect(root.textContent).toContain(
-      "Which patient should receive treatment first?"
-    );
-    expect(root.textContent).toContain("CLINICAL_DECISION_REFUSAL");
-    expect(
-      root.querySelector('[data-testid="voice-clinical-refusal"]')
-    ).not.toBeNull();
-    expect(root.textContent).toContain("routed to a clinician");
-  });
+      expect(profileButton).not.toBeUndefined();
+      profileButton.dispatchEvent(new CustomEvent("click"));
+      await flushPromises();
 
-  it("captures optional browser speech transcripts without protected execution", async () => {
-    const recognitionInstances = [];
-    window.SpeechRecognition = jest.fn().mockImplementation(function () {
-      this.start = jest.fn();
-      this.stop = jest.fn();
-      recognitionInstances.push(this);
-    });
-    const element = createComponent();
-    const handler = jest.fn();
-    element.addEventListener("voicetranscript", handler);
-
-    const captureButton = element.shadowRoot.querySelector(
-      '[data-testid="voice-capture-controls"] lightning-button'
-    );
-    expect(captureButton).not.toBeNull();
-    captureButton.dispatchEvent(new CustomEvent("click"));
-
-    expect(recognitionInstances).toHaveLength(1);
-    expect(recognitionInstances[0].start).toHaveBeenCalledTimes(1);
-
-    recognitionInstances[0].onresult({
-      results: [
-        [
-          {
-            transcript: "Please check discharge rooms and pharmacy stock"
-          }
-        ]
-      ]
-    });
-    await flushPromises();
-
-    expect(
-      element.shadowRoot.querySelector(
-        '[data-testid="voice-captured-transcript"]'
-      ).textContent
-    ).toContain("Please check discharge rooms and pharmacy stock");
-    expect(handler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: expect.objectContaining({
-          source: "browserSpeech",
-          transcript: "Please check discharge rooms and pharmacy stock",
-          protectedActionState: "No protected action executed",
-          correlationId: "20000000-0000-4000-8000-000000000001",
-          stateVersion: UI_STATE_VERSION
-        })
-      })
-    );
-  });
+      expect(root.textContent).toContain(expectedEyebrow);
+      expect(root.textContent).toContain(expectedRiskHeading);
+      expect(root.textContent).not.toContain("North Star retail signals");
+    }
+  );
 
   it.each([
     ["loading", "loading-view", "Loading North Star context"],
@@ -353,11 +313,36 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("North Star hospital operations surge");
+    expect(root.textContent).toContain("North Star weekend promotion recovery");
     expect(
       root.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();
     expect(root.querySelector('[data-testid="approval-controls"]')).toBeNull();
+    expect(
+      root.querySelector('[data-testid="correction-button"]').disabled
+    ).toBe(true);
+  });
+
+  it("emits governed relationship correction intent without mutating data", () => {
+    const element = createComponent();
+    const handler = jest.fn();
+    element.addEventListener("relationshipcorrectionrequest", handler);
+
+    element.shadowRoot
+      .querySelector('[data-testid="correction-button"]')
+      .dispatchEvent(new CustomEvent("click"));
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler.mock.calls[0][0].detail).toEqual({
+      action: expect.objectContaining({
+        id: "correction-batch-scope-001",
+        target: "Batch scope"
+      }),
+      correlationId: "20000000-0000-4000-8000-000000000001",
+      stateVersion: UI_STATE_VERSION
+    });
+    expect(decideApproval).not.toHaveBeenCalled();
+    expect(requestCorrectionReview).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -376,8 +361,8 @@ describe("c-hfs-relationship-command-center", () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toEqual({
       decision,
-      recommendationId: "recommendation-north-star-hospital-001",
-      approvalId: "approval-north-star-hospital-001",
+      recommendationId: "recommendation-north-star-retail-001",
+      approvalId: "approval-north-star-retail-001",
       correlationId: "20000000-0000-4000-8000-000000000001",
       stateVersion: UI_STATE_VERSION
     });
@@ -428,18 +413,30 @@ describe("c-hfs-relationship-command-center", () => {
         contractVersion: UI_STATE_VERSION,
         tenantKey: "tenant-live-test",
         workItemId: "a01000000000001AAA",
-        purpose: "RESOLVE_HOSPITAL_OPERATION_RISK",
+        purpose: "RESOLVE_RETAIL_RISK",
         includeProvenance: true
       })
     );
     expect(element.shadowRoot.textContent).toContain("Live North Star case");
     expect(element.shadowRoot.textContent).toContain("Live customer");
+    expect(element.shadowRoot.textContent).toContain("93%");
+    expect(element.shadowRoot.textContent).toContain(
+      "Manager approval is required before outreach."
+    );
+    expect(element.shadowRoot.textContent).toContain(
+      "Depends on a01000000000002AAA"
+    );
+    expect(element.shadowRoot.textContent).toContain("Store Operations Lead");
+    expect(element.shadowRoot.textContent).toContain("Duty Manager");
+    expect(element.shadowRoot.textContent).toContain(
+      "Source event, recommendation, approval, and outcome."
+    );
+    expect(element.shadowRoot.textContent).toContain(
+      "Live customer participated in the source status event."
+    );
     expect(element.shadowRoot.textContent).toContain(
       "Send a grounded service update."
     );
-    expect(element.shadowRoot.textContent).toContain("Request Bed Cleaning");
-    expect(element.shadowRoot.textContent).toContain("Ward A3 discharge rooms");
-    expect(element.shadowRoot.textContent).toContain("mock-slack");
     expect(
       element.shadowRoot.querySelector('[data-testid="modify-button"]')
     ).toBeNull();
@@ -514,6 +511,50 @@ describe("c-hfs-relationship-command-center", () => {
           correlationId: "correlation-decision-test"
         })
       })
+    );
+  });
+
+  it("requests a live correction review and refreshes governed context", async () => {
+    loadCommandCenter.mockResolvedValue({
+      ...livePayload,
+      permissions: {
+        ...livePayload.permissions,
+        canModify: true
+      }
+    });
+    requestCorrectionReview.mockResolvedValue({
+      contractVersion: "1.0.0",
+      correlationId: "correlation-correction-test",
+      operation: "REQUEST_CORRECTION_REVIEW",
+      success: true,
+      replayed: false,
+      recordId: "a10000000000001AAA",
+      recordType: "HFS_Work_Item__c",
+      status: "AWAITING_APPROVAL",
+      errors: []
+    });
+    const element = createLiveComponent();
+    await flushPromises();
+
+    element.shadowRoot
+      .querySelector('[data-testid="correction-button"]')
+      .dispatchEvent(new CustomEvent("click"));
+    await flushPromises();
+    await flushPromises();
+
+    expect(requestCorrectionReview).toHaveBeenCalledTimes(1);
+    expect(requestCorrectionReview.mock.calls[0][0].command).toEqual(
+      expect.objectContaining({
+        tenantKey: "tenant-live-test",
+        sourceRelationshipId: "a03000000000001AAA",
+        targetLabel: "CUSTOMER_OF",
+        reason:
+          "Open a governed review instead of overwriting relationship history silently."
+      })
+    );
+    expect(loadCommandCenter).toHaveBeenCalledTimes(2);
+    expect(element.shadowRoot.textContent).toContain(
+      "Correction review work item created"
     );
   });
 

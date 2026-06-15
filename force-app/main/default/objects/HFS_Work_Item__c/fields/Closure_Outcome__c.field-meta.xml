@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Closure_Outcome__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Closure Outcome</label>
+    <referenceTo>HFS_Outcome__c</referenceTo>
+    <relationshipLabel>Work Items by Closure Outcome</relationshipLabel>
+    <relationshipName>HFS_Work_Item_Closure_Outcome</relationshipName>
+    <type>Lookup</type>
+</CustomField>

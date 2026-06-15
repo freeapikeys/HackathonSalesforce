@@ -24,6 +24,16 @@ The actions remain governed. Agentforce can explain a hospital operations case,
 draft an evidence-backed action recommendation, and request approval. It
 cannot directly send Slack, WhatsApp-style alerts, pharmacy restock, lab/vendor,
 billing, room/bed, staff-task, patient-message, or outcome write-backs.
+The same action boundary also supports private jury-gift scenarios. The
+Nexavenu revenue-intelligence fixture uses the recommendation action to return
+separate facts, contact-sourced assumptions, inferences, citations, a governed
+close plan, and audit state for the Revenue Intelligence and Champion Nurture
+Tower.
+
+The actions remain governed. Agentforce can explain a retail case, draft an
+evidence-backed recovery recommendation, and request approval. It cannot
+directly send Slack, WhatsApp, reorder, markdown, supplier, or store-task
+write-backs.
 
 The contract deliberately does not expose protected external execution as an
 Agentforce action. The refusal fixture proves that an attempted execution fails

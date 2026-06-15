@@ -461,6 +461,7 @@ def build_schema() -> dict[str, Any]:
     recommendation_output = object_schema(
         {
             "facts": array_of(string(max_length=1000), minimum=1),
+            "assumptions": array_of(string(max_length=1000)),
             "inferences": array_of(string(max_length=1000)),
             "recommendation": string(max_length=2000),
             "confidence": {
@@ -473,6 +474,7 @@ def build_schema() -> dict[str, Any]:
         },
         [
             "facts",
+            "assumptions",
             "inferences",
             "recommendation",
             "confidence",
@@ -663,8 +665,10 @@ def check(
 
 def build_fixture() -> dict[str, Any]:
     profile_key = "hospital_action_reasoning"
+    nexavenu_profile_key = "nexavenu-revenue-recommendation"
     primary_key = "mock-alpha-primary"
     fallback_key = "mock-beta-private"
+    deepseek_key = "deepseek-cloud-disabled"
     evidence_hash = (
         "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70f"
         "db4feada11935c10"
@@ -696,6 +700,18 @@ def build_fixture() -> dict[str, Any]:
         "fallbackMode": "QUALIFIED_ONLY",
         "status": "ACTIVE",
     }
+    nexavenu_profile = {
+        **profile,
+        "profileKey": nexavenu_profile_key,
+        "minimumContextTokens": 6000,
+        "qualityObjective": {
+            "metricKey": "grounded_recommendation_score",
+            "minimumScore": 0.82,
+            "evaluationSuiteVersion": "revenue-recommendation-eval-1.0.0",
+        },
+        "maximumLatencyMs": 9000,
+        "maximumCostUsd": 0.09,
+    }
     deployments = [
         {
             "contractVersion": CONTRACT_VERSION,
@@ -715,7 +731,7 @@ def build_fixture() -> dict[str, Any]:
             ],
             "capabilities": ["CHAT", "STRUCTURED_OUTPUT", "TOOL_USE"],
             "contextWindowTokens": 32768,
-            "qualifiedProfiles": [profile_key],
+            "qualifiedProfiles": [profile_key, nexavenu_profile_key],
             "qualityScores": {"grounded_recommendation_score": 0.91},
             "estimatedLatencyMs": 2200,
             "estimatedCostUsd": 0.035,
@@ -741,11 +757,34 @@ def build_fixture() -> dict[str, Any]:
             ],
             "capabilities": ["CHAT", "STRUCTURED_OUTPUT"],
             "contextWindowTokens": 16384,
-            "qualifiedProfiles": [profile_key],
+            "qualifiedProfiles": [profile_key, nexavenu_profile_key],
             "qualityScores": {"grounded_recommendation_score": 0.88},
             "estimatedLatencyMs": 3100,
             "estimatedCostUsd": 0.041,
             "operationalStatus": "ACTIVE",
+            "activeFrom": "2026-06-01T00:00:00Z",
+            "activeUntil": None,
+        },
+        {
+            "contractVersion": CONTRACT_VERSION,
+            "version": "1.0.0",
+            "deploymentKey": deepseek_key,
+            "adapterKey": "deepseek-openai-compatible-adapter",
+            "adapterInterfaceVersion": "hfs.generate.v1",
+            "providerIdentifier": "deepseek",
+            "modelIdentifier": "deepseek-chat",
+            "configuredModelIdentifier": None,
+            "hostingClass": "CLOUD",
+            "residencyRegions": ["global"],
+            "supportedLanguages": ["en", "fr"],
+            "permittedDataClassifications": ["INTERNAL"],
+            "capabilities": ["CHAT", "STRUCTURED_OUTPUT"],
+            "contextWindowTokens": 64000,
+            "qualifiedProfiles": [profile_key, nexavenu_profile_key],
+            "qualityScores": {"grounded_recommendation_score": 0.86},
+            "estimatedLatencyMs": 7000,
+            "estimatedCostUsd": 0.02,
+            "operationalStatus": "UNAVAILABLE",
             "activeFrom": "2026-06-01T00:00:00Z",
             "activeUntil": None,
         },
@@ -758,7 +797,7 @@ def build_fixture() -> dict[str, Any]:
         "businessUnit": None,
         "profileKey": profile_key,
         "permittedPurposes": ["RESOLVE_HOSPITAL_OPERATION_RISK"],
-        "candidatePriority": [primary_key, fallback_key],
+        "candidatePriority": [primary_key, fallback_key, deepseek_key],
         "requiredChecks": [
             "TENANT",
             "BUSINESS_UNIT",
@@ -778,6 +817,12 @@ def build_fixture() -> dict[str, Any]:
         "fallbackMode": "QUALIFIED_ONLY",
         "effectiveFrom": "2026-06-01T00:00:00Z",
         "effectiveUntil": None,
+    }
+    nexavenu_policy = {
+        **policy,
+        "policyKey": "nexavenu-revenue-routing-mauritius",
+        "profileKey": nexavenu_profile_key,
+        "permittedPurposes": ["QUALIFY_B2B_REVENUE_PIPELINE"],
     }
     request = {
         "contractVersion": CONTRACT_VERSION,
@@ -825,7 +870,7 @@ def build_fixture() -> dict[str, Any]:
             False,
             "DATA_CLASSIFICATION_NOT_PERMITTED",
         )
-        for deployment_key in (primary_key, fallback_key)
+        for deployment_key in (primary_key, fallback_key, deepseek_key)
     ]
     decisions = [
         {
@@ -928,6 +973,7 @@ def build_fixture() -> dict[str, Any]:
         "facts": [
             "Patient complaints, blocked discharge rooms, low pharmacy stock, delayed lab acknowledgement, and billing holds are all active in the same morning surge window."
         ],
+        "assumptions": [],
         "inferences": [
             "The safest next step is an operations action plan, not a clinical decision: coordinate rooms, porter work, pharmacy restock or transfer, partner escalation, billing review, and internal alerts after manager approval."
         ],
@@ -941,6 +987,125 @@ def build_fixture() -> dict[str, Any]:
             "evidence-pharmacy-hospital-001",
             "evidence-partner-hospital-001",
             "evidence-billing-hospital-001",
+        ],
+        "requiresHumanApproval": True,
+    }
+    nexavenu_request = {
+        **request,
+        "agentKey": "nexavenu-revenue-orchestrator",
+        "subagentKey": "b2b-revenue-qualification",
+        "purpose": "QUALIFY_B2B_REVENUE_PIPELINE",
+        "profileKey": nexavenu_profile_key,
+        "requiredContextTokens": 7200,
+        "maximumLatencyMs": 9000,
+        "maximumCostUsd": 0.09,
+    }
+    nexavenu_decision = {
+        "contractVersion": CONTRACT_VERSION,
+        "correlationId": CORRELATION,
+        "policyKey": nexavenu_policy["policyKey"],
+        "policyVersion": nexavenu_policy["version"],
+        "profileKey": nexavenu_profile_key,
+        "profileVersion": nexavenu_profile["version"],
+        "decision": "SELECTED",
+        "selectedDeploymentKey": primary_key,
+        "selectedDeploymentVersion": deployments[0]["version"],
+        "fallback": False,
+        "fallbackFromDeploymentKey": None,
+        "checks": [
+            check(primary_key, name, True, "QUALIFIED")
+            for name in nexavenu_policy["requiredChecks"]
+        ],
+        "decidedAt": "2026-06-10T09:05:11Z",
+    }
+    nexavenu_generate_request = {
+        "contractVersion": CONTRACT_VERSION,
+        "correlationId": CORRELATION,
+        "tenantKey": TENANT,
+        "userId": "integration-user-001",
+        "purpose": "QUALIFY_B2B_REVENUE_PIPELINE",
+        "agentKey": "nexavenu-revenue-orchestrator",
+        "profileKey": nexavenu_profile_key,
+        "profileVersion": nexavenu_profile["version"],
+        "promptVersion": "nexavenu-revenue-recommendation-prompt-1.0.0",
+        "retrievalVersion": "nexavenu-revenue-context-1.0.0",
+        "messages": [
+            {
+                "role": "SYSTEM",
+                "content": (
+                    "Separate B2B revenue facts, contact-sourced assumptions, "
+                    "inferences, and governed recommendations. Cite lead "
+                    "source, buyer education, champion map, discovery readiness, "
+                    "close plan, retention risk, and outcome evidence. Never "
+                    "present private diagnostic signal as public proof, and do "
+                    "not execute external outreach."
+                ),
+            },
+            {
+                "role": "USER",
+                "content": (
+                    "Recommend the next governed actions for the Nexavenu "
+                    "Revenue Intelligence and Champion Nurture Tower."
+                ),
+            },
+        ],
+        "context": {
+            "dataClassification": "CONFIDENTIAL",
+            "evidenceIds": [
+                "evidence-nexavenu-lead-source-001",
+                "evidence-nexavenu-education-gap-001",
+                "evidence-nexavenu-buying-committee-001",
+                "evidence-nexavenu-readiness-001",
+                "evidence-nexavenu-close-plan-001",
+                "evidence-nexavenu-retention-risk-001",
+                "evidence-nexavenu-outcome-001",
+            ],
+            "sourceContentHashes": [
+                "sha256:15ec846204c98c2dcd963a904d85633b5b0ad3bb7b8d44e4b0582ac3f592f4d9",
+                "sha256:a79d23357b2e5c0e5f11b9a5f4ea65cffd02971e8229b107896bc55d5672ed3d",
+                "sha256:5c81292ae1d9a73de4219c06a230a31cd3a7d08e0477095edb1b49241dcd46a5",
+                "sha256:45ffe60a85a761be8db5fae6ca1858ad7ae8786770b100ffb4ef9121ac3bcfe5",
+                "sha256:cc8225815cd95c3a2ddbf4b8571503137a96ca3449d35fe6cf41e1429f05016d",
+                "sha256:8733ad175aa9a44fdc16c22bf553e2fecfc2421145b1357e7f0a3132f83bbd67",
+                "sha256:82a2d3f5e30cbdeb5a48be25c05a822d85101593452e443074a91441cde34644",
+            ],
+        },
+        "responseSchema": response_schema,
+        "invocationPolicy": {
+            "maximumOutputTokens": 1400,
+            "temperature": 0.1,
+            "retainContent": False,
+            "requireCitations": True,
+        },
+    }
+    nexavenu_output = {
+        "facts": [
+            "Synthetic prospect has ICP score 72/100 and is engaged through webinar, outbound, and landing-page touches.",
+            "Buyer education gaps remain around system inventory, executive decision owner, budget range, and AI-to-process translation.",
+            "Operations manager is likely champion; CFO and CIO are high-influence buyers; executive sponsor and data owner are missing.",
+            "Discovery readiness is 48/100 with handoff gate HOLD.",
+        ],
+        "assumptions": [
+            "Contact-sourced signal suggests lead quality and buyer education need stronger system support; treat as private diagnostic assumption, not public proof.",
+            "Contact-sourced signal suggests long discovery should be compressed with readiness gates before senior solution-consultant handoff.",
+        ],
+        "inferences": [
+            "The lead is promising but should remain in nurture until stakeholder, budget, system inventory, and success metric gaps are resolved.",
+            "Champion enablement and content sequencing should precede CFO/CIO alignment.",
+            "Retention risk should be monitored after fulfillment because previous loyalty can coexist with new executive dissatisfaction.",
+        ],
+        "recommendation": (
+            "Route a champion-nurture plan for human approval: send readiness and MuleSoft education content, equip the operations champion, request system inventory and success metrics, wait for readiness score above 70 before solution-consultant handoff, and create a retention review for the existing-customer risk. Expected outcomes are qualified discovery, protected solution-consultant time, champion-equipped CFO/CIO alignment, and early retention recovery."
+        ),
+        "confidence": 0.83,
+        "evidenceIds": [
+            "evidence-nexavenu-lead-source-001",
+            "evidence-nexavenu-education-gap-001",
+            "evidence-nexavenu-buying-committee-001",
+            "evidence-nexavenu-readiness-001",
+            "evidence-nexavenu-close-plan-001",
+            "evidence-nexavenu-retention-risk-001",
+            "evidence-nexavenu-outcome-001",
         ],
         "requiresHumanApproval": True,
     }
@@ -973,8 +1138,23 @@ def build_fixture() -> dict[str, Any]:
             "outputSchemaValid": True,
             "safetyStatus": "PASSED",
         },
+        {
+            "contractVersion": CONTRACT_VERSION,
+            "correlationId": CORRELATION,
+            "invocationId": "invocation-alpha-nexavenu-001",
+            "profileKey": nexavenu_profile_key,
+            "profileVersion": nexavenu_profile["version"],
+            "deploymentKey": primary_key,
+            "deploymentVersion": deployments[0]["version"],
+            "adapterInterfaceVersion": "hfs.generate.v1",
+            "output": nexavenu_output,
+            "finishReason": "STOP",
+            "outputSchemaValid": True,
+            "safetyStatus": "PASSED",
+        },
     ]
     input_hash = content_hash(generate_request)
+    nexavenu_input_hash = content_hash(nexavenu_generate_request)
     audits = [
         {
             "contractVersion": CONTRACT_VERSION,
@@ -1075,6 +1255,53 @@ def build_fixture() -> dict[str, Any]:
         },
         {
             "contractVersion": CONTRACT_VERSION,
+            "invocationId": "invocation-alpha-nexavenu-001",
+            "correlationId": CORRELATION,
+            "tenantKey": TENANT,
+            "userId": nexavenu_generate_request["userId"],
+            "purpose": nexavenu_generate_request["purpose"],
+            "agentKey": nexavenu_generate_request["agentKey"],
+            "profileKey": nexavenu_profile_key,
+            "profileVersion": nexavenu_profile["version"],
+            "policyKey": nexavenu_policy["policyKey"],
+            "policyVersion": nexavenu_policy["version"],
+            "selectedDeploymentKey": primary_key,
+            "selectedDeploymentVersion": deployments[0]["version"],
+            "promptVersion": nexavenu_generate_request["promptVersion"],
+            "retrievalVersion": nexavenu_generate_request[
+                "retrievalVersion"
+            ],
+            "inputHash": nexavenu_input_hash,
+            "outputHash": content_hash(nexavenu_output),
+            "evidenceIds": nexavenu_generate_request["context"][
+                "evidenceIds"
+            ],
+            "attempts": [
+                {
+                    "sequence": 1,
+                    "deploymentKey": primary_key,
+                    "deploymentVersion": deployments[0]["version"],
+                    "adapterKey": deployments[0]["adapterKey"],
+                    "startedAt": "2026-06-10T09:05:12Z",
+                    "completedAt": "2026-06-10T09:05:14Z",
+                    "status": "SUCCEEDED",
+                    "retryable": False,
+                    "failureCode": None,
+                }
+            ],
+            "fallbackUsed": False,
+            "inputTokens": 1120,
+            "outputTokens": 214,
+            "latencyMs": 2400,
+            "costUsd": 0.038,
+            "safetyStatus": "PASSED",
+            "outputSchemaValid": True,
+            "retentionMode": "HASHES_ONLY",
+            "status": "SUCCEEDED",
+            "completedAt": "2026-06-10T09:05:14Z",
+        },
+        {
+            "contractVersion": CONTRACT_VERSION,
             "invocationId": "invocation-no-qualified-001",
             "correlationId": CORRELATION,
             "tenantKey": TENANT,
@@ -1121,20 +1348,25 @@ def build_fixture() -> dict[str, Any]:
 
     return {
         "contractVersion": CONTRACT_VERSION,
-        "profiles": [profile],
+        "profiles": [profile, nexavenu_profile],
         "deployments": deployments,
-        "policies": [policy],
+        "policies": [policy, nexavenu_policy],
         "routingRequests": {
             "primary": request,
             "fallback": fallback_request,
             "noQualifiedDeployment": restricted_request,
+            "nexavenuRevenue": nexavenu_request,
         },
         "routingDecisions": {
             "primary": decisions[0],
             "fallback": decisions[1],
             "noQualifiedDeployment": decisions[2],
+            "nexavenuRevenue": nexavenu_decision,
         },
         "generateRequest": generate_request,
+        "generateRequests": {
+            "nexavenuRevenue": nexavenu_generate_request,
+        },
         "normalizedResponses": responses,
         "invocationAudits": audits,
     }

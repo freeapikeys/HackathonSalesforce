@@ -24,6 +24,7 @@ FIXTURE_PATH = (
 HOSPITAL_PURPOSE = "RESOLVE_HOSPITAL_OPERATION_RISK"
 HOSPITAL_MODEL_PROFILE = "hospital_action_reasoning"
 RETAIL_MODEL_PROFILE = "north-star-retail-recommendation"
+NEXAVENU_MODEL_PROFILE = "nexavenu-revenue-recommendation"
 
 
 def require(condition: bool, message: str) -> None:
@@ -98,6 +99,11 @@ def main() -> int:
             require(
                 set(fact["evidenceIds"]) <= citation_ids,
                 f"{name}: fact cites evidence not returned to the user.",
+            )
+        for assumption in response["assumptions"]:
+            require(
+                set(assumption["evidenceIds"]) <= citation_ids,
+                f"{name}: assumption cites evidence not returned to the user.",
             )
         for inference in response["inferences"]:
             require(
@@ -246,6 +252,7 @@ def main() -> int:
             require(response["refusal"] is not None, f"{name}: refusal missing.")
             require(
                 not response["facts"]
+                and not response["assumptions"]
                 and not response["inferences"]
                 and not response["citations"]
                 and response["recommendation"] is None
@@ -285,6 +292,7 @@ def main() -> int:
         "hospital-operations-action-plan",
         "hospital-missing-capacity-evidence",
         "hospital-clinical-refusal",
+        "nexavenu-revenue-intelligence-recommendation",
     }
     require(
         required_scenarios <= scenario_names,
@@ -301,9 +309,33 @@ def main() -> int:
                 if has_hospital_reasoning
                 else RETAIL_MODEL_PROFILE
             )
+            if scenario["name"] == "nexavenu-revenue-intelligence-recommendation":
+                expected_profile = NEXAVENU_MODEL_PROFILE
             require(
                 recommendation["modelProfile"] == expected_profile,
                 f"{scenario['name']}: recommendation used an unexpected model profile.",
+            )
+        if scenario["name"] == "nexavenu-revenue-intelligence-recommendation":
+            response = scenario["response"]
+            fact_ids = {fact["factId"] for fact in response["facts"]}
+            require(
+                {
+                    "fact-nexavenu-icp-score",
+                    "fact-nexavenu-education-gaps",
+                    "fact-nexavenu-champion-map",
+                    "fact-nexavenu-readiness-score",
+                }
+                <= fact_ids,
+                "Nexavenu scenario is missing required revenue facts.",
+            )
+            require(
+                response["assumptions"],
+                "Nexavenu scenario must separate contact-sourced assumptions.",
+            )
+            require(
+                response["recommendation"]
+                and response["recommendation"]["requiresHumanApproval"],
+                "Nexavenu scenario must leave protected actions behind human approval.",
             )
     inventory_waste = next(
         scenario

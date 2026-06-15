@@ -1,0 +1,54 @@
+{
+  "specversion": "1.0",
+  "id": "00000000-0000-4000-8000-000000000030",
+  "source": "urn:hfs:source:nexavenu-revenue",
+  "type": "io.github.freeapikeys.hfs.nexavenu.revenue.buyer.education.gap.detected.v1",
+  "subject": "prospect:SYNTH-LIFTOPS-MANUFACTURING",
+  "time": "2026-06-10T08:10:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://freeapikeys.github.io/HackathonSalesforce/events/event-envelope-v1.schema.json",
+  "hfstenantid": "demo-mauritius",
+  "hfsschemaversion": "1.0.0",
+  "hfscorrelationid": "30000000-0000-4000-8000-000000000001",
+  "hfscausationid": "00000000-0000-4000-8000-000000000029",
+  "hfsidempotencykey": "nexavenu-education-gap-detected-v1",
+  "hfssourcerecordid": "nexavenu-revenue-event-education-gap-001",
+  "hfssourcesequence": 2,
+  "hfsobservedat": "2026-06-10T08:10:03Z",
+  "hfscontenthash": "sha256:a79d23357b2e5c0e5f11b9a5f4ea65cffd02971e8229b107896bc55d5672ed3d",
+  "data": {
+    "recordtype": "Issue",
+    "operation": "UPDATE",
+    "businesskey": "ISSUE-NEXAVENU-PIPELINE-LEAK-001",
+    "effectiveat": "2026-06-10T08:10:00Z",
+    "attributes": {
+      "eventcode": "NEXAVENU_BUYER_EDUCATION_GAP_DETECTED",
+      "pipeline_stage": "lead_nurture",
+      "buyer_journey_stage": "struggle_to_education",
+      "content_touches": [
+        {
+          "asset": "AI readiness checklist",
+          "status": "opened",
+          "insight": "Prospect clicked data-governance section twice."
+        },
+        {
+          "asset": "MuleSoft modernization explainer",
+          "status": "not_sent",
+          "insight": "Integration scope is still implicit."
+        },
+        {
+          "asset": "Field-service transformation case story",
+          "status": "recommended",
+          "insight": "Industry fit is strong enough for nurture."
+        }
+      ],
+      "education_gaps": [
+        "No current-system inventory",
+        "No named executive decision owner",
+        "No budget range",
+        "AI ask not translated into process, data, or integration requirements"
+      ],
+      "recommended_nurture_action": "Send readiness checklist, integration explainer, and field-service case story before assigning senior solution-consultant time."
+    }
+  }
+}

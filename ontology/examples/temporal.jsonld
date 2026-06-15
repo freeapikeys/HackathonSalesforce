@@ -1,0 +1,103 @@
+{
+  "@context": "../context.jsonld",
+  "@graph": [
+    {
+      "id": "https://example.org/data/organization/acme",
+      "type": "Organization",
+      "identifier": "org-acme",
+      "sourceSystem": "crm",
+      "sourceRecordId": "account-001",
+      "recordedAt": "2026-06-01T08:00:00Z"
+    },
+    {
+      "id": "https://example.org/data/person/alice",
+      "type": "Person",
+      "identifier": "person-alice",
+      "sourceSystem": "crm",
+      "sourceRecordId": "contact-001",
+      "recordedAt": "2026-06-01T08:00:00Z"
+    },
+    {
+      "id": "https://example.org/data/agent/crm",
+      "type": "SourceAgent",
+      "preferredLabel": "CRM source system"
+    },
+    {
+      "id": "https://example.org/data/activity/crm-sync-2026-06-01",
+      "type": "SourceActivity",
+      "preferredLabel": "CRM sync 2026-06-01",
+      "associatedWith": "https://example.org/data/agent/crm"
+    },
+    {
+      "id": "https://example.org/data/activity/crm-sync-2026-06-05",
+      "type": "SourceActivity",
+      "preferredLabel": "CRM sync 2026-06-05",
+      "associatedWith": "https://example.org/data/agent/crm"
+    },
+    {
+      "id": "https://example.org/data/activity/crm-sync-2026-06-08",
+      "type": "SourceActivity",
+      "preferredLabel": "CRM sync 2026-06-08",
+      "associatedWith": "https://example.org/data/agent/crm"
+    },
+    {
+      "id": "https://example.org/data/relationship/alice-acme",
+      "type": "Relationship",
+      "identifier": "relationship-alice-acme",
+      "sourceSystem": "crm",
+      "sourceRecordId": "relationship-001",
+      "recordedAt": "2026-06-01T08:00:00Z",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "subjectEntity": "https://example.org/data/person/alice",
+      "objectEntity": "https://example.org/data/organization/acme",
+      "relationshipType": "hfs:CustomerRelationship"
+    },
+    {
+      "id": "https://example.org/data/assertion/status-active-original",
+      "type": "Assertion",
+      "identifier": "assertion-status-active-original",
+      "sourceSystem": "crm",
+      "sourceRecordId": "relationship-status-001",
+      "recordedAt": "2026-06-01T08:01:00Z",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "assertionSubject": "https://example.org/data/relationship/alice-acme",
+      "assertionPredicate": "hfs:relationshipStatus",
+      "assertionObject": "ACTIVE",
+      "assertionKind": "hfs:SourceClaim",
+      "generatedBy": "https://example.org/data/activity/crm-sync-2026-06-01",
+      "attributedTo": "https://example.org/data/agent/crm"
+    },
+    {
+      "id": "https://example.org/data/assertion/status-paused-late",
+      "type": "Assertion",
+      "identifier": "assertion-status-paused-late",
+      "sourceSystem": "crm",
+      "sourceRecordId": "relationship-status-002",
+      "recordedAt": "2026-06-05T09:30:00Z",
+      "validFrom": "2026-05-20T00:00:00Z",
+      "assertionSubject": "https://example.org/data/relationship/alice-acme",
+      "assertionPredicate": "hfs:relationshipStatus",
+      "assertionObject": "PAUSED",
+      "assertionKind": "hfs:SourceClaim",
+      "generatedBy": "https://example.org/data/activity/crm-sync-2026-06-05",
+      "attributedTo": "https://example.org/data/agent/crm",
+      "supersedes": "https://example.org/data/assertion/status-active-original"
+    },
+    {
+      "id": "https://example.org/data/assertion/status-active-restored",
+      "type": "Assertion",
+      "identifier": "assertion-status-active-restored",
+      "sourceSystem": "crm",
+      "sourceRecordId": "relationship-status-003",
+      "recordedAt": "2026-06-08T10:00:00Z",
+      "validFrom": "2026-06-08T09:00:00Z",
+      "assertionSubject": "https://example.org/data/relationship/alice-acme",
+      "assertionPredicate": "hfs:relationshipStatus",
+      "assertionObject": "ACTIVE",
+      "assertionKind": "hfs:SourceClaim",
+      "generatedBy": "https://example.org/data/activity/crm-sync-2026-06-08",
+      "attributedTo": "https://example.org/data/agent/crm",
+      "supersedes": "https://example.org/data/assertion/status-paused-late"
+    }
+  ]
+}

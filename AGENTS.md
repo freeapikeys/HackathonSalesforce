@@ -12,12 +12,17 @@ Before starting work:
 5. Read the relevant contract or source files for the surface you are changing.
 6. Run `bd prime` and `bd ready` if Beads is installed.
 7. If Beads is not installed, use the checklist in `ROADMAP.md` and say which
-   checklist item you are advancing.
+8. Read `docs/closed-loop-intelligence-rm.md`.
+9. Read `docs/architecture.md`.
+10. Read the relevant contract or source files for the surface you are changing.
+11. Run `bd prime` and `bd ready` if Beads is installed.
+12. If Beads is not installed, use the checklist in `ROADMAP.md` and say which
+    checklist item you are advancing.
 
-The roadmap is the visible hackathon checklist. Beads is useful for dependency
+The roadmap is the visible branch checklist. Beads is useful for dependency
 tracking, but it is not required to understand the build.
 
-## North Star Context
+## Branch Context
 
 North Star is the active product. It is a Salesforce, Agentforce, and MuleSoft
 operations command center that turns messy business signals into evidence-backed
@@ -93,6 +98,25 @@ The visible demo should feel like one coordinated product, not many disconnected
 chatbots. Agents may be implemented as Agentforce topics, prompt profiles,
 deterministic reasoning modules, or action contracts, but their responsibilities
 are:
+This private local branch is the active product direction. It is a closed-loop
+enterprise intelligence and relationship-management system that coordinates
+evidence, recommendations, human approval, actions, and outcomes across business
+relationships.
+
+The supermarket command-center material is a demo vertical, not the product
+boundary. Keep shared contracts adaptable to customers, employees, managers,
+suppliers, partners, subsidiaries, regulators, shareholders, and other business
+relationships.
+
+Do not publish this branch, push commits, open pull requests, or otherwise make
+this work visible to collaborators until the owner explicitly approves it.
+
+Do not hard-code the MVP to burgers, supermarkets, or any single relationship
+type. Retail can be the first scenario, but object names, fixtures, labels,
+actions, and Agentforce instructions should preserve the reusable relationship
+intelligence loop.
+
+The retail demo agents are:
 
 - North Star Orchestrator Topic;
 - Evidence and Context Agent;
@@ -138,6 +162,7 @@ Close a bead only after its acceptance checks pass. If you change Beads, run
 
 - Use plain operations language that hospital, hotel, airport, and banking
   judges can understand.
+- Use plain business and technical language.
 - Preserve source records and evidence.
 - Distinguish facts, claims, inferences, recommendations, decisions, actions,
   and outcomes.
@@ -151,6 +176,12 @@ Close a bead only after its acceptance checks pass. If you change Beads, run
 - Approval means a business manager role in the MVP, not a Salesforce admin and
   not a developer approving implementation work. A command-center button or
   Salesforce approval/status record is acceptable for the hackathon demo.
+- Slack, WhatsApp, email, supplier, customer, employee, partner, reorder,
+  markdown, case, and task write-backs are protected external actions unless
+  explicitly scoped as local demo mocks.
+- Approval means the responsible business role in the MVP, not a Salesforce
+  admin and not a developer approving implementation work. A command-center
+  button or Salesforce approval/status record is acceptable for the demo.
 - Agents operate with the current user's permissions and purpose restrictions.
 - Prefer existing Salesforce, Agentforce, MuleSoft, model-gateway, LWC, and
   harness patterns before adding new architecture.
@@ -161,9 +192,11 @@ Close a bead only after its acceptance checks pass. If you change Beads, run
 1. **Scope:** identify the roadmap checkbox being advanced.
 2. **Trace:** identify the source data, evidence, action, owner, and failure
    path.
-3. **Assemble:** implement the smallest complete behavior.
-4. **Verify:** run the focused checks and record what passed.
-5. **Update:** keep docs and checklist status honest.
+3. **Scope:** identify the roadmap checkbox or Beads task being advanced.
+4. **Trace:** identify the source data, evidence, action, owner, and failure path.
+5. **Assemble:** implement the smallest complete behavior.
+6. **Verify:** run the focused checks and record what passed.
+7. **Update:** keep docs and checklist status honest.
 
 Use language models for interpretation and recommendations, not for invariants
 that must always execute deterministically.
@@ -171,8 +204,9 @@ that must always execute deterministically.
 ## Documentation
 
 - Update `ROADMAP.md` when a checklist item is truly complete.
-- Keep `docs/north-star-mvp.md` as the product brief.
-- Keep `docs/north-star-implementation-plan.md` as the practical build plan.
+- Keep `docs/closed-loop-intelligence-rm.md` as the branch product doctrine.
+- Treat `docs/north-star-mvp.md` as the retail demo vertical brief.
+- Treat `docs/north-star-implementation-plan.md` as the retail demo build plan.
 - Record architecture decisions in `docs/decisions/` only when a real contract
   decision changes.
 - Never commit secrets, personal memory, downloaded copyrighted source files,

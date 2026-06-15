@@ -231,3 +231,24 @@ The MuleSoft boundary must not expose actions for diagnosis, treatment, dosage,
 triage, or clinical priority decisions. If a request attempts to execute one of
 those actions, the correct result is denial or validation failure with a safe
 manager/clinician routing message.
+
+## Nexavenu Revenue Mock Actions
+
+The Nexavenu jury-gift scenario uses the same approved-action execution path for
+revenue operations:
+
+- create nurture task;
+- draft champion email;
+- update opportunity stage;
+- assign content asset;
+- create solution-consultant handoff;
+- capture retention/ascension outcome.
+
+Each action is still a protected write-back. The runtime records only actions
+with a matching approved action ID and returns correlated source-record and
+outcome evidence for the command center.
+
+It deliberately keeps adapters behind Python interfaces so the same contract
+tests can be applied to Mule flows and real connectors without embedding mock
+behavior in production configuration. The runtime is an integration test
+harness, not a substitute for an Anypoint deployment.

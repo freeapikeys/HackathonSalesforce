@@ -1,11 +1,18 @@
 import { api, LightningElement } from "lwc";
 import loadCommandCenter from "@salesforce/apex/HFS_RelationshipController.loadCommandCenter";
 import decideApproval from "@salesforce/apex/HFS_RelationshipController.decideApproval";
-import { getUiState, UI_STATE_VERSION } from "./fixtures";
+import requestCorrectionReview from "@salesforce/apex/HFS_RelationshipController.requestCorrectionReview";
+import {
+  DEFAULT_PROFILE_KEY,
+  getProfile,
+  getUiState,
+  UI_STATE_VERSION
+} from "./fixtures";
 import { mapCommandCenterPayload, mapTransportError } from "./stateAdapter";
 
 export default class HfsRelationshipCommandCenter extends LightningElement {
   _stateName = "ready";
+  _profileKey = DEFAULT_PROFILE_KEY;
   _connected = false;
   @api recordId;
   @api workItemId;
@@ -35,6 +42,22 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
   }
 
   @api
+  get profileKey() {
+    return this._profileKey;
+  }
+
+  set profileKey(value) {
+    const nextProfileKey = value || DEFAULT_PROFILE_KEY;
+    if (nextProfileKey === this._profileKey) {
+      return;
+    }
+    this._profileKey = nextProfileKey;
+    if (this._connected) {
+      this.loadState();
+    }
+  }
+
+  @api
   refresh() {
     this.loadState();
   }
@@ -55,22 +78,22 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
       this.commandError = null;
     }
     if (this.mockMode) {
-      this.state = getUiState(this._stateName);
+      this.state = getUiState(this._stateName, this.profileKey);
       return;
     }
 
-    this.state = getUiState("loading");
+    this.state = getUiState("loading", this.profileKey);
     const effectiveWorkItemId = this.workItemId || this.recordId;
     const correlationId = this.createCorrelationId();
     if (!effectiveWorkItemId || !this.tenantKey) {
-      this.state = {
+      this.state = this.withProfile({
         ...getUiState("error"),
         errorCode: "INVALID_CONFIGURATION",
         message:
           "Configure a tenant key and provide an HFS work item record before loading live context.",
         correlationId,
         retryable: false
-      };
+      });
       return;
     }
 
@@ -87,9 +110,11 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
           timelineLimit: 100
         }
       });
-      this.state = mapCommandCenterPayload(payload, this.purpose);
+      this.state = this.withProfile(
+        mapCommandCenterPayload(payload, this.purpose)
+      );
     } catch (error) {
-      this.state = mapTransportError(error, correlationId);
+      this.state = this.withProfile(mapTransportError(error, correlationId));
     }
   }
 
@@ -175,6 +200,82 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
       return "Speech capture needs retry";
     }
     return "Browser speech capture ready";
+  }
+
+  get profileOptions() {
+    return this.state.profileOptions || [];
+  }
+
+  get hasProfileOptions() {
+    return this.profileOptions.length > 1;
+  }
+
+  get operatingLayer() {
+    return (
+      this.state.case?.operatingLayer || {
+        kpis: [],
+        trendTitle: "Operating forecast",
+        trend: [],
+        brief: [],
+        agents: [],
+        channels: []
+      }
+    );
+  }
+
+  get operatingKpis() {
+    return this.operatingLayer.kpis;
+  }
+
+  get operatingTrendTitle() {
+    return this.operatingLayer.trendTitle;
+  }
+
+  get operatingTrend() {
+    return this.operatingLayer.trend;
+  }
+
+  get operatingBrief() {
+    return this.operatingLayer.brief;
+  }
+
+  get operatingAgents() {
+    return this.operatingLayer.agents;
+  }
+
+  get operatingChannels() {
+    return this.operatingLayer.channels;
+  }
+
+  get hasRecommendationAssumptions() {
+    return Boolean(this.state.case?.recommendation?.assumptions?.length);
+  }
+
+  get hasRelationshipHistory() {
+    return Boolean(this.state.case?.relationshipHistory?.length);
+  }
+
+  get hasIdentityLinks() {
+    return Boolean(this.state.case?.identityLinks?.length);
+  }
+
+  get hasRelationshipContradictions() {
+    return Boolean(this.state.case?.relationshipContradictions?.length);
+  }
+
+  get hasCorrectionActions() {
+    return Boolean(this.state.case?.correctionActions?.length);
+  }
+
+  get disableCorrectionControls() {
+    return !this.state.permissions.canRequestCorrection;
+  }
+
+  withProfile(state) {
+    return {
+      ...state,
+      profile: getProfile(this.profileKey)
+    };
   }
 
   async handleApprove() {
@@ -295,6 +396,74 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
     }
   }
 
+  handleProfileSelect(event) {
+    const selectedProfileKey = event.currentTarget.dataset.profileKey;
+    if (!selectedProfileKey || selectedProfileKey === this.profileKey) {
+      return;
+    }
+    this._profileKey = selectedProfileKey;
+    this.dispatchEvent(
+      new CustomEvent("profileselect", {
+        detail: {
+          profileKey: selectedProfileKey,
+          stateVersion: this.state.stateVersion
+        }
+      })
+    );
+    this.loadState();
+  }
+
+  async handleCorrectionRequest(event) {
+    const actionId = event.currentTarget.dataset.actionId;
+    const action = (this.state.case.correctionActions || []).find(
+      (candidate) => candidate.id === actionId
+    );
+    this.dispatchEvent(
+      new CustomEvent("relationshipcorrectionrequest", {
+        detail: {
+          action,
+          correlationId: this.state.correlationId,
+          stateVersion: this.state.stateVersion
+        }
+      })
+    );
+    if (this.mockMode || !action || this.disableCorrectionControls) {
+      return;
+    }
+
+    this.commandMessage = null;
+    this.commandError = null;
+    try {
+      const result = await requestCorrectionReview({
+        command: {
+          contractVersion: UI_STATE_VERSION,
+          correlationId: this.createCorrelationId(),
+          tenantKey: this.tenantKey,
+          purpose: this.purpose,
+          externalKey: `correction-${action.id}`,
+          sourceRelationshipId: action.sourceRelationshipId,
+          sourceParticipantId: action.sourceParticipantId,
+          targetLabel: action.target,
+          reason: action.reason
+        }
+      });
+      if (!result?.success) {
+        const error = result?.errors?.[0];
+        this.commandError =
+          error?.message || "The correction review was not accepted.";
+        return;
+      }
+      await this.loadState(true);
+      this.commandMessage =
+        "Correction review work item created and approval requested.";
+    } catch (error) {
+      this.commandError =
+        error?.body?.message ||
+        error?.message ||
+        "The correction review could not be requested.";
+    }
+  }
+
   dispatchDecision(decision) {
     this.dispatchEvent(
       new CustomEvent("approvalaction", {
@@ -327,7 +496,7 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
           purpose: this.purpose,
           approvalId: this.state.case.approval.id,
           decisionStatus,
-          decisionNotes: `${decisionStatus} from the North Star command center.`
+          decisionNotes: `${decisionStatus} from the ${this.state.profile.shortName} command center.`
         }
       });
       if (!result?.success) {

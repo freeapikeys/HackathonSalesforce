@@ -151,6 +151,33 @@ The initial executable contract lives in `ontology/`. It includes the core OWL
 vocabulary, controlled SKOS concepts, SHACL shapes, a JSON-LD context, and
 positive and negative validation fixtures.
 
+`ontology/mappings/semantic-mappings-v1.json` is the executable bridge between
+the contracts. It maps:
+
+- event envelope paths and source-local fixture attributes;
+- event type families;
+- generated Salesforce fields, including field-set fields;
+- intended Data 360 objects and fields;
+- ontology classes and properties.
+
+Run `npm run check:mappings` to fail on missing or duplicate source paths,
+fixture attributes, event type coverage, or generated Salesforce field targets.
+
+`ontology/examples/temporal.jsonld` and `npm run check:temporal` validate the
+bitemporal assertion rule. A query always states both:
+
+- the business time being asked about;
+- the recorded-time cutoff representing what the system knew then.
+
+This lets the system answer "what is our current best-known state for that date?"
+and "what did we believe on that date before later evidence arrived?" without
+deleting late or superseded claims.
+
+`npm run verify:shared-semantics` is the C02 checkpoint harness. It runs the
+ontology, mapping, and temporal validators and emits machine-readable counts for
+source terminology mappings, source assertions, supersession edges, Salesforce
+field mappings, event attribute mappings, and event type patterns.
+
 A separate graph database is not required for the initial vertical slice.
 Introduce one only when measured traversal, inference, or scale requirements
 cannot be satisfied by the platform architecture.

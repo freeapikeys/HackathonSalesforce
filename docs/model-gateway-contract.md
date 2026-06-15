@@ -27,6 +27,11 @@ his pretrained multilingual/voice models or DeepSeek through configuration. The
 gateway contract stays the same: provider output is advisory, audited, and
 policy-bound. It must not approve protected actions, execute external actions,
 make clinical decisions, decide refunds, or bypass evidence retention.
+North Star callers should request logical profiles such as
+`north-star-retail-recommendation`. Jury-gift callers can request similarly
+logical profiles such as `nexavenu-revenue-recommendation`. They must not
+request a provider, a model name, or a product-specific profile such as a
+burger-only model.
 
 ## Deterministic Routing
 
@@ -55,6 +60,14 @@ Sensitive prompt or response content is not required in the audit record.
 North Star invocation audit should also record stable keys or hashes for the
 department, location, resource, partner, complaint cluster, capacity record,
 billing case, recommendation type, and action type when present in accessible
+Normalized recommendation outputs separate facts, assumptions, inferences,
+recommendation text, confidence, cited evidence, and human-approval
+requirements. This is required for private diagnostic signal: a contact-sourced
+assumption can inform a recommendation without being promoted into source truth.
+
+North Star invocation audit should also record the selected product external key,
+product category, store key, supplier key, source evidence identifiers,
+recommendation type, and action type when these are present in accessible
 context. Record identifiers should be stable business keys or hashes where
 policy requires minimization.
 

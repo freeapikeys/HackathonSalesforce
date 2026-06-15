@@ -26,9 +26,12 @@ priority decisions.
 
 ## Grounding
 
-Version `1.0.0` returns separate collections for facts and inferences.
+Version `1.0.0` returns separate collections for facts, assumptions, and
+inferences.
 
 - Every fact cites one or more returned accessible evidence identifiers.
+- Every assumption cites returned accessible evidence and must be labeled as an
+  assumption rather than being promoted into source truth.
 - Every inference names its basis facts and confidence from zero to one.
 - Every recommendation cites returned evidence, records the logical model
   profile and invocation identifier, and sets `requiresHumanApproval = true`
@@ -58,6 +61,7 @@ Refusals are normal structured results, not prompt text.
 | `CLINICAL_DECISION`     | The request asks for diagnosis, treatment, dosage, or triage |
 
 Refusal responses contain no inaccessible facts, inferences, citations,
+Refusal responses contain no facts, assumptions, inferences, citations,
 recommendation, approval, or disclosed record identifiers.
 
 ## Salesforce Action Shape
@@ -83,6 +87,8 @@ refusal, error, and external-execution fields. `responseJson` is the canonical
 serialized `1.0.0` response and preserves the complete facts, inferences,
 citations, context coverage, recommendation, approval, refusal, error, and
 audit structure.
+assumptions, citations, recommendation, approval, refusal, error, and audit
+structure.
 
 The recommendation action returns only a normalized recommendation already
 persisted with a qualified provider-neutral model profile and invocation ID.

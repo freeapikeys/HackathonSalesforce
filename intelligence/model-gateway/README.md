@@ -14,8 +14,8 @@ The contract defines:
 - qualified fallback attempts;
 - invocation audit records.
 
-Two mock deployments implement the same `hfs.generate.v1` adapter interface.
-The scenario demonstrates primary selection, qualified fallback, and
+Two active mock deployments implement the same `hfs.generate.v1` adapter
+interface. The scenario demonstrates primary selection, qualified fallback, and
 fail-closed behavior when no deployment satisfies the data policy.
 
 For North Star, the same gateway should route hospital action
@@ -23,6 +23,25 @@ recommendations and message drafts through logical profiles. A hospital
 action request should include only accessible complaint, capacity, resource,
 partner, pharmacy stock, billing, staffing, approval, and outcome evidence. It
 should never select a provider or model by name from Agentforce or UI code.
+A disabled DeepSeek descriptor is also present so the router can prove that a
+cloud provider can be plugged into the same contract without changing
+Agentforce, UI, or prompt callers. It remains `UNAVAILABLE` in the demo
+fixtures. The reference adapter checks `DEEPSEEK_API_KEY` only after it is
+explicitly enabled and still fails closed instead of making a live paid call.
+Production DeepSeek use should sit behind Salesforce LLM Open Connector or an
+equivalent governed adapter with customer-approved credentials, budget, policy,
+and observability.
+
+For North Star, the same gateway should route retail recommendations and message
+drafts through logical profiles. A retail recommendation request should include
+only accessible product, store, supplier, batch, complaint, inventory,
+promotion, staff, and outcome evidence.
+
+The private jury-gift path also defines a `nexavenu-revenue-recommendation`
+profile. Its fixture separates revenue facts, contact-sourced assumptions,
+inferences, champion-nurture recommendations, cited evidence, and human approval
+requirements. Neither Agentforce nor UI code should select a provider or model
+by name.
 
 Run:
 

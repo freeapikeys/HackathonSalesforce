@@ -4,6 +4,7 @@ import unittest
 from copy import deepcopy
 
 from hfs_model_gateway import (
+    DeepSeekOpenAICompatibleAdapter,
     DeterministicRouter,
     MockAlphaAdapter,
     MockBetaAdapter,
@@ -42,16 +43,18 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         output = fixture["normalizedResponses"][0]["output"]
         alpha = MockAlphaAdapter(output, mode=alpha_mode)
         beta = MockBetaAdapter(output, mode=beta_mode)
+        deepseek = DeepSeekOpenAICompatibleAdapter()
         gateway = ModelGateway(
             contract=contract,
             router=router,
             adapters={
                 alpha.adapter_key: alpha,
                 beta.adapter_key: beta,
+                deepseek.adapter_key: deepseek,
             },
             clock=clock,
         )
-        return contract, gateway, alpha, beta
+        return contract, gateway, alpha, beta, deepseek
 
     def requests(self, contract):
         route = deepcopy(contract.fixture["routingRequests"]["primary"])
@@ -59,7 +62,7 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         return route, generate
 
     def test_primary_deployment_success_is_fully_audited(self) -> None:
-        contract, gateway, alpha, beta = self.build_gateway()
+        contract, gateway, alpha, beta, deepseek = self.build_gateway()
         route, generate = self.requests(contract)
 
         result = gateway.generate(route, generate)
@@ -81,9 +84,10 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         )
         self.assertEqual(1, alpha.calls)
         self.assertEqual(0, beta.calls)
+        self.assertEqual(0, deepseek.calls)
 
     def test_same_request_falls_back_to_second_qualified_adapter(self) -> None:
-        contract, gateway, alpha, beta = self.build_gateway(
+        contract, gateway, alpha, beta, deepseek = self.build_gateway(
             alpha_mode="unavailable"
         )
         route, generate = self.requests(contract)
@@ -100,11 +104,12 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         self.assertTrue(result.audit["attempts"][0]["retryable"])
         self.assertEqual(1, alpha.calls)
         self.assertEqual(1, beta.calls)
+        self.assertEqual(0, deepseek.calls)
 
     def test_policy_selected_fallback_is_recorded_without_calling_primary(
         self,
     ) -> None:
-        contract, gateway, alpha, beta = self.build_gateway()
+        contract, gateway, alpha, beta, deepseek = self.build_gateway()
         route, generate = self.requests(contract)
         route["unavailableDeploymentKeys"] = ["mock-alpha-primary"]
 
@@ -119,9 +124,10 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         )
         self.assertEqual(0, alpha.calls)
         self.assertEqual(1, beta.calls)
+        self.assertEqual(0, deepseek.calls)
 
     def test_invalid_primary_output_uses_qualified_fallback(self) -> None:
-        contract, gateway, alpha, beta = self.build_gateway(
+        contract, gateway, alpha, beta, deepseek = self.build_gateway(
             alpha_mode="invalid"
         )
         route, generate = self.requests(contract)
@@ -137,9 +143,10 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         self.assertTrue(result.audit["fallbackUsed"])
         self.assertEqual(1, alpha.calls)
         self.assertEqual(1, beta.calls)
+        self.assertEqual(0, deepseek.calls)
 
     def test_all_invalid_outputs_fail_closed(self) -> None:
-        contract, gateway, alpha, beta = self.build_gateway(
+        contract, gateway, alpha, beta, deepseek = self.build_gateway(
             alpha_mode="invalid",
             beta_mode="invalid",
         )
@@ -157,9 +164,10 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         self.assertIsNone(result.audit["outputHash"])
         self.assertEqual(1, alpha.calls)
         self.assertEqual(1, beta.calls)
+        self.assertEqual(0, deepseek.calls)
 
     def test_restricted_data_fails_before_any_adapter_call(self) -> None:
-        contract, gateway, alpha, beta = self.build_gateway()
+        contract, gateway, alpha, beta, deepseek = self.build_gateway()
         route, generate = self.requests(contract)
         route["dataClassification"] = "RESTRICTED"
         generate["context"]["dataClassification"] = "RESTRICTED"
@@ -178,6 +186,7 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         )
         self.assertEqual(0, alpha.calls)
         self.assertEqual(0, beta.calls)
+        self.assertEqual(0, deepseek.calls)
 
     def test_residency_capability_cost_and_availability_fail_closed(self) -> None:
         mutations = (
@@ -192,7 +201,7 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         )
         for field, value in mutations:
             with self.subTest(field=field):
-                contract, gateway, alpha, beta = self.build_gateway()
+                contract, gateway, alpha, beta, deepseek = self.build_gateway()
                 route, generate = self.requests(contract)
                 route[field] = value
 
@@ -202,9 +211,10 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
                 self.assertEqual("FAILED_CLOSED", result.audit["status"])
                 self.assertEqual(0, alpha.calls)
                 self.assertEqual(0, beta.calls)
+                self.assertEqual(0, deepseek.calls)
 
     def test_request_identity_and_classification_must_match(self) -> None:
-        contract, gateway, _, _ = self.build_gateway()
+        contract, gateway, _, _, _ = self.build_gateway()
         route, generate = self.requests(contract)
         generate["purpose"] = "DIFFERENT_PURPOSE"
         with self.assertRaises(ModelContractError):
@@ -223,7 +233,7 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         )
         for field, value in scenarios:
             with self.subTest(field=field):
-                contract, gateway, alpha, beta = self.build_gateway()
+                contract, gateway, alpha, beta, deepseek = self.build_gateway()
                 route, generate = self.requests(contract)
                 route[field] = value
                 if field in {"tenantKey", "purpose"}:
@@ -235,6 +245,30 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
                 self.assertEqual("FAILED_CLOSED", result.audit["status"])
                 self.assertEqual(0, alpha.calls)
                 self.assertEqual(0, beta.calls)
+                self.assertEqual(0, deepseek.calls)
+
+    def test_deepseek_deployment_is_configured_but_disabled_by_default(self) -> None:
+        contract, gateway, alpha, beta, deepseek = self.build_gateway()
+        route, generate = self.requests(contract)
+        route["unavailableDeploymentKeys"] = [
+            "mock-alpha-primary",
+            "mock-beta-private",
+        ]
+
+        result = gateway.generate(route, generate)
+
+        self.assertIsNone(result.response)
+        self.assertEqual("FAILED_CLOSED", result.audit["status"])
+        self.assertIn(
+            ("deepseek-cloud-disabled", "DEPLOYMENT_NOT_ACTIVE"),
+            {
+                (check["deploymentKey"], check["reasonCode"])
+                for check in result.decision["checks"]
+            },
+        )
+        self.assertEqual(0, alpha.calls)
+        self.assertEqual(0, beta.calls)
+        self.assertEqual(0, deepseek.calls)
 
 
 if __name__ == "__main__":

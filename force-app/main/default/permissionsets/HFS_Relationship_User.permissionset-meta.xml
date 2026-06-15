@@ -55,6 +55,31 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>HFS_Relationship__c.Superseded_By__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Supersession_Approval__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Superseded_By_User__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Superseded_At__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>HFS_Relationship__c.Supersession_Reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>HFS_Agreement__c.Effective_To__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -70,6 +95,51 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>HFS_Work_Item__c.Target_Relationship__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Depends_On_Work_Item__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Owner_Role__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Escalation_Role__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Handoff_Target_Role__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Handoff_State__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Closure_Verification_Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Closure_Verified_At__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_Work_Item__c.Closure_Outcome__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>HFS_Work_Item__c.Due_At__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -81,6 +151,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>HFS_SOP_Execution__c.Current_Step_Key__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_SOP_Execution__c.Required_Evidence__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>HFS_SOP_Execution__c.Escalation_Rule__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -175,6 +255,10 @@
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>HFS Relationship User</label>
+    <tabSettings>
+        <tab>North_Star_Command_Center</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>

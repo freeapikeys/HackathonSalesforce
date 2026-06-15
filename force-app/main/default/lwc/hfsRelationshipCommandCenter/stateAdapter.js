@@ -50,6 +50,12 @@ function entityLabel(entityById, entityId, fallback) {
   return entityById.get(entityId)?.label || fallback;
 }
 
+function confidencePercent(confidence) {
+  return confidence === null || confidence === undefined
+    ? "Not scored"
+    : `${Math.round(Number(confidence) * 100)}%`;
+}
+
 function timelineItem(item, index) {
   return {
     id: item.recordId || `timeline-${index}`,
@@ -104,6 +110,151 @@ function outcomeMetric(outcome, index) {
   };
 }
 
+function relationshipHistoryItem(entityById, relationship, index) {
+  return {
+    id: relationship.recordId || `relationship-history-${index}`,
+    type: relationship.relationshipType || humanize(relationship.recordType),
+    subject: entityLabel(
+      entityById,
+      relationship.subjectEntityId,
+      "Accessible subject"
+    ),
+    object: entityLabel(
+      entityById,
+      relationship.objectEntityId,
+      "Accessible object"
+    ),
+    status: humanize(relationship.status, "Current"),
+    confidencePercent: confidencePercent(relationship.confidence),
+    sourceEventId: relationship.sourceEventId || "Source event not recorded",
+    supersessionApprovalId:
+      relationship.supersessionApprovalId || "Not superseded",
+    supersededByUserId: relationship.supersededByUserId || "Not superseded",
+    supersededAt: relationship.supersededAt,
+    supersessionReason:
+      relationship.supersessionReason || "No supersession recorded.",
+    evidenceSummary:
+      relationship.supersessionReason ||
+      relationship.summary ||
+      "Relationship assertion preserved from accessible Salesforce context.",
+    correctionState: relationship.supersededAt ? "Superseded" : "Reviewable"
+  };
+}
+
+function participantLinkItem(entityById, participant, index) {
+  return {
+    id: participant.recordId || `participant-link-${index}`,
+    role: participant.participantRole || humanize(participant.recordType),
+    entity: entityLabel(
+      entityById,
+      participant.subjectEntityId,
+      "Accessible participant"
+    ),
+    sourceEventId: participant.sourceEventId || "Source event not recorded",
+    evidenceSummary:
+      participant.summary ||
+      "Source event participant link preserved for identity history."
+  };
+}
+
+function agreementContradictions(agreements, entityById) {
+  const byRelationship = new Map();
+  for (const agreement of agreements) {
+    const key = [
+      agreement.relationshipType || agreement.recordType,
+      agreement.subjectEntityId,
+      agreement.objectEntityId
+    ].join("|");
+    if (!byRelationship.has(key)) {
+      byRelationship.set(key, []);
+    }
+    byRelationship.get(key).push(agreement);
+  }
+
+  const contradictions = [];
+  for (const claims of byRelationship.values()) {
+    const statuses = new Set(
+      claims.map((claim) => claim.status).filter(Boolean)
+    );
+    if (statuses.size < 2) {
+      continue;
+    }
+    const firstClaim = claims[0];
+    contradictions.push({
+      id: `contradiction-${firstClaim.recordId}`,
+      claim: `${entityLabel(
+        entityById,
+        firstClaim.subjectEntityId,
+        "Accessible party"
+      )} and ${entityLabel(
+        entityById,
+        firstClaim.objectEntityId,
+        "accessible party"
+      )} have competing ${humanize(firstClaim.recordType)} statuses.`,
+      counterclaim: Array.from(statuses).map(humanize).join(" vs "),
+      resolution:
+        "Keep both claims visible until a human supersedes one with source evidence."
+    });
+  }
+  return contradictions;
+}
+
+function correctionActionForRelationship(relationship, index) {
+  return {
+    id: relationship.recordId || `relationship-correction-${index}`,
+    label: "Request correction review",
+    target: relationship.relationshipType || humanize(relationship.recordType),
+    reason:
+      "Open a governed review instead of overwriting relationship history silently.",
+    sourceEventId: relationship.sourceEventId,
+    sourceRelationshipId: relationship.recordId
+  };
+}
+
+function workBlockers(workItem) {
+  const blockers = [];
+  if (workItem.blockedReason) {
+    blockers.push({
+      id: `${workItem.recordId}-blocker`,
+      label: workItem.blockedReason,
+      owner: workItem.ownerRole || workItem.ownerLabel || "Work owner",
+      status: "Blocked",
+      dueAt: workItem.dueAt
+    });
+  }
+  if (workItem.dependsOnWorkItemId) {
+    blockers.push({
+      id: `${workItem.recordId}-dependency`,
+      label: `Depends on ${workItem.dependsOnWorkItemId}`,
+      owner: workItem.handoffTargetRole || workItem.ownerRole || "Work owner",
+      status: "Dependency",
+      dueAt: workItem.dueAt
+    });
+  }
+  if (
+    workItem.handoffState &&
+    !["NOT_REQUIRED", "COMPLETED"].includes(workItem.handoffState)
+  ) {
+    blockers.push({
+      id: `${workItem.recordId}-handoff`,
+      label: `Handoff ${humanize(workItem.handoffState)}`,
+      owner: workItem.handoffTargetRole || "Handoff owner",
+      status: humanize(workItem.handoffState),
+      dueAt: workItem.dueAt
+    });
+  }
+  if (workItem.escalationRole) {
+    blockers.push({
+      id: `${workItem.recordId}-escalation`,
+      label: "Escalation path",
+      owner: workItem.escalationRole,
+      status: "Available",
+      dueAt: workItem.dueAt
+    });
+  }
+  return blockers;
+}
+
 export function mapCommandCenterPayload(payload, purpose) {
   const context = payload?.context;
   if (!context) {
@@ -138,6 +289,9 @@ export function mapCommandCenterPayload(payload, purpose) {
     entities.map((entity) => [entity.recordId, entity])
   );
   const relationship = first(context.relationships) || {};
+  const relationships = context.relationships || [];
+  const eventParticipants = context.eventParticipants || [];
+  const agreements = context.agreements || [];
   const sop = first(context.sopExecutions) || {};
   const recommendation = first(context.recommendations) || {};
   const approval = first(context.approvals) || {};
@@ -164,7 +318,8 @@ export function mapCommandCenterPayload(payload, purpose) {
       canApprove: Boolean(rawPermissions.canApprove && approvalIsPending),
       canModify: Boolean(rawPermissions.canModify && approvalIsPending),
       canReject: Boolean(rawPermissions.canReject && approvalIsPending),
-      canExecute: Boolean(rawPermissions.canExecute)
+      canExecute: Boolean(rawPermissions.canExecute),
+      canRequestCorrection: Boolean(rawPermissions.canModify)
     },
     case: {
       id: workItem.recordId,
@@ -175,7 +330,7 @@ export function mapCommandCenterPayload(payload, purpose) {
       status: humanize(workItem.status),
       owner: {
         name: workItem.ownerLabel || "Unassigned",
-        role: "Salesforce record owner",
+        role: workItem.ownerRole || "Salesforce record owner",
         since: workItem.occurredAt
       },
       serviceDeadline: workItem.dueAt,
@@ -200,6 +355,27 @@ export function mapCommandCenterPayload(payload, purpose) {
         ),
         recoveryWindow: "Not recorded",
         serviceAreas: "Not recorded"
+      },
+      relationshipContext: {
+        store: entityLabel(
+          entityById,
+          relationship.subjectEntityId,
+          "Accessible organization"
+        ),
+        product: entityLabel(
+          entityById,
+          workItem.subjectEntityId,
+          "Accessible resource"
+        ),
+        category: "Operations",
+        batch: workItem.externalKey || "Not recorded",
+        supplier: entityLabel(
+          entityById,
+          relationship.objectEntityId,
+          "Accessible partner"
+        ),
+        promotion: workItem.status ? humanize(workItem.status) : "Not recorded",
+        resourceArea: relationship.relationshipType || "Not recorded"
       },
       profile: {
         core: "North Star universal operations",
@@ -244,6 +420,7 @@ export function mapCommandCenterPayload(payload, purpose) {
         }
       ],
       resourcePositions: [],
+      stock: [],
       riskPulses: [
         { id: "risk-complaint", label: "Complaint", status: "Review" },
         { id: "risk-capacity", label: "Capacity", status: "Review" },
@@ -294,6 +471,10 @@ export function mapCommandCenterPayload(payload, purpose) {
       },
       partnerResponse: {
         status: "Not recorded",
+        leadTime: "Not recorded",
+        replacement: "Not recorded",
+        creditNote: "Not recorded",
+        qualityIssue: "Not recorded",
         responseDelay: "Not recorded",
         recoveryOption: "Not recorded",
         financialImpact: "Not recorded",
@@ -394,6 +575,19 @@ export function mapCommandCenterPayload(payload, purpose) {
         type: relationship.relationshipType || "RELATED_TO",
         status: humanize(relationship.status, "Current")
       },
+      relationshipHistory: relationships.map((item, index) =>
+        relationshipHistoryItem(entityById, item, index)
+      ),
+      identityLinks: eventParticipants.map((item, index) =>
+        participantLinkItem(entityById, item, index)
+      ),
+      relationshipContradictions: agreementContradictions(
+        agreements,
+        entityById
+      ),
+      correctionActions: relationships.map((item, index) =>
+        correctionActionForRelationship(item, index)
+      ),
       connectedEntities: entities.map((entity) => ({
         id: entity.recordId,
         label: entity.label,
@@ -403,17 +597,7 @@ export function mapCommandCenterPayload(payload, purpose) {
             ? "Primary relationship"
             : "Connected entity"
       })),
-      blockers: workItem.blockedReason
-        ? [
-            {
-              id: `${workItem.recordId}-blocker`,
-              label: workItem.blockedReason,
-              owner: workItem.ownerLabel || "Work owner",
-              status: "Blocked",
-              dueAt: workItem.dueAt
-            }
-          ]
-        : [],
+      blockers: workBlockers(workItem),
       timeline: (context.timeline || []).map(timelineItem),
       evidence: (context.evidence || []).map((evidence, index) => ({
         id: evidence.evidenceId,
@@ -431,7 +615,10 @@ export function mapCommandCenterPayload(payload, purpose) {
         completedSteps: sop.status === "COMPLETED" ? 1 : 0,
         totalSteps: 1,
         progress: sop.status === "COMPLETED" ? 100 : 0,
-        requiredEvidence: "Evidence requirements are defined by the active SOP."
+        requiredEvidence:
+          sop.requiredEvidence ||
+          "Evidence requirements are defined by the active SOP.",
+        escalationRule: sop.escalationRule
       },
       recommendation: {
         id: recommendation.recordId,

@@ -27,6 +27,12 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
     'PRESCRIBE_TREATMENT',
     'SET_DOSAGE'
   };
+  private static final Set<String> PRESERVED_EVENT_RESULTS = new Set<String>{
+    'ACCEPTED',
+    'ACCEPTED_LATE',
+    'ACCEPTED_OUT_OF_ORDER',
+    'CONFLICT_REVIEW'
+  };
 
   public HFS_ContextResponse getContext(HFS_ContextRequest request) {
     try {
@@ -39,6 +45,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       response.generatedAt = System.now();
       response.entities = new List<HFS_ContextItem>();
       response.relationships = new List<HFS_ContextItem>();
+      response.eventParticipants = new List<HFS_ContextItem>();
       response.agreements = new List<HFS_ContextItem>();
       response.sopExecutions = new List<HFS_ContextItem>();
       response.timeline = new List<HFS_ContextItem>();
@@ -69,6 +76,98 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         HFS_ServiceSupport.error(exceptionValue)
       };
       return response;
+    }
+  }
+
+  public HFS_CommandResult persistEvent(HFS_EventIntakeCommand command) {
+    try {
+      validateCommand(
+        command == null ? null : command.contractVersion,
+        command == null ? null : command.tenantKey,
+        command == null ? null : command.purpose,
+        command == null ? null : command.correlationId
+      );
+      HFS_ServiceSupport.requireCreate(
+        Schema.SObjectType.HFS_Event__c,
+        'HFS_Event__c'
+      );
+      HFS_ServiceSupport.requireText(command.eventId, 'eventId');
+      HFS_ServiceSupport.requireText(command.sourceUri, 'sourceUri');
+      HFS_ServiceSupport.requireText(command.sourceRecordId, 'sourceRecordId');
+      HFS_ServiceSupport.requireText(command.eventType, 'eventType');
+      HFS_ServiceSupport.requireText(command.subject, 'subject');
+      HFS_ServiceSupport.requireText(command.schemaVersion, 'schemaVersion');
+      HFS_ServiceSupport.requireText(command.idempotencyKey, 'idempotencyKey');
+      requirePresent(command.sourceSequence, 'sourceSequence');
+      requirePresent(command.occurredAt, 'occurredAt');
+      requirePresent(command.observedAt, 'observedAt');
+      HFS_ServiceSupport.requireText(command.contentHash, 'contentHash');
+      HFS_ServiceSupport.requireText(command.payloadJson, 'payloadJson');
+      HFS_ServiceSupport.requireText(command.intakeResult, 'intakeResult');
+      if (!PRESERVED_EVENT_RESULTS.contains(command.intakeResult)) {
+        HFS_ServiceSupport.fail(
+          HFS_ServiceContract.INVALID_STATE,
+          'Only accepted or review-required intake results are persisted as source events.',
+          'intakeResult'
+        );
+      }
+
+      HFS_Event__c replayedByIdempotency = replayableEventByIdempotency(
+        command
+      );
+      if (replayedByIdempotency != null) {
+        return HFS_ServiceSupport.success(
+          HFS_ServiceContract.PERSIST_EVENT,
+          command.correlationId,
+          replayedByIdempotency,
+          replayedByIdempotency.Intake_Result__c,
+          true
+        );
+      }
+
+      HFS_Event__c replayedByIdentity = replayableEventByIdentity(command);
+      if (replayedByIdentity != null) {
+        return HFS_ServiceSupport.success(
+          HFS_ServiceContract.PERSIST_EVENT,
+          command.correlationId,
+          replayedByIdentity,
+          replayedByIdentity.Intake_Result__c,
+          true
+        );
+      }
+
+      HFS_Event__c sourceEvent = new HFS_Event__c(
+        Event_Id__c = command.eventId,
+        Tenant_Key__c = command.tenantKey,
+        Event_Type__c = command.eventType,
+        Source_URI__c = command.sourceUri,
+        Subject__c = command.subject,
+        Source_Record_Id__c = command.sourceRecordId,
+        Schema_Version__c = command.schemaVersion,
+        Correlation_Id__c = command.correlationId,
+        Causation_Id__c = command.causationId,
+        Idempotency_Key__c = command.idempotencyKey,
+        Source_Sequence__c = command.sourceSequence,
+        Occurred_At__c = command.occurredAt,
+        Observed_At__c = command.observedAt,
+        Content_Hash__c = command.contentHash,
+        Payload_JSON__c = command.payloadJson,
+        Intake_Result__c = command.intakeResult
+      );
+      insert as user sourceEvent;
+      return HFS_ServiceSupport.success(
+        HFS_ServiceContract.PERSIST_EVENT,
+        command.correlationId,
+        sourceEvent,
+        sourceEvent.Intake_Result__c,
+        false
+      );
+    } catch (Exception exceptionValue) {
+      return HFS_ServiceSupport.failure(
+        HFS_ServiceContract.PERSIST_EVENT,
+        command == null ? null : command.correlationId,
+        exceptionValue
+      );
     }
   }
 
@@ -303,6 +402,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   }
 
   public HFS_CommandResult decideApproval(HFS_ApprovalDecisionCommand command) {
+    Savepoint transactionStart;
     try {
       validateCommand(
         command == null ? null : command.contractVersion,
@@ -326,11 +426,17 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
 
       HFS_Approval__c approval = approval(command.approvalId);
       requireTenant(command.tenantKey, approval, 'approvalId');
+      Boolean correctionSupersession = isCorrectionSupersessionApproval(
+        approval
+      );
       if (approval.Status__c != 'PENDING') {
         if (
           approval.Status__c == command.decisionStatus &&
           approval.Decision_Notes__c == command.decisionNotes
         ) {
+          if (command.decisionStatus == 'APPROVED' && correctionSupersession) {
+            persistApprovedSupersession(command, approval);
+          }
           return HFS_ServiceSupport.success(
             HFS_ServiceContract.DECIDE_APPROVAL,
             command.correlationId,
@@ -346,11 +452,23 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         );
       }
 
+      if (command.decisionStatus == 'APPROVED' && correctionSupersession) {
+        HFS_ServiceSupport.requireUpdate(
+          Schema.SObjectType.HFS_Relationship__c,
+          'HFS_Relationship__c'
+        );
+      }
+
+      transactionStart = Database.setSavepoint();
       approval.Status__c = command.decisionStatus;
       approval.Decision_By__c = UserInfo.getUserId();
       approval.Decided_At__c = System.now();
       approval.Decision_Notes__c = command.decisionNotes;
       update as user approval;
+
+      if (command.decisionStatus == 'APPROVED' && correctionSupersession) {
+        persistApprovedSupersession(command, approval);
+      }
       return HFS_ServiceSupport.success(
         HFS_ServiceContract.DECIDE_APPROVAL,
         command.correlationId,
@@ -359,6 +477,9 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
         false
       );
     } catch (Exception exceptionValue) {
+      if (transactionStart != null) {
+        Database.rollback(transactionStart);
+      }
       return HFS_ServiceSupport.failure(
         HFS_ServiceContract.DECIDE_APPROVAL,
         command == null ? null : command.correlationId,
@@ -534,6 +655,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
           'externalKey'
         );
         if (outcomeMatches(existing, command)) {
+          markTerminalWorkClosure(command.tenantKey, existing);
           return HFS_ServiceSupport.success(
             HFS_ServiceContract.CAPTURE_OUTCOME,
             command.correlationId,
@@ -584,16 +706,7 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
       update as user action;
 
       if (TERMINAL_OUTCOME_STATUSES.contains(command.status)) {
-        HFS_Recommendation__c recommendation = recommendation(
-          String.valueOf(action.Recommendation__c)
-        );
-        HFS_Work_Item__c workItem = workItem(
-          String.valueOf(recommendation.Work_Item__c)
-        );
-        requireTenant(command.tenantKey, recommendation, 'actionId');
-        requireTenant(command.tenantKey, workItem, 'actionId');
-        workItem.Status__c = 'COMPLETED';
-        update as user workItem;
+        markTerminalWorkClosure(command.tenantKey, outcome);
       }
       return HFS_ServiceSupport.success(
         HFS_ServiceContract.CAPTURE_OUTCOME,
@@ -641,10 +754,86 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
     }
   }
 
+  private static void requirePresent(Object value, String fieldName) {
+    if (value == null) {
+      HFS_ServiceSupport.fail(
+        HFS_ServiceContract.INVALID_REQUEST,
+        'A required value is missing.',
+        fieldName
+      );
+    }
+  }
+
+  private static HFS_Event__c replayableEventByIdempotency(
+    HFS_EventIntakeCommand command
+  ) {
+    List<HFS_Event__c> records = [
+      SELECT Id, Tenant_Key__c, Content_Hash__c, Intake_Result__c
+      FROM HFS_Event__c
+      WHERE
+        Tenant_Key__c = :command.tenantKey
+        AND Source_URI__c = :command.sourceUri
+        AND Idempotency_Key__c = :command.idempotencyKey
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    if (records.isEmpty()) {
+      return null;
+    }
+    HFS_Event__c existing = records[0];
+    if (existing.Content_Hash__c == command.contentHash) {
+      return existing;
+    }
+    HFS_ServiceSupport.fail(
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT,
+      'The idempotency key was already used for different source data.',
+      'idempotencyKey'
+    );
+    return null;
+  }
+
+  private static HFS_Event__c replayableEventByIdentity(
+    HFS_EventIntakeCommand command
+  ) {
+    List<HFS_Event__c> records = [
+      SELECT Id, Tenant_Key__c, Content_Hash__c, Intake_Result__c
+      FROM HFS_Event__c
+      WHERE
+        Tenant_Key__c = :command.tenantKey
+        AND Source_URI__c = :command.sourceUri
+        AND Event_Id__c = :command.eventId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    if (records.isEmpty()) {
+      return null;
+    }
+    HFS_Event__c existing = records[0];
+    if (existing.Content_Hash__c == command.contentHash) {
+      return existing;
+    }
+    HFS_ServiceSupport.fail(
+      HFS_ServiceContract.IDEMPOTENCY_CONFLICT,
+      'The event identity was already used for different source data.',
+      'eventId'
+    );
+    return null;
+  }
+
   private static HFS_Work_Item__c workItem(String recordId) {
     Id value = HFS_ServiceSupport.requireId(recordId, 'workItemId');
     List<HFS_Work_Item__c> records = [
-      SELECT Id, Tenant_Key__c, Status__c, Primary_Entity__c, Trigger_Event__c
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Status__c,
+        Primary_Entity__c,
+        Trigger_Event__c,
+        Target_Relationship__c,
+        Handoff_State__c,
+        Closure_Verification_Status__c,
+        Closure_Verified_At__c,
+        Closure_Outcome__c
       FROM HFS_Work_Item__c
       WHERE Id = :value
       WITH USER_MODE
@@ -688,6 +877,108 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
     return records[0];
   }
 
+  private static Boolean isCorrectionSupersessionApproval(
+    HFS_Approval__c approval
+  ) {
+    return approval.Recommendation__r != null &&
+      approval.Recommendation__r.Recommendation_Type__c ==
+      'RELATIONSHIP_CORRECTION_REVIEW' &&
+      approval.Recommendation__r.Proposed_Action_Type__c ==
+      'SUPERSEDE_RELATIONSHIP_ASSERTION';
+  }
+
+  private static void persistApprovedSupersession(
+    HFS_ApprovalDecisionCommand command,
+    HFS_Approval__c approval
+  ) {
+    Id relationshipId = approval
+      .Recommendation__r
+      .Work_Item__r
+      .Target_Relationship__c;
+    if (relationshipId == null) {
+      HFS_ServiceSupport.fail(
+        HFS_ServiceContract.INVALID_STATE,
+        'A correction review approval requires a target relationship.',
+        'approvalId'
+      );
+    }
+
+    List<HFS_Relationship__c> relationships = [
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Valid_From__c,
+        Valid_To__c,
+        Supersession_Approval__c,
+        Superseded_By_User__c,
+        Superseded_At__c,
+        Supersession_Reason__c
+      FROM HFS_Relationship__c
+      WHERE Id = :relationshipId
+      WITH USER_MODE
+      LIMIT 1
+    ];
+    requireRecord(relationships, 'approvalId');
+    HFS_Relationship__c relationship = relationships[0];
+    requireTenant(command.tenantKey, relationship, 'approvalId');
+    if (
+      relationship.Supersession_Approval__c != null &&
+      relationship.Supersession_Approval__c != approval.Id
+    ) {
+      HFS_ServiceSupport.fail(
+        HFS_ServiceContract.INVALID_STATE,
+        'The relationship has already been superseded by another approval.',
+        'approvalId'
+      );
+    }
+
+    Datetime supersededAt = approval.Decided_At__c == null
+      ? System.now()
+      : approval.Decided_At__c;
+    relationship.Valid_To__c = relationship.Valid_From__c != null &&
+      supersededAt < relationship.Valid_From__c
+      ? relationship.Valid_From__c
+      : supersededAt;
+    relationship.Supersession_Approval__c = approval.Id;
+    relationship.Superseded_By_User__c = approval.Decision_By__c == null
+      ? UserInfo.getUserId()
+      : approval.Decision_By__c;
+    relationship.Superseded_At__c = supersededAt;
+    relationship.Supersession_Reason__c = String.isBlank(command.decisionNotes)
+      ? 'Approved relationship correction review.'
+      : command.decisionNotes;
+    update as user relationship;
+  }
+
+  private static void markTerminalWorkClosure(
+    String tenantKey,
+    HFS_Outcome__c outcome
+  ) {
+    if (!TERMINAL_OUTCOME_STATUSES.contains(outcome.Status__c)) {
+      return;
+    }
+
+    HFS_Action__c action = action(String.valueOf(outcome.Action__c));
+    HFS_Recommendation__c recommendation = recommendation(
+      String.valueOf(action.Recommendation__c)
+    );
+    HFS_Work_Item__c workItem = workItem(
+      String.valueOf(recommendation.Work_Item__c)
+    );
+    requireTenant(tenantKey, action, 'actionId');
+    requireTenant(tenantKey, recommendation, 'actionId');
+    requireTenant(tenantKey, workItem, 'actionId');
+
+    workItem.Status__c = 'COMPLETED';
+    workItem.Handoff_State__c = 'COMPLETED';
+    workItem.Closure_Verification_Status__c = 'VERIFIED';
+    workItem.Closure_Verified_At__c = outcome.Observed_At__c == null
+      ? System.now()
+      : outcome.Observed_At__c;
+    workItem.Closure_Outcome__c = outcome.Id;
+    update as user workItem;
+  }
+
   private static void inaccessibleEvidence() {
     HFS_ServiceSupport.fail(
       HFS_ServiceContract.SOURCE_EVIDENCE_INACCESSIBLE,
@@ -699,7 +990,14 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   private static HFS_Recommendation__c recommendation(String recordId) {
     Id value = HFS_ServiceSupport.requireId(recordId, 'recommendationId');
     List<HFS_Recommendation__c> records = [
-      SELECT Id, Tenant_Key__c, Work_Item__c, Status__c
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Work_Item__c,
+        Work_Item__r.Target_Relationship__c,
+        Status__c,
+        Recommendation_Type__c,
+        Proposed_Action_Type__c
       FROM HFS_Recommendation__c
       WHERE Id = :value
       WITH USER_MODE
@@ -712,7 +1010,18 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   private static HFS_Approval__c approval(String recordId) {
     Id value = HFS_ServiceSupport.requireId(recordId, 'approvalId');
     List<HFS_Approval__c> records = [
-      SELECT Id, Tenant_Key__c, Recommendation__c, Status__c, Decision_Notes__c
+      SELECT
+        Id,
+        Tenant_Key__c,
+        Recommendation__c,
+        Recommendation__r.Work_Item__c,
+        Recommendation__r.Work_Item__r.Target_Relationship__c,
+        Recommendation__r.Recommendation_Type__c,
+        Recommendation__r.Proposed_Action_Type__c,
+        Status__c,
+        Decision_By__c,
+        Decided_At__c,
+        Decision_Notes__c
       FROM HFS_Approval__c
       WHERE Id = :value
       WITH USER_MODE

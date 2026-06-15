@@ -723,7 +723,7 @@
           "tenantKey": "demo-mauritius",
           "correlationId": "10000000-0000-4000-8000-000000000001",
           "purpose": "CAPTURE_APPROVED_ACTION_OUTCOME",
-          "externalKey": "outcome-message-delivered-001",
+          "externalKey": "outcome-slack-alert-001",
           "idempotencyKey": "outcome-slack-alert-001-v1",
           "actionId": "action-slack-alert-001",
           "sourceEventId": "event-slack-alert-001",
