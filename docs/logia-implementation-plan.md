@@ -171,7 +171,7 @@ WhatsApp:
 - use Meta WhatsApp Cloud API as the active hackathon demo provider;
 - keep Twilio Sandbox as legacy backup only;
 - the current CloudHub public callback URL is
-  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`;
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`;
   despite the inherited path name, it accepts Meta JSON and Twilio form payloads;
 - the current visible Meta WhatsApp reply is a receipt acknowledgement, not the
   full agent conversation;
@@ -195,9 +195,9 @@ Slack approval:
 - use `SLACK_SIGNING_SECRET` and Slack App Interactivity for true approve/reject
   buttons;
 - use the free CloudHub Interactivity & Shortcuts Request URL:
-  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`;
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`;
 - use the free CloudHub slash-command Request URL for `/logia`:
-  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`;
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`;
 - the local mock runtime and harness validate Slack signatures and keep
   protected actions blocked until a signed approve decision is processed;
 - add `/logia status <approval-id>` as a signed slash-command status check for
@@ -281,7 +281,7 @@ Implemented bridge:
   `/services/apexrest/logia/v1/twilio/whatsapp`.
 - Mule app: `mulesoft/logia-twilio-webhook`.
 - Current deployed CloudHub webhook:
-  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 - Use the same URL as the Meta WhatsApp Cloud API callback URL with verify token
   `logia-meta-verify`.
 - Public hosting requires packaging/deploying the Mule app to CloudHub and
@@ -435,9 +435,9 @@ Focused checks:
 - [x] Add harness proof that pending approval blocks execution until Slack
       approve is processed.
 - [x] Define the free Slack App Interactivity Request URL:
-      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
 - [x] Define the free `/logia` slash-command Request URL:
-      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
 - [ ] Rehearse live Slack button clicks after the CloudHub app is redeployed
       with the `/slack/interactions` route.
 

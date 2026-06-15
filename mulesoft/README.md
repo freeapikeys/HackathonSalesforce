@@ -120,7 +120,7 @@ pending approval.
 Current deployed demo webhook:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
 Use that same URL as the Meta WhatsApp Cloud API callback URL. The verify token
@@ -178,13 +178,13 @@ Slack Lists, ngrok, or tunnel is required after the app is deployed.
 Slack App **Interactivity & Shortcuts** Request URL:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
 ```
 
 Slack slash command Request URL for `/logia`:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
 ```
 
 The CloudHub Slack endpoints return fast, privacy-safe ephemeral acknowledgements

@@ -161,9 +161,9 @@ Correct behavior:
       Slack App interactivity Request URL and `SLACK_SIGNING_SECRET` outside
       Git.
       Use:
-      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
       The `/logia` slash-command Request URL is:
-      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
 - [x] If live Slack interactivity is not reachable, document the exact
       command-center fallback used for manager approval.
 - [x] Prove protected actions stay blocked before approval and execute only

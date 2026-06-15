@@ -70,7 +70,7 @@ For CloudHub 2 shared spaces, point WhatsApp providers to the active public
 endpoint. The current deployed endpoint is:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
 Despite the inherited `twilio` path name, the Mule listener behind this route is
@@ -108,7 +108,7 @@ Thanks. Logia received this. A manager will review it.
 Current deployed demo URL:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
 ## Slack Interactivity
@@ -119,13 +119,13 @@ ngrok, or tunnel is needed after this Mule app is deployed.
 In the Slack app, set **Interactivity & Shortcuts** to this Request URL:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
 ```
 
 For the `/logia` slash command, set the command Request URL to:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
 ```
 
 The endpoints return fast ephemeral Slack acknowledgements. This prevents

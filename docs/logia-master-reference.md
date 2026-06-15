@@ -196,9 +196,9 @@ Recommended hackathon stance:
   and delivery/audit metadata in the local runtime.
 - Slack approve/reject buttons should be the manager approval story when the
   Slack App interactivity Request URL is configured. The free CloudHub URL is:
-  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
 - The `/logia` slash command Request URL is:
-  `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+  `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
 - Optional bot-token mode can add live `chat.postMessage`, `chat.update`,
   threaded replies, and ephemeral messages with `SLACK_BOT_TOKEN` and
   `SLACK_CHANNEL_ID`; do not claim message-update or thread features unless
@@ -302,7 +302,7 @@ approval records.
 Current deployed demo webhook:
 
 ```text
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound
 ```
 
 Use this same URL for Meta WhatsApp Cloud API webhook verification and message
@@ -396,10 +396,10 @@ Slack app URLs to paste:
 
 ```text
 Interactivity & Shortcuts Request URL:
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions
 
 Slash command /logia Request URL:
-https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
+https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands
 ```
 
 This is the free route: it uses the deployed CloudHub Mule app. Do not use
@@ -548,7 +548,7 @@ Highest-value tasks still open:
 
 1. Keep the Meta WhatsApp Cloud API webhook callback URL pointed to the active
    CloudHub webhook URL:
-   `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
+   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 2. Finish same-language Meta WhatsApp receipts and approved replies for
    English, French, and Mauritian Creole.
 3. Hassan may use his pretrained multilingual/voice models and DeepSeek for
@@ -563,7 +563,7 @@ Highest-value tasks still open:
    hotel, airport, and banking using the same global primitives.
 7. Configure Slack App Interactivity with a public Request URL if the live demo
    should use real Slack button clicks:
-   `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+   `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
 8. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
    are configured safely; the repo currently has protected mock vendor email.
 9. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for

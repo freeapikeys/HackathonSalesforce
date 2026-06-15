@@ -594,9 +594,9 @@ file before editing.
       MuleSoft mock runtime for safe internal approval/action status checks.
 - [x] Define the public free CloudHub Slack App Interactivity Request URL for
       live button clicks:
-      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/interactions`.
 - [x] Define the public free CloudHub `/logia` slash-command Request URL:
-      `https://logia-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
+      `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/slack/commands`.
 - [x] Store optional `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` outside Git for
       live `chat.postMessage`, `chat.update`, threaded replies, or ephemeral
       Slack messages beyond the webhook/harness proof.
