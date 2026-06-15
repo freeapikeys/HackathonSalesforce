@@ -22,6 +22,7 @@ for runtime_path in (MODEL_RUNTIME, MULESOFT_RUNTIME):
         sys.path.insert(0, str(runtime_path))
 
 from hfs_model_gateway import (  # noqa: E402
+    DeepSeekOpenAICompatibleAdapter,
     DeterministicRouter,
     MockAlphaAdapter,
     MockBetaAdapter,
@@ -318,12 +319,14 @@ class DemoHarness:
             )
             alpha = MockAlphaAdapter(output)
             beta = MockBetaAdapter(output)
+            deepseek = DeepSeekOpenAICompatibleAdapter()
             return ModelGateway(
                 contract=contract,
                 router=router,
                 adapters={
                     alpha.adapter_key: alpha,
                     beta.adapter_key: beta,
+                    deepseek.adapter_key: deepseek,
                 },
             )
 

@@ -255,6 +255,10 @@
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>HFS Relationship User</label>
+    <tabSettings>
+        <tab>North_Star_Command_Center</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>

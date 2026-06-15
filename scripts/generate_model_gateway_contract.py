@@ -668,6 +668,7 @@ def build_fixture() -> dict[str, Any]:
     nexavenu_profile_key = "nexavenu-revenue-recommendation"
     primary_key = "mock-alpha-primary"
     fallback_key = "mock-beta-private"
+    deepseek_key = "deepseek-cloud-disabled"
     evidence_hash = (
         "sha256:56a6f426aa5f34eb9f59d250d587ce835ab7394cc009b70f"
         "db4feada11935c10"
@@ -764,6 +765,29 @@ def build_fixture() -> dict[str, Any]:
             "activeFrom": "2026-06-01T00:00:00Z",
             "activeUntil": None,
         },
+        {
+            "contractVersion": CONTRACT_VERSION,
+            "version": "1.0.0",
+            "deploymentKey": deepseek_key,
+            "adapterKey": "deepseek-openai-compatible-adapter",
+            "adapterInterfaceVersion": "hfs.generate.v1",
+            "providerIdentifier": "deepseek",
+            "modelIdentifier": "deepseek-chat",
+            "configuredModelIdentifier": None,
+            "hostingClass": "CLOUD",
+            "residencyRegions": ["global"],
+            "supportedLanguages": ["en", "fr"],
+            "permittedDataClassifications": ["INTERNAL"],
+            "capabilities": ["CHAT", "STRUCTURED_OUTPUT"],
+            "contextWindowTokens": 64000,
+            "qualifiedProfiles": [profile_key, nexavenu_profile_key],
+            "qualityScores": {"grounded_recommendation_score": 0.86},
+            "estimatedLatencyMs": 7000,
+            "estimatedCostUsd": 0.02,
+            "operationalStatus": "UNAVAILABLE",
+            "activeFrom": "2026-06-01T00:00:00Z",
+            "activeUntil": None,
+        },
     ]
     policy = {
         "contractVersion": CONTRACT_VERSION,
@@ -773,7 +797,7 @@ def build_fixture() -> dict[str, Any]:
         "businessUnit": None,
         "profileKey": profile_key,
         "permittedPurposes": ["RESOLVE_RETAIL_RISK"],
-        "candidatePriority": [primary_key, fallback_key],
+        "candidatePriority": [primary_key, fallback_key, deepseek_key],
         "requiredChecks": [
             "TENANT",
             "BUSINESS_UNIT",
@@ -846,7 +870,7 @@ def build_fixture() -> dict[str, Any]:
             False,
             "DATA_CLASSIFICATION_NOT_PERMITTED",
         )
-        for deployment_key in (primary_key, fallback_key)
+        for deployment_key in (primary_key, fallback_key, deepseek_key)
     ]
     decisions = [
         {

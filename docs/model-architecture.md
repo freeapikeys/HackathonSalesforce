@@ -125,6 +125,13 @@ may be fronted by MuleSoft for policy, routing, observability, and production
 connectivity, but model-streaming and latency requirements must be tested
 before choosing MuleSoft as the inference proxy.
 
+Provider-specific deployment descriptors can include Salesforce-managed,
+private, on-prem, or cloud models. For the current demo, DeepSeek is represented
+only as a disabled cloud deployment behind the provider-neutral contract. It is
+not invoked by the reference runtime and must not be used with live credentials
+until the customer-approved budget, policy, secret manager, and monitoring path
+are in place.
+
 The application must also keep a narrow internal interface:
 
 ```text

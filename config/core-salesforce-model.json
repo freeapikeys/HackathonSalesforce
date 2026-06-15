@@ -1065,6 +1065,12 @@
         "HFS_AgentExplainAction",
         "HFS_AgentRecommendationAction"
       ],
+      "tabSettings": [
+        {
+          "tab": "North_Star_Command_Center",
+          "visibility": "Visible"
+        }
+      ],
       "editableObjects": [
         "HFS_Work_Item__c",
         "HFS_SOP_Execution__c",
@@ -1080,6 +1086,12 @@
         "HFS_RelationshipController",
         "HFS_AgentExplainAction",
         "HFS_AgentApprovalRequestAction"
+      ],
+      "tabSettings": [
+        {
+          "tab": "North_Star_Command_Center",
+          "visibility": "Visible"
+        }
       ],
       "editableObjects": ["HFS_Approval__c"],
       "updateOnlyObjects": ["HFS_Relationship__c"],

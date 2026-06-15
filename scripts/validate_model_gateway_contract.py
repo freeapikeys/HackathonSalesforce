@@ -131,9 +131,9 @@ def main() -> None:
         validated += 1
 
     deployments = fixture["deployments"]
-    assert len(deployments) == 2
-    assert len({item["providerIdentifier"] for item in deployments}) == 2
-    assert len({item["adapterKey"] for item in deployments}) == 2
+    assert len(deployments) == 3
+    assert len({item["providerIdentifier"] for item in deployments}) == 3
+    assert len({item["adapterKey"] for item in deployments}) == 3
     assert {
         item["adapterInterfaceVersion"] for item in deployments
     } == {"hfs.generate.v1"}
@@ -141,6 +141,11 @@ def main() -> None:
         fixture["profiles"][0]["profileKey"] in item["qualifiedProfiles"]
         for item in deployments
     )
+    deepseek_deployments = [
+        item for item in deployments if item["providerIdentifier"] == "deepseek"
+    ]
+    assert len(deepseek_deployments) == 1
+    assert deepseek_deployments[0]["operationalStatus"] == "UNAVAILABLE"
 
     request_keys: set[str] = set()
     for request in [
@@ -283,7 +288,8 @@ def main() -> None:
 
     print(
         "Model gateway contract is valid "
-        f"({validated} typed fixtures, 2 interchangeable deployments)."
+        f"({validated} typed fixtures, 2 active mock deployments, "
+        "1 disabled DeepSeek deployment)."
     )
 
 

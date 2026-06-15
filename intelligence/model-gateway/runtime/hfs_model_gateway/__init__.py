@@ -2,6 +2,7 @@
 
 from .adapters import (
     AdapterUnavailable,
+    DeepSeekOpenAICompatibleAdapter,
     MockAlphaAdapter,
     MockBetaAdapter,
 )
@@ -11,6 +12,7 @@ from .router import DeterministicRouter
 
 __all__ = [
     "AdapterUnavailable",
+    "DeepSeekOpenAICompatibleAdapter",
     "DeterministicRouter",
     "GatewayResult",
     "MockAlphaAdapter",

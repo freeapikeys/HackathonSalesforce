@@ -350,6 +350,16 @@ and UI must support any supermarket product category.
 - [x] Profile key switches visible titles, domain labels, recommendation copy,
       approval copy, and outcome labels between North Star retail and Nexavenu
       gift profiles.
+- [x] Command center includes prediction dashboards, KPI cards, daily brief,
+      agent coordination threads, and shared employee/department chat panels for
+      the synthetic demo profiles.
+- [x] Command center UI polish is grounded in saved design-source notes for
+      shadcn-style composition, dashboard cognition, chart choice, decluttering,
+      monochrome hierarchy, and honest interactions.
+- [x] Command center has a TradeZella-inspired analytics shell with a dark
+      navigation rail, dense metric cards, chart/log panels, and Dribbble-style
+      dark SaaS dashboard accents while preserving the relationship
+      intelligence model.
 - [x] Risk pulse cards show stockout, expiry, overstock, complaint, supplier,
       queue, shelf-layout, price, promotion, and staff readiness.
 - [x] Product and batch context is visible.

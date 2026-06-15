@@ -134,6 +134,44 @@
       "operationalStatus": "ACTIVE",
       "activeFrom": "2026-06-01T00:00:00Z",
       "activeUntil": null
+    },
+    {
+      "contractVersion": "1.0.0",
+      "version": "1.0.0",
+      "deploymentKey": "deepseek-cloud-disabled",
+      "adapterKey": "deepseek-openai-compatible-adapter",
+      "adapterInterfaceVersion": "hfs.generate.v1",
+      "providerIdentifier": "deepseek",
+      "modelIdentifier": "deepseek-chat",
+      "configuredModelIdentifier": null,
+      "hostingClass": "CLOUD",
+      "residencyRegions": [
+        "global"
+      ],
+      "supportedLanguages": [
+        "en",
+        "fr"
+      ],
+      "permittedDataClassifications": [
+        "INTERNAL"
+      ],
+      "capabilities": [
+        "CHAT",
+        "STRUCTURED_OUTPUT"
+      ],
+      "contextWindowTokens": 64000,
+      "qualifiedProfiles": [
+        "north-star-retail-recommendation",
+        "nexavenu-revenue-recommendation"
+      ],
+      "qualityScores": {
+        "grounded_recommendation_score": 0.86
+      },
+      "estimatedLatencyMs": 7000,
+      "estimatedCostUsd": 0.02,
+      "operationalStatus": "UNAVAILABLE",
+      "activeFrom": "2026-06-01T00:00:00Z",
+      "activeUntil": null
     }
   ],
   "policies": [
@@ -149,7 +187,8 @@
       ],
       "candidatePriority": [
         "mock-alpha-primary",
-        "mock-beta-private"
+        "mock-beta-private",
+        "deepseek-cloud-disabled"
       ],
       "requiredChecks": [
         "TENANT",
@@ -183,7 +222,8 @@
       ],
       "candidatePriority": [
         "mock-alpha-primary",
-        "mock-beta-private"
+        "mock-beta-private",
+        "deepseek-cloud-disabled"
       ],
       "requiredChecks": [
         "TENANT",
@@ -526,6 +566,12 @@
         },
         {
           "deploymentKey": "mock-beta-private",
+          "check": "DATA_CLASSIFICATION",
+          "passed": false,
+          "reasonCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        },
+        {
+          "deploymentKey": "deepseek-cloud-disabled",
           "check": "DATA_CLASSIFICATION",
           "passed": false,
           "reasonCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
@@ -1037,6 +1083,17 @@
           "deploymentKey": "mock-beta-private",
           "deploymentVersion": "2.0.0",
           "adapterKey": "mock-beta-adapter",
+          "startedAt": "2026-06-05T08:30:12Z",
+          "completedAt": "2026-06-05T08:30:12Z",
+          "status": "POLICY_REJECTED",
+          "retryable": false,
+          "failureCode": "DATA_CLASSIFICATION_NOT_PERMITTED"
+        },
+        {
+          "sequence": 3,
+          "deploymentKey": "deepseek-cloud-disabled",
+          "deploymentVersion": "1.0.0",
+          "adapterKey": "deepseek-openai-compatible-adapter",
           "startedAt": "2026-06-05T08:30:12Z",
           "completedAt": "2026-06-05T08:30:12Z",
           "status": "POLICY_REJECTED",

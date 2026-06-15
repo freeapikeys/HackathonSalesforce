@@ -12,12 +12,12 @@ import { mapCommandCenterPayload, mapTransportError } from "./stateAdapter";
 
 export default class HfsRelationshipCommandCenter extends LightningElement {
   _stateName = "ready";
+  _profileKey = DEFAULT_PROFILE_KEY;
   _connected = false;
   @api recordId;
   @api workItemId;
   @api tenantKey;
   @api purpose = "RESOLVE_RETAIL_RISK";
-  @api profileKey = DEFAULT_PROFILE_KEY;
   @api mockMode = false;
   state = getUiState("loading");
   decisionPending = false;
@@ -31,6 +31,22 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
 
   set stateName(value) {
     this._stateName = value || "ready";
+    if (this._connected) {
+      this.loadState();
+    }
+  }
+
+  @api
+  get profileKey() {
+    return this._profileKey;
+  }
+
+  set profileKey(value) {
+    const nextProfileKey = value || DEFAULT_PROFILE_KEY;
+    if (nextProfileKey === this._profileKey) {
+      return;
+    }
+    this._profileKey = nextProfileKey;
     if (this._connected) {
       this.loadState();
     }
@@ -145,6 +161,51 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
     return `UI state ${UI_STATE_VERSION}`;
   }
 
+  get profileOptions() {
+    return this.state.profileOptions || [];
+  }
+
+  get hasProfileOptions() {
+    return this.profileOptions.length > 1;
+  }
+
+  get operatingLayer() {
+    return (
+      this.state.case?.operatingLayer || {
+        kpis: [],
+        trendTitle: "Operating forecast",
+        trend: [],
+        brief: [],
+        agents: [],
+        channels: []
+      }
+    );
+  }
+
+  get operatingKpis() {
+    return this.operatingLayer.kpis;
+  }
+
+  get operatingTrendTitle() {
+    return this.operatingLayer.trendTitle;
+  }
+
+  get operatingTrend() {
+    return this.operatingLayer.trend;
+  }
+
+  get operatingBrief() {
+    return this.operatingLayer.brief;
+  }
+
+  get operatingAgents() {
+    return this.operatingLayer.agents;
+  }
+
+  get operatingChannels() {
+    return this.operatingLayer.channels;
+  }
+
   get hasRecommendationAssumptions() {
     return Boolean(this.state.case?.recommendation?.assumptions?.length);
   }
@@ -200,6 +261,23 @@ export default class HfsRelationshipCommandCenter extends LightningElement {
     if (!this.mockMode) {
       this.loadState();
     }
+  }
+
+  handleProfileSelect(event) {
+    const selectedProfileKey = event.currentTarget.dataset.profileKey;
+    if (!selectedProfileKey || selectedProfileKey === this.profileKey) {
+      return;
+    }
+    this._profileKey = selectedProfileKey;
+    this.dispatchEvent(
+      new CustomEvent("profileselect", {
+        detail: {
+          profileKey: selectedProfileKey,
+          stateVersion: this.state.stateVersion
+        }
+      })
+    );
+    this.loadState();
   }
 
   async handleCorrectionRequest(event) {

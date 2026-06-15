@@ -196,6 +196,18 @@ describe("c-hfs-relationship-command-center", () => {
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
     expect(root.textContent).toContain("North Star weekend promotion recovery");
+    expect(root.textContent).toContain("RM Intel");
+    expect(root.textContent).toContain("Dashboard");
+    expect(root.textContent).toContain("Signals");
+    expect(root.textContent).toContain("Dashboards, KPIs, and predictions");
+    expect(root.textContent).toContain("Evidence > approval > outcome");
+    expect(root.textContent).toContain("Source records preserved");
+    expect(root.textContent).toContain("Human decision boundary");
+    expect(root.textContent).toContain("Predicted next state");
+    expect(root.textContent).toContain("Weekend recovery trend");
+    expect(root.textContent).toContain("Chat with agents");
+    expect(root.textContent).toContain("Employees and departments");
+    expect(root.textContent).toContain("Predicted stockout avoided");
     expect(root.textContent).toContain("North Star retail signals");
     expect(root.textContent).toContain("Product, batch, and stock");
     expect(root.textContent).toContain("Relationship inspection");
@@ -215,6 +227,11 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("WhatsApp-style");
     expect(root.textContent).toContain("Stockout avoided");
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
+    expect(root.querySelectorAll(".profile-card")).toHaveLength(6);
+    expect(root.querySelectorAll(".kpi-card")).toHaveLength(3);
+    expect(root.querySelectorAll(".forecast-point")).toHaveLength(4);
+    expect(root.querySelectorAll(".agent-thread")).toHaveLength(3);
+    expect(root.querySelectorAll(".team-channel")).toHaveLength(2);
     expect(root.querySelectorAll(".timeline li")).toHaveLength(5);
     expect(root.querySelectorAll(".evidence-card")).toHaveLength(4);
     expect(root.querySelectorAll(".history-card")).toHaveLength(2);
@@ -236,6 +253,46 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Readiness target");
     expect(root.textContent).not.toContain("North Star retail signals");
   });
+
+  it.each([
+    [
+      "air-mauritius-passenger",
+      "Air Mauritius passenger recovery tower",
+      "Claims, baggage, and disruption signals"
+    ],
+    [
+      "constance-hospitality",
+      "Constance guest revenue and operations loop",
+      "Reservations, FX, and sentiment signals"
+    ],
+    [
+      "afrasia-private-banking",
+      "AfrAsia relationship intelligence control tower",
+      "KYC, FX, and wealth relationship signals"
+    ],
+    [
+      "sunlife-guest-recovery",
+      "Sunlife guest recovery and experience loop",
+      "Guest recovery, staff, and service signals"
+    ]
+  ])(
+    "switches the demo terrain to %s without changing component code",
+    async (profileKey, expectedEyebrow, expectedRiskHeading) => {
+      const element = createComponent();
+      const root = element.shadowRoot;
+      const profileButton = Array.from(
+        root.querySelectorAll(".profile-card")
+      ).find((button) => button.dataset.profileKey === profileKey);
+
+      expect(profileButton).not.toBeUndefined();
+      profileButton.dispatchEvent(new CustomEvent("click"));
+      await flushPromises();
+
+      expect(root.textContent).toContain(expectedEyebrow);
+      expect(root.textContent).toContain(expectedRiskHeading);
+      expect(root.textContent).not.toContain("North Star retail signals");
+    }
+  );
 
   it.each([
     ["loading", "loading-view", "Loading North Star context"],

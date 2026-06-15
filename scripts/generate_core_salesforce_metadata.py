@@ -370,6 +370,14 @@ def render_permission_set(
     child(root, "hasActivationRequired", False)
     child(root, "label", permission_set["label"])
 
+    for tab_setting in permission_set.get("tabSettings", []):
+        tab_element = ET.SubElement(
+            root,
+            f"{{{METADATA_NAMESPACE}}}tabSettings",
+        )
+        child(tab_element, "tab", tab_setting["tab"])
+        child(tab_element, "visibility", tab_setting["visibility"])
+
     for object_definition in objects:
         permissions = ET.SubElement(
             root,

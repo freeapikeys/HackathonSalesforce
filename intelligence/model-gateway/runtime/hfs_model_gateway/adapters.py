@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
+import os
 from typing import Any
 
 
@@ -84,4 +85,32 @@ class MockBetaAdapter(ScriptedMockAdapter):
             mode=mode,
             latency_ms=3200,
             cost_usd=0.039,
+        )
+
+
+class DeepSeekOpenAICompatibleAdapter:
+    interface_version = "hfs.generate.v1"
+    adapter_key = "deepseek-openai-compatible-adapter"
+    api_key_env_var = "DEEPSEEK_API_KEY"
+    base_url = "https://api.deepseek.com"
+
+    def __init__(self, *, enabled: bool = False) -> None:
+        self.enabled = enabled
+        self.calls = 0
+
+    def generate(self, request: dict[str, Any]) -> AdapterResult:
+        self.calls += 1
+        if not self.enabled:
+            raise AdapterUnavailable(
+                "DeepSeek adapter is disabled by default; enable it only "
+                "after approved credentials, budget, and policy are configured."
+            )
+        if not os.environ.get(self.api_key_env_var):
+            raise AdapterUnavailable(
+                f"{self.api_key_env_var} is not configured."
+            )
+        raise AdapterUnavailable(
+            "DeepSeek live invocation is intentionally not implemented in the "
+            "demo runtime; use the LLM Open Connector or a governed production "
+            "adapter behind the same hfs.generate.v1 interface."
         )
