@@ -68,6 +68,22 @@ Profile mapping examples:
 | Customer complaint | Patient or visitor complaint    | Guest complaint           | Passenger complaint             | Client complaint                   |
 | Partner delay      | Lab, insurer, or supplier delay | Laundry or supplier delay | Airline or ground handler delay | Processor or insurer delay         |
 
+## Universal Operations Pack
+
+The hackathon build now keeps one four-profile demo pack available for judge
+questions:
+
+| Profile                           | Example signal                           | Main resources                     | Main partners                     | Protected actions                               |
+| --------------------------------- | ---------------------------------------- | ---------------------------------- | --------------------------------- | ----------------------------------------------- |
+| `profile:hospital-private-large`  | patient complaint, queue, stock, billing | room, queue, stock item            | lab, insurer, supplier            | restock, task, billing review, updates          |
+| `profile:airport-operations`      | passenger complaint, delay, baggage      | gate, belt, queue, equipment stock | airline, ground handler, caterer  | gate task, baggage follow-up, update            |
+| `profile:hotel-guest-operations`  | guest complaint, room readiness          | room, housekeeping queue, stock    | laundry, food vendor, maintenance | room task, voucher review, supplier follow-up   |
+| `profile:bank-service-operations` | client complaint, dispute, KYC delay     | case, account, queue, documents    | processor, KYC vendor, insurer    | dispute review, callback, compliance escalation |
+
+The flow stays identical for all four profiles: signal, evidence, primitive
+mapping, agent action plan, approval, MuleSoft execution, Slack update, and
+outcome. Only the profile wording changes.
+
 ## Signal Intake And Channel Roles
 
 Logia should not be pitched as "the user talks to a chatbot and the bot

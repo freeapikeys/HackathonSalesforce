@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from mock_runtime import (
     RetryPolicy,
+    RetryableDependencyFailure,
     SlackApprovalInteractionHandler,
     SlackStatusCommandHandler,
     WhatsAppProviderConfig,
@@ -22,6 +23,56 @@ class FakeSlackTransport:
     def post(self, webhook_url, payload):
         self.posts.append({"webhookUrl": webhook_url, "payload": payload})
         return {"messageId": "slack-message-001"}
+
+
+class FakeSlackListTransport:
+    def __init__(self, *, fail_create_item: bool = False) -> None:
+        self.fail_create_item = fail_create_item
+        self.created_lists = []
+        self.created_items = []
+        self.updated_items = []
+        self._item_counter = 0
+
+    def create_list(self, *, bot_token, name, schema):
+        self.created_lists.append(
+            {"botToken": bot_token, "name": name, "schema": schema}
+        )
+        return {
+            "ok": True,
+            "list": {
+                "id": "FLOGIAOPS",
+                "columns": [
+                    {"key": item["key"], "id": f"COL_{item['key'].upper()}"}
+                    for item in schema
+                ],
+            },
+        }
+
+    def create_item(self, *, bot_token, list_id, initial_fields):
+        if self.fail_create_item:
+            raise RetryableDependencyFailure("missing_scope")
+        self._item_counter += 1
+        item_id = f"RECLOGIA{self._item_counter:03d}"
+        self.created_items.append(
+            {
+                "botToken": bot_token,
+                "listId": list_id,
+                "initialFields": initial_fields,
+                "itemId": item_id,
+            }
+        )
+        return {"ok": True, "item": {"id": item_id}}
+
+    def update_item(self, *, bot_token, list_id, row_id, cells):
+        self.updated_items.append(
+            {
+                "botToken": bot_token,
+                "listId": list_id,
+                "rowId": row_id,
+                "cells": cells,
+            }
+        )
+        return {"ok": True}
 
 
 class FakeWhatsAppTransport:
@@ -333,6 +384,99 @@ class MockAdapterTest(unittest.TestCase):
             "slack-message-001",
             record["delivery"]["providerMessageId"],
         )
+        self.assertEqual(
+            "SKIPPED",
+            record["delivery"]["slackListMirror"]["status"],
+        )
+
+    def test_slack_list_mirror_can_create_operations_queue_item(self) -> None:
+        slack_transport = FakeSlackTransport()
+        list_transport = FakeSlackListTransport()
+        api = build_default_api(
+            slack_webhook_url="https://hooks.slack.test/services/demo",
+            slack_transport=slack_transport,
+            slack_bot_token="test-slack-bot-token",
+            slack_list_transport=list_transport,
+        )
+        example = api.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+        body = deepcopy(example["value"])
+        body["payload"].update(
+            {
+                "caseId": "case-logia-demo-001",
+                "profileId": "profile:airport-operations",
+                "module": "Inventory and supply",
+                "priority": "P1",
+                "dueTime": "15 minutes",
+                "expectedOutcome": "stockout avoided",
+            }
+        )
+
+        response = api.request(
+            "POST",
+            "/v1/actions/executions",
+            deepcopy(example["x-hfs-headers"]),
+            body,
+        )
+
+        self.assertEqual(202, response.status)
+        self.assertEqual(1, len(list_transport.created_lists))
+        self.assertEqual("Logia Operations Queue", list_transport.created_lists[0]["name"])
+        self.assertEqual(1, len(list_transport.created_items))
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        mirror = record["delivery"]["slackListMirror"]
+        self.assertEqual("MIRRORED", mirror["status"])
+        self.assertEqual("FLOGIAOPS", mirror["listId"])
+        self.assertEqual("RECLOGIA001", mirror["itemId"])
+        self.assertTrue(mirror["safeFieldsOnly"])
+        self.assertIn("slack_list_mirror", record["delivery"]["slackFeatures"])
+        initial_fields = list_transport.created_items[0]["initialFields"]
+        self.assertTrue(
+            any(field["column_id"] == "COL_CASE" for field in initial_fields)
+        )
+        self.assertFalse(
+            any("raw" in json.dumps(field).lower() for field in initial_fields)
+        )
+
+    def test_slack_list_mirror_failure_does_not_block_slack_alert(self) -> None:
+        slack_transport = FakeSlackTransport()
+        list_transport = FakeSlackListTransport(fail_create_item=True)
+        api = build_default_api(
+            slack_webhook_url="https://hooks.slack.test/services/demo",
+            slack_transport=slack_transport,
+            slack_bot_token="test-slack-bot-token",
+            slack_list_id_operations="FLOGIAOPS",
+            slack_list_columns={
+                "case": "COL_CASE",
+                "status": "COL_STATUS",
+                "outcome": "COL_OUTCOME",
+            },
+            slack_list_transport=list_transport,
+        )
+        example = api.contract.examples["operations"][
+            "executeApprovedAction"
+        ]["request"]
+
+        response = api.request(
+            "POST",
+            "/v1/actions/executions",
+            deepcopy(example["x-hfs-headers"]),
+            deepcopy(example["value"]),
+        )
+
+        self.assertEqual(202, response.status)
+        self.assertEqual(1, len(slack_transport.posts))
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        self.assertEqual("SENT", record["delivery"]["status"])
+        self.assertEqual(
+            "FAILED",
+            record["delivery"]["slackListMirror"]["status"],
+        )
+        self.assertIn(
+            "slack_list_fallback",
+            record["delivery"]["slackFeatures"],
+        )
 
     def test_slack_approval_message_can_include_block_kit_buttons(self) -> None:
         transport = FakeSlackTransport()
@@ -470,6 +614,67 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual(409, replay.status)
         self.assertEqual("SLACK_INTERACTION_REPLAYED", replay.body["code"])
 
+    def test_slack_approval_updates_linked_slack_list_item(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        list_transport = FakeSlackListTransport()
+        api = build_default_api(
+            slack_webhook_url="",
+            slack_bot_token="test-slack-bot-token",
+            slack_list_id_operations="FLOGIAOPS",
+            slack_list_columns={
+                "status": "COL_STATUS",
+                "outcome": "COL_OUTCOME",
+            },
+            slack_list_transport=list_transport,
+        )
+        api.write_back_adapter.register_approval(
+            approval_id="approval-logia-list-001",
+            tenant_key="tenant-hfs-demo",
+            recommendation_id="recommendation-logia-list-001",
+            action_id="action-logia-list-001",
+            status="PENDING",
+        )
+        api.write_back_adapter.slack_list_items_by_approval[
+            "approval-logia-list-001"
+        ] = ["RECLOGIA001"]
+        slack_payload = {
+            "type": "block_actions",
+            "user": {"username": "ops-manager"},
+            "actions": [
+                {
+                    "action_id": "logia_approve",
+                    "value": json.dumps(
+                        {
+                            "tenantKey": "tenant-hfs-demo",
+                            "recommendationId": "recommendation-logia-list-001",
+                            "approvalId": "approval-logia-list-001",
+                            "decisionStatus": "APPROVED",
+                        }
+                    ),
+                }
+            ],
+        }
+        signed_headers, raw_body = self.signed_slack_request(
+            signing_secret=signing_secret,
+            payload=slack_payload,
+        )
+        handler = SlackApprovalInteractionHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        decision = handler.handle(signed_headers, raw_body)
+
+        self.assertEqual(200, decision.status)
+        self.assertEqual("APPROVED", decision.body["decisionStatus"])
+        self.assertEqual(1, len(list_transport.updated_items))
+        update = list_transport.updated_items[0]
+        self.assertEqual("RECLOGIA001", update["rowId"])
+        self.assertTrue(
+            any(cell["column_id"] == "COL_STATUS" for cell in update["cells"])
+        )
+
     def test_slack_interaction_rejects_invalid_signature(self) -> None:
         signing_secret = "test-slack-signing-secret"
         api = build_default_api(slack_webhook_url="")
@@ -519,6 +724,65 @@ class MockAdapterTest(unittest.TestCase):
         self.assertEqual("ephemeral", response.body["response_type"])
         self.assertEqual("PENDING", response.body["decisionStatus"])
         self.assertIn("approval-logia-command-001", response.body["text"])
+
+    def test_slack_queue_command_reports_active_operations_summary(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        api.write_back_adapter.register_approval(
+            approval_id="approval-logia-command-pending",
+            tenant_key="tenant-hfs-demo",
+            recommendation_id="recommendation-logia-command-001",
+            action_id="action-logia-command-001",
+            status="PENDING",
+        )
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": "queue",
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("ephemeral", response.body["response_type"])
+        self.assertEqual(1, response.body["approvalCounts"]["PENDING"])
+        self.assertIn(
+            "approval-logia-command-pending",
+            response.body["pendingApprovalIds"],
+        )
+        self.assertIn("Logia queue summary", response.body["text"])
+
+    def test_slack_demo_command_returns_universal_profile_mapping(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": "demo airport",
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("profile:airport-operations", response.body["profileId"])
+        self.assertIn("gate", response.body["text"])
+        self.assertIn("Partner and vendor failure", response.body["modules"])
 
     def test_slack_status_command_rejects_invalid_signature(self) -> None:
         signing_secret = "test-slack-signing-secret"

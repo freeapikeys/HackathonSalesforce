@@ -203,8 +203,13 @@ Slack approval:
   returned `404` there;
 - the local mock runtime and harness validate Slack signatures and keep
   protected actions blocked until a signed approve decision is processed;
-- add `/logia status <approval-id>` as a signed slash-command status check for
-  internal managers;
+- add `/logia status <case-id|approval-id>` as a signed slash-command status
+  check for internal managers;
+- add `/logia queue` as a signed slash-command summary of active approvals and
+  safe queue state;
+- add `/logia demo hospital|airport|hotel|bank` as a safe four-profile preview
+  command that shows the same universal primitives under different business
+  wording;
 - record delivery features such as webhook/mock delivery, Block Kit approval,
   signed interactivity, approve/reject/modify, and thread-ready metadata;
 - Salesforce command-center approval remains the fallback when no public Slack
@@ -212,13 +217,21 @@ Slack approval:
 - `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` are optional enhancers for
   live message updates, threads, and ephemeral replies. Do not claim those are
   live unless configured and tested.
+- Slack Lists are optional paid-plan mirrors, not the system of record. The
+  mock runtime can create `Logia Operations Queue`, create safe list items, and
+  update mirrored status after approval when `SLACK_BOT_TOKEN`, `lists:write`,
+  and either returned or configured `SLACK_LIST_COLUMN_*` IDs are available.
+  If Lists are unavailable, Slack delivery still works and the mirror result is
+  recorded as skipped or failed.
 
 Acceptance:
 
 - unapproved action execution returns denial;
 - approved action execution returns queued, success, or honest mock status with
   correlation IDs;
-- channel results are visible in the command center.
+- channel results are visible in the command center;
+- Slack Lists mirror only safe fields: case, profile, module, priority, status,
+  owner role, due time, approval ID, action ID, evidence count, and outcome.
 
 ## Workstream 4A: Customer And Staff Signal Intake
 
@@ -442,6 +455,12 @@ Focused checks:
       `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 - [x] Rehearse CloudHub Slack command and button payload acknowledgements
       through the active rewritten ingress route.
+- [x] Add `/logia queue` and `/logia demo hospital|airport|hotel|bank` command
+      handling in the signed mock runtime and CloudHub acknowledgement route.
+- [x] Add optional Slack Lists mirror support for `Logia Operations Queue`,
+      including create-list, create-item, status-update, and fallback tests.
+- [ ] Configure live Slack Lists in the workspace only if the Pro plan and
+      `lists:write` scope are ready; Salesforce remains the source of truth.
 
 ### Salesforce Core And Agentforce Recommendation
 

@@ -70,7 +70,11 @@ class TwilioWebhookAppTest(unittest.TestCase):
         self.assertIn("process-slack-interaction", config)
         self.assertIn("process-slack-command", config)
         self.assertIn("Salesforce remains the system of record", config)
-        self.assertIn("Try `/logia status <approval-id>`", config)
+        self.assertIn("Try `/logia status <case-id|approval-id>`", config)
+        self.assertIn("`/logia queue`", config)
+        self.assertIn("`/logia demo hospital|airport|hotel|bank`", config)
+        self.assertIn("profile:airport-operations", config)
+        self.assertIn("Slack mirrors safe case", config)
 
     def test_mule_app_does_not_commit_runtime_secrets(self) -> None:
         combined = "\n".join(

@@ -126,8 +126,10 @@ https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twili
 
 ## Slack Interactivity
 
-Use the same free CloudHub app for Slack. No paid Slack plan, Slack Lists,
-ngrok, or tunnel is needed after this Mule app is deployed.
+Use the same free CloudHub app for Slack. No paid Slack plan, ngrok, or tunnel
+is needed for Slack buttons and slash-command acknowledgements after this Mule
+app is deployed. Slack Lists are optional paid-plan mirrors for teams that have
+`lists:write`.
 
 The verified live Slack Request URL is the same active CloudHub ingress used by
 WhatsApp:
@@ -149,7 +151,19 @@ and the Mule app routes Slack form payloads by payload shape at the internal
 root path. That route is the proven no-cost demo URL.
 
 The endpoints return fast ephemeral Slack acknowledgements. This prevents
-Slack timeouts and keeps the live demo free. The Salesforce command center
-remains the system of record for approval state, action execution, and outcome
-tracking until the CloudHub flow is extended to write signed approval decisions
-back to Salesforce.
+Slack timeouts and keeps the live demo free. Supported command text:
+
+```text
+/logia status <case-id|approval-id>
+/logia queue
+/logia demo hospital|airport|hotel|bank
+```
+
+The Salesforce command center remains the system of record for approval state,
+action execution, and outcome tracking until the CloudHub flow is extended to
+write signed approval decisions back to Salesforce.
+
+Slack Lists support lives in the mock runtime/write-back adapter, not in this
+public acknowledgement route. If the paid List mirror is configured, Logia uses
+safe fields only and records skipped/failed mirror status without blocking the
+Slack alert.

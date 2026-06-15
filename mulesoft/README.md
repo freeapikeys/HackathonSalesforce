@@ -154,7 +154,8 @@ Slack has four MVP roles:
 1. internal alert delivery through `SLACK_WEBHOOK_URL`;
 2. Block Kit approval cards with `Approve`, `Reject`, and `Modify`;
 3. signed interactivity handling through `SLACK_SIGNING_SECRET`;
-4. `/logia status <approval-id>` slash-command status checks.
+4. `/logia status <case-id|approval-id>`, `/logia queue`, and
+   `/logia demo hospital|airport|hotel|bank` slash-command checks.
 
 Use `SLACK_WEBHOOK_URL` only as a local or Anypoint secure property. If it is
 configured, the runtime posts the approved message to the webhook and records
@@ -173,7 +174,9 @@ revise the recommendation in Salesforce because Salesforce currently supports
 only `APPROVED` and `REJECTED` approval decisions.
 
 For the free CloudHub route, use the same deployed Mule app. No paid Slack plan,
-Slack Lists, ngrok, or tunnel is required after the app is deployed.
+ngrok, or tunnel is required for Slack messages, buttons, or slash-command
+acknowledgements after the app is deployed. Slack Lists are different: they are
+optional paid-plan mirrors and require `lists:write`.
 
 Slack App **Interactivity & Shortcuts** Request URL:
 
@@ -206,9 +209,40 @@ The runtime now records `slackFeatures` in delivery evidence, for example
 presentation-safe capabilities, not proof that Slack has executed protected
 business work without approval.
 
-The `/logia status` slash command uses the same signed request validation as
-button interactions and returns only safe approval/action readiness details. It
-does not expose raw complaint text, phone numbers, patient details, or secrets.
+The `/logia` slash commands use the same signed request validation as button
+interactions and return only safe approval/action readiness details. They do
+not expose raw complaint text, phone numbers, patient details, or secrets.
+
+- `/logia status <case-id|approval-id>` checks safe approval or delivery state.
+- `/logia queue` summarizes active approvals and queue state.
+- `/logia demo hospital|airport|hotel|bank` previews the same universal pack
+  under a judge-readable profile.
+
+Optional Slack Lists support mirrors queue work into `Logia Operations Queue`.
+Salesforce remains the source of truth. The Slack app needs `lists:write` to
+create/update the mirror; `lists:read` is useful when inspecting existing list
+and column IDs. The mirror writes safe fields only:
+case, profile, module, priority, status, owner role, due time, approval ID,
+action ID, evidence count, and outcome. Configure it outside Git with:
+
+- `SLACK_BOT_TOKEN`
+- `SLACK_LIST_ID_OPERATIONS`, optional if the runtime should attempt list
+  creation
+- `SLACK_LIST_COLUMN_CASE`
+- `SLACK_LIST_COLUMN_PROFILE`
+- `SLACK_LIST_COLUMN_MODULE`
+- `SLACK_LIST_COLUMN_PRIORITY`
+- `SLACK_LIST_COLUMN_STATUS`
+- `SLACK_LIST_COLUMN_OWNER`
+- `SLACK_LIST_COLUMN_DUE`
+- `SLACK_LIST_COLUMN_APPROVAL`
+- `SLACK_LIST_COLUMN_ACTION`
+- `SLACK_LIST_COLUMN_EVIDENCE_COUNT`
+- `SLACK_LIST_COLUMN_OUTCOME`
+
+If the workspace is unpaid, `lists:write` is missing, or column IDs are absent,
+the approved Slack alert still sends and the delivery record marks the List
+mirror as skipped or failed.
 
 For an Anypoint build, keep the same Process API boundary and implement the
 Slack write-back as a Mule flow or connector-backed adapter behind

@@ -590,18 +590,37 @@ file before editing.
 - [x] Add Logia Slack delivery capability metadata for webhook/mock delivery,
       Block Kit approval, signed interactivity, approve/reject/modify, and
       thread-ready status.
-- [x] Add signed `/logia status <approval-id>` slash-command handling in the
-      MuleSoft mock runtime for safe internal approval/action status checks.
+- [x] Add signed `/logia status <case-id|approval-id>` slash-command handling
+      in the MuleSoft mock runtime for safe internal approval/action status
+      checks.
 - [x] Define the verified public free CloudHub Slack App Interactivity Request
       URL and `/logia` slash-command Request URL:
       `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
 - [x] Store optional `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` outside Git for
       live `chat.postMessage`, `chat.update`, threaded replies, or ephemeral
       Slack messages beyond the webhook/harness proof.
-- [ ] If bot-token Slack delivery is needed, invite the bot to the target
+- [x] If bot-token Slack delivery is needed, invite the bot to the target
       channel or reinstall the app with the required channel scopes. Current
-      live smoke test confirms webhook delivery; bot-token posting is blocked
-      by Slack channel scope/membership.
+      live smoke test confirms bot-token posting works after the target channel
+      was made public and the bot was invited.
+- [ ] Rename the live Slack app/bot/channel manually to `Logia` and
+      `#logia-demo`; repository labels are Logia, but Slack workspace display
+      names are controlled in the Slack UI.
+- [x] Add signed `/logia queue` handling in the mock runtime so internal
+      managers can see a safe operations queue summary without exposing raw
+      customer text or contact details.
+- [x] Add signed `/logia demo hospital|airport|hotel|bank` handling in the mock
+      runtime and CloudHub acknowledgement route so the same universal pack can
+      be shown for all four judge-readable profiles.
+- [x] Add optional Slack Lists mirror support behind `SLACK_BOT_TOKEN`,
+      `SLACK_LIST_ID_OPERATIONS`, and `SLACK_LIST_COLUMN_*` configuration.
+      Salesforce remains the source of truth.
+- [x] Add Slack Lists fallback behavior: if the workspace is unpaid, the
+      `lists:write` scope is missing, or column IDs are absent, Slack alerts
+      still send and delivery evidence records the mirror failure or skip.
+- [ ] Configure live Slack Lists only if the Pro workspace and `lists:write`
+      scope are ready; otherwise use Slack messages/threads and Salesforce
+      command-center tasks for the demo.
 - [x] Rehearse CloudHub Slack command and button payload acknowledgements
       through the active rewritten ingress route.
 - [x] Package/deploy the WhatsApp webhook Mule app to CloudHub and verify the

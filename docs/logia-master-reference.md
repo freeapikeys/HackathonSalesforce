@@ -183,7 +183,7 @@ business manager approval unless the demo clearly marks them as local mocks.
 | WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | Official Meta WhatsApp Cloud API is active; Twilio is legacy backup only |
 | Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                  |
 | Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                               |
-| Slack                       | Internal staff and manager coordination                  | Live outbound delivery works when webhook is configured                  |
+| Slack                       | Internal staff and manager coordination                  | Live webhook and bot-token posting work; Lists are optional paid mirror  |
 | WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live Meta receipt works; approved replies still need final rehearsal     |
 | Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured            |
 
@@ -192,8 +192,10 @@ Recommended hackathon stance:
 - WhatsApp should be the customer-facing intake story.
 - Slack should be the internal worker and manager coordination story.
 - Slack supports internal alerts, Block Kit approval cards, signed
-  approve/reject/modify decisions, safe `/logia status <approval-id>` checks,
-  and delivery/audit metadata in the local runtime.
+  approve/reject/modify decisions, safe
+  `/logia status <case-id|approval-id>`, `/logia queue`, and
+  `/logia demo hospital|airport|hotel|bank` checks, plus delivery/audit
+  metadata in the local runtime.
 - Slack approve/reject buttons should be the manager approval story when the
   Slack App interactivity Request URL is configured. The verified free CloudHub
   URL is:
@@ -204,6 +206,9 @@ Recommended hackathon stance:
   threaded replies, and ephemeral messages with `SLACK_BOT_TOKEN` and
   `SLACK_CHANNEL_ID`; do not claim message-update or thread features unless
   those credentials are configured and tested.
+- Optional Slack Lists mode can mirror safe queue fields into
+  `Logia Operations Queue` on a paid Slack workspace with `lists:write`.
+  Salesforce remains the source of truth; the list is only a cockpit mirror.
 - WhatsApp outbound may be used for urgent internal mobile alerts or approved
   customer-safe replies in the demo.
 - Customer-facing WhatsApp replies should be approved, privacy-safe, and
@@ -213,6 +218,52 @@ Recommended hackathon stance:
 - Email is useful for suppliers, insurers, vendors, or formal follow-up. The
   current repo has a protected mock vendor-email action; do not claim live
   email delivery until credentials and Anypoint/SMTP delivery are configured.
+
+## Slack Cockpit
+
+Slack is the internal operating layer, not the database. Use it to make the
+demo feel alive for managers and staff:
+
+- alerts: role-routed internal updates for operations owners;
+- approval cards: `Approve`, `Reject`, and `Modify` Block Kit buttons;
+- commands: `/logia status <case-id|approval-id>`, `/logia queue`, and
+  `/logia demo hospital|airport|hotel|bank`;
+- threads: one case thread can hold recommendation, approval, execution, and
+  outcome updates when bot-token threading is configured;
+- Lists: optional paid mirror named `Logia Operations Queue`.
+
+The Slack List mirror uses safe fields only:
+
+| Field            | Meaning                                          |
+| ---------------- | ------------------------------------------------ |
+| `Case`           | Work item or correlation ID                      |
+| `Profile`        | Active profile, for example `profile:airport-*`  |
+| `Module`         | Universal issue module                           |
+| `Priority`       | Operational priority label                       |
+| `Status`         | Pending Approval, Approved, Executing, or Failed |
+| `Owner Role`     | Role alias, not a personal user                  |
+| `Due Time`       | Demo-safe due window                             |
+| `Approval ID`    | Approval record ID                               |
+| `Action ID`      | Action record ID                                 |
+| `Evidence Count` | Count only, not raw evidence text                |
+| `Outcome`        | Safe outcome label                               |
+
+Slack Lists require a paid Slack workspace and `lists:write`. If the List API
+fails because the workspace is unpaid, the scope is missing, or column IDs are
+not configured, Logia still sends the Slack message and records the List mirror
+as skipped or failed. That is acceptable for the demo if stated honestly.
+
+Universal demo command examples:
+
+```text
+/logia demo hospital
+/logia demo airport
+/logia demo hotel
+/logia demo bank
+```
+
+Each command uses the same primitive flow: signal, evidence, primitive mapping,
+agent action plan, approval, MuleSoft execution, Slack update, and outcome.
 
 ## End-To-End Logic
 
@@ -377,16 +428,33 @@ Slack:
 [Environment]::SetEnvironmentVariable("SLACK_SIGNING_SECRET", "<slack-signing-secret>", "User")
 [Environment]::SetEnvironmentVariable("SLACK_BOT_TOKEN", "<optional-bot-token>", "User")
 [Environment]::SetEnvironmentVariable("SLACK_CHANNEL_ID", "<optional-channel-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_ID_OPERATIONS", "<optional-list-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_CASE", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_PROFILE", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_MODULE", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_PRIORITY", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_STATUS", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_OWNER", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_DUE", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_APPROVAL", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_ACTION", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_EVIDENCE_COUNT", "<optional-column-id>", "User")
+[Environment]::SetEnvironmentVariable("SLACK_LIST_COLUMN_OUTCOME", "<optional-column-id>", "User")
 $env:SLACK_WEBHOOK_URL = [Environment]::GetEnvironmentVariable("SLACK_WEBHOOK_URL", "User")
 $env:SLACK_SIGNING_SECRET = [Environment]::GetEnvironmentVariable("SLACK_SIGNING_SECRET", "User")
 $env:SLACK_BOT_TOKEN = [Environment]::GetEnvironmentVariable("SLACK_BOT_TOKEN", "User")
 $env:SLACK_CHANNEL_ID = [Environment]::GetEnvironmentVariable("SLACK_CHANNEL_ID", "User")
+$env:SLACK_LIST_ID_OPERATIONS = [Environment]::GetEnvironmentVariable("SLACK_LIST_ID_OPERATIONS", "User")
 ```
 
 `SLACK_WEBHOOK_URL` is enough for approved outbound alerts.
 `SLACK_SIGNING_SECRET` is required for real approval buttons and `/logia`
 status commands. `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` are optional
 enhancements for message updates, threads, and ephemeral replies.
+`SLACK_LIST_ID_OPERATIONS` and the `SLACK_LIST_COLUMN_*` values are optional
+paid Slack Lists enhancers. If no list ID exists, the runtime can attempt to
+create `Logia Operations Queue` and use returned column IDs for that process,
+but for a stable rehearsal you should save the list and column IDs outside Git.
 
 Bot-token mode also requires Slack channel access. If `chat.postMessage` returns
 `channel_not_found`, invite the app/bot to the channel or reinstall the app with
@@ -404,8 +472,8 @@ https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twili
 ```
 
 This is the free route: it uses the deployed CloudHub Mule app. Do not use
-Slack Lists for hackathon task tracking; keep tasks and approvals in
-Salesforce.
+Slack Lists as the task database; keep tasks and approvals in Salesforce and
+use Lists only as a paid mirror.
 
 WhatsApp through Meta Cloud API:
 
@@ -504,6 +572,8 @@ What it does not prove yet:
 - an in-command-center form where a judge types a fresh complaint;
 - live Slack button clicks unless the Slack App Interactivity Request URL is
   configured to reach the runtime endpoint.
+- live Slack Lists rendering unless the paid workspace, `lists:write` scope,
+  list ID, and column IDs are configured.
 
 ## Salesforce Org
 
@@ -565,13 +635,18 @@ Highest-value tasks still open:
 7. Configure Slack App Interactivity and the `/logia` slash command with the
    verified public Request URL if the live demo should use real Slack clicks:
    `https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twilio/whatsapp/inbound`.
-8. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
-   are configured safely; the repo currently has protected mock vendor email.
-9. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for
-   multilingual complaint scripts, fake voice-note transcripts, document/image
-   evidence scenarios, expected agent routing, judge-sector mappings, and
-   strongest/backup pitch picks.
-10. Keep the cross-sector cards aligned with the same global primitives across
+8. Rename the live Slack app/bot/channel to `Logia` and `#logia-demo` in the
+   Slack UI before the final pitch.
+9. Configure live Slack Lists only if the paid workspace, `lists:write` scope,
+   list ID, and column IDs are ready. Otherwise use Slack messages/threads plus
+   Salesforce command-center tasks.
+10. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
+    are configured safely; the repo currently has protected mock vendor email.
+11. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for
+    multilingual complaint scripts, fake voice-note transcripts, document/image
+    evidence scenarios, expected agent routing, judge-sector mappings, and
+    strongest/backup pitch picks.
+12. Keep the cross-sector cards aligned with the same global primitives across
     airport, hotel, banking, supermarket, and cruise operations.
 
 ## Team Ownership

@@ -22,6 +22,123 @@ CONTRACT_VERSION = "1.0.0"
 USE_ENV_SLACK_WEBHOOK = object()
 USE_ENV_WHATSAPP_PROVIDER = object()
 
+SLACK_LIST_COLUMN_ENV = {
+    "case": "SLACK_LIST_COLUMN_CASE",
+    "profile": "SLACK_LIST_COLUMN_PROFILE",
+    "module": "SLACK_LIST_COLUMN_MODULE",
+    "priority": "SLACK_LIST_COLUMN_PRIORITY",
+    "status": "SLACK_LIST_COLUMN_STATUS",
+    "owner": "SLACK_LIST_COLUMN_OWNER",
+    "due": "SLACK_LIST_COLUMN_DUE",
+    "approval": "SLACK_LIST_COLUMN_APPROVAL",
+    "action": "SLACK_LIST_COLUMN_ACTION",
+    "evidence_count": "SLACK_LIST_COLUMN_EVIDENCE_COUNT",
+    "outcome": "SLACK_LIST_COLUMN_OUTCOME",
+}
+
+SLACK_OPERATIONS_LIST_SCHEMA = [
+    {
+        "key": "case",
+        "name": "Case",
+        "type": "text",
+        "is_primary_column": True,
+    },
+    {"key": "profile", "name": "Profile", "type": "text"},
+    {"key": "module", "name": "Module", "type": "text"},
+    {"key": "priority", "name": "Priority", "type": "text"},
+    {"key": "status", "name": "Status", "type": "text"},
+    {"key": "owner", "name": "Owner Role", "type": "text"},
+    {"key": "due", "name": "Due Time", "type": "text"},
+    {"key": "approval", "name": "Approval ID", "type": "text"},
+    {"key": "action", "name": "Action ID", "type": "text"},
+    {"key": "evidence_count", "name": "Evidence Count", "type": "text"},
+    {"key": "outcome", "name": "Outcome", "type": "text"},
+]
+
+UNIVERSAL_PROFILE_DEMOS = {
+    "hospital": {
+        "profileId": "profile:hospital-private-large",
+        "label": "Large private hospital",
+        "signal": "Patient complaint plus queue, room, stock, partner, and billing pressure.",
+        "resources": ["resource:room", "resource:stock-item", "resource:service-counter"],
+        "partners": ["lab", "insurer", "supplier"],
+        "protectedActions": [
+            "restock request",
+            "service task",
+            "billing review",
+            "Slack/WhatsApp update",
+        ],
+        "modules": [
+            "Complaint and trust",
+            "Capacity and availability",
+            "Inventory and supply",
+            "Billing and financial exposure",
+            "Partner and vendor failure",
+        ],
+    },
+    "airport": {
+        "profileId": "profile:airport-operations",
+        "label": "Airport operations",
+        "signal": "Passenger complaint plus delay, gate, baggage, queue, and equipment stock pressure.",
+        "resources": ["resource:gate", "resource:baggage-belt", "resource:service-counter"],
+        "partners": ["airline", "ground handler", "caterer"],
+        "protectedActions": [
+            "gate task",
+            "baggage follow-up",
+            "passenger update",
+            "equipment request",
+        ],
+        "modules": [
+            "Complaint and trust",
+            "Capacity and availability",
+            "Partner and vendor failure",
+            "Communication and escalation",
+            "Outcome learning",
+        ],
+    },
+    "hotel": {
+        "profileId": "profile:hotel-guest-operations",
+        "label": "Hotel guest operations",
+        "signal": "Guest complaint plus room readiness, housekeeping, linen/food stock, and billing issue.",
+        "resources": ["resource:room", "resource:stock-item", "resource:service-counter"],
+        "partners": ["laundry", "food vendor", "maintenance"],
+        "protectedActions": [
+            "room task",
+            "voucher review",
+            "supplier follow-up",
+            "guest update",
+        ],
+        "modules": [
+            "Complaint and trust",
+            "Staff coordination",
+            "Inventory and supply",
+            "Billing and financial exposure",
+            "Communication and escalation",
+        ],
+    },
+    "bank": {
+        "profileId": "profile:bank-service-operations",
+        "label": "Bank service operations",
+        "signal": "Client complaint plus dispute, KYC delay, queue, document evidence, and compliance risk.",
+        "resources": ["resource:case", "resource:account", "resource:service-counter"],
+        "partners": ["payment processor", "KYC vendor", "insurer"],
+        "protectedActions": [
+            "dispute review",
+            "callback",
+            "compliance escalation",
+            "partner follow-up",
+        ],
+        "modules": [
+            "Complaint and trust",
+            "Evidence quality and uncertainty",
+            "Risk, safety, and compliance",
+            "Financial impact",
+            "Partner and vendor failure",
+        ],
+    },
+}
+UNIVERSAL_PROFILE_DEMOS["banking"] = UNIVERSAL_PROFILE_DEMOS["bank"]
+
 
 def canonical_hash(value: dict[str, Any]) -> str:
     canonical = json.dumps(
@@ -124,6 +241,130 @@ class SlackWebhookTransport:
                 f"Slack webhook returned HTTP {status_code}."
             )
         return {"statusCode": status_code, "body": response_body}
+
+
+class SlackListTransport:
+    """Mirrors safe task fields into Slack Lists when paid scopes exist."""
+
+    def create_list(
+        self,
+        *,
+        bot_token: str,
+        name: str,
+        schema: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        return self._post(
+            "slackLists.create",
+            bot_token=bot_token,
+            body={
+                "name": name,
+                "todo_mode": True,
+                "schema": deepcopy(schema),
+                "description_blocks": [
+                    self.rich_text_block(
+                        "Safe mirror of Logia operations work. "
+                        "Salesforce remains the source of truth."
+                    )
+                ],
+            },
+        )
+
+    def create_item(
+        self,
+        *,
+        bot_token: str,
+        list_id: str,
+        initial_fields: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        return self._post(
+            "slackLists.items.create",
+            bot_token=bot_token,
+            body={
+                "list_id": list_id,
+                "initial_fields": deepcopy(initial_fields),
+            },
+        )
+
+    def update_item(
+        self,
+        *,
+        bot_token: str,
+        list_id: str,
+        row_id: str,
+        cells: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        prepared_cells = []
+        for cell in cells:
+            prepared = deepcopy(cell)
+            prepared["row_id"] = row_id
+            prepared_cells.append(prepared)
+        return self._post(
+            "slackLists.items.update",
+            bot_token=bot_token,
+            body={
+                "list_id": list_id,
+                "cells": prepared_cells,
+            },
+        )
+
+    def _post(
+        self,
+        method_name: str,
+        *,
+        bot_token: str,
+        body: dict[str, Any],
+    ) -> dict[str, Any]:
+        request = urllib.request.Request(
+            f"https://slack.com/api/{method_name}",
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {bot_token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                response_body = response.read().decode("utf-8", errors="replace")
+                status_code = getattr(response, "status", response.getcode())
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            raise RetryableDependencyFailure(
+                f"Slack Lists API {method_name} request failed."
+            ) from error
+
+        if status_code < 200 or status_code >= 300:
+            raise RetryableDependencyFailure(
+                f"Slack Lists API {method_name} returned HTTP {status_code}."
+            )
+        try:
+            parsed = json.loads(response_body or "{}")
+        except json.JSONDecodeError as error:
+            raise RetryableDependencyFailure(
+                f"Slack Lists API {method_name} returned invalid JSON."
+            ) from error
+        if not parsed.get("ok", False):
+            raise RetryableDependencyFailure(
+                "Slack Lists API "
+                f"{method_name} failed: {parsed.get('error', 'unknown_error')}."
+            )
+        return parsed
+
+    @staticmethod
+    def rich_text_block(text: str) -> dict[str, Any]:
+        return {
+            "type": "rich_text",
+            "elements": [
+                {
+                    "type": "rich_text_section",
+                    "elements": [
+                        {
+                            "type": "text",
+                            "text": text[:3000],
+                        }
+                    ],
+                }
+            ],
+        }
 
 
 class TwilioWhatsAppTransport:
@@ -455,16 +696,26 @@ class MockWriteBackAdapter:
         *,
         slack_webhook_url: str | None = None,
         slack_transport: SlackWebhookTransport | None = None,
+        slack_bot_token: str | None = None,
+        slack_list_id_operations: str | None = None,
+        slack_list_columns: dict[str, str] | None = None,
+        slack_list_transport: SlackListTransport | None = None,
         whatsapp_provider_config: WhatsAppProviderConfig | None = None,
         whatsapp_transport: TwilioWhatsAppTransport | None = None,
     ) -> None:
-        self.approvals: dict[str, dict[str, str]] = {}
+        self.approvals: dict[str, dict[str, Any]] = {}
         self.source_records: dict[str, dict[str, Any]] = {}
         self._executions: dict[
             tuple[str, str], tuple[str, dict[str, Any]]
         ] = {}
         self.slack_webhook_url = slack_webhook_url
         self.slack_transport = slack_transport or SlackWebhookTransport()
+        self.slack_bot_token = slack_bot_token
+        self.slack_list_id_operations = slack_list_id_operations
+        self.slack_list_columns = slack_list_columns or {}
+        self.slack_list_transport = slack_list_transport or SlackListTransport()
+        self.slack_list_items_by_action: dict[str, str] = {}
+        self.slack_list_items_by_approval: dict[str, list[str]] = {}
         self.whatsapp_provider_config = whatsapp_provider_config
         self.whatsapp_transport = (
             whatsapp_transport or TwilioWhatsAppTransport()
@@ -512,7 +763,66 @@ class MockWriteBackAdapter:
         approval["status"] = decision_status
         approval["decisionNotes"] = decision_notes
         approval["decidedAt"] = timestamp()
+        approval["slackListMirror"] = self.update_slack_list_status_for_approval(
+            approval_id=approval_id,
+            status="Approved" if decision_status == "APPROVED" else "Rejected",
+            outcome=decision_notes,
+        )
         return deepcopy(approval)
+
+    def update_slack_list_status_for_approval(
+        self,
+        *,
+        approval_id: str,
+        status: str,
+        outcome: str,
+    ) -> dict[str, Any]:
+        item_ids = self.slack_list_items_by_approval.get(approval_id, [])
+        if not item_ids:
+            return {
+                "status": "SKIPPED",
+                "fallbackReason": (
+                    "No Slack List mirror item is linked to this approval."
+                ),
+            }
+        context = self._slack_operations_list_context()
+        if context["status"] != "READY":
+            return context
+
+        cells = self._slack_list_cells(
+            {
+                "status": status,
+                "outcome": outcome,
+            },
+            context["columns"],
+        )
+        if not cells:
+            return {
+                "status": "SKIPPED",
+                "fallbackReason": (
+                    "Slack List status/outcome column IDs are not configured."
+                ),
+            }
+        try:
+            for item_id in item_ids:
+                self.slack_list_transport.update_item(
+                    bot_token=self.slack_bot_token or "",
+                    list_id=context["listId"],
+                    row_id=item_id,
+                    cells=cells,
+                )
+        except RetryableDependencyFailure as error:
+            return {
+                "status": "FAILED",
+                "fallbackReason": str(error),
+                "listId": context["listId"],
+                "rowIds": deepcopy(item_ids),
+            }
+        return {
+            "status": "UPDATED",
+            "listId": context["listId"],
+            "rowIds": deepcopy(item_ids),
+        }
 
     def execute(self, action: dict[str, Any]) -> dict[str, Any]:
         approval = self.approvals.get(action["approvalId"])
@@ -841,6 +1151,18 @@ class MockWriteBackAdapter:
             ),
             "threadKey": slack_payload.get("threadKey"),
         }
+        delivery["slackListMirror"] = self._mirror_slack_list_item(
+            action=action,
+            slack_payload=slack_payload,
+            delivery_status=status,
+        )
+        if delivery["slackListMirror"]["status"] == "MIRRORED":
+            slack_features.append("slack_list_mirror")
+        elif delivery["slackListMirror"]["status"] == "FAILED" or (
+            delivery["slackListMirror"].get("listId") is not None
+            or self.slack_bot_token
+        ):
+            slack_features.append("slack_list_fallback")
         source_record = {
             "sourceRecordId": source_record_id,
             "sourceSystem": action["sourceSystem"],
@@ -872,6 +1194,224 @@ class MockWriteBackAdapter:
             "metricValue": 1 if outcome_status == "SUCCESS" else 0,
         }
         return source_record, outcome
+
+    def _mirror_slack_list_item(
+        self,
+        *,
+        action: dict[str, Any],
+        slack_payload: dict[str, Any],
+        delivery_status: str,
+    ) -> dict[str, Any]:
+        context = self._slack_operations_list_context()
+        if context["status"] != "READY":
+            return context
+
+        values = self._slack_list_safe_values(
+            action=action,
+            slack_payload=slack_payload,
+            delivery_status=delivery_status,
+        )
+        initial_fields = self._slack_list_cells(values, context["columns"])
+        if not initial_fields:
+            return {
+                "status": "SKIPPED",
+                "fallbackReason": (
+                    "Slack List column IDs are not configured for safe fields."
+                ),
+            }
+        try:
+            response = self.slack_list_transport.create_item(
+                bot_token=self.slack_bot_token or "",
+                list_id=context["listId"],
+                initial_fields=initial_fields,
+            )
+        except RetryableDependencyFailure as error:
+            return {
+                "status": "FAILED",
+                "fallbackReason": str(error),
+                "listId": context["listId"],
+            }
+
+        item_id = self._extract_slack_list_item_id(response)
+        if item_id:
+            self.slack_list_items_by_action[action["actionId"]] = item_id
+            self.slack_list_items_by_approval.setdefault(
+                action["approvalId"],
+                [],
+            ).append(item_id)
+        return {
+            "status": "MIRRORED",
+            "listId": context["listId"],
+            "itemId": item_id,
+            "fieldKeys": sorted(values.keys()),
+            "safeFieldsOnly": True,
+        }
+
+    def _slack_operations_list_context(self) -> dict[str, Any]:
+        if not self.slack_bot_token:
+            return {
+                "status": "SKIPPED",
+                "fallbackReason": "SLACK_BOT_TOKEN is not configured.",
+            }
+        if self.slack_list_id_operations:
+            if not self.slack_list_columns:
+                return {
+                    "status": "SKIPPED",
+                    "fallbackReason": (
+                        "SLACK_LIST_ID_OPERATIONS is set, but no Slack List "
+                        "column IDs are configured."
+                    ),
+                    "listId": self.slack_list_id_operations,
+                }
+            return {
+                "status": "READY",
+                "listId": self.slack_list_id_operations,
+                "columns": deepcopy(self.slack_list_columns),
+            }
+
+        try:
+            response = self.slack_list_transport.create_list(
+                bot_token=self.slack_bot_token,
+                name="Logia Operations Queue",
+                schema=SLACK_OPERATIONS_LIST_SCHEMA,
+            )
+        except RetryableDependencyFailure as error:
+            return {
+                "status": "FAILED",
+                "fallbackReason": str(error),
+            }
+
+        list_id = self._extract_slack_list_id(response)
+        columns = self._extract_slack_list_columns(response)
+        if not list_id or not columns:
+            return {
+                "status": "FAILED",
+                "fallbackReason": (
+                    "Slack Lists create response did not include a usable "
+                    "list ID and column IDs."
+                ),
+            }
+        self.slack_list_id_operations = list_id
+        self.slack_list_columns = columns
+        return {
+            "status": "READY",
+            "listId": list_id,
+            "columns": deepcopy(columns),
+        }
+
+    def _slack_list_safe_values(
+        self,
+        *,
+        action: dict[str, Any],
+        slack_payload: dict[str, Any],
+        delivery_status: str,
+    ) -> dict[str, str]:
+        approval = self.approvals.get(action["approvalId"], {})
+        approval_status = approval.get("status", "UNKNOWN")
+        queue_status = slack_payload.get("queueStatus")
+        if not queue_status:
+            if approval_status == "PENDING":
+                queue_status = "Pending Approval"
+            elif delivery_status == "FAILED":
+                queue_status = "Failed"
+            else:
+                queue_status = "Executing"
+        return {
+            "case": self._safe_slack_list_text(
+                slack_payload.get("caseId")
+                or slack_payload.get("workItemId")
+                or action["correlationId"]
+            ),
+            "profile": self._safe_slack_list_text(
+                slack_payload.get("profileId") or "profile:hospital-private-large"
+            ),
+            "module": self._safe_slack_list_text(
+                slack_payload.get("module") or "Communication and escalation"
+            ),
+            "priority": self._safe_slack_list_text(
+                slack_payload.get("priority") or "P1"
+            ),
+            "status": self._safe_slack_list_text(queue_status),
+            "owner": self._safe_slack_list_text(slack_payload["targetRole"]),
+            "due": self._safe_slack_list_text(
+                slack_payload.get("dueTime") or "Demo window"
+            ),
+            "approval": self._safe_slack_list_text(action["approvalId"]),
+            "action": self._safe_slack_list_text(action["actionId"]),
+            "evidence_count": str(len(slack_payload["evidenceIds"])),
+            "outcome": self._safe_slack_list_text(
+                slack_payload.get("expectedOutcome") or "Awaiting outcome"
+            ),
+        }
+
+    def _slack_list_cells(
+        self,
+        values: dict[str, str],
+        columns: dict[str, str],
+    ) -> list[dict[str, Any]]:
+        cells = []
+        for key, value in values.items():
+            column_id = columns.get(key)
+            if column_id:
+                cells.append(
+                    {
+                        "column_id": column_id,
+                        "rich_text": [
+                            SlackListTransport.rich_text_block(value)
+                        ],
+                    }
+                )
+        return cells
+
+    @staticmethod
+    def _safe_slack_list_text(value: Any) -> str:
+        text = str(value or "").replace("\n", " ").strip()
+        return text[:180] if text else "n/a"
+
+    @staticmethod
+    def _extract_slack_list_id(response: dict[str, Any]) -> str | None:
+        list_record = response.get("list")
+        if isinstance(list_record, dict):
+            return list_record.get("id") or list_record.get("list_id")
+        return response.get("list_id") or response.get("id")
+
+    @staticmethod
+    def _extract_slack_list_item_id(response: dict[str, Any]) -> str | None:
+        item = response.get("item") or response.get("record")
+        if isinstance(item, dict):
+            return item.get("id") or item.get("row_id")
+        return response.get("item_id") or response.get("id")
+
+    @staticmethod
+    def _extract_slack_list_columns(
+        response: dict[str, Any],
+    ) -> dict[str, str]:
+        list_record = response.get("list") if isinstance(response, dict) else {}
+        if not isinstance(list_record, dict):
+            list_record = {}
+        raw_columns = (
+            list_record.get("columns")
+            or list_record.get("schema")
+            or response.get("columns")
+            or response.get("schema")
+            or []
+        )
+        name_to_key = {
+            item["name"].lower(): item["key"]
+            for item in SLACK_OPERATIONS_LIST_SCHEMA
+        }
+        columns = {}
+        for column in raw_columns:
+            if not isinstance(column, dict):
+                continue
+            column_id = column.get("id") or column.get("column_id")
+            key = column.get("key")
+            name = str(column.get("name") or "").lower()
+            if not key and name:
+                key = name_to_key.get(name)
+            if key in SLACK_LIST_COLUMN_ENV and column_id:
+                columns[str(key)] = str(column_id)
+        return columns
 
     def _validated_channel_payload(
         self,
@@ -1217,7 +1757,7 @@ class SlackApprovalInteractionHandler:
 
 
 class SlackStatusCommandHandler:
-    """Validates `/logia status` slash commands and returns safe case state."""
+    """Validates `/logia` slash commands and returns safe operations state."""
 
     def __init__(
         self,
@@ -1275,46 +1815,142 @@ class SlackStatusCommandHandler:
             )
         text = form.get("text", "").strip()
         parts = text.split()
-        if len(parts) != 2 or parts[0].lower() != "status":
-            return MockHttpResponse(
-                200,
-                {
-                    "ok": True,
-                    "response_type": "ephemeral",
-                    "text": (
-                        "Use `/logia status <approval-id>` to check approval "
-                        "and action readiness."
-                    ),
-                },
-                {},
-            )
+        if not parts:
+            return self._help_response()
 
-        approval_id = parts[1]
-        approval = self.write_back_adapter.approvals.get(approval_id)
-        if approval is None:
-            return MockHttpResponse(
-                200,
-                {
-                    "ok": True,
-                    "response_type": "ephemeral",
-                    "text": f"Logia could not find approval `{approval_id}`.",
-                },
-                {},
-            )
-        status = approval.get("status", "UNKNOWN")
+        verb = parts[0].lower()
+        if verb == "status" and len(parts) == 2:
+            return self._status_response(parts[1])
+        if verb == "queue" and len(parts) == 1:
+            return self._queue_response()
+        if verb == "demo" and len(parts) == 2:
+            return self._demo_response(parts[1].lower())
+        return self._help_response()
+
+    def _help_response(self) -> MockHttpResponse:
         return MockHttpResponse(
             200,
             {
                 "ok": True,
                 "response_type": "ephemeral",
                 "text": (
-                    f"Logia approval `{approval_id}` is `{status}`. "
-                    f"Recommendation `{approval.get('recommendationId')}`; "
-                    f"actions: {', '.join(approval.get('actionIds', []))}."
+                    "Use `/logia status <case-id|approval-id>`, "
+                    "`/logia queue`, or "
+                    "`/logia demo hospital|airport|hotel|bank`."
                 ),
-                "approvalId": approval_id,
-                "decisionStatus": status,
-                "actionIds": deepcopy(approval.get("actionIds", [])),
+            },
+            {},
+        )
+
+    def _status_response(self, identifier: str) -> MockHttpResponse:
+        approval = self.write_back_adapter.approvals.get(identifier)
+        if approval is not None:
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "response_type": "ephemeral",
+                    "text": (
+                        f"Logia approval `{identifier}` is "
+                        f"`{approval.get('status', 'UNKNOWN')}`. "
+                        f"Recommendation `{approval.get('recommendationId')}`; "
+                        f"actions: {', '.join(approval.get('actionIds', []))}."
+                    ),
+                    "approvalId": identifier,
+                    "decisionStatus": approval.get("status", "UNKNOWN"),
+                    "actionIds": deepcopy(approval.get("actionIds", [])),
+                },
+                {},
+            )
+
+        for source_record in self.write_back_adapter.source_records.values():
+            delivery = source_record.get("delivery", {})
+            identifiers = {
+                source_record.get("sourceRecordId"),
+                source_record.get("actionId"),
+                delivery.get("correlationId"),
+            }
+            if identifier in identifiers:
+                return MockHttpResponse(
+                    200,
+                    {
+                        "ok": True,
+                        "response_type": "ephemeral",
+                        "text": (
+                            f"Logia case/action `{identifier}` has "
+                            f"`{delivery.get('status', 'UNKNOWN')}` delivery "
+                            f"for `{source_record.get('actionType')}`. "
+                            f"Approval mode: "
+                            f"{delivery.get('approvalMode', 'n/a')}."
+                        ),
+                        "actionId": source_record.get("actionId"),
+                        "deliveryStatus": delivery.get("status", "UNKNOWN"),
+                    },
+                    {},
+                )
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "ephemeral",
+                "text": f"Logia could not find `{identifier}`.",
+            },
+            {},
+        )
+
+    def _queue_response(self) -> MockHttpResponse:
+        counts: dict[str, int] = {}
+        for approval in self.write_back_adapter.approvals.values():
+            status = approval.get("status", "UNKNOWN")
+            counts[status] = counts.get(status, 0) + 1
+        pending = [
+            approval_id
+            for approval_id, approval in self.write_back_adapter.approvals.items()
+            if approval.get("status") == "PENDING"
+        ][:5]
+        count_text = ", ".join(
+            f"{status}: {count}" for status, count in sorted(counts.items())
+        ) or "no approvals"
+        pending_text = ", ".join(pending) if pending else "none"
+        list_text = (
+            f" Slack List mirror: `{self.write_back_adapter.slack_list_id_operations}`."
+            if self.write_back_adapter.slack_list_id_operations
+            else " Slack List mirror is optional and not configured."
+        )
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "ephemeral",
+                "text": (
+                    f"Logia queue summary: {count_text}. "
+                    f"Pending approvals: {pending_text}.{list_text}"
+                ),
+                "approvalCounts": counts,
+                "pendingApprovalIds": pending,
+            },
+            {},
+        )
+
+    def _demo_response(self, profile_key: str) -> MockHttpResponse:
+        profile = UNIVERSAL_PROFILE_DEMOS.get(profile_key)
+        if profile is None:
+            return self._help_response()
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "ephemeral",
+                "text": (
+                    f"Logia demo `{profile_key}` uses "
+                    f"`{profile['profileId']}`. Signal: "
+                    f"{profile['signal']} Modules: "
+                    f"{'; '.join(profile['modules'])}. Protected actions: "
+                    f"{'; '.join(profile['protectedActions'])}."
+                ),
+                "profileId": profile["profileId"],
+                "modules": deepcopy(profile["modules"]),
+                "protectedActions": deepcopy(profile["protectedActions"]),
             },
             {},
         )
@@ -2455,6 +3091,14 @@ def whatsapp_provider_config_from_env() -> WhatsAppProviderConfig | None:
     )
 
 
+def slack_list_columns_from_env() -> dict[str, str]:
+    return {
+        key: value
+        for key, env_name in SLACK_LIST_COLUMN_ENV.items()
+        if (value := os.getenv(env_name))
+    }
+
+
 def build_default_api(
     *,
     failures_by_operation: dict[str, int] | None = None,
@@ -2465,6 +3109,10 @@ def build_default_api(
     replay_purposes: set[str] | None = None,
     slack_webhook_url: str | None | object = USE_ENV_SLACK_WEBHOOK,
     slack_transport: SlackWebhookTransport | None = None,
+    slack_bot_token: str | None = None,
+    slack_list_id_operations: str | None = None,
+    slack_list_columns: dict[str, str] | None = None,
+    slack_list_transport: SlackListTransport | None = None,
     whatsapp_provider_config: (
         WhatsAppProviderConfig | None | object
     ) = USE_ENV_WHATSAPP_PROVIDER,
@@ -2477,6 +3125,15 @@ def build_default_api(
         if slack_webhook_url is USE_ENV_SLACK_WEBHOOK
         else slack_webhook_url
     )
+    resolved_slack_bot_token = slack_bot_token or os.getenv("SLACK_BOT_TOKEN")
+    resolved_slack_list_id = slack_list_id_operations or os.getenv(
+        "SLACK_LIST_ID_OPERATIONS"
+    )
+    resolved_slack_list_columns = (
+        slack_list_columns
+        if slack_list_columns is not None
+        else slack_list_columns_from_env()
+    )
     resolved_whatsapp_provider_config = (
         whatsapp_provider_config_from_env()
         if whatsapp_provider_config is USE_ENV_WHATSAPP_PROVIDER
@@ -2485,6 +3142,10 @@ def build_default_api(
     write_back_adapter = MockWriteBackAdapter(
         slack_webhook_url=resolved_slack_webhook_url,
         slack_transport=slack_transport,
+        slack_bot_token=resolved_slack_bot_token,
+        slack_list_id_operations=resolved_slack_list_id,
+        slack_list_columns=resolved_slack_list_columns,
+        slack_list_transport=slack_list_transport,
         whatsapp_provider_config=resolved_whatsapp_provider_config,
         whatsapp_transport=whatsapp_transport,
     )

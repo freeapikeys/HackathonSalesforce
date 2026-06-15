@@ -258,14 +258,31 @@ var decision =
 output application/json
 var text = trim((payload.text default "") as String)
 var normalized = lower(text)
+var parts = normalized splitBy " "
+var profile = parts[1] default ""
+var demoText =
+    if (profile == "hospital")
+        "Logia demo `hospital` uses `profile:hospital-private-large`: complaint, queue, room, stock, billing, partner delay, approval, Slack update, WhatsApp receipt, outcome."
+    else if (profile == "airport")
+        "Logia demo `airport` uses `profile:airport-operations`: passenger complaint, delay, gate, baggage, queue, equipment stock, protected passenger update, outcome."
+    else if (profile == "hotel")
+        "Logia demo `hotel` uses `profile:hotel-guest-operations`: guest complaint, room readiness, housekeeping, linen/food stock, billing, supplier follow-up, outcome."
+    else if (profile == "bank" or profile == "banking")
+        "Logia demo `bank` uses `profile:bank-service-operations`: client complaint, dispute, KYC delay, document evidence, compliance approval, callback, outcome."
+    else
+        "Use `/logia demo hospital|airport|hotel|bank` to preview a safe four-profile scenario."
 ---
 {
     response_type: "ephemeral",
     text:
         if (normalized startsWith "status")
             "Logia status request received. Check the Salesforce command center for facts, approval state, actions, and outcomes."
+        else if (normalized == "queue")
+            "Logia queue summary: Salesforce is the source of truth. Slack mirrors safe case, profile, module, status, owner, approval, action, evidence count, and outcome fields when Slack Lists are configured."
+        else if (normalized startsWith "demo")
+            demoText
         else
-            "Try `/logia status <approval-id>`. Logia keeps tasks and approvals in Salesforce, while Slack is for safe coordination."
+            "Try `/logia status <case-id|approval-id>`, `/logia queue`, or `/logia demo hospital|airport|hotel|bank`. Logia keeps tasks and approvals in Salesforce, while Slack is for safe coordination."
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
