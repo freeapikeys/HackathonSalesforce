@@ -352,10 +352,24 @@ class MockAdapterTest(unittest.TestCase):
 
     def test_slack_webhook_is_used_when_configured(self) -> None:
         transport = FakeSlackTransport()
-        api = build_default_api(
-            slack_webhook_url="https://hooks.slack.test/services/demo",
-            slack_transport=transport,
-        )
+        with patch.dict(
+            "os.environ",
+            {
+                "SLACK_BOT_TOKEN": "",
+                "SLACK_LIST_ID_OPERATIONS": "",
+                "SLACK_LIST_COLUMN_CASE": "",
+                "SLACK_LIST_COLUMN_PROFILE": "",
+                "SLACK_LIST_COLUMN_STATUS": "",
+                "SLACK_LIST_COLUMN_OWNER": "",
+                "SLACK_LIST_COLUMN_DUE": "",
+                "SLACK_LIST_COLUMN_APPROVAL": "",
+                "SLACK_LIST_COLUMN_OUTCOME": "",
+            },
+        ):
+            api = build_default_api(
+                slack_webhook_url="https://hooks.slack.test/services/demo",
+                slack_transport=transport,
+            )
         example = api.contract.examples["operations"][
             "executeApprovedAction"
         ]["request"]

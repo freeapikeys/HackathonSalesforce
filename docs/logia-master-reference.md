@@ -253,6 +253,9 @@ fails because the workspace is unpaid, the scope is missing, or column IDs are
 not configured, Logia still sends the Slack message and records the List mirror
 as skipped or failed. That is acceptable for the demo if stated honestly.
 
+For a step-by-step demo script, see
+[docs/logia-demo-operator-guide.md](logia-demo-operator-guide.md).
+
 Universal demo command examples:
 
 ```text

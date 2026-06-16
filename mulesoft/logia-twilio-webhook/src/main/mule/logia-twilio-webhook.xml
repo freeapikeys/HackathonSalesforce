@@ -119,7 +119,19 @@
       variableName="responseFormat"
       value="#[if (((attributes.headers.'content-type' default '') as String) contains 'json') 'json' else 'twiml']"
     />
-        <flow-ref name="process-whatsapp-inbound" />
+        <choice doc:name="Route shared public POST">
+            <when expression="#[not isEmpty(payload.payload default '')]">
+                <set-variable variableName="responseFormat" value="json" />
+                <flow-ref name="process-slack-interaction" />
+            </when>
+            <when expression="#[not isEmpty(payload.command default '')]">
+                <set-variable variableName="responseFormat" value="json" />
+                <flow-ref name="process-slack-command" />
+            </when>
+            <otherwise>
+                <flow-ref name="process-whatsapp-inbound" />
+            </otherwise>
+        </choice>
     </flow>
 
     <flow name="meta-whatsapp-inbound">

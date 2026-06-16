@@ -67,6 +67,7 @@ class TwilioWebhookAppTest(unittest.TestCase):
         self.assertIn("Acknowledge Slack interaction", config)
         self.assertIn("Return Slack command help", config)
         self.assertIn("Route rewritten root POST", config)
+        self.assertIn("Route shared public POST", config)
         self.assertIn("process-slack-interaction", config)
         self.assertIn("process-slack-command", config)
         self.assertIn("Salesforce remains the system of record", config)

@@ -210,6 +210,8 @@ Slack approval:
 - add `/logia demo hospital|airport|hotel|bank` as a safe four-profile preview
   command that shows the same universal primitives under different business
   wording;
+- keep `docs/logia-demo-operator-guide.md` as the demo-day guide for WhatsApp,
+  Slack, Agentforce, Salesforce approval, protected execution, and outcomes;
 - record delivery features such as webhook/mock delivery, Block Kit approval,
   signed interactivity, approve/reject/modify, and thread-ready metadata;
 - Salesforce command-center approval remains the fallback when no public Slack
