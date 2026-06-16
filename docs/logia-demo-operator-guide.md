@@ -492,6 +492,101 @@ available.
 
 9. Show that Logia recorded the outcome instead of only sending a message.
 
+## Slack-Only Rehearsal Without WhatsApp
+
+Use this when WhatsApp is unavailable. It still proves the internal operations
+loop.
+
+1. Start with the hospital profile:
+
+```text
+/logia profile hospital
+```
+
+This tells the channel that the live story is hospital operations. Future
+manager stock orders can omit the profile word, but keeping it explicit is
+clearer for judges.
+
+2. Ask for the current queue:
+
+```text
+/logia queue
+```
+
+This proves Slack is the staff cockpit. The response summarizes pending
+approvals, worker reports, and the optional Slack List mirror.
+
+3. Have the worker report an issue:
+
+```text
+/logia report gloves are low and patients are waiting at pharmacy
+```
+
+Expected behavior: Logia treats this as evidence. It creates role tasks for the
+Operations Manager, Worker B, Worker A when service is affected, and Finance
+Reviewer when money or billing is involved. It does not send a supplier email.
+
+4. Have the manager request the order:
+
+```text
+/logia order please order hospital gloves of quantity around 500. We need those within three days. The supplier email is supplier@example.com
+```
+
+Expected behavior: Logia extracts `gloves`, `500`, `within three days`, and the
+supplier email. It drafts a protected supplier email with a short business
+sign-off. No email is sent before approval.
+
+5. Click `Approve` if Slack interactivity is live. Otherwise, use Salesforce as
+   the approval fallback and explain that Salesforce is the source of truth.
+
+6. Check status:
+
+```text
+/logia queue
+```
+
+## Airport Rehearsal Sequence
+
+Use this when you want the airport judges to feel the mapping immediately.
+
+```text
+/logia profile airport
+```
+
+```text
+/logia report passengers waited 45 minutes at baggage and belt equipment is delayed
+```
+
+```text
+/logia order airport baggage tags qty 1000 due tomorrow supplier supplier@example.com
+```
+
+```text
+/logia demo airport
+```
+
+Explain the mapping:
+
+- passenger complaint maps to `Customer` + `Signal`;
+- baggage belt, gate, equipment, and queue map to `Resource`;
+- airline, ground handler, and caterer map to `Partner`;
+- passenger update, baggage follow-up, and equipment restock are protected
+  `Action` records;
+- approval and outcome tracking remain the same as hospital.
+
+## What The Demo Commands Mean
+
+- `/logia profile <business>` sets the wording for the current channel story.
+  It does not create a case.
+- `/logia demo <business>` shows a quick cross-sector mapping card. It is for
+  judges, not for creating real work.
+- `/logia report <issue>` is for workers. It creates evidence and role tasks,
+  then routes protected actions to the manager.
+- `/logia order <request>` is for managers. It drafts a protected supplier
+  email/order and asks for approval.
+- `/logia queue` shows current safe operational state.
+- `/logia status <approval-id>` checks one approval/action when you have the ID.
+
 ## What To Say If Something Fails
 
 - If WhatsApp receives but does not generate a deep answer: "WhatsApp is the

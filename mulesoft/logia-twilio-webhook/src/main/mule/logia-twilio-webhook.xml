@@ -388,7 +388,7 @@ if (isOrder)
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Draft email*\nSubject: Stock request approval needed\n\nHello supplier, please confirm availability, price, and earliest delivery for the requested stock. This message will stay blocked until the manager approves it."
+                    "text": "*Draft email*\nSubject: Stock request approval needed\n\nHello, could you please confirm availability, price, and earliest delivery for this request?\n\nBest regards,\nOperations Manager\nLogia"
                 }
             },
             {

@@ -911,6 +911,49 @@ class MockAdapterTest(unittest.TestCase):
             response.body["draft"]["profile"],
         )
 
+    def test_slack_order_command_accepts_plain_english_request(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order please order hospital gloves of quantity around 500. "
+                    "We need those within three days. The supplier email is "
+                    "supplier@example.com"
+                ),
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("gloves", response.body["draft"]["item"])
+        self.assertEqual("500", response.body["draft"]["quantity"])
+        self.assertEqual("within three days", response.body["draft"]["dueTime"])
+        self.assertEqual(
+            "profile:hospital-private-large",
+            response.body["draft"]["profile"],
+        )
+        action = api.write_back_adapter.pending_actions_by_approval[
+            response.body["approvalId"]
+        ][0]
+        self.assertIn(
+            "Could you please confirm availability",
+            action["payload"]["emailBody"],
+        )
+        self.assertIn(
+            "Best regards,\nOperations Manager\nLogia",
+            action["payload"]["emailBody"],
+        )
+
     def test_slack_profile_command_sets_channel_profile_for_orders(self) -> None:
         signing_secret = "test-slack-signing-secret"
         api = build_default_api(slack_webhook_url="")
