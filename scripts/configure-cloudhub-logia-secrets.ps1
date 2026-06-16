@@ -83,6 +83,7 @@ if ($missing.Count -gt 0) {
 Write-Output "Applying Logia CloudHub properties. Secrets are passed directly to Anypoint and are not written to Git."
 
 anypoint-cli-v4 runtime-mgr application modify $AppId `
+  --no-lastMileSecurity `
   --property "logia.tenant:demo-mauritius" `
   --property "logia.purpose:RESOLVE_HOSPITAL_OPERATION_RISK" `
   --property "northstar.tenant:demo-mauritius" `

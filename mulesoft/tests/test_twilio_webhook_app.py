@@ -76,7 +76,8 @@ class TwilioWebhookAppTest(unittest.TestCase):
         self.assertIn("`/logia demo hospital|airport|hotel|bank`", config)
         self.assertIn("`/logia order <item> qty <amount>", config)
         self.assertIn("profile:airport-operations", config)
-        self.assertIn("Slack mirrors safe case", config)
+        self.assertIn("this is the manager ops board", config)
+        self.assertIn("Slack shows safe staff updates", config)
         self.assertIn("Protected supplier order draft", config)
         self.assertIn("SEND_VENDOR_EMAIL", config)
 

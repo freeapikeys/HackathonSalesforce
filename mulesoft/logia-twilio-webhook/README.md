@@ -88,6 +88,13 @@ mvn -version
 Deploy the packaged app with Anypoint CLI or Anypoint Runtime Manager. Use
 Anypoint secure properties for the Salesforce access token.
 
+When publishing a new Exchange asset version through `anypoint-cli-v4 exchange
+asset upload`, attach a POM whose `groupId`, `artifactId`, and `version` match
+the Exchange asset you will deploy. Do not pass `--name`, `--type`, `--status`,
+or other asset metadata when a POM is attached; Exchange rejects that combination.
+The live demo currently uses Exchange asset `north-star-twilio-webhook-fahan`
+with CloudHub application `north-star-twilio-webhook-fahan`.
+
 For CloudHub 2 shared spaces, point WhatsApp providers to the active public
 endpoint. The current deployed endpoint is:
 
@@ -97,9 +104,10 @@ https://north-star-twilio-webhook-fahan-fp4vdx.5sc6y6-2.usa-e2.cloudhub.io/twili
 
 Despite the inherited `twilio` path name, the Mule listener behind this route is
 provider-neutral: Twilio form posts return TwiML, and Meta JSON posts return a
-JSON acknowledgement. CloudHub 2 currently routes this endpoint reliably with
-`pathRewrite: "/"`; the friendly `/meta/whatsapp/inbound` listener remains in
-the Mule app for future routing targets, but it is not the active public demo
+JSON acknowledgement. The active CloudHub 2 target routes the public URL to the
+Mule listener without a `pathRewrite` flag; `pathRewrite` is rejected on this
+deployment target. The friendly `/meta/whatsapp/inbound` listener remains in the
+Mule app for future routing targets, but it is not the active public demo
 endpoint.
 
 For Meta, set the WhatsApp webhook callback URL to the active endpoint above and

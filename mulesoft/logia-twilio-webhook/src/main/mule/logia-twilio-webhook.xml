@@ -335,7 +335,7 @@ var responseText =
     if (normalized startsWith "status")
         "Logia status request received. Check the Salesforce command center for facts, approval state, actions, and outcomes."
     else if (normalized == "queue")
-        "Logia queue summary: Salesforce is the source of truth. Slack mirrors safe case, profile, module, status, owner, approval, action, evidence count, and outcome fields when Slack Lists are configured. Workers report issues; managers approve protected actions."
+        "Logia queue summary: this is the manager ops board. It shows active issues, tasks, approvals, and outcomes. Salesforce keeps the full record; Slack shows safe staff updates."
     else if (isProfile)
         profileText
     else if (isDemoRun)
@@ -357,47 +357,47 @@ if (isOrder)
     baseResponse ++ {
         blocks: [
             {
-                "type": "section",
+                'type': "section",
                 "text": {
-                    "type": "mrkdwn",
+                    'type': "mrkdwn",
                     "text": "*Protected supplier order draft*\n" ++ orderSummary
                 }
             },
             {
-                "type": "section",
+                'type': "section",
                 "fields": [
                     {
-                        "type": "mrkdwn",
+                        'type': "mrkdwn",
                         "text": "*Profile*\nUniversal operations"
                     },
                     {
-                        "type": "mrkdwn",
+                        'type': "mrkdwn",
                         "text": "*Module*\nInventory and supply"
                     },
                     {
-                        "type": "mrkdwn",
+                        'type': "mrkdwn",
                         "text": "*Approval ID*\n`" ++ orderApprovalId ++ "`"
                     },
                     {
-                        "type": "mrkdwn",
+                        'type': "mrkdwn",
                         "text": "*Action*\n`SEND_VENDOR_EMAIL` mock queue"
                     }
                 ]
             },
             {
-                "type": "section",
+                'type': "section",
                 "text": {
-                    "type": "mrkdwn",
+                    'type': "mrkdwn",
                     "text": "*Draft email*\nSubject: Stock request approval needed\n\nHello, could you please confirm availability, price, and earliest delivery for this request?\n\nBest regards,\nOperations Manager\nLogia"
                 }
             },
             {
-                "type": "actions",
+                'type': "actions",
                 "elements": [
                     {
-                        "type": "button",
+                        'type': "button",
                         "text": {
-                            "type": "plain_text",
+                            'type': "plain_text",
                             "text": "Approve"
                         },
                         "style": "primary",
@@ -405,9 +405,9 @@ if (isOrder)
                         "value": orderButtonValue
                     },
                     {
-                        "type": "button",
+                        'type': "button",
                         "text": {
-                            "type": "plain_text",
+                            'type': "plain_text",
                             "text": "Reject"
                         },
                         "style": "danger",
@@ -415,9 +415,9 @@ if (isOrder)
                         "value": orderButtonValue
                     },
                     {
-                        "type": "button",
+                        'type': "button",
                         "text": {
-                            "type": "plain_text",
+                            'type': "plain_text",
                             "text": "Modify"
                         },
                         "action_id": "modify_logia_supplier_order",
@@ -532,7 +532,7 @@ output application/json
 {
     "messaging_product": "whatsapp",
     "to": vars.metaReplyTo,
-    "type": "text",
+    'type': "text",
     "text": {
         "body": "Thanks. Logia received this. A manager will review it."
     }
