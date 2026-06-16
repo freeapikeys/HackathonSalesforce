@@ -74,8 +74,11 @@ class TwilioWebhookAppTest(unittest.TestCase):
         self.assertIn("Try `/logia status <case-id|approval-id>`", config)
         self.assertIn("`/logia queue`", config)
         self.assertIn("`/logia demo hospital|airport|hotel|bank`", config)
+        self.assertIn("`/logia order <item> qty <amount>", config)
         self.assertIn("profile:airport-operations", config)
         self.assertIn("Slack mirrors safe case", config)
+        self.assertIn("Protected supplier order draft", config)
+        self.assertIn("SEND_VENDOR_EMAIL", config)
 
     def test_mule_app_does_not_commit_runtime_secrets(self) -> None:
         combined = "\n".join(

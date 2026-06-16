@@ -263,10 +263,14 @@ Universal demo command examples:
 /logia demo airport
 /logia demo hotel
 /logia demo bank
+/logia order gloves qty 500 due 3 days supplier supplier@example.com
 ```
 
 Each command uses the same primitive flow: signal, evidence, primitive mapping,
 agent action plan, approval, MuleSoft execution, Slack update, and outcome.
+The `order` command is manager-initiated and demonstrates a protected supplier
+email draft: Slack can show the approval card, but Salesforce remains the
+approval and audit source of truth.
 
 ## End-To-End Logic
 

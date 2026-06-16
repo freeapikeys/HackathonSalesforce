@@ -1825,6 +1825,8 @@ class SlackStatusCommandHandler:
             return self._queue_response()
         if verb == "demo" and len(parts) == 2:
             return self._demo_response(parts[1].lower())
+        if verb == "order":
+            return self._order_response(text)
         return self._help_response()
 
     def _help_response(self) -> MockHttpResponse:
@@ -1836,7 +1838,9 @@ class SlackStatusCommandHandler:
                 "text": (
                     "Use `/logia status <case-id|approval-id>`, "
                     "`/logia queue`, or "
-                    "`/logia demo hospital|airport|hotel|bank`."
+                    "`/logia demo hospital|airport|hotel|bank`, or "
+                    "`/logia order <item> qty <amount> due <days> "
+                    "supplier <email>`."
                 ),
             },
             {},
@@ -1940,7 +1944,7 @@ class SlackStatusCommandHandler:
             200,
             {
                 "ok": True,
-                "response_type": "ephemeral",
+                "response_type": "in_channel",
                 "text": (
                     f"Logia demo `{profile_key}` uses "
                     f"`{profile['profileId']}`. Signal: "
@@ -1951,6 +1955,125 @@ class SlackStatusCommandHandler:
                 "profileId": profile["profileId"],
                 "modules": deepcopy(profile["modules"]),
                 "protectedActions": deepcopy(profile["protectedActions"]),
+            },
+            {},
+        )
+
+    def _order_response(self, text: str) -> MockHttpResponse:
+        order_text = text[len("order") :].strip()
+        order_summary = (
+            f"Manager stock request captured: {order_text}"
+            if order_text
+            else (
+                "No stock request details were provided. Try "
+                "`/logia order gloves qty 500 due 3 days supplier "
+                "supplier@example.com`."
+            )
+        )
+        approval_id = "approval-logia-supplier-order-001"
+        recommendation_id = "recommendation-logia-supplier-order-001"
+        button_value = json.dumps(
+            {
+                "approvalId": approval_id,
+                "recommendationId": recommendation_id,
+                "tenantKey": "demo-mauritius",
+            },
+            separators=(",", ":"),
+        )
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "in_channel",
+                "text": (
+                    f"{order_summary} Logia drafted a protected supplier "
+                    "email. Manager approval is required before any supplier "
+                    "email or order is sent."
+                ),
+                "approvalId": approval_id,
+                "recommendationId": recommendation_id,
+                "protectedAction": "SEND_VENDOR_EMAIL",
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": (
+                                "*Protected supplier order draft*\n"
+                                f"{order_summary}"
+                            ),
+                        },
+                    },
+                    {
+                        "type": "section",
+                        "fields": [
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Profile*\nUniversal operations",
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Module*\nInventory and supply",
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": f"*Approval ID*\n`{approval_id}`",
+                            },
+                            {
+                                "type": "mrkdwn",
+                                "text": "*Action*\n`SEND_VENDOR_EMAIL` mock queue",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": (
+                                "*Draft email*\n"
+                                "Subject: Stock request approval needed\n\n"
+                                "Hello supplier, please confirm availability, "
+                                "price, and earliest delivery for the "
+                                "requested stock. This message will stay "
+                                "blocked until the manager approves it."
+                            ),
+                        },
+                    },
+                    {
+                        "type": "actions",
+                        "elements": [
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Approve",
+                                },
+                                "style": "primary",
+                                "action_id": "approve_logia_supplier_order",
+                                "value": button_value,
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Reject",
+                                },
+                                "style": "danger",
+                                "action_id": "reject_logia_supplier_order",
+                                "value": button_value,
+                            },
+                            {
+                                "type": "button",
+                                "text": {
+                                    "type": "plain_text",
+                                    "text": "Modify",
+                                },
+                                "action_id": "modify_logia_supplier_order",
+                                "value": button_value,
+                            },
+                        ],
+                    },
+                ],
             },
             {},
         )

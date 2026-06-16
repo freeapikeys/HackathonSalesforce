@@ -794,9 +794,50 @@ class MockAdapterTest(unittest.TestCase):
         response = handler.handle(headers, raw_body)
 
         self.assertEqual(200, response.status)
+        self.assertEqual("in_channel", response.body["response_type"])
         self.assertEqual("profile:airport-operations", response.body["profileId"])
         self.assertIn("gate", response.body["text"])
         self.assertIn("Partner and vendor failure", response.body["modules"])
+
+    def test_slack_order_command_returns_protected_supplier_draft(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order gloves qty 500 due 3 days supplier "
+                    "supplier@example.com"
+                ),
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("in_channel", response.body["response_type"])
+        self.assertEqual(
+            "SEND_VENDOR_EMAIL",
+            response.body["protectedAction"],
+        )
+        self.assertIn("Manager approval is required", response.body["text"])
+        self.assertIn("supplier@example.com", response.body["text"])
+        self.assertEqual(
+            "approval-logia-supplier-order-001",
+            response.body["approvalId"],
+        )
+        buttons = response.body["blocks"][-1]["elements"]
+        self.assertEqual(
+            ["Approve", "Reject", "Modify"],
+            [button["text"]["text"] for button in buttons],
+        )
 
     def test_slack_status_command_rejects_invalid_signature(self) -> None:
         signing_secret = "test-slack-signing-secret"

@@ -43,6 +43,7 @@ Use these inside Slack as real slash commands, not as normal chat messages.
 /logia demo airport
 /logia demo hotel
 /logia demo bank
+/logia order <item> qty <amount> due <days> supplier <email>
 ```
 
 ### `/logia queue`
@@ -61,6 +62,30 @@ to show that Slack is not the database; it is asking Salesforce for safe status.
 
 Shows how the same universal Logia operating model maps to different business
 profiles. This is the fast way to prove that Logia is not only a hospital tool.
+
+These commands are intentionally visible in-channel so judges can see the
+profile mapping.
+
+### `/logia order <item> qty <amount> due <days> supplier <email>`
+
+Creates a manager-facing stock-order draft. Use it when the manager already
+knows the needed item, quantity, deadline, and supplier contact.
+
+Example:
+
+```text
+/logia order gloves qty 500 due 3 days supplier supplier@example.com
+```
+
+Expected result:
+
+- Logia captures the request as an inventory and supply signal.
+- Logia drafts a supplier email.
+- Logia marks the action as protected.
+- Slack shows `Approve`, `Reject`, and `Modify`.
+- No supplier email or order is sent before approval.
+- Salesforce remains the source of truth for the final approval and audit
+  record.
 
 ## If `/logia queue` Does Not Reply
 
@@ -171,6 +196,16 @@ Use:
 Then show the internal alert card. Explain that Slack is where managers and
 staff see the work, discuss it, and approve or reject actions.
 
+For a manager-created stock order, run:
+
+```text
+/logia order gloves qty 500 due 3 days supplier supplier@example.com
+```
+
+Explain: the manager can express the operational need in plain language. Logia
+turns it into a protected supplier email draft and approval card, but it does
+not send anything before approval.
+
 ### 6. Show Approval
 
 Click `Approve` on the Slack card if live interactivity is working. If not, use
@@ -243,6 +278,16 @@ Expected business flow:
 9. MuleSoft queues the protected supplier email/order mock.
 10. Logia records `stockout avoided`, `supplier request queued`, and
     `manager approved`.
+
+Manager-initiated stock request:
+
+```text
+/logia order surgical gloves qty 500 due 3 days supplier supplier@example.com
+```
+
+This is different from a customer complaint. It starts from an internal manager,
+not WhatsApp. The same rules still apply: supplier email is protected, approval
+is required, and outcome is recorded.
 
 ## Exact Demo Script
 
