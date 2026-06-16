@@ -37,6 +37,18 @@
         <name>CustomPermission</name>
     </types>
     <types>
+        <members>Logia</members>
+        <name>CustomApplication</name>
+    </types>
+    <types>
+        <members>Logia_Command_Center</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>Logia_Command_Center</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
         <members>*</members>
         <name>PermissionSet</name>
     </types>

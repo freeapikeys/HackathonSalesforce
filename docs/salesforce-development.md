@@ -49,6 +49,43 @@ sf project deploy preview --source-dir force-app
 sf project deploy start --source-dir force-app
 ```
 
+Deploy only the Logia Lightning dashboard entry point when you need a fast UI
+refresh:
+
+```bash
+sf project deploy start \
+  --metadata CustomApplication:Logia \
+  --metadata CustomTab:Logia_Command_Center \
+  --metadata FlexiPage:Logia_Command_Center \
+  --metadata LightningComponentBundle:hfsRelationshipCommandCenter \
+  --target-org hfs-dev \
+  --wait 30
+```
+
+Make the dashboard visible to the connected demo user:
+
+```bash
+sf org assign permset --name HFS_Approver --target-org hfs-dev
+```
+
+If you are publishing or previewing the Agentforce authoring bundle from the
+same user, also assign the Agentforce builder permission set:
+
+```bash
+sf org assign permset --name Logia_Agentforce_Admin --target-org hfs-dev
+```
+
+Open the Lightning dashboard directly:
+
+```bash
+sf org open \
+  --target-org hfs-dev \
+  --path /lightning/n/Logia_Command_Center
+```
+
+You can also open the App Launcher in Lightning, search for `Logia`, choose the
+`Logia` app, and then open the `Logia Command Center` tab.
+
 For the core metadata used by both HFS and Logia, assign the integration
 permission set to the connected integration identity and run the rollback smoke
 test:

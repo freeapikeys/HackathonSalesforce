@@ -592,11 +592,20 @@ The live Agentforce Studio recovery and publish notes are in
 generic Salesforce replies or if `sf agent publish authoring-bundle` fails on
 Windows.
 
+The Lightning dashboard is the `Logia` app with the `Logia Command Center` tab.
+The direct Lightning path is:
+
+```text
+/lightning/n/Logia_Command_Center
+```
+
 Useful commands:
 
 ```powershell
 sf org display --target-org hfs-dev
 sf project deploy start --source-dir force-app --target-org hfs-dev --wait 30
+sf org assign permset --name HFS_Approver --target-org hfs-dev
+sf org open --target-org hfs-dev --path /lightning/n/Logia_Command_Center
 npm run demo:reset -- --target-org hfs-dev
 npm run demo:seed -- --target-org hfs-dev
 npm run demo:run -- --target-org hfs-dev --output artifacts\demo-harness-result-live-channels.json
