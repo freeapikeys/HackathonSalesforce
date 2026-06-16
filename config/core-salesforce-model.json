@@ -946,7 +946,9 @@
           "values": [
             "OBSERVED",
             "SUCCESS",
+            "FAILED",
             "PARTIAL",
+            "REVERSED",
             "NO_EFFECT",
             "NEGATIVE",
             "UNKNOWN"

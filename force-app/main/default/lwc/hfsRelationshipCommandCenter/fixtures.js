@@ -1,8 +1,70 @@
 export const UI_STATE_VERSION = "1.0.0";
 
-export const DEFAULT_PROFILE_KEY = "logia-retail";
+export const DEFAULT_PROFILE_KEY = "logia-hospital";
 
 const PROFILE_CONFIGS = {
+  "logia-hospital": {
+    key: "logia-hospital",
+    shortName: "Logia",
+    eyebrow: "Logia hospital operations command center",
+    pageTitle: "Private hospital operations surge",
+    loadingTitle: "Loading Logia context",
+    loadingMessage: "Assembling Logia hospital operations context.",
+    emptyTitle: "No Logia work is assigned",
+    emptyMessage:
+      "New hospital operations work will appear here when assigned.",
+    deniedTitle: "Logia context is not available",
+    deniedMessage:
+      "Your current permissions or declared purpose do not allow access to this hospital operations context.",
+    errorTitle: "Logia could not load",
+    errorMessage:
+      "The hospital operations command service is temporarily unavailable. Retry the request.",
+    ownerLabel: "Operations owner",
+    deadlineLabel: "Service window",
+    updateLabel: "Next manager update",
+    riskKicker: "Risk pulse",
+    riskHeading: "Logia hospital signals",
+    relationshipKicker: "Operations context",
+    relationshipHeading: "Customer, resource, and department",
+    contextLabels: {
+      primary: "Hospital",
+      secondary: "Resource",
+      tertiary: "Department",
+      quaternary: "Process"
+    },
+    clusterKicker: "Customer trust",
+    clusterHeading: "Patient and visitor complaint cluster",
+    clusterLabels: {
+      type: "Type",
+      count: "Count",
+      supplier: "Department",
+      window: "Window"
+    },
+    responseKicker: "Partner",
+    responseHeading: "Partner and capacity response",
+    responseLabels: {
+      leadTime: "SLA",
+      replacement: "Next response",
+      creditNote: "Financial note",
+      qualityIssue: "Open risk"
+    },
+    executionKicker: "Execution",
+    executionHeading: "Service tasks and channel log",
+    executionPlanLabel: "Operations plan",
+    recommendationKicker: "Recommendation",
+    factsHeading: "Source facts",
+    assumptionsHeading: "Assumptions",
+    inferencesHeading: "Model inference",
+    approvalKicker: "Human control",
+    approvalHeading: "Manager approval decision",
+    approvalNote:
+      "Approval authorizes protected execution; it does not mark the external action as completed.",
+    blockersKicker: "Dependencies",
+    blockersHeading: "Current blockers",
+    restrictedNotice:
+      "You can inspect the accessible hospital operations facts. Approval controls are not available for your current role.",
+    outcomeMetricLabel: "Hospital outcome metrics"
+  },
   "logia-retail": {
     key: "logia-retail",
     shortName: "Logia",
@@ -853,6 +915,493 @@ const caseState = {
         unread: 1,
         lastMessage:
           "Replacement batch is approved; batch A review remains open."
+      }
+    ]
+  })
+};
+
+const hospitalOperationsCaseState = {
+  ...caseState,
+  id: "work-logia-hospital-surge-001",
+  externalKey: "CORR-LOGIA-HOSPITAL-SURGE-001",
+  title: "Logia hospital operations surge",
+  summary:
+    "Morning complaints, blocked rooms, queue pressure, pharmacy stock risk, lab delay, and billing review need one manager-approved operations plan.",
+  severity: "High",
+  status: "Awaiting operations approval",
+  owner: {
+    name: "Duty Operations Manager",
+    role: "Hospital operations approval",
+    since: "2026-06-12T08:35:00Z"
+  },
+  serviceDeadline: "2026-06-12T11:15:00Z",
+  nextUpdateDue: "2026-06-12T09:05:00Z",
+  relationshipContext: {
+    store: "Logia Demo Private Hospital",
+    product: "Discharge room and outpatient flow",
+    category: "Private hospital operations",
+    batch: "Surgical discharge and outpatient desk",
+    supplier: "Lab partner, insurer, pharmacy, facilities",
+    promotion: "Morning surge recovery",
+    resourceArea: "Ward 4B, outpatient reception, pharmacy"
+  },
+  stock: [
+    { id: "resource-room", label: "Rooms", value: "6 blocked" },
+    { id: "resource-queue", label: "Queue", value: "42 waiting" },
+    { id: "resource-stock", label: "Stock cover", value: "0.8 days" },
+    { id: "resource-staff", label: "Staff tasks", value: "5 queued" }
+  ],
+  riskPulses: [
+    { id: "risk-complaint", label: "Complaints", status: "Clustered" },
+    { id: "risk-bed-capacity", label: "Room capacity", status: "High" },
+    { id: "risk-queue", label: "Queue", status: "Rising" },
+    { id: "risk-pharmacy", label: "Pharmacy stock", status: "Low" },
+    { id: "risk-vendor", label: "Lab partner", status: "Delayed" },
+    { id: "risk-billing", label: "Billing", status: "Review" },
+    { id: "risk-approval", label: "Approval", status: "Pending" },
+    { id: "risk-outcome", label: "Outcome", status: "Projected" }
+  ],
+  complaintCluster: {
+    type: "Wait time, room readiness, pharmacy delay, billing question",
+    count: 9,
+    product: "Outpatient and discharge flow",
+    batch: "Ward 4B and outpatient reception",
+    supplier: "Patient Experience and Operations",
+    window: "08:05-08:32"
+  },
+  partnerResponse: {
+    status: "Response requested",
+    leadTime: "45m SLA risk",
+    replacement: "Lab partner update and room-cleaning task",
+    creditNote: "Billing review only; no refund decision",
+    qualityIssue: "Clinical decisions remain out of scope"
+  },
+  operationsExecution: {
+    primaryRecommendation:
+      "Approve room cleaning, porter, pharmacy restock, lab follow-up, billing review, and internal alerts as one coordinated operations plan.",
+    tasks: [
+      {
+        id: "task-room-cleaning",
+        label: "Create discharge-room cleaning task",
+        owner: "Housekeeping Lead",
+        status: "Needs approval"
+      },
+      {
+        id: "task-porter",
+        label: "Assign porter support for room release",
+        owner: "Operations Coordinator",
+        status: "Queued"
+      },
+      {
+        id: "task-pharmacy",
+        label: "Request pharmacy stock transfer",
+        owner: "Pharmacy Lead",
+        status: "Needs approval"
+      },
+      {
+        id: "task-billing",
+        label: "Open duplicate-billing review",
+        owner: "Billing Supervisor",
+        status: "Needs approval"
+      }
+    ]
+  },
+  affectedRelationship: {
+    label: "Hospital operations context",
+    subject: "Logia Demo Private Hospital",
+    object: "Patient alias PAT-OPS-1042",
+    type: "RESOLVES_OPERATIONS_SIGNAL",
+    status: "Active surge response"
+  },
+  relationshipHistory: [
+    {
+      id: "history-hospital-resource-001",
+      type: "AFFECTS_RESOURCE",
+      subject: "Logia Demo Private Hospital",
+      object: "Discharge rooms and outpatient queue",
+      status: "Active",
+      confidencePercent: "89%",
+      sourceEventId: "event-hospital-surge-detected",
+      evidenceSummary:
+        "Complaint, queue, room, stock, lab, and billing evidence are linked to one surge response.",
+      correctionState: "Current"
+    },
+    {
+      id: "history-partner-delay-001",
+      type: "DEPENDS_ON_PARTNER",
+      subject: "Operations command center",
+      object: "Lab partner response",
+      status: "Delayed",
+      confidencePercent: "82%",
+      sourceEventId: "event-lab-vendor-response-delayed",
+      evidenceSummary:
+        "Partner response evidence qualifies the plan and keeps customer messaging approval-gated.",
+      correctionState: "Reviewable"
+    }
+  ],
+  identityLinks: [
+    {
+      id: "participant-patient-alias-001",
+      role: "CUSTOMER_ALIAS",
+      entity: "Patient alias PAT-OPS-1042",
+      sourceEventId: "event-patient-complaint-cluster",
+      evidenceSummary:
+        "Synthetic alias participates in complaint evidence without real patient data."
+    },
+    {
+      id: "participant-duty-manager-001",
+      role: "APPROVER_ROLE",
+      entity: "Duty Operations Manager",
+      sourceEventId: "event-manager-approval-requested",
+      evidenceSummary:
+        "Manager approval is required before protected tasks and messages execute."
+    }
+  ],
+  relationshipContradictions: [
+    {
+      id: "contradiction-room-speed-001",
+      claim:
+        "Move patients faster to reduce outpatient wait time and discharge pressure.",
+      counterclaim:
+        "Rooms cannot be released until cleaning and porter tasks are complete.",
+      resolution:
+        "Keep capacity action blocked until room-readiness evidence and manager approval are recorded."
+    }
+  ],
+  correctionActions: [
+    {
+      id: "correction-room-readiness-001",
+      label: "Request correction review",
+      target: "Room readiness",
+      reason:
+        "Ask a manager to supersede the room-readiness claim only if cleaning evidence changes.",
+      sourceEventId: "event-discharge-room-blocked"
+    }
+  ],
+  connectedEntities: [
+    {
+      id: "ORG-LOGIA-DEMO-HOSPITAL",
+      label: "Logia Demo Private Hospital",
+      type: "Organization",
+      role: "Demo hospital profile"
+    },
+    {
+      id: "ALIAS-PAT-OPS-1042",
+      label: "Patient alias PAT-OPS-1042",
+      type: "Customer alias",
+      role: "Complaint subject"
+    },
+    {
+      id: "RESOURCE-WARD-4B-ROOMS",
+      label: "Ward 4B discharge rooms",
+      type: "Resource",
+      role: "Capacity constraint"
+    },
+    {
+      id: "PARTNER-LAB-001",
+      label: "Lab partner",
+      type: "Partner",
+      role: "Delayed dependency"
+    }
+  ],
+  blockers: [
+    {
+      id: "blocker-hospital-approval-001",
+      label: "Manager approval for protected actions",
+      owner: "Duty Operations Manager",
+      status: "Ready for decision",
+      dueAt: "2026-06-12T09:05:00Z"
+    },
+    {
+      id: "blocker-clinical-boundary-001",
+      label: "Clinical priority decisions are refused and routed to clinicians",
+      owner: "Clinical Manager",
+      status: "Boundary active",
+      dueAt: "2026-06-12T09:05:00Z"
+    }
+  ],
+  timeline: [
+    {
+      id: "timeline-hospital-complaint",
+      occurredAt: "2026-06-12T08:05:00Z",
+      type: "Signal",
+      title: "Complaint cluster detected",
+      detail:
+        "Patient and visitor aliases report wait time, room readiness, pharmacy delay, and billing questions.",
+      source: "Meta WhatsApp and command-center fixture"
+    },
+    {
+      id: "timeline-room-blocked",
+      occurredAt: "2026-06-12T08:18:00Z",
+      type: "Resource",
+      title: "Discharge rooms blocked",
+      detail: "Six rooms await cleaning or porter handoff before release.",
+      source: "Hospital capacity fixture"
+    },
+    {
+      id: "timeline-stock-risk",
+      occurredAt: "2026-06-12T08:24:00Z",
+      type: "Resource",
+      title: "Pharmacy stock risk detected",
+      detail:
+        "Common supply stock cover is below one day before the afternoon rush.",
+      source: "Pharmacy stock fixture"
+    },
+    {
+      id: "timeline-partner-delay",
+      occurredAt: "2026-06-12T08:31:00Z",
+      type: "Partner",
+      title: "Lab partner response delayed",
+      detail:
+        "Partner delay affects customer-safe updates and service recovery timing.",
+      source: "Partner SLA fixture"
+    },
+    {
+      id: "timeline-approval",
+      occurredAt: "2026-06-12T08:36:00Z",
+      type: "Approval",
+      title: "Manager decision requested",
+      detail:
+        "Logia created an approval-gated action plan; no protected action has executed.",
+      source: "Logia Orchestrator"
+    }
+  ],
+  evidence: [
+    {
+      id: "evidence-hospital-complaints-001",
+      label: "Complaint cluster",
+      summary:
+        "Nine synthetic patient and visitor complaints cite wait time, room readiness, pharmacy delay, and billing questions.",
+      sourceUri: "urn:hfs:source:hospital:complaints",
+      capturedAt: "2026-06-12T08:06:00Z",
+      contentHash:
+        "sha256:0e6bb9e0e1e8b2a0eac4af48f29df7f4d7d9a08ef0d2dfb83e26c955aa6f9f12"
+    },
+    {
+      id: "evidence-hospital-capacity-001",
+      label: "Room and queue capacity",
+      summary:
+        "Six discharge rooms are blocked, outpatient queue count is 42, and staff tasks are queued.",
+      sourceUri: "urn:hfs:source:hospital:capacity",
+      capturedAt: "2026-06-12T08:19:00Z",
+      contentHash:
+        "sha256:52eb40d13f7f36182e57b8ce24cbb16b2cf7382eaa1d5a8545a0b9ce366f8dd0"
+    },
+    {
+      id: "evidence-hospital-stock-001",
+      label: "Pharmacy stock",
+      summary:
+        "Common supply stock cover is 0.8 days; transfer or restock request requires approval.",
+      sourceUri: "urn:hfs:source:hospital:pharmacy-stock",
+      capturedAt: "2026-06-12T08:25:00Z",
+      contentHash:
+        "sha256:8841be955b0f25040e96b7116851850b174600ce053f82cc0efc19c650a1d0af"
+    },
+    {
+      id: "evidence-hospital-partner-001",
+      label: "Partner and billing evidence",
+      summary:
+        "Lab partner response is delayed and billing review is needed; no refund or clinical decision is automated.",
+      sourceUri: "urn:hfs:source:hospital:partner-billing",
+      capturedAt: "2026-06-12T08:32:00Z",
+      contentHash:
+        "sha256:9d21ce60e8c4ab43d3d4e0fd158d85f54e918a7a94b0e75369c38a21164b8789"
+    }
+  ],
+  sop: {
+    name: "Logia hospital operations surge",
+    version: "1.0.0",
+    status: "In progress",
+    currentStep: "Await manager approval",
+    completedSteps: 3,
+    totalSteps: 7,
+    progress: 43,
+    requiredEvidence:
+      "Complaint, room, queue, pharmacy, partner, billing, approval, action, and outcome evidence",
+    escalationRule:
+      "Escalate to Duty Operations Manager if approval is still pending after 30 minutes."
+  },
+  recommendation: {
+    id: "recommendation-logia-hospital-001",
+    status: "Pending approval",
+    title: "Approve hospital operations actions",
+    recommendation:
+      "Create discharge-room cleaning and porter tasks, request pharmacy stock transfer, escalate lab partner follow-up, open billing review, send internal Slack and WhatsApp-style alerts, and track wait-time, room-release, stockout, billing, vendor, and task outcomes.",
+    facts: [
+      "Nine complaints are clustered around wait time, room readiness, pharmacy delay, and billing.",
+      "Six discharge rooms are blocked and outpatient queue pressure is rising.",
+      "Pharmacy stock cover is below one day.",
+      "Lab partner response and billing review are open dependencies."
+    ],
+    assumptions: [
+      "Room-release evidence and queue evidence will improve after cleaning and porter tasks complete."
+    ],
+    inferences: [
+      "The issue is mixed: customer trust, resource capacity, partner delay, financial review, and operations execution.",
+      "Customer-facing messages and protected operational tasks must remain blocked until manager approval."
+    ],
+    confidence: 0.88,
+    confidencePercent: "88%",
+    modelProfile: "logia-hospital-operations",
+    modelProfileVersion: "1.0.0",
+    policyVersion: "hospital-operations-routing-mauritius 1.0.0",
+    evidenceIds: [
+      "evidence-hospital-complaints-001",
+      "evidence-hospital-capacity-001",
+      "evidence-hospital-stock-001",
+      "evidence-hospital-partner-001"
+    ],
+    requiresHumanApproval: true
+  },
+  approval: {
+    id: "approval-logia-hospital-001",
+    status: "Pending",
+    policy: "Hospital operations manager approval",
+    policyVersion: "1.0.0",
+    requestedAt: "2026-06-12T08:36:00Z",
+    requestedBy: "Logia Orchestrator",
+    decisionDueAt: "2026-06-12T09:05:00Z"
+  },
+  actions: [
+    {
+      id: "action-room-cleaning-001",
+      type: "REQUEST_BED_CLEANING",
+      status: "Pending approval",
+      requestedAt: "2026-06-12T08:36:00Z",
+      completedAt: null,
+      sourceSystem: "MuleSoft hospital mock",
+      correlationId: "10000000-0000-4000-8000-000000000001"
+    },
+    {
+      id: "action-billing-review-001",
+      type: "OPEN_BILLING_REVIEW",
+      status: "Pending approval",
+      requestedAt: "2026-06-12T08:36:00Z",
+      completedAt: null,
+      sourceSystem: "MuleSoft hospital mock",
+      correlationId: "10000000-0000-4000-8000-000000000001"
+    }
+  ],
+  channelLog: [
+    {
+      id: "channel-hospital-slack-001",
+      channel: "Slack",
+      status: "MOCK_SENT",
+      target: "Duty Operations Manager",
+      detail: "Webhook missing; internal approval alert recorded honestly."
+    },
+    {
+      id: "channel-hospital-whatsapp-001",
+      channel: "WhatsApp-style",
+      status: "MOCK_SENT",
+      target: "Operations mobile lead",
+      detail:
+        "Meta credentials missing or unconfigured; mobile operations alert recorded as mock."
+    }
+  ],
+  outcomeMetrics: [
+    { id: "outcome-wait", label: "Wait time reduced", value: "Projected" },
+    { id: "outcome-room", label: "Room released", value: "6 targeted" },
+    { id: "outcome-stock", label: "Stockout avoided", value: "0.8d risk" },
+    { id: "outcome-complaint", label: "Complaint contained", value: "Watch" },
+    { id: "outcome-billing", label: "Billing routed", value: "Review" },
+    { id: "outcome-vendor", label: "Vendor SLA", value: "45m risk" },
+    { id: "outcome-task", label: "Task completion", value: "Pending" }
+  ],
+  outcome: {
+    status: "Awaiting approved hospital action",
+    summary:
+      "Outcome metrics are projected until operations approval, MuleSoft mock execution, and Salesforce outcome records complete.",
+    observedAt: null,
+    effectiveness: "Pending"
+  },
+  operatingLayer: operatingLayer({
+    kpis: [
+      {
+        id: "kpi-hospital-wait",
+        label: "Wait-time exposure",
+        value: "42 waiting",
+        prediction:
+          "Predicted wait pressure falls after room release and staff tasks are approved",
+        predictionPercent: 78,
+        confidence: "82%",
+        delta: "Approval gated",
+        status: "High"
+      },
+      {
+        id: "kpi-hospital-room",
+        label: "Room release",
+        value: "6 blocked",
+        prediction:
+          "Predicted release improves after housekeeping and porter tasks acknowledge",
+        predictionPercent: 84,
+        confidence: "80%",
+        delta: "Tasks needed",
+        status: "Blocked"
+      },
+      {
+        id: "kpi-hospital-stock",
+        label: "Stockout risk",
+        value: "0.8 days",
+        prediction:
+          "Predicted stockout risk lowers if stock transfer is approved before noon",
+        predictionPercent: 74,
+        confidence: "76%",
+        delta: "Transfer pending",
+        status: "Watch"
+      }
+    ],
+    trendTitle: "Hospital operations recovery forecast",
+    trend: [
+      { id: "hospital-trend-1", label: "Queue", actual: 76, predicted: 42 },
+      { id: "hospital-trend-2", label: "Rooms", actual: 69, predicted: 84 },
+      { id: "hospital-trend-3", label: "Stock", actual: 62, predicted: 74 },
+      { id: "hospital-trend-4", label: "Partner", actual: 45, predicted: 68 }
+    ],
+    brief: [
+      "Approve service tasks before promising customers a resolved timeline.",
+      "Release rooms only after cleaning and porter evidence is recorded.",
+      "Keep clinical triage, diagnosis, treatment, and dosage outside Logia."
+    ],
+    agents: [
+      {
+        id: "agent-hospital-orchestrator",
+        name: "Logia Orchestrator",
+        status: "Waiting on approval",
+        lastMessage:
+          "I combined complaint, room, queue, pharmacy, lab, and billing evidence into one plan."
+      },
+      {
+        id: "agent-hospital-resource",
+        name: "Resource and Capacity",
+        status: "Monitoring",
+        lastMessage:
+          "Rooms, queue, stock, and staff tasks are the active capacity constraints."
+      },
+      {
+        id: "agent-hospital-risk",
+        name: "Risk and Approval",
+        status: "Gate active",
+        lastMessage:
+          "Protected actions are blocked until the duty operations manager approves."
+      }
+    ],
+    channels: [
+      {
+        id: "dept-hospital-ops",
+        name: "Operations",
+        owner: "Duty Operations Manager",
+        unread: 4,
+        lastMessage:
+          "Cleaning, porter, pharmacy, and billing tasks are ready for approval."
+      },
+      {
+        id: "dept-hospital-partners",
+        name: "Partner desk",
+        owner: "Vendor Coordinator",
+        unread: 2,
+        lastMessage:
+          "Lab partner follow-up is pending; customer update remains approval-gated."
       }
     ]
   })
@@ -2774,6 +3323,7 @@ const sunlifeGuestRecoveryCaseState = buildTerrainCaseState({
 });
 
 const CASE_STATES_BY_PROFILE = {
+  "logia-hospital": hospitalOperationsCaseState,
   "logia-retail": caseState,
   "nexavenu-revenue": nexavenuCaseState,
   "air-mauritius-passenger": airMauritiusCaseState,
@@ -2783,6 +3333,11 @@ const CASE_STATES_BY_PROFILE = {
 };
 
 const PROFILE_RUNTIME = {
+  "logia-hospital": {
+    correlationId: "10000000-0000-4000-8000-000000000001",
+    userRole: "Duty Operations Manager",
+    purpose: "RESOLVE_HOSPITAL_OPERATION_RISK"
+  },
   "logia-retail": {
     correlationId: "20000000-0000-4000-8000-000000000001",
     userRole: "Duty Manager",
@@ -2831,10 +3386,10 @@ const readyState = {
   stateName: "ready",
   mode: "ready",
   profile: PROFILE_CONFIGS[DEFAULT_PROFILE_KEY],
-  generatedAt: "2026-06-06T09:39:00Z",
-  correlationId: "20000000-0000-4000-8000-000000000001",
-  userRole: "Duty Manager",
-  purpose: "RESOLVE_RETAIL_RISK",
+  generatedAt: "2026-06-12T08:39:00Z",
+  correlationId: "10000000-0000-4000-8000-000000000001",
+  userRole: "Duty Operations Manager",
+  purpose: "RESOLVE_HOSPITAL_OPERATION_RISK",
   permissions: {
     canApprove: true,
     canModify: true,
@@ -2842,7 +3397,7 @@ const readyState = {
     canExecute: false,
     canRequestCorrection: true
   },
-  case: caseState
+  case: hospitalOperationsCaseState
 };
 
 export const UI_STATES = {

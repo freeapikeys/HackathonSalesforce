@@ -31,7 +31,7 @@
         name="profileKey"
         type="String"
         label="Demo profile key"
-        default="logia-retail"
+        default="logia-hospital"
         description="Synthetic profile key used when mock mode is enabled."
       />
       <property

@@ -957,6 +957,61 @@ private class HFS_RelationshipServiceImplTest {
   }
 
   @IsTest
+  static void acceptsMulesoftOutcomeStatusContract() {
+    System.runAs(createUser('outstat', 'HFS_Integration_User')) {
+      HFS_RelationshipService service = new HFS_RelationshipServiceImpl();
+      HFS_Work_Item__c workItem = workItem();
+      HFS_Entity__c customer = customer();
+      HFS_Evidence__c evidence = evidence();
+      HFS_Event__c sourceEvent = sourceEvent();
+      HFS_CommandResult recommendationResult = service.storeRecommendation(
+        recommendationCommand(workItem.Id, customer.Id, evidence.Id)
+      );
+      HFS_CommandResult approvalResult = service.requestApproval(
+        approvalRequest(recommendationResult.recordId)
+      );
+      HFS_ServiceSupport.setPermissionOverride(
+        'HFS_Approve_Recommendation',
+        true
+      );
+      service.decideApproval(
+        approvalDecision(approvalResult.recordId, 'APPROVED')
+      );
+      HFS_ServiceSupport.setPermissionOverride('HFS_Execute_Action', true);
+      HFS_CommandResult actionResult = service.logAction(
+        actionCommand(
+          recommendationResult.recordId,
+          approvalResult.recordId,
+          customer.Id
+        )
+      );
+
+      for (String status : new List<String>{ 'FAILED', 'REVERSED' }) {
+        HFS_OutcomeCommand outcome = outcomeCommand(
+          actionResult.recordId,
+          sourceEvent.Id
+        );
+        outcome.externalKey = 'outcome-status-' + status.toLowerCase();
+        outcome.status = status;
+        outcome.metricValue = status == 'FAILED' ? 0 : 1;
+        HFS_CommandResult result = service.captureOutcome(outcome);
+
+        System.assertEquals(true, result.success);
+        System.assertEquals(status, result.status);
+      }
+
+      System.assertEquals(
+        2,
+        [
+          SELECT COUNT()
+          FROM HFS_Outcome__c
+          WHERE External_Key__c LIKE 'outcome-status-%'
+        ]
+      );
+    }
+  }
+
+  @IsTest
   static void rollsBackOutcomeWhenDerivedActionUpdateFails() {
     System.runAs(createUser('rollback', 'HFS_Integration_User')) {
       HFS_RelationshipService service = new HFS_RelationshipServiceImpl();

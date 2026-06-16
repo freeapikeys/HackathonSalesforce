@@ -40,7 +40,7 @@ function createLiveComponent() {
   });
   element.recordId = "a01000000000001AAA";
   element.tenantKey = "tenant-live-test";
-  element.purpose = "RESOLVE_RETAIL_RISK";
+  element.purpose = "RESOLVE_HOSPITAL_OPERATION_RISK";
   document.body.appendChild(element);
   return element;
 }
@@ -163,7 +163,7 @@ const livePayload = {
         summary: "Send a grounded service update.",
         confidence: 0.91,
         proposedActionType: "SEND_STATUS_UPDATE",
-        modelProfile: "logia-retail-recommendation",
+        modelProfile: "logia-hospital-operations",
         modelInvocationId: "invocation-live-test"
       }
     ],
@@ -195,7 +195,7 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("Logia weekend promotion recovery");
+    expect(root.textContent).toContain("Logia hospital operations surge");
     expect(root.textContent).toContain("RM Intel");
     expect(root.textContent).toContain("Dashboard");
     expect(root.textContent).toContain("Signals");
@@ -204,30 +204,31 @@ describe("c-hfs-relationship-command-center", () => {
     expect(root.textContent).toContain("Source records preserved");
     expect(root.textContent).toContain("Human decision boundary");
     expect(root.textContent).toContain("Predicted next state");
-    expect(root.textContent).toContain("Weekend recovery trend");
+    expect(root.textContent).toContain("Hospital operations recovery forecast");
     expect(root.textContent).toContain("Chat with agents");
     expect(root.textContent).toContain("Employees and departments");
-    expect(root.textContent).toContain("Predicted stockout avoided");
-    expect(root.textContent).toContain("Logia retail signals");
-    expect(root.textContent).toContain("Product, batch, and stock");
+    expect(root.textContent).toContain("Predicted wait pressure falls");
+    expect(root.textContent).toContain("Logia hospital signals");
+    expect(root.textContent).toContain("Customer, resource, and department");
     expect(root.textContent).toContain("Relationship inspection");
     expect(root.textContent).toContain("Contradictory claims");
     expect(root.querySelector('[data-testid="correction-button"]').label).toBe(
       "Request correction review"
     );
-    expect(root.textContent).toContain("Complaint cluster");
-    expect(root.textContent).toContain("Supplier response");
+    expect(root.textContent).toContain("Patient and visitor complaint cluster");
+    expect(root.textContent).toContain("Partner and capacity response");
     expect(root.textContent).toContain("Source records");
     expect(root.textContent).toContain("Accessible source evidence");
-    expect(root.textContent).toContain("Logia retail recovery");
-    expect(root.textContent).toContain("Approve retail recovery actions");
-    expect(root.textContent).toContain("Approval decision");
-    expect(root.textContent).toContain("Store tasks and channel log");
+    expect(root.textContent).toContain("Logia hospital operations surge");
+    expect(root.textContent).toContain("Approve hospital operations actions");
+    expect(root.textContent).toContain("Manager approval decision");
+    expect(root.textContent).toContain("Service tasks and channel log");
     expect(root.textContent).toContain("Slack");
     expect(root.textContent).toContain("WhatsApp-style");
+    expect(root.textContent).toContain("Wait time reduced");
     expect(root.textContent).toContain("Stockout avoided");
     expect(root.textContent).toContain(`UI state ${UI_STATE_VERSION}`);
-    expect(root.querySelectorAll(".profile-card")).toHaveLength(6);
+    expect(root.querySelectorAll(".profile-card")).toHaveLength(7);
     expect(root.querySelectorAll(".kpi-card")).toHaveLength(3);
     expect(root.querySelectorAll(".forecast-point")).toHaveLength(4);
     expect(root.querySelectorAll(".agent-thread")).toHaveLength(3);
@@ -313,7 +314,7 @@ describe("c-hfs-relationship-command-center", () => {
     const root = element.shadowRoot;
 
     expect(root.querySelector('[data-testid="ready-view"]')).not.toBeNull();
-    expect(root.textContent).toContain("Logia weekend promotion recovery");
+    expect(root.textContent).toContain("Logia hospital operations surge");
     expect(
       root.querySelector('[data-testid="restricted-notice"]')
     ).not.toBeNull();
@@ -335,10 +336,10 @@ describe("c-hfs-relationship-command-center", () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toEqual({
       action: expect.objectContaining({
-        id: "correction-batch-scope-001",
-        target: "Batch scope"
+        id: "correction-room-readiness-001",
+        target: "Room readiness"
       }),
-      correlationId: "20000000-0000-4000-8000-000000000001",
+      correlationId: "10000000-0000-4000-8000-000000000001",
       stateVersion: UI_STATE_VERSION
     });
     expect(decideApproval).not.toHaveBeenCalled();
@@ -361,9 +362,9 @@ describe("c-hfs-relationship-command-center", () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail).toEqual({
       decision,
-      recommendationId: "recommendation-logia-retail-001",
-      approvalId: "approval-logia-retail-001",
-      correlationId: "20000000-0000-4000-8000-000000000001",
+      recommendationId: "recommendation-logia-hospital-001",
+      approvalId: "approval-logia-hospital-001",
+      correlationId: "10000000-0000-4000-8000-000000000001",
       stateVersion: UI_STATE_VERSION
     });
   });
@@ -413,7 +414,7 @@ describe("c-hfs-relationship-command-center", () => {
         contractVersion: UI_STATE_VERSION,
         tenantKey: "tenant-live-test",
         workItemId: "a01000000000001AAA",
-        purpose: "RESOLVE_RETAIL_RISK",
+        purpose: "RESOLVE_HOSPITAL_OPERATION_RISK",
         includeProvenance: true
       })
     );

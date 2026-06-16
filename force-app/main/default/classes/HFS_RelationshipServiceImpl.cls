@@ -7,14 +7,18 @@ public with sharing class HFS_RelationshipServiceImpl implements HFS_Relationshi
   private static final Set<String> OUTCOME_STATUSES = new Set<String>{
     'OBSERVED',
     'SUCCESS',
+    'FAILED',
     'PARTIAL',
+    'REVERSED',
     'NO_EFFECT',
     'NEGATIVE',
     'UNKNOWN'
   };
   private static final Set<String> TERMINAL_OUTCOME_STATUSES = new Set<String>{
     'SUCCESS',
+    'FAILED',
     'PARTIAL',
+    'REVERSED',
     'NO_EFFECT',
     'NEGATIVE'
   };

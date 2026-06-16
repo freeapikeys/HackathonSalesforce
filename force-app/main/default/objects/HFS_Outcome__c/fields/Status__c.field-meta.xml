@@ -19,9 +19,19 @@
                 <label>Success</label>
             </value>
             <value>
+                <fullName>FAILED</fullName>
+                <default>false</default>
+                <label>Failed</label>
+            </value>
+            <value>
                 <fullName>PARTIAL</fullName>
                 <default>false</default>
                 <label>Partial</label>
+            </value>
+            <value>
+                <fullName>REVERSED</fullName>
+                <default>false</default>
+                <label>Reversed</label>
             </value>
             <value>
                 <fullName>NO_EFFECT</fullName>

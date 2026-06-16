@@ -9,11 +9,11 @@
         </componentInstanceProperties>
         <componentInstanceProperties>
           <name>profileKey</name>
-          <value>logia-retail</value>
+          <value>logia-hospital</value>
         </componentInstanceProperties>
         <componentInstanceProperties>
           <name>purpose</name>
-          <value>RESOLVE_RETAIL_RISK</value>
+          <value>RESOLVE_HOSPITAL_OPERATION_RISK</value>
         </componentInstanceProperties>
         <componentInstanceProperties>
           <name>stateName</name>
@@ -21,7 +21,7 @@
         </componentInstanceProperties>
         <componentInstanceProperties>
           <name>tenantKey</name>
-          <value>tenant:closed-loop-demo</value>
+          <value>demo-mauritius</value>
         </componentInstanceProperties>
         <componentName>hfsRelationshipCommandCenter</componentName>
         <identifier>c_hfsRelationshipCommandCenter</identifier>
