@@ -121,9 +121,11 @@ questions, root-cause hypotheses, next-evidence needs, and affected primitives.
 - `/logia status <approval-id>` is an internal Slack status command. It may
   report approval state and action readiness, but it must not expose raw
   complaint text, contact data, patient details, secrets, or execute actions.
-- Vendor email notification is implemented as protected mock action
-  `SEND_VENDOR_EMAIL`; do not claim live email delivery unless an Anypoint,
-  SMTP, or email-provider connector is configured and tested.
+- Vendor email notification is implemented as protected action
+  `SEND_VENDOR_EMAIL`. The reference runtime has a Gmail API adapter, but live
+  delivery can be claimed only when `gmail.send` credentials are configured
+  outside Git and the approved action records a provider message ID. Otherwise
+  the action remains a protected queued fallback.
 - Clinical diagnosis, treatment, dosage, triage, and clinical priority actions
   are not valid MuleSoft actions for the demo.
 

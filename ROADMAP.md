@@ -555,8 +555,10 @@ file before editing.
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as either urgent internal mobile alert or
       approved customer acknowledgement.
-- [x] Document email as a protected mock action for vendor/supplier follow-up,
-      not a current live email capability.
+- [x] Document email as a protected vendor/supplier follow-up action. Gmail API
+      live send is available only after approval and only when credentials are
+      configured outside Git; otherwise Logia records a protected queued
+      fallback.
 - [x] Verify live outbound Slack delivery when `SLACK_WEBHOOK_URL` is
       configured.
 - [x] Verify live outbound WhatsApp delivery when Meta WhatsApp Cloud API
@@ -582,10 +584,12 @@ file before editing.
       recommendation without executing protected actions.
 - [x] Show the manager approval step before Slack, WhatsApp, vendor, pharmacy,
       billing, refund, email, or customer-facing response execution.
-- [x] Add protected mock email/vendor notification behind the protected action
+- [x] Add protected email/vendor notification behind the protected action
       boundary.
-- [ ] Add live email/vendor delivery only if Anypoint/SMTP credentials are
-      configured safely outside Git.
+- [x] Add Gmail API vendor/supplier delivery adapter behind manager approval,
+      using `gmail.send` credentials from environment or secure properties.
+- [ ] Configure live Gmail OAuth credentials only if the sender account,
+      supplier recipient, refresh token, and demo policy are ready outside Git.
 - [x] Add signed Slack approval buttons in the mock runtime and harness.
 - [x] Add Logia Slack delivery capability metadata for webhook/mock delivery,
       Block Kit approval, signed interactivity, approve/reject/modify, and
@@ -618,9 +622,38 @@ file before editing.
 - [x] Add Slack Lists fallback behavior: if the workspace is unpaid, the
       `lists:write` scope is missing, or column IDs are absent, Slack alerts
       still send and delivery evidence records the mirror failure or skip.
+- [x] Add natural Slack staff intake in the MuleSoft reference runtime:
+      `@Logia` app mentions and DMs route stock/order wording into the same
+      protected supplier-order workflow as `/logia order`.
+- [x] Add Slack Events API URL verification, `app_mention`, and DM message
+      handling in the signed MuleSoft reference runtime.
+- [ ] Re-enable the live CloudHub Slack Events route only after CloudHub startup
+      logs are available or the 4.6 runtime compatibility issue is isolated;
+      attempts with Exchange `1.0.19` to `1.0.21` failed readiness and were
+      rolled back to the known-good `1.0.18` live app.
+- [x] Add Slack message-shortcut/modal handling in the signed interaction
+      runtime so `Send to Logia` can prefill the order form from an existing
+      Slack message.
+- [x] Add `/logia order` missing-detail behavior: if item, quantity, due date,
+      or supplier email is missing, Logia returns a modal/form request instead
+      of guessing.
+- [x] Register manager-created stock orders as pending protected actions with
+      role-owned task/list mirror metadata: Owner, Operations Manager, Worker A,
+      Worker B, Finance Reviewer, Supplier, and Customer Alias.
+- [x] Add Gmail API supplier-email adapter behind approval using `gmail.send`
+      credentials from environment or Anypoint secure properties.
+- [x] Keep supplier email fail-closed: no email executes before manager
+      approval, and missing/failed Gmail credentials produce a protected queued
+      fallback.
 - [ ] Configure live Slack Lists only if the Pro workspace and `lists:write`
       scope are ready; otherwise use Slack messages/threads and Salesforce
       command-center tasks for the demo.
+- [ ] Configure live Slack Events, message shortcut, and optional modal
+      behavior in the Slack App UI; use the same CloudHub Request URL and keep
+      the bot token outside Git.
+- [ ] Configure live Gmail OAuth for the manager/demo sender account:
+      Gmail API enabled, OAuth refresh token stored outside Git, `gmail.send`
+      scope only, and one supplier recipient email for the demo.
 - [x] Rehearse CloudHub Slack command and button payload acknowledgements
       through the active rewritten ingress route.
 - [x] Package/deploy the WhatsApp webhook Mule app to CloudHub and verify the

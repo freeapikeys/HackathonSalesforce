@@ -5,6 +5,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -21,6 +22,7 @@ from .intake import EventIntakeClassifier, IntakeDecision, content_hash
 CONTRACT_VERSION = "1.0.0"
 USE_ENV_SLACK_WEBHOOK = object()
 USE_ENV_WHATSAPP_PROVIDER = object()
+USE_ENV_GMAIL_PROVIDER = object()
 
 SLACK_LIST_COLUMN_ENV = {
     "case": "SLACK_LIST_COLUMN_CASE",
@@ -171,6 +173,366 @@ class WhatsAppProviderConfig:
     phone_number_id: str = ""
     access_token: str = ""
     graph_version: str = "v25.0"
+
+
+@dataclass(frozen=True)
+class GmailProviderConfig:
+    client_id: str
+    client_secret: str
+    refresh_token: str
+    sender_email: str
+    default_supplier_email: str = ""
+    token_uri: str = "https://oauth2.googleapis.com/token"
+
+
+@dataclass(frozen=True)
+class LogiaOrderDraft:
+    raw_text: str
+    item: str
+    quantity: str
+    due_time: str
+    supplier_email: str
+    manager_note: str = ""
+    profile: str = "profile:hospital-private-large"
+
+    @property
+    def missing_fields(self) -> list[str]:
+        missing = []
+        if not self.item:
+            missing.append("item")
+        if not self.quantity:
+            missing.append("quantity")
+        if not self.due_time:
+            missing.append("due date")
+        if not self.supplier_email:
+            missing.append("supplier email")
+        return missing
+
+    @property
+    def is_complete(self) -> bool:
+        return not self.missing_fields
+
+    @property
+    def identity_hash(self) -> str:
+        return canonical_hash(
+            {
+                "rawText": self.raw_text,
+                "item": self.item,
+                "quantity": self.quantity,
+                "dueTime": self.due_time,
+                "supplierEmail": self.supplier_email,
+                "profile": self.profile,
+            }
+        )[:12]
+
+    @property
+    def approval_id(self) -> str:
+        return f"approval-logia-order-{self.identity_hash}"
+
+    @property
+    def action_id(self) -> str:
+        return f"action-logia-order-{self.identity_hash}"
+
+    @property
+    def recommendation_id(self) -> str:
+        return f"recommendation-logia-order-{self.identity_hash}"
+
+    @property
+    def case_id(self) -> str:
+        return f"case-logia-order-{self.identity_hash}"
+
+    def summary(self) -> str:
+        parts = []
+        if self.quantity or self.item:
+            parts.append(" ".join(part for part in [self.quantity, self.item] if part))
+        if self.due_time:
+            parts.append(f"due {self.due_time}")
+        if self.supplier_email:
+            parts.append(f"supplier {self.supplier_email}")
+        return ", ".join(parts) if parts else self.raw_text or "stock request"
+
+
+class LogiaOrderParser:
+    EMAIL_PATTERN = re.compile(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}")
+    ORDER_TERMS = re.compile(
+        r"\b(order|need|needs|restock|stock|supplier|buy|purchase|low)\b",
+        re.IGNORECASE,
+    )
+
+    PROFILE_TERMS = {
+        "airport": "profile:airport-operations",
+        "hotel": "profile:hotel-guest-operations",
+        "bank": "profile:bank-service-operations",
+        "banking": "profile:bank-service-operations",
+        "hospital": "profile:hospital-private-large",
+    }
+
+    @classmethod
+    def has_order_intent(cls, text: str) -> bool:
+        return bool(cls.ORDER_TERMS.search(text or ""))
+
+    @classmethod
+    def strip_slack_mention(cls, text: str) -> str:
+        return re.sub(r"<@[A-Z0-9]+>\s*", "", text or "").strip()
+
+    @classmethod
+    def parse(cls, text: str) -> LogiaOrderDraft:
+        raw_text = cls.strip_slack_mention(text).strip()
+        cleaned = re.sub(r"^/logia\s+", "", raw_text, flags=re.IGNORECASE)
+        cleaned = re.sub(r"^order\b", "", cleaned, flags=re.IGNORECASE).strip()
+        supplier_email = ""
+        email_match = cls.EMAIL_PATTERN.search(cleaned)
+        if email_match:
+            supplier_email = email_match.group(0)
+
+        profile = "profile:hospital-private-large"
+        lowered = cleaned.lower()
+        for term, profile_id in cls.PROFILE_TERMS.items():
+            if re.search(rf"\b{re.escape(term)}\b", lowered):
+                profile = profile_id
+                break
+
+        quantity = ""
+        item = ""
+        qty_match = re.search(
+            r"\b(?:qty|quantity|amount)\s*[:=]?\s*(\d+(?:\.\d+)?)\b",
+            cleaned,
+            re.IGNORECASE,
+        )
+        if qty_match:
+            quantity = qty_match.group(1)
+            before_qty = cleaned[: qty_match.start()]
+            item = re.sub(
+                r"\b(need|needs|order|restock|stock|buy|purchase|supplier|from|for)\b",
+                " ",
+                before_qty,
+                flags=re.IGNORECASE,
+            )
+        else:
+            first_number = re.search(r"\b(\d+(?:\.\d+)?)\b", cleaned)
+            if first_number:
+                quantity = first_number.group(1)
+                after_number = cleaned[first_number.end() :]
+                item_match = re.match(
+                    r"\s*([A-Za-z][A-Za-z0-9 /_-]{1,80}?)(?=\s+\b(?:by|due|in|from|supplier|email|for)\b|$)",
+                    after_number,
+                    re.IGNORECASE,
+                )
+                if item_match:
+                    item = item_match.group(1)
+            else:
+                item_match = re.search(
+                    r"\b(?:need|needs|order|restock|stock|buy|purchase)\s+([A-Za-z][A-Za-z0-9 /_-]{1,80}?)(?=\s+\b(?:by|due|in|from|supplier|email|qty|quantity|amount)\b|$)",
+                    cleaned,
+                    re.IGNORECASE,
+                )
+                if item_match:
+                    item = item_match.group(1)
+
+        item = cls._clean_item(item)
+        due_time = ""
+        due_match = re.search(
+            r"\b(?:due|by|in)\s+([^,.;]+?)(?=\s+\b(?:from|supplier|email|manager|note)\b|$)",
+            cleaned,
+            re.IGNORECASE,
+        )
+        if due_match:
+            prefix = due_match.group(0).split()[0].lower()
+            due_value = due_match.group(1).strip()
+            due_time = f"{prefix} {due_value}" if prefix == "in" else due_value
+
+        manager_note = ""
+        note_match = re.search(
+            r"\b(?:note|notes)\s*[:=-]?\s*(.+)$",
+            cleaned,
+            re.IGNORECASE,
+        )
+        if note_match:
+            manager_note = note_match.group(1).strip()
+
+        return LogiaOrderDraft(
+            raw_text=raw_text,
+            item=item,
+            quantity=quantity,
+            due_time=due_time,
+            supplier_email=supplier_email,
+            manager_note=manager_note,
+            profile=profile,
+        )
+
+    @classmethod
+    def from_modal_submission(cls, payload: dict[str, Any]) -> LogiaOrderDraft:
+        values = (
+            payload.get("view", {})
+            .get("state", {})
+            .get("values", {})
+        )
+
+        def plain(block_id: str, action_id: str) -> str:
+            return str(
+                values.get(block_id, {})
+                .get(action_id, {})
+                .get("value", "")
+                or ""
+            ).strip()
+
+        profile_value = (
+            values.get("profile_block", {})
+            .get("profile", {})
+            .get("selected_option", {})
+            .get("value", "")
+        )
+        return LogiaOrderDraft(
+            raw_text=plain("source_block", "source_text"),
+            item=plain("item_block", "item"),
+            quantity=plain("quantity_block", "quantity"),
+            due_time=plain("due_block", "due"),
+            supplier_email=plain("supplier_block", "supplier_email"),
+            manager_note=plain("note_block", "manager_note"),
+            profile=profile_value or "profile:hospital-private-large",
+        )
+
+    @staticmethod
+    def _clean_item(value: str) -> str:
+        value = re.sub(LogiaOrderParser.EMAIL_PATTERN, "", value or "")
+        value = re.sub(
+            r"\b(?:qty|quantity|amount|due|by|in|from|supplier|email|for|manager|note)\b.*$",
+            "",
+            value,
+            flags=re.IGNORECASE,
+        )
+        value = re.sub(r"[^A-Za-z0-9 /_-]+", " ", value)
+        return re.sub(r"\s+", " ", value).strip(" -_/").lower()
+
+
+class LogiaSlackViews:
+    @staticmethod
+    def order_modal(draft: LogiaOrderDraft | None = None) -> dict[str, Any]:
+        draft = draft or LogiaOrderParser.parse("")
+        return {
+            "type": "modal",
+            "callback_id": "logia_order_modal",
+            "title": {"type": "plain_text", "text": "Logia order"},
+            "submit": {"type": "plain_text", "text": "Draft"},
+            "close": {"type": "plain_text", "text": "Cancel"},
+            "blocks": [
+                LogiaSlackViews._plain_input(
+                    "item_block",
+                    "item",
+                    "Item",
+                    draft.item,
+                    "gloves",
+                ),
+                LogiaSlackViews._plain_input(
+                    "quantity_block",
+                    "quantity",
+                    "Quantity",
+                    draft.quantity,
+                    "500",
+                ),
+                LogiaSlackViews._plain_input(
+                    "due_block",
+                    "due",
+                    "Needed by",
+                    draft.due_time,
+                    "Friday or 3 days",
+                ),
+                LogiaSlackViews._plain_input(
+                    "supplier_block",
+                    "supplier_email",
+                    "Supplier email",
+                    draft.supplier_email,
+                    "supplier@example.com",
+                ),
+                {
+                    "type": "input",
+                    "block_id": "profile_block",
+                    "label": {"type": "plain_text", "text": "Profile"},
+                    "element": {
+                        "type": "static_select",
+                        "action_id": "profile",
+                        "initial_option": LogiaSlackViews._profile_option(
+                            draft.profile
+                        ),
+                        "options": [
+                            LogiaSlackViews._profile_option(
+                                "profile:hospital-private-large"
+                            ),
+                            LogiaSlackViews._profile_option(
+                                "profile:airport-operations"
+                            ),
+                            LogiaSlackViews._profile_option(
+                                "profile:hotel-guest-operations"
+                            ),
+                            LogiaSlackViews._profile_option(
+                                "profile:bank-service-operations"
+                            ),
+                        ],
+                    },
+                },
+                LogiaSlackViews._plain_input(
+                    "note_block",
+                    "manager_note",
+                    "Manager note",
+                    draft.manager_note,
+                    "Ask for earliest delivery and price.",
+                    multiline=True,
+                    optional=True,
+                ),
+                LogiaSlackViews._plain_input(
+                    "source_block",
+                    "source_text",
+                    "Source message",
+                    draft.raw_text,
+                    "Original Slack message or request",
+                    multiline=True,
+                    optional=True,
+                ),
+            ],
+        }
+
+    @staticmethod
+    def _plain_input(
+        block_id: str,
+        action_id: str,
+        label: str,
+        initial_value: str,
+        placeholder: str,
+        *,
+        multiline: bool = False,
+        optional: bool = False,
+    ) -> dict[str, Any]:
+        element: dict[str, Any] = {
+            "type": "plain_text_input",
+            "action_id": action_id,
+            "placeholder": {"type": "plain_text", "text": placeholder},
+            "multiline": multiline,
+        }
+        if initial_value:
+            element["initial_value"] = initial_value
+        return {
+            "type": "input",
+            "block_id": block_id,
+            "optional": optional,
+            "label": {"type": "plain_text", "text": label},
+            "element": element,
+        }
+
+    @staticmethod
+    def _profile_option(profile_id: str) -> dict[str, Any]:
+        labels = {
+            "profile:hospital-private-large": "Hospital",
+            "profile:airport-operations": "Airport",
+            "profile:hotel-guest-operations": "Hotel",
+            "profile:bank-service-operations": "Banking",
+        }
+        return {
+            "text": {
+                "type": "plain_text",
+                "text": labels.get(profile_id, "Hospital"),
+            },
+            "value": profile_id,
+        }
 
 
 @dataclass(frozen=True)
@@ -364,6 +726,121 @@ class SlackListTransport:
                     ],
                 }
             ],
+        }
+
+
+class GmailTransport:
+    """Sends approved supplier email through Gmail API with gmail.send scope."""
+
+    def send(
+        self,
+        config: GmailProviderConfig,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        access_token = self.refresh_access_token(config)
+        return self.send_message(
+            access_token=access_token,
+            sender_email=config.sender_email,
+            to_email=payload["to"],
+            subject=payload["subject"],
+            body=payload["body"],
+        )
+
+    def refresh_access_token(self, config: GmailProviderConfig) -> str:
+        form = urllib.parse.urlencode(
+            {
+                "client_id": config.client_id,
+                "client_secret": config.client_secret,
+                "refresh_token": config.refresh_token,
+                "grant_type": "refresh_token",
+            }
+        ).encode("utf-8")
+        request = urllib.request.Request(
+            config.token_uri,
+            data=form,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                response_body = response.read().decode("utf-8", errors="replace")
+                status_code = getattr(response, "status", response.getcode())
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            raise RetryableDependencyFailure(
+                "Gmail OAuth refresh request failed."
+            ) from error
+        if status_code < 200 or status_code >= 300:
+            raise RetryableDependencyFailure(
+                f"Gmail OAuth refresh returned HTTP {status_code}."
+            )
+        try:
+            parsed = json.loads(response_body or "{}")
+        except json.JSONDecodeError as error:
+            raise RetryableDependencyFailure(
+                "Gmail OAuth refresh returned invalid JSON."
+            ) from error
+        access_token = parsed.get("access_token")
+        if not access_token:
+            raise RetryableDependencyFailure(
+                "Gmail OAuth refresh did not return an access token."
+            )
+        return str(access_token)
+
+    def send_message(
+        self,
+        *,
+        access_token: str,
+        sender_email: str,
+        to_email: str,
+        subject: str,
+        body: str,
+    ) -> dict[str, Any]:
+        raw_message = "\r\n".join(
+            [
+                f"From: {sender_email}",
+                f"To: {to_email}",
+                f"Subject: {subject}",
+                "MIME-Version: 1.0",
+                'Content-Type: text/plain; charset="UTF-8"',
+                "",
+                body,
+            ]
+        )
+        encoded_message = (
+            base64.urlsafe_b64encode(raw_message.encode("utf-8"))
+            .decode("ascii")
+            .rstrip("=")
+        )
+        request = urllib.request.Request(
+            "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+            data=json.dumps({"raw": encoded_message}).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                response_body = response.read().decode("utf-8", errors="replace")
+                status_code = getattr(response, "status", response.getcode())
+        except (urllib.error.URLError, TimeoutError, OSError) as error:
+            raise RetryableDependencyFailure("Gmail send request failed.") from error
+        if status_code < 200 or status_code >= 300:
+            raise RetryableDependencyFailure(
+                f"Gmail send returned HTTP {status_code}."
+            )
+        try:
+            parsed = json.loads(response_body or "{}")
+        except json.JSONDecodeError as error:
+            raise RetryableDependencyFailure(
+                "Gmail send returned invalid JSON."
+            ) from error
+        return {
+            "statusCode": status_code,
+            "messageId": parsed.get("id"),
+            "threadId": parsed.get("threadId"),
+            "body": response_body,
         }
 
 
@@ -702,9 +1179,13 @@ class MockWriteBackAdapter:
         slack_list_transport: SlackListTransport | None = None,
         whatsapp_provider_config: WhatsAppProviderConfig | None = None,
         whatsapp_transport: TwilioWhatsAppTransport | None = None,
+        gmail_provider_config: GmailProviderConfig | None = None,
+        gmail_transport: GmailTransport | None = None,
     ) -> None:
         self.approvals: dict[str, dict[str, Any]] = {}
         self.source_records: dict[str, dict[str, Any]] = {}
+        self.pending_actions_by_approval: dict[str, list[dict[str, Any]]] = {}
+        self.pending_task_mirrors_by_approval: dict[str, dict[str, Any]] = {}
         self._executions: dict[
             tuple[str, str], tuple[str, dict[str, Any]]
         ] = {}
@@ -720,6 +1201,8 @@ class MockWriteBackAdapter:
         self.whatsapp_transport = (
             whatsapp_transport or TwilioWhatsAppTransport()
         )
+        self.gmail_provider_config = gmail_provider_config
+        self.gmail_transport = gmail_transport or GmailTransport()
 
     def register_approval(
         self,
@@ -739,6 +1222,41 @@ class MockWriteBackAdapter:
             "actionIds": list(approved_action_ids),
             "status": status,
         }
+
+    def register_pending_action(self, action: dict[str, Any]) -> dict[str, Any]:
+        self.register_approval(
+            approval_id=action["approvalId"],
+            tenant_key=action["tenantKey"],
+            recommendation_id=action["recommendationId"],
+            action_id=action["actionId"],
+            action_ids=[action["actionId"]],
+            status="PENDING",
+        )
+        self.pending_actions_by_approval.setdefault(
+            action["approvalId"],
+            [],
+        )
+        existing_ids = {
+            item["actionId"]
+            for item in self.pending_actions_by_approval[action["approvalId"]]
+        }
+        if action["actionId"] not in existing_ids:
+            self.pending_actions_by_approval[action["approvalId"]].append(
+                deepcopy(action)
+            )
+        mirror = self._mirror_pending_action(action)
+        self.pending_task_mirrors_by_approval[action["approvalId"]] = mirror
+        self.approvals[action["approvalId"]]["taskMirror"] = mirror
+        return deepcopy(self.approvals[action["approvalId"]])
+
+    def execute_pending_actions_for_approval(
+        self,
+        approval_id: str,
+    ) -> list[dict[str, Any]]:
+        outcomes = []
+        for action in self.pending_actions_by_approval.get(approval_id, []):
+            outcomes.append(self.execute(action))
+        return outcomes
 
     def decide_approval(
         self,
@@ -934,16 +1452,7 @@ class MockWriteBackAdapter:
                 "metricValue": 1,
             }
         if action_type == "SEND_VENDOR_EMAIL":
-            return {
-                "channel": "EMAIL_MOCK",
-                "targetRole": payload.get("targetRole", "Vendor Coordinator"),
-                "messageBody": payload.get("messageBody", ""),
-                "status": "QUEUED",
-                "fallbackReason": None,
-                "summary": "Approved vendor email was queued in protected mock mode.",
-                "metricKey": "vendor_email_queued",
-                "metricValue": 1,
-            }
+            return self._execute_vendor_email(action)
         if action_type in self.HOSPITAL_ACTION_TYPES:
             return {
                 "channel": payload.get("channel", "MULESOFT_HOSPITAL_MOCK"),
@@ -992,6 +1501,149 @@ class MockWriteBackAdapter:
             "metricKey": "action_execution_success",
             "metricValue": 1,
         }
+
+    def _execute_vendor_email(self, action: dict[str, Any]) -> dict[str, Any]:
+        payload = action.get("payload", {})
+        email_payload, fallback_reason = self._vendor_email_payload(payload)
+        base = {
+            "targetRole": payload.get("targetRole", "Supplier"),
+            "targetChannel": email_payload.get("to") or "supplier-email",
+            "messageBody": email_payload["body"],
+            "emailSubject": email_payload["subject"],
+            "approvalMode": "manager_approved",
+            "actionId": action["actionId"],
+            "approvalId": action["approvalId"],
+            "correlationId": action["correlationId"],
+        }
+        if fallback_reason:
+            return base | {
+                "channel": "EMAIL_MOCK",
+                "provider": "mock-vendor-email",
+                "status": "QUEUED",
+                "fallbackReason": fallback_reason,
+                "summary": (
+                    "Approved supplier email stayed in the protected queue."
+                ),
+                "metricKey": "vendor_email_queued",
+                "metricValue": 1,
+            }
+        if self.gmail_provider_config is None:
+            return base | {
+                "channel": "EMAIL_MOCK",
+                "provider": "mock-vendor-email",
+                "status": "QUEUED",
+                "fallbackReason": (
+                    "Gmail API credentials are not configured; protected "
+                    "supplier email remains queued."
+                ),
+                "summary": (
+                    "Approved supplier email stayed in the protected queue."
+                ),
+                "metricKey": "vendor_email_queued",
+                "metricValue": 1,
+            }
+        try:
+            provider_result = self.gmail_transport.send(
+                self.gmail_provider_config,
+                email_payload,
+            )
+        except RetryableDependencyFailure as error:
+            return base | {
+                "channel": "EMAIL_MOCK",
+                "provider": "gmail-api",
+                "status": "QUEUED",
+                "fallbackReason": (
+                    "Gmail API send failed; protected supplier email remains "
+                    f"queued. Reason: {error}"
+                ),
+                "summary": (
+                    "Approved supplier email stayed in the protected queue "
+                    "after Gmail failure."
+                ),
+                "metricKey": "vendor_email_queued",
+                "metricValue": 1,
+            }
+
+        return base | {
+            "channel": "GMAIL",
+            "provider": "gmail-api",
+            "status": "SENT",
+            "providerMessageId": provider_result.get("messageId"),
+            "providerThreadId": provider_result.get("threadId"),
+            "fallbackReason": None,
+            "summary": "Approved supplier email was sent through Gmail API.",
+            "metricKey": "vendor_email_sent",
+            "metricValue": 1,
+        }
+
+    def _vendor_email_payload(
+        self,
+        payload: dict[str, Any],
+    ) -> tuple[dict[str, str], str | None]:
+        configured_to = (
+            self.gmail_provider_config.default_supplier_email
+            if self.gmail_provider_config is not None
+            else ""
+        )
+        to_email = (
+            payload.get("supplierEmail")
+            or payload.get("recipientEmail")
+            or (
+                payload.get("targetChannel")
+                if LogiaOrderParser.EMAIL_PATTERN.fullmatch(
+                    str(payload.get("targetChannel") or "")
+                )
+                else ""
+            )
+            or configured_to
+        )
+        subject = (
+            payload.get("emailSubject")
+            or payload.get("messageTitle")
+            or "Logia supplier request"
+        )
+        body = (
+            payload.get("emailBody")
+            or payload.get("messageBody")
+            or "Please review this approved Logia supplier request."
+        )
+        if not str(to_email).strip():
+            return (
+                {
+                    "to": "",
+                    "subject": str(subject).strip(),
+                    "body": str(body).strip(),
+                },
+                "Supplier email recipient is not configured.",
+            )
+        return (
+            {
+                "to": str(to_email).strip(),
+                "subject": str(subject).strip(),
+                "body": str(body).strip(),
+            },
+            None,
+        )
+
+    def _mirror_pending_action(self, action: dict[str, Any]) -> dict[str, Any]:
+        payload = action.get("payload", {})
+        if not {
+            "targetRole",
+            "targetChannel",
+            "messageTitle",
+            "messageBody",
+            "evidenceIds",
+            "sourceRecommendationId",
+        }.issubset(payload):
+            return {
+                "status": "SKIPPED",
+                "fallbackReason": "Pending action payload is not list-safe.",
+            }
+        return self._mirror_slack_list_item(
+            action=action,
+            slack_payload=payload,
+            delivery_status="PENDING",
+        )
 
     def _execute_whatsapp_alert(
         self,
@@ -1560,6 +2212,248 @@ class MockWriteBackAdapter:
         ]
 
 
+class LogiaSlackOrderWorkflow:
+    """Builds protected supplier-order UX and pending approved-action records."""
+
+    TENANT_KEY = "demo-mauritius"
+
+    @classmethod
+    def response_for_text(
+        cls,
+        *,
+        write_back_adapter: MockWriteBackAdapter,
+        text: str,
+        response_type: str = "in_channel",
+    ) -> MockHttpResponse:
+        return cls.response_for_draft(
+            write_back_adapter=write_back_adapter,
+            draft=LogiaOrderParser.parse(text),
+            response_type=response_type,
+        )
+
+    @classmethod
+    def response_for_draft(
+        cls,
+        *,
+        write_back_adapter: MockWriteBackAdapter,
+        draft: LogiaOrderDraft,
+        response_type: str = "in_channel",
+    ) -> MockHttpResponse:
+        if not draft.is_complete:
+            missing = ", ".join(draft.missing_fields)
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "response_type": "ephemeral",
+                    "text": (
+                        "Logia needs a little more detail before it can draft "
+                        f"the protected supplier email: {missing}."
+                    ),
+                    "modalRequired": True,
+                    "missingFields": draft.missing_fields,
+                    "view": LogiaSlackViews.order_modal(draft),
+                },
+                {},
+            )
+
+        action = cls.pending_action_from_draft(draft)
+        approval = write_back_adapter.register_pending_action(action)
+        button_value = json.dumps(
+            {
+                "approvalId": draft.approval_id,
+                "recommendationId": draft.recommendation_id,
+                "tenantKey": cls.TENANT_KEY,
+                "actionId": draft.action_id,
+                "correlationId": action["correlationId"],
+            },
+            separators=(",", ":"),
+        )
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": response_type,
+                "text": (
+                    "Logia drafted a protected supplier email for "
+                    f"{draft.summary()}. Manager approval is required before "
+                    "any supplier email or order is sent."
+                ),
+                "approvalId": draft.approval_id,
+                "recommendationId": draft.recommendation_id,
+                "actionId": draft.action_id,
+                "caseId": draft.case_id,
+                "protectedAction": "SEND_VENDOR_EMAIL",
+                "taskMirror": approval.get("taskMirror"),
+                "draft": {
+                    "item": draft.item,
+                    "quantity": draft.quantity,
+                    "dueTime": draft.due_time,
+                    "supplierEmail": draft.supplier_email,
+                    "profile": draft.profile,
+                    "ownerRole": "Operations Manager",
+                    "workerRole": "Worker B",
+                    "financeRole": "Finance Reviewer",
+                },
+                "blocks": cls.approval_blocks(draft, button_value),
+            },
+            {},
+        )
+
+    @classmethod
+    def pending_action_from_draft(cls, draft: LogiaOrderDraft) -> dict[str, Any]:
+        correlation_id = str(
+            uuid.uuid5(
+                uuid.NAMESPACE_URL,
+                f"logia:order:{cls.TENANT_KEY}:{draft.identity_hash}",
+            )
+        )
+        email_subject = f"Stock request: {draft.quantity} {draft.item}".strip()
+        email_body = "\n".join(
+            [
+                "Hello,",
+                "",
+                "Please confirm availability, price, and earliest delivery for:",
+                f"- Item: {draft.item}",
+                f"- Quantity: {draft.quantity}",
+                f"- Needed by: {draft.due_time}",
+                "",
+                (
+                    "Manager note: " + draft.manager_note
+                    if draft.manager_note
+                    else "Manager note: Please reply with availability and lead time."
+                ),
+                "",
+                "This request was generated by Logia after manager approval.",
+            ]
+        )
+        return {
+            "contractVersion": CONTRACT_VERSION,
+            "tenantKey": cls.TENANT_KEY,
+            "correlationId": correlation_id,
+            "purpose": "EXECUTE_APPROVED_ACTION",
+            "externalKey": draft.action_id,
+            "idempotencyKey": f"{draft.action_id}-v1",
+            "recommendationId": draft.recommendation_id,
+            "approvalId": draft.approval_id,
+            "actionId": draft.action_id,
+            "actionType": "SEND_VENDOR_EMAIL",
+            "sourceSystem": "gmail",
+            "targetEntityId": "partner:supplier",
+            "payload": {
+                "caseId": draft.case_id,
+                "profileId": draft.profile,
+                "module": "Inventory and supply",
+                "priority": "P1",
+                "queueStatus": "Pending Approval",
+                "dueTime": draft.due_time,
+                "expectedOutcome": "Supplier request sent after approval",
+                "targetRole": "Supplier",
+                "targetChannel": draft.supplier_email,
+                "messageTitle": email_subject,
+                "messageBody": email_body,
+                "emailSubject": email_subject,
+                "emailBody": email_body,
+                "supplierEmail": draft.supplier_email,
+                "supplierAlias": "partner-supplier-" + draft.identity_hash[:8],
+                "sourceRecommendationId": draft.recommendation_id,
+                "evidenceIds": [f"evidence-{draft.case_id}-request"],
+                "ownerRoles": [
+                    "Owner",
+                    "Operations Manager",
+                    "Worker B",
+                    "Finance Reviewer",
+                    "Supplier",
+                ],
+                "protectedActionState": "PENDING_MANAGER_APPROVAL",
+            },
+        }
+
+    @classmethod
+    def approval_blocks(
+        cls,
+        draft: LogiaOrderDraft,
+        button_value: str,
+    ) -> list[dict[str, Any]]:
+        return [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                        "*Protected supplier order draft*\n"
+                        f"Need *{draft.quantity} {draft.item}* by "
+                        f"*{draft.due_time}*."
+                    ),
+                },
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {"type": "mrkdwn", "text": f"*Profile*\n`{draft.profile}`"},
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Module*\nInventory and supply",
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Supplier*\n`{draft.supplier_email}`",
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Approval ID*\n`{draft.approval_id}`",
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Task owner*\nWorker B + Operations Manager",
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": "*Action*\n`SEND_VENDOR_EMAIL` after approval",
+                    },
+                ],
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": (
+                        "*Draft email*\n"
+                        f"Subject: Stock request: {draft.quantity} {draft.item}\n\n"
+                        "Hello supplier, please confirm availability, price, "
+                        "and earliest delivery. This message stays blocked "
+                        "until a manager approves it."
+                    ),
+                },
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Approve"},
+                        "style": "primary",
+                        "action_id": "approve_logia_supplier_order",
+                        "value": button_value,
+                    },
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Reject"},
+                        "style": "danger",
+                        "action_id": "reject_logia_supplier_order",
+                        "value": button_value,
+                    },
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Modify"},
+                        "action_id": "modify_logia_supplier_order",
+                        "value": button_value,
+                    },
+                ],
+            },
+        ]
+
+
 class SlackApprovalInteractionHandler:
     """Validates Slack button interactions and records approval decisions."""
 
@@ -1672,6 +2566,57 @@ class SlackApprovalInteractionHandler:
                 "SLACK_PAYLOAD_INVALID",
                 "Slack interaction payload must be JSON.",
             ) from error
+        interaction_type = payload.get("type")
+        if interaction_type == "message_action":
+            message_text = (
+                payload.get("message", {}).get("text")
+                or payload.get("message", {}).get("blocks", [{}])[0].get(
+                    "text",
+                    {},
+                ).get("text", "")
+            )
+            draft = LogiaOrderParser.parse(str(message_text or ""))
+            self._seen_signatures.add(signature_value)
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "response_type": "ephemeral",
+                    "text": (
+                        "Logia captured that Slack message. Complete the "
+                        "order details before any supplier email is drafted."
+                    ),
+                    "modalRequired": True,
+                    "view": LogiaSlackViews.order_modal(draft),
+                },
+                {},
+            )
+        if interaction_type == "view_submission":
+            draft = LogiaOrderParser.from_modal_submission(payload)
+            if not draft.is_complete:
+                self._seen_signatures.add(signature_value)
+                return MockHttpResponse(
+                    200,
+                    {
+                        "ok": False,
+                        "response_action": "errors",
+                        "errors": {
+                            "item_block": (
+                                "Item, quantity, due date, and supplier "
+                                "email are required."
+                            )
+                        },
+                    },
+                    {},
+                )
+            self._seen_signatures.add(signature_value)
+            response = LogiaSlackOrderWorkflow.response_for_draft(
+                write_back_adapter=self.write_back_adapter,
+                draft=draft,
+                response_type="ephemeral",
+            )
+            response.body["response_action"] = "clear"
+            return response
         action = (payload.get("actions") or [{}])[0]
         action_id = action.get("action_id")
         try:
@@ -1683,7 +2628,8 @@ class SlackApprovalInteractionHandler:
             ) from error
 
         decision_status = value.get("decisionStatus")
-        if action_id == "logia_modify" or decision_status == "MODIFY":
+        action_id_text = str(action_id or "").lower()
+        if "modify" in action_id_text or decision_status == "MODIFY":
             self._seen_signatures.add(signature_value)
             return MockHttpResponse(
                 200,
@@ -1700,9 +2646,9 @@ class SlackApprovalInteractionHandler:
                 },
                 {},
             )
-        if action_id == "logia_approve":
+        if action_id == "logia_approve" or "approve" in action_id_text:
             decision_status = "APPROVED"
-        elif action_id == "logia_reject":
+        elif action_id == "logia_reject" or "reject" in action_id_text:
             decision_status = "REJECTED"
         if decision_status not in {"APPROVED", "REJECTED"}:
             raise SlackInteractionValidationError(
@@ -1731,8 +2677,28 @@ class SlackApprovalInteractionHandler:
                 str(error),
                 status=403,
             ) from error
+        executed_outcomes: list[dict[str, Any]] = []
+        if decision_status == "APPROVED":
+            executed_outcomes = (
+                self.write_back_adapter.execute_pending_actions_for_approval(
+                    value["approvalId"]
+                )
+            )
 
         self._seen_signatures.add(signature_value)
+        execution_text = ""
+        if executed_outcomes:
+            delivery_records = []
+            for outcome in executed_outcomes:
+                source_record = self.write_back_adapter.source_records.get(
+                    outcome["sourceRecordId"],
+                    {},
+                )
+                delivery = source_record.get("delivery", {})
+                delivery_records.append(
+                    f"{source_record.get('actionType')}={delivery.get('status')}"
+                )
+            execution_text = " Executed: " + ", ".join(delivery_records) + "."
         return MockHttpResponse(
             200,
             {
@@ -1743,10 +2709,11 @@ class SlackApprovalInteractionHandler:
                 "tenantKey": value["tenantKey"],
                 "correlationId": value.get("correlationId"),
                 "actionIds": decision.get("actionIds", []),
+                "executedOutcomes": executed_outcomes,
                 "replace_original": True,
                 "text": (
                     f"Logia approval {decision_status.lower()} for "
-                    f"{value['approvalId']}."
+                    f"{value['approvalId']}." + execution_text
                 ),
                 "channelId": (payload.get("channel") or {}).get("id"),
                 "messageTs": (payload.get("message") or {}).get("ts")
@@ -1960,120 +2927,153 @@ class SlackStatusCommandHandler:
         )
 
     def _order_response(self, text: str) -> MockHttpResponse:
-        order_text = text[len("order") :].strip()
-        order_summary = (
-            f"Manager stock request captured: {order_text}"
-            if order_text
-            else (
-                "No stock request details were provided. Try "
-                "`/logia order gloves qty 500 due 3 days supplier "
-                "supplier@example.com`."
+        return LogiaSlackOrderWorkflow.response_for_text(
+            write_back_adapter=self.write_back_adapter,
+            text=text,
+            response_type="in_channel",
+        )
+
+    def _validate_signature(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> None:
+        normalized_headers = {key.lower(): value for key, value in headers.items()}
+        timestamp_value = normalized_headers.get("x-slack-request-timestamp", "")
+        signature_value = normalized_headers.get("x-slack-signature", "")
+        if not timestamp_value or not signature_value:
+            raise SlackInteractionValidationError(
+                "SLACK_SIGNATURE_MISSING",
+                "Slack signature headers are required.",
+                status=401,
             )
+        try:
+            request_time = int(timestamp_value)
+        except ValueError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_TIMESTAMP_INVALID",
+                "Slack request timestamp must be an integer.",
+                status=401,
+            ) from error
+        if abs(self.now_seconds() - request_time) > self.maximum_age_seconds:
+            raise SlackInteractionValidationError(
+                "SLACK_TIMESTAMP_EXPIRED",
+                "Slack request timestamp is outside the allowed window.",
+                status=401,
+            )
+        expected_signature = SlackApprovalInteractionHandler.signature(
+            signing_secret=self.signing_secret,
+            timestamp_value=timestamp_value,
+            raw_body=raw_body,
         )
-        approval_id = "approval-logia-supplier-order-001"
-        recommendation_id = "recommendation-logia-supplier-order-001"
-        button_value = json.dumps(
-            {
-                "approvalId": approval_id,
-                "recommendationId": recommendation_id,
-                "tenantKey": "demo-mauritius",
-            },
-            separators=(",", ":"),
-        )
+        if not hmac.compare_digest(expected_signature, signature_value):
+            raise SlackInteractionValidationError(
+                "SLACK_SIGNATURE_INVALID",
+                "Slack request signature did not match.",
+                status=401,
+            )
+        if signature_value in self._seen_signatures:
+            raise SlackInteractionValidationError(
+                "SLACK_INTERACTION_REPLAYED",
+                "Slack command was already processed.",
+                status=409,
+            )
+        self._seen_signatures.add(signature_value)
+
+
+class SlackEventHandler:
+    """Handles Slack Events API payloads for @Logia and DM intake."""
+
+    def __init__(
+        self,
+        *,
+        signing_secret: str,
+        write_back_adapter: MockWriteBackAdapter,
+        now_seconds: Callable[[], int] | None = None,
+        maximum_age_seconds: int = 300,
+    ) -> None:
+        if not signing_secret:
+            raise ValueError("signing_secret is required")
+        self.signing_secret = signing_secret
+        self.write_back_adapter = write_back_adapter
+        self.now_seconds = now_seconds or (lambda: int(time.time()))
+        self.maximum_age_seconds = maximum_age_seconds
+        self._seen_signatures: set[str] = set()
+
+    def handle(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> MockHttpResponse:
+        try:
+            return self._handle(headers, raw_body)
+        except SlackInteractionValidationError as error:
+            return MockHttpResponse(
+                error.status,
+                {
+                    "ok": False,
+                    "code": error.code,
+                    "message": str(error),
+                },
+                {},
+            )
+
+    def _handle(
+        self,
+        headers: dict[str, str],
+        raw_body: str,
+    ) -> MockHttpResponse:
+        self._validate_signature(headers, raw_body)
+        try:
+            body = json.loads(raw_body or "{}")
+        except json.JSONDecodeError as error:
+            raise SlackInteractionValidationError(
+                "SLACK_EVENT_INVALID",
+                "Slack event payload must be JSON.",
+            ) from error
+
+        if body.get("type") == "url_verification":
+            return MockHttpResponse(
+                200,
+                {"challenge": body.get("challenge", "")},
+                {},
+            )
+        if body.get("type") != "event_callback":
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "ignored": True,
+                    "message": "Only Slack url_verification and event_callback are handled.",
+                },
+                {},
+            )
+
+        event = body.get("event") or {}
+        if event.get("bot_id") or event.get("subtype") == "bot_message":
+            return MockHttpResponse(200, {"ok": True, "ignored": True}, {})
+        event_type = event.get("type")
+        is_dm = event_type == "message" and event.get("channel_type") == "im"
+        is_mention = event_type == "app_mention"
+        if not (is_dm or is_mention):
+            return MockHttpResponse(200, {"ok": True, "ignored": True}, {})
+
+        text = LogiaOrderParser.strip_slack_mention(str(event.get("text") or ""))
+        if LogiaOrderParser.has_order_intent(text):
+            return LogiaSlackOrderWorkflow.response_for_text(
+                write_back_adapter=self.write_back_adapter,
+                text=text,
+                response_type="ephemeral" if is_dm else "in_channel",
+            )
         return MockHttpResponse(
             200,
             {
                 "ok": True,
-                "response_type": "in_channel",
+                "response_type": "ephemeral",
                 "text": (
-                    f"{order_summary} Logia drafted a protected supplier "
-                    "email. Manager approval is required before any supplier "
-                    "email or order is sent."
+                    "Tell me the issue in one sentence. For stock, say "
+                    "`order 500 gloves by Friday from supplier@example.com`."
                 ),
-                "approvalId": approval_id,
-                "recommendationId": recommendation_id,
-                "protectedAction": "SEND_VENDOR_EMAIL",
-                "blocks": [
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": (
-                                "*Protected supplier order draft*\n"
-                                f"{order_summary}"
-                            ),
-                        },
-                    },
-                    {
-                        "type": "section",
-                        "fields": [
-                            {
-                                "type": "mrkdwn",
-                                "text": "*Profile*\nUniversal operations",
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": "*Module*\nInventory and supply",
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Approval ID*\n`{approval_id}`",
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": "*Action*\n`SEND_VENDOR_EMAIL` mock queue",
-                            },
-                        ],
-                    },
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": (
-                                "*Draft email*\n"
-                                "Subject: Stock request approval needed\n\n"
-                                "Hello supplier, please confirm availability, "
-                                "price, and earliest delivery for the "
-                                "requested stock. This message will stay "
-                                "blocked until the manager approves it."
-                            ),
-                        },
-                    },
-                    {
-                        "type": "actions",
-                        "elements": [
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Approve",
-                                },
-                                "style": "primary",
-                                "action_id": "approve_logia_supplier_order",
-                                "value": button_value,
-                            },
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Reject",
-                                },
-                                "style": "danger",
-                                "action_id": "reject_logia_supplier_order",
-                                "value": button_value,
-                            },
-                            {
-                                "type": "button",
-                                "text": {
-                                    "type": "plain_text",
-                                    "text": "Modify",
-                                },
-                                "action_id": "modify_logia_supplier_order",
-                                "value": button_value,
-                            },
-                        ],
-                    },
-                ],
             },
             {},
         )
@@ -2120,7 +3120,7 @@ class SlackStatusCommandHandler:
         if signature_value in self._seen_signatures:
             raise SlackInteractionValidationError(
                 "SLACK_INTERACTION_REPLAYED",
-                "Slack command was already processed.",
+                "Slack event was already processed.",
                 status=409,
             )
         self._seen_signatures.add(signature_value)
@@ -3214,6 +4214,24 @@ def whatsapp_provider_config_from_env() -> WhatsAppProviderConfig | None:
     )
 
 
+def gmail_provider_config_from_env() -> GmailProviderConfig | None:
+    values = {
+        "client_id": os.getenv("GMAIL_CLIENT_ID"),
+        "client_secret": os.getenv("GMAIL_CLIENT_SECRET"),
+        "refresh_token": os.getenv("GMAIL_REFRESH_TOKEN"),
+        "sender_email": os.getenv("GMAIL_SENDER_EMAIL"),
+    }
+    if not all(values.values()):
+        return None
+    return GmailProviderConfig(
+        client_id=str(values["client_id"]),
+        client_secret=str(values["client_secret"]),
+        refresh_token=str(values["refresh_token"]),
+        sender_email=str(values["sender_email"]),
+        default_supplier_email=os.getenv("GMAIL_SUPPLIER_EMAIL", ""),
+    )
+
+
 def slack_list_columns_from_env() -> dict[str, str]:
     return {
         key: value
@@ -3240,6 +4258,10 @@ def build_default_api(
         WhatsAppProviderConfig | None | object
     ) = USE_ENV_WHATSAPP_PROVIDER,
     whatsapp_transport: TwilioWhatsAppTransport | None = None,
+    gmail_provider_config: (
+        GmailProviderConfig | None | object
+    ) = USE_ENV_GMAIL_PROVIDER,
+    gmail_transport: GmailTransport | None = None,
 ) -> MockIntegrationApi:
     contract = IntegrationContract()
     source_adapter = MockSourceAdapter(source_failures)
@@ -3262,6 +4284,11 @@ def build_default_api(
         if whatsapp_provider_config is USE_ENV_WHATSAPP_PROVIDER
         else whatsapp_provider_config
     )
+    resolved_gmail_provider_config = (
+        gmail_provider_config_from_env()
+        if gmail_provider_config is USE_ENV_GMAIL_PROVIDER
+        else gmail_provider_config
+    )
     write_back_adapter = MockWriteBackAdapter(
         slack_webhook_url=resolved_slack_webhook_url,
         slack_transport=slack_transport,
@@ -3271,6 +4298,8 @@ def build_default_api(
         slack_list_transport=slack_list_transport,
         whatsapp_provider_config=resolved_whatsapp_provider_config,
         whatsapp_transport=whatsapp_transport,
+        gmail_provider_config=resolved_gmail_provider_config,
+        gmail_transport=gmail_transport,
     )
     outcome_adapter = MockOutcomeAdapter(outcome_failures)
     callback_transport = MockCallbackTransport(

@@ -157,6 +157,18 @@ Slack has four MVP roles:
 4. `/logia status <case-id|approval-id>`, `/logia queue`, and
    `/logia demo hospital|airport|hotel|bank` slash-command checks.
 
+It now also has a natural manager/staff UX in the reference runtime:
+
+- `/logia order <item> qty <amount> due <days> supplier <email>` drafts a
+  protected supplier email and approval card;
+- `/logia order` with missing details returns the order modal/form payload;
+- `@Logia ...` app mentions and Logia DMs route stock/order wording into the
+  same protected workflow;
+- the `Send to Logia` message shortcut can prefill the order modal from an
+  existing Slack message;
+- complete stock orders register a pending protected action and can mirror a
+  safe row into `Logia Operations Queue`.
+
 Use `SLACK_WEBHOOK_URL` only as a local or Anypoint secure property. If it is
 configured, the runtime posts the approved message to the webhook and records
 `SENT`. If it is missing, the runtime records `MOCK_SENT` with
@@ -217,6 +229,9 @@ not expose raw complaint text, phone numbers, patient details, or secrets.
 - `/logia queue` summarizes active approvals and queue state.
 - `/logia demo hospital|airport|hotel|bank` previews the same universal pack
   under a judge-readable profile.
+- `/logia order gloves qty 500 due 3 days supplier supplier@example.com`
+  drafts a supplier email, task mirror, and approval card. Approval is required
+  before Gmail or queued fallback execution.
 
 Optional Slack Lists support mirrors queue work into `Logia Operations Queue`.
 Salesforce remains the source of truth. The Slack app needs `lists:write` to
@@ -299,16 +314,26 @@ Twilio Sandbox credentials in Anypoint secure configuration or process
 environment, never in Git. Meta is preferred when the app, phone number, test
 recipient, token, and webhook are ready; Twilio stays the backup.
 
-## Email Path
+## Gmail Supplier Email Path
 
 Vendor email is modeled as the protected action type `SEND_VENDOR_EMAIL` behind
-`EXECUTE_APPROVED_ACTION`. In the local reference runtime, an approved vendor
-email action records a queued protected mock delivery for suppliers, insurers,
-vendors, formal customer follow-up, or manager-approved notices.
+`EXECUTE_APPROVED_ACTION`. In the local reference runtime, a manager-created
+stock order registers a pending `SEND_VENDOR_EMAIL` action. A Slack approval can
+approve it, and the adapter executes it only after the approval is valid.
 
-This is not live email delivery. Do not claim live email delivery until an
-Anypoint, SMTP, or email-provider connector exists, credentials are stored
-outside Git, and tests prove approval-gated execution.
+When these variables are configured outside Git, the runtime sends through the
+Gmail API using the narrow `gmail.send` scope:
+
+- `GMAIL_CLIENT_ID`
+- `GMAIL_CLIENT_SECRET`
+- `GMAIL_REFRESH_TOKEN`
+- `GMAIL_SENDER_EMAIL`
+- `GMAIL_SUPPLIER_EMAIL`, optional fallback recipient
+
+If Gmail credentials are missing, the supplier recipient is missing, or Gmail
+returns a retryable failure, Logia records `QUEUED` with an honest fallback
+reason. Do not claim live email delivery unless a visible Gmail message ID is
+recorded after approval.
 
 ## Clinical Boundary
 

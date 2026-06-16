@@ -7,9 +7,12 @@ from copy import deepcopy
 from unittest.mock import patch
 
 from mock_runtime import (
+    GmailProviderConfig,
+    LogiaSlackOrderWorkflow,
     RetryPolicy,
     RetryableDependencyFailure,
     SlackApprovalInteractionHandler,
+    SlackEventHandler,
     SlackStatusCommandHandler,
     WhatsAppProviderConfig,
     build_default_api,
@@ -84,6 +87,21 @@ class FakeWhatsAppTransport:
         return {"messageId": "whatsapp-message-001"}
 
 
+class FakeGmailTransport:
+    def __init__(self, *, fail_send: bool = False) -> None:
+        self.fail_send = fail_send
+        self.sent = []
+
+    def send(self, config, payload):
+        if self.fail_send:
+            raise RetryableDependencyFailure("gmail temporary failure")
+        self.sent.append({"config": config, "payload": payload})
+        return {
+            "messageId": "gmail-message-001",
+            "threadId": "gmail-thread-001",
+        }
+
+
 class MockAdapterTest(unittest.TestCase):
     def setUp(self) -> None:
         self.api = build_default_api(
@@ -135,6 +153,26 @@ class MockAdapterTest(unittest.TestCase):
         timestamp: str = "1710000000",
     ) -> tuple[dict[str, str], str]:
         raw_body = urllib.parse.urlencode(form)
+        return (
+            {
+                "X-Slack-Request-Timestamp": timestamp,
+                "X-Slack-Signature": SlackApprovalInteractionHandler.signature(
+                    signing_secret=signing_secret,
+                    timestamp_value=timestamp,
+                    raw_body=raw_body,
+                ),
+            },
+            raw_body,
+        )
+
+    def signed_slack_json_request(
+        self,
+        *,
+        signing_secret: str,
+        body: dict,
+        timestamp: str = "1710000000",
+    ) -> tuple[dict[str, str], str]:
+        raw_body = json.dumps(body, separators=(",", ":"))
         return (
             {
                 "X-Slack-Request-Timestamp": timestamp,
@@ -829,15 +867,311 @@ class MockAdapterTest(unittest.TestCase):
         )
         self.assertIn("Manager approval is required", response.body["text"])
         self.assertIn("supplier@example.com", response.body["text"])
+        self.assertTrue(response.body["approvalId"].startswith("approval-logia-order-"))
         self.assertEqual(
-            "approval-logia-supplier-order-001",
-            response.body["approvalId"],
+            "PENDING",
+            api.write_back_adapter.approvals[response.body["approvalId"]]["status"],
         )
+        self.assertEqual("gloves", response.body["draft"]["item"])
+        self.assertEqual("500", response.body["draft"]["quantity"])
         buttons = response.body["blocks"][-1]["elements"]
         self.assertEqual(
             ["Approve", "Reject", "Modify"],
             [button["text"]["text"] for button in buttons],
         )
+
+    def test_slack_order_command_without_details_returns_modal_request(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": "order",
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("ephemeral", response.body["response_type"])
+        self.assertTrue(response.body["modalRequired"])
+        self.assertEqual("modal", response.body["view"]["type"])
+        self.assertIn("supplier email", response.body["missingFields"])
+
+    def test_slack_app_mention_order_creates_pending_supplier_draft(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_json_request(
+            signing_secret=signing_secret,
+            body={
+                "type": "event_callback",
+                "event": {
+                    "type": "app_mention",
+                    "text": (
+                        "<@ULOGIA> order 500 gloves by Friday from "
+                        "supplier@example.com"
+                    ),
+                    "channel": "CLOGIA",
+                },
+            },
+        )
+        handler = SlackEventHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("in_channel", response.body["response_type"])
+        self.assertIn("Friday", response.body["text"])
+        self.assertEqual(
+            "PENDING",
+            api.write_back_adapter.approvals[response.body["approvalId"]]["status"],
+        )
+
+    def test_slack_dm_order_missing_details_returns_modal_request(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_json_request(
+            signing_secret=signing_secret,
+            body={
+                "type": "event_callback",
+                "event": {
+                    "type": "message",
+                    "channel_type": "im",
+                    "text": "Need 500 gloves in 3 days",
+                    "channel": "DLOGIA",
+                },
+            },
+        )
+        handler = SlackEventHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("ephemeral", response.body["response_type"])
+        self.assertTrue(response.body["modalRequired"])
+        self.assertIn("supplier email", response.body["missingFields"])
+
+    def test_slack_url_verification_returns_challenge(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_json_request(
+            signing_secret=signing_secret,
+            body={"type": "url_verification", "challenge": "challenge-123"},
+        )
+        handler = SlackEventHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("challenge-123", response.body["challenge"])
+
+    def test_slack_message_shortcut_prefills_order_modal(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        handler = SlackApprovalInteractionHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+        payload = {
+            "type": "message_action",
+            "callback_id": "send_to_logia",
+            "message": {
+                "text": (
+                    "Pharmacy says order 500 gloves by Friday from "
+                    "supplier@example.com"
+                )
+            },
+            "user": {"username": "ops-manager"},
+        }
+        headers, raw_body = self.signed_slack_request(
+            signing_secret=signing_secret,
+            payload=payload,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertTrue(response.body["modalRequired"])
+        self.assertEqual("modal", response.body["view"]["type"])
+
+    def test_slack_order_approval_executes_gmail_when_configured(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        gmail_transport = FakeGmailTransport()
+        api = build_default_api(
+            slack_webhook_url="",
+            gmail_provider_config=GmailProviderConfig(
+                client_id="gmail-client",
+                client_secret="gmail-secret",
+                refresh_token="gmail-refresh",
+                sender_email="manager@example.com",
+            ),
+            gmail_transport=gmail_transport,
+        )
+        command_headers, command_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order gloves qty 500 due 3 days supplier "
+                    "supplier@example.com"
+                ),
+                "user_name": "ops-manager",
+            },
+        )
+        command_handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+        command_response = command_handler.handle(command_headers, command_body)
+        approve_value = command_response.body["blocks"][-1]["elements"][0]["value"]
+        interaction_handler = SlackApprovalInteractionHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000001,
+        )
+        approve_headers, approve_body = self.signed_slack_request(
+            signing_secret=signing_secret,
+            timestamp="1710000001",
+            payload={
+                "type": "block_actions",
+                "user": {"username": "ops-manager"},
+                "actions": [
+                    {
+                        "action_id": "approve_logia_supplier_order",
+                        "value": approve_value,
+                    }
+                ],
+            },
+        )
+
+        approve_response = interaction_handler.handle(
+            approve_headers,
+            approve_body,
+        )
+
+        self.assertEqual(200, approve_response.status)
+        self.assertEqual("APPROVED", approve_response.body["decisionStatus"])
+        self.assertEqual(1, len(gmail_transport.sent))
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        self.assertEqual("SENT", record["delivery"]["status"])
+        self.assertEqual("gmail-api", record["delivery"]["provider"])
+        self.assertEqual(
+            "gmail-message-001",
+            record["delivery"]["providerMessageId"],
+        )
+
+    def test_supplier_email_stays_queued_without_gmail_credentials(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        command_headers, command_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order gloves qty 500 due 3 days supplier "
+                    "supplier@example.com"
+                ),
+            },
+        )
+        command_handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+        command_response = command_handler.handle(command_headers, command_body)
+        approve_value = command_response.body["blocks"][-1]["elements"][0]["value"]
+        interaction_handler = SlackApprovalInteractionHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000001,
+        )
+        approve_headers, approve_body = self.signed_slack_request(
+            signing_secret=signing_secret,
+            timestamp="1710000001",
+            payload={
+                "type": "block_actions",
+                "user": {"username": "ops-manager"},
+                "actions": [
+                    {
+                        "action_id": "approve_logia_supplier_order",
+                        "value": approve_value,
+                    }
+                ],
+            },
+        )
+
+        response = interaction_handler.handle(approve_headers, approve_body)
+
+        self.assertEqual(200, response.status)
+        record = next(iter(api.write_back_adapter.source_records.values()))
+        self.assertEqual("QUEUED", record["delivery"]["status"])
+        self.assertEqual("mock-vendor-email", record["delivery"]["provider"])
+        self.assertIn("Gmail API credentials", record["delivery"]["fallbackReason"])
+
+    def test_supplier_email_cannot_execute_before_approval(self) -> None:
+        api = build_default_api(slack_webhook_url="")
+        draft_response = LogiaSlackOrderWorkflow.response_for_text(
+            write_back_adapter=api.write_back_adapter,
+            text="order gloves qty 500 due 3 days supplier supplier@example.com",
+        )
+        pending_actions = api.write_back_adapter.pending_actions_by_approval[
+            draft_response.body["approvalId"]
+        ]
+
+        with self.assertRaises(PermissionError):
+            api.write_back_adapter.execute(pending_actions[0])
+
+    def test_stock_order_creates_slack_list_task_when_configured(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        list_transport = FakeSlackListTransport()
+        api = build_default_api(
+            slack_webhook_url="",
+            slack_bot_token="test-slack-bot-token",
+            slack_list_transport=list_transport,
+        )
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order gloves qty 500 due 3 days supplier "
+                    "supplier@example.com"
+                ),
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual(1, len(list_transport.created_lists))
+        self.assertEqual(1, len(list_transport.created_items))
+        self.assertEqual("MIRRORED", response.body["taskMirror"]["status"])
 
     def test_slack_status_command_rejects_invalid_signature(self) -> None:
         signing_secret = "test-slack-signing-secret"

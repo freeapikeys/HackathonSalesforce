@@ -216,8 +216,9 @@ Recommended hackathon stance:
 - The current visible Meta WhatsApp response is a receipt acknowledgement only:
   it proves intake worked, but it is not yet a full agent conversation.
 - Email is useful for suppliers, insurers, vendors, or formal follow-up. The
-  current repo has a protected mock vendor-email action; do not claim live
-  email delivery until credentials and Anypoint/SMTP delivery are configured.
+  current repo has a protected Gmail-capable vendor-email adapter. It sends
+  only after approval when credentials are configured outside Git; otherwise it
+  records a protected queued fallback.
 
 ## Slack Cockpit
 
@@ -228,6 +229,9 @@ demo feel alive for managers and staff:
 - approval cards: `Approve`, `Reject`, and `Modify` Block Kit buttons;
 - commands: `/logia status <case-id|approval-id>`, `/logia queue`, and
   `/logia demo hospital|airport|hotel|bank`;
+- natural intake: `@Logia` mentions, Logia DMs, `/logia order`, and the
+  `Send to Logia` message shortcut can route stock/order requests into a
+  protected supplier-email draft;
 - threads: one case thread can hold recommendation, approval, execution, and
   outcome updates when bot-token threading is configured;
 - Lists: optional paid mirror named `Logia Operations Queue`.
@@ -619,7 +623,9 @@ The live channel demo is ready when the harness output shows:
 - `SEND_SLACK_ALERT.provider = slack-webhook`
 - `SEND_WHATSAPP_ALERT.status = SENT`
 - `SEND_WHATSAPP_ALERT.provider = meta-whatsapp-cloud`
-- `SEND_VENDOR_EMAIL.status = QUEUED`
+- `SEND_VENDOR_EMAIL.status = SENT` with `provider = gmail-api` when Gmail is
+  configured, or `SEND_VENDOR_EMAIL.status = QUEUED` with an honest fallback
+  reason when Gmail credentials are absent
 - `workItemStatus = COMPLETED`
 - `actionCount >= 11`
 - `outcomeCount >= 12`

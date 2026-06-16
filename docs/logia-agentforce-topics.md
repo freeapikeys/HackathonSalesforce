@@ -66,9 +66,10 @@ evidence without personal data.
 Drafts Slack, WhatsApp, and protected vendor-email messages, then executes only
 the approved ones through MuleSoft. Slack is for internal teams. WhatsApp can be
 customer intake, urgent mobile alert, or approved customer acknowledgement.
-Vendor email stays a queued mock unless a real Anypoint or email connector is
-configured. Customer-facing replies must be privacy-safe and must not include
-clinical advice. The agent preserves provider, status, fallback reason,
+Vendor email can use the Gmail API adapter after approval when `gmail.send`
+credentials are configured outside Git; otherwise it stays in a protected
+queued fallback. Customer-facing replies must be privacy-safe and must not
+include clinical advice. The agent preserves provider, status, fallback reason,
 evidence IDs, approval ID, action ID, and correlation ID.
 
 ## Outcome Learning

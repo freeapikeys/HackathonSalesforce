@@ -317,8 +317,9 @@ records, diagnoses, or treatment details.
   production integrations unless configured and demonstrated.
 - Do not claim full WhatsApp agent chat yet. Claim live Meta WhatsApp intake
   and receipt acknowledgement only when the webhook and token are working. Do
-  not claim live email delivery until an email adapter exists and has been
-  tested.
+  not claim live email delivery unless the Gmail API adapter is configured with
+  credentials outside Git and a visible post-approval Gmail message ID is
+  recorded.
 - Do not claim machine-learning forecasting if the prototype uses deterministic
   rules. Say "rules-based baseline with model-ready architecture."
 - Do not let Agentforce execute protected external actions directly.

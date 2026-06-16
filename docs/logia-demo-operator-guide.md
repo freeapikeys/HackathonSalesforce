@@ -18,13 +18,21 @@ airport, hotel, and banking profiles.
 - Slack is the internal staff and manager cockpit.
 - Slack messages, approval buttons, and slash-command replies are available when
   the Slack app points to the verified CloudHub Request URL.
+- `/logia` slash commands are the reliable live Slack demo path.
+- The MuleSoft reference runtime supports manager/staff intake through
+  `@Logia` mentions, DMs, and the `Send to Logia` message shortcut. Do not demo
+  those live until the CloudHub Events route is re-enabled and smoke-tested.
 - Slack Lists can mirror safe task fields when the paid workspace, bot scopes,
   list ID, and list column IDs are configured.
+- Supplier email has a Gmail API adapter in the MuleSoft reference runtime. It
+  sends live only after manager approval and only when Gmail OAuth credentials
+  are configured outside Git.
 
 ## What Is Mocked Or Protected
 
-- Vendor or supplier email is a protected mock queue. Do not claim live supplier
-  email delivery unless a real email provider is configured later.
+- Vendor or supplier email is protected. If Gmail credentials are missing or
+  Gmail fails, Logia keeps the supplier email in a protected queue and says so.
+  Do not claim live supplier email unless the Gmail send proof is visible.
 - Slack Lists are a mirror, not the source of truth. Salesforce remains the
   official task, approval, and audit surface.
 - WhatsApp customer replies are short receipt acknowledgements today. The deep
@@ -84,8 +92,73 @@ Expected result:
 - Logia marks the action as protected.
 - Slack shows `Approve`, `Reject`, and `Modify`.
 - No supplier email or order is sent before approval.
+- If Gmail API credentials exist, approval sends the supplier email.
+- If Gmail API credentials are missing, approval records a protected queued
+  fallback instead of pretending the email was sent.
 - Salesforce remains the source of truth for the final approval and audit
   record.
+
+### Plain-English Slack Intake
+
+Use `/logia` when you want reliable live demo control. For a more natural
+business UX, the reference runtime also supports:
+
+```text
+@Logia order 500 gloves by Friday from supplier@example.com
+```
+
+or DM Logia:
+
+```text
+Need 500 gloves in 3 days
+```
+
+If item, quantity, due date, or supplier email is missing, Logia asks for the
+missing details through the order form/modal path. It should not guess supplier
+email, quantity, or deadline. This path must be re-enabled in live CloudHub
+before using it on demo day.
+
+Slack message shortcut:
+
+```text
+Send to Logia
+```
+
+Use it on an existing Slack message such as "pharmacy says gloves are low." It
+prefills the order form with the selected message so the manager can complete
+the protected action safely.
+
+## Demo Roles
+
+Use these simple roles in the demo:
+
+- Owner: sees summary and outcomes.
+- Operations Manager: approves protected actions.
+- Worker A: service/customer/front-desk work.
+- Worker B: inventory, facilities, and resource work.
+- Finance Reviewer: billing, refund, payment, and claim review.
+- Supplier: external recipient for approved supplier emails.
+- Customer Alias: external complainant with no raw personal data shown.
+
+## Slack Lists Task Mirror
+
+Salesforce remains the task source of truth. Slack Lists are a paid-plan mirror
+for safe fields only:
+
+- case;
+- profile;
+- module;
+- priority;
+- status;
+- owner role;
+- due time;
+- approval ID;
+- action ID;
+- evidence count;
+- outcome.
+
+If Slack Lists fail because of plan, scope, or column setup, the demo still
+works through Slack messages and Salesforce.
 
 ## If `/logia queue` Does Not Reply
 
@@ -220,7 +293,8 @@ After approval, show the action results:
 
 - Slack internal alert sent;
 - WhatsApp receipt or approved customer acknowledgement;
-- vendor email queued as protected mock;
+- vendor email sent through Gmail if configured, otherwise protected queued
+  fallback;
 - service task created or queued;
 - outcome metric recorded.
 
@@ -275,8 +349,9 @@ Expected business flow:
 6. Slack posts an approval card.
 7. Slack List can mirror the task as `Pending Approval`.
 8. Manager approves.
-9. MuleSoft queues the protected supplier email/order mock.
-10. Logia records `stockout avoided`, `supplier request queued`, and
+9. MuleSoft sends the supplier email through Gmail if configured, or keeps it
+   in a protected queue if not.
+10. Logia records `stockout avoided`, `supplier request sent or queued`, and
     `manager approved`.
 
 Manager-initiated stock request:
@@ -334,5 +409,6 @@ available.
   Salesforce remains the fallback approval surface."
 - If Slack Lists fail: "Lists are a paid Slack mirror. Salesforce remains the
   source of truth."
-- If vendor email is asked about: "Supplier email is a protected mock queue in
-  this demo. We do not send real supplier orders before approval."
+- If vendor email is asked about: "Supplier email is protected. Gmail can send
+  it after approval when credentials are configured; otherwise Logia records a
+  protected queued fallback."

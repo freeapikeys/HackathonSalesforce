@@ -213,6 +213,15 @@ Slack approval:
 - add `/logia order <item> qty <amount> due <days> supplier <email>` as an
   internal manager stock-request command that drafts a protected supplier email
   and requires approval before sending;
+- add natural Slack intake for `@Logia` mentions and DMs so managers can type
+  ordinary stock/order requests without memorizing the slash-command grammar;
+- add Slack message-shortcut/modal support so an existing staff message can be
+  sent to Logia and completed with item, quantity, due date, supplier email,
+  manager note, and profile;
+- register manager-created stock orders as pending protected actions and mirror
+  safe task fields into Slack Lists when configured;
+- add Gmail API supplier email delivery behind manager approval, using only the
+  narrow `gmail.send` scope and credentials stored outside Git;
 - keep `docs/logia-demo-operator-guide.md` as the demo-day guide for WhatsApp,
   Slack, Agentforce, Salesforce approval, protected execution, and outcomes;
 - record delivery features such as webhook/mock delivery, Block Kit approval,
@@ -235,6 +244,8 @@ Acceptance:
 - approved action execution returns queued, success, or honest mock status with
   correlation IDs;
 - channel results are visible in the command center;
+- Gmail supplier email sends only after approval when credentials are
+  configured; otherwise the runtime records a protected queued fallback;
 - Slack Lists mirror only safe fields: case, profile, module, priority, status,
   owner role, due time, approval ID, action ID, evidence count, and outcome.
 
@@ -412,8 +423,9 @@ Focused checks:
 - [x] Document Slack as internal worker and manager coordination.
 - [x] Document WhatsApp outbound as urgent internal mobile alert or approved
       customer acknowledgement.
-- [x] Document email as a protected mock vendor/supplier action, not a current
-      live delivery capability.
+- [x] Document email as a protected vendor/supplier action. Gmail API live send
+      is available only after manager approval and only when credentials are
+      configured outside Git.
 - [x] Add or simulate a provider-neutral inbound WhatsApp webhook that maps
       customer complaint text to `INGEST_EVENT`.
 - [x] Keep existing Salesforce command center as the visibility, approval, and
@@ -430,7 +442,9 @@ Focused checks:
       wording checks pass.
 - [x] Add tests or harness evidence for WhatsApp complaint intake through
       recommendation, approval, Slack alert, WhatsApp response, and outcome.
-- [x] Add protected mock email/vendor adapter behind the approval boundary.
+- [x] Add protected email/vendor adapter behind the approval boundary.
+- [x] Add Gmail API supplier-email adapter behind approval with `gmail.send`
+      scope and missing-credential fallback.
 - [ ] Add live email/vendor delivery only if credentials and provider routing
       can stay outside Git.
 
@@ -464,6 +478,9 @@ Focused checks:
       handling in the signed mock runtime and CloudHub acknowledgement route.
 - [x] Add optional Slack Lists mirror support for `Logia Operations Queue`,
       including create-list, create-item, status-update, and fallback tests.
+- [x] Add natural Slack UX: `/logia order`, `@Logia` mentions, DMs,
+      message-shortcut prefill, missing-detail modal requests, pending task
+      mirror rows, and approval-triggered supplier-email execution.
 - [ ] Configure live Slack Lists in the workspace only if the Pro plan and
       `lists:write` scope are ready; Salesforce remains the source of truth.
 
