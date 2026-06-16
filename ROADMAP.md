@@ -588,8 +588,10 @@ file before editing.
       boundary.
 - [x] Add Gmail API vendor/supplier delivery adapter behind manager approval,
       using `gmail.send` credentials from environment or secure properties.
-- [ ] Configure live Gmail OAuth credentials only if the sender account,
-      supplier recipient, refresh token, and demo policy are ready outside Git.
+- [x] Configure live Gmail OAuth credentials outside Git for the current demo:
+      sender, supplier recipient, refresh token, and CloudHub secure properties
+      are set. Live CloudHub Gmail send still needs execution-route proof before
+      it can be claimed in the pitch.
 - [x] Add signed Slack approval buttons in the mock runtime and harness.
 - [x] Add Logia Slack delivery capability metadata for webhook/mock delivery,
       Block Kit approval, signed interactivity, approve/reject/modify, and
@@ -651,9 +653,11 @@ file before editing.
 - [ ] Configure live Slack Events, message shortcut, and optional modal
       behavior in the Slack App UI; use the same CloudHub Request URL and keep
       the bot token outside Git.
-- [ ] Configure live Gmail OAuth for the manager/demo sender account:
+- [x] Configure live Gmail OAuth for the manager/demo sender account:
       Gmail API enabled, OAuth refresh token stored outside Git, `gmail.send`
-      scope only, and one supplier recipient email for the demo.
+      scope only, and one supplier recipient email for the demo. CloudHub stores
+      these as secure properties; the live approval route must still produce a
+      `gmail-api` send result before judges are told live email was sent.
 - [x] Rehearse CloudHub Slack command and button payload acknowledgements
       through the active rewritten ingress route.
 - [x] Package/deploy the WhatsApp webhook Mule app to CloudHub and verify the

@@ -52,6 +52,15 @@ No secrets belong in this folder. Override these properties at runtime:
 - secure `slack.signingSecret`
 - secure `slack.botToken`, optional
 - `slack.channelId`, optional
+- secure `gmail.clientId`, optional until live supplier email execution is
+  enabled in the CloudHub route
+- secure `gmail.clientSecret`, optional until live supplier email execution is
+  enabled in the CloudHub route
+- secure `gmail.refreshToken`, optional until live supplier email execution is
+  enabled in the CloudHub route
+- secure `gmail.senderEmail`, optional until live supplier email execution is
+  enabled in the CloudHub route
+- secure `gmail.supplierEmail`, optional default demo recipient
 
 For the hackathon, Meta Cloud API is preferred when the app, test recipient,
 phone number ID, access token, and webhook are ready. Keep Twilio Sandbox as a
@@ -167,3 +176,29 @@ Slack Lists support lives in the mock runtime/write-back adapter, not in this
 public acknowledgement route. If the paid List mirror is configured, Logia uses
 safe fields only and records skipped/failed mirror status without blocking the
 Slack alert.
+
+## Gmail Supplier Email
+
+The Python reference runtime supports Gmail API supplier email after manager
+approval with the narrow `gmail.send` scope. The deployed CloudHub channel app
+now has Gmail secure property placeholders and can store those values in
+Runtime Manager, but the live Slack approval route still returns a fast
+acknowledgement and keeps Salesforce as the approval/audit surface.
+
+Use the repository helper to apply the complete CloudHub property set without
+committing secrets:
+
+```powershell
+.\scripts\configure-cloudhub-logia-secrets.ps1 `
+  -SupplierEmail "supplier@example.com" `
+  -TargetOrg hfs-dev
+```
+
+The helper intentionally updates Salesforce, Meta, Slack, and Gmail properties
+together. Anypoint CLI can replace the current property set during `modify`, so
+do not update only one Gmail secret unless you also preserve the required
+runtime properties. See
+`docs/gmail-oauth-cloudhub-runbook.md` for the full setup and smoke tests.
+
+Do not claim live Gmail delivery from CloudHub until the approval execution
+route is extended and a `gmail-api` send result is visible in demo evidence.

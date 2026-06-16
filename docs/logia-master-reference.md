@@ -178,14 +178,14 @@ execute actions.
 Outbound action channels execute approved `Action` records. They require a
 business manager approval unless the demo clearly marks them as local mocks.
 
-| Channel                     | Best use                                                 | Current demo state                                                       |
-| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------ |
-| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | Official Meta WhatsApp Cloud API is active; Twilio is legacy backup only |
-| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                  |
-| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                               |
-| Slack                       | Internal staff and manager coordination                  | Live webhook and bot-token posting work; Lists are optional paid mirror  |
-| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live Meta receipt works; approved replies still need final rehearsal     |
-| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Protected mock action exists; live delivery is not configured            |
+| Channel                     | Best use                                                 | Current demo state                                                                                                                                                  |
+| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WhatsApp inbound            | Customer, patient, visitor, or client complaint intake   | Official Meta WhatsApp Cloud API is active; Twilio is legacy backup only                                                                                            |
+| Salesforce command center   | Manager review, approval, command-center visibility      | Active platform surface                                                                                                                                             |
+| Salesforce/manual demo form | Optional fallback for staff-entered signals              | Not a core build item for the hackathon v1                                                                                                                          |
+| Slack                       | Internal staff and manager coordination                  | Live webhook and bot-token posting work; Lists are optional paid mirror                                                                                             |
+| WhatsApp outbound           | Urgent mobile alert or approved customer acknowledgement | Live Meta receipt works; approved replies still need final rehearsal                                                                                                |
+| Email                       | Supplier, vendor, insurer, or formal customer follow-up  | Gmail-capable protected action exists in the reference runtime; CloudHub secure properties are configured, but live CloudHub send still needs execution-route proof |
 
 Recommended hackathon stance:
 
@@ -219,6 +219,12 @@ Recommended hackathon stance:
   current repo has a protected Gmail-capable vendor-email adapter. It sends
   only after approval when credentials are configured outside Git; otherwise it
   records a protected queued fallback.
+- For the current CloudHub channel app, Gmail OAuth values can be stored as
+  Anypoint secure properties with
+  `scripts/configure-cloudhub-logia-secrets.ps1`. The live Slack route still
+  acknowledges approval quickly and keeps Salesforce as the system of record,
+  so do not claim CloudHub Gmail send until a visible `gmail-api` send result
+  is recorded.
 
 ## Slack Cockpit
 
@@ -486,6 +492,22 @@ This is the free route: it uses the deployed CloudHub Mule app. Do not use
 Slack Lists as the task database; keep tasks and approvals in Salesforce and
 use Lists only as a paid mirror.
 
+Gmail supplier email:
+
+```powershell
+[Environment]::SetEnvironmentVariable("GMAIL_CLIENT_ID", "<google-client-id>", "User")
+[Environment]::SetEnvironmentVariable("GMAIL_CLIENT_SECRET", "<google-client-secret>", "User")
+[Environment]::SetEnvironmentVariable("GMAIL_REFRESH_TOKEN", "<google-refresh-token>", "User")
+[Environment]::SetEnvironmentVariable("GMAIL_SENDER_EMAIL", "<manager-demo@gmail.com>", "User")
+[Environment]::SetEnvironmentVariable("GMAIL_SUPPLIER_EMAIL", "<supplier-demo@gmail.com>", "User")
+.\scripts\configure-cloudhub-logia-secrets.ps1 -TargetOrg hfs-dev
+```
+
+The sender Gmail must be the account that authorized the refresh token. If the
+manager changes, reconnect Gmail and replace the refresh token. Do not reuse an
+old manager's refresh token with a new sender email. Full setup:
+[docs/gmail-oauth-cloudhub-runbook.md](gmail-oauth-cloudhub-runbook.md).
+
 WhatsApp through Meta Cloud API:
 
 ```powershell
@@ -623,9 +645,10 @@ The live channel demo is ready when the harness output shows:
 - `SEND_SLACK_ALERT.provider = slack-webhook`
 - `SEND_WHATSAPP_ALERT.status = SENT`
 - `SEND_WHATSAPP_ALERT.provider = meta-whatsapp-cloud`
-- `SEND_VENDOR_EMAIL.status = SENT` with `provider = gmail-api` when Gmail is
-  configured, or `SEND_VENDOR_EMAIL.status = QUEUED` with an honest fallback
-  reason when Gmail credentials are absent
+- `SEND_VENDOR_EMAIL.status = SENT` with `provider = gmail-api` when the
+  reference runtime sends through Gmail after approval, or
+  `SEND_VENDOR_EMAIL.status = QUEUED` with an honest fallback reason when
+  credentials or live execution routing are absent
 - `workItemStatus = COMPLETED`
 - `actionCount >= 11`
 - `outcomeCount >= 12`
@@ -662,8 +685,9 @@ Highest-value tasks still open:
 9. Configure live Slack Lists only if the paid workspace, `lists:write` scope,
    list ID, and column IDs are ready. Otherwise use Slack messages/threads plus
    Salesforce command-center tasks.
-10. Add live email/vendor delivery only if credentials and Anypoint/SMTP routing
-    are configured safely; the repo currently has protected mock vendor email.
+10. Extend the live CloudHub approval execution route before claiming CloudHub
+    Gmail delivery. Credentials are configured as secure properties, but live
+    send still needs a visible `gmail-api` evidence result.
 11. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for
     multilingual complaint scripts, fake voice-note transcripts, document/image
     evidence scenarios, expected agent routing, judge-sector mappings, and
