@@ -51,10 +51,13 @@ Use these inside Slack as real slash commands, not as normal chat messages.
 ```text
 /logia queue
 /logia status <case-id-or-approval-id>
+/logia profile hospital|airport|hotel|bank
 /logia demo hospital
 /logia demo airport
 /logia demo hotel
 /logia demo bank
+/logia demo run hospital-surge
+/logia report <issue>
 /logia order <item> qty <amount> due <days> supplier <email>
 ```
 
@@ -78,15 +81,53 @@ profiles. This is the fast way to prove that Logia is not only a hospital tool.
 These commands are intentionally visible in-channel so judges can see the
 profile mapping.
 
-### `/logia order <item> qty <amount> due <days> supplier <email>`
+### `/logia profile hospital|airport|hotel|bank`
 
-Creates a manager-facing stock-order draft. Use it when the manager already
-knows the needed item, quantity, deadline, and supplier contact.
+Sets the channel story profile for the team. Use this when the demo switches
+from hospital to airport, hotel, or banking wording.
+
+Use one Logia bot. Do not create one bot per industry. The active profile
+changes wording and task examples; the primitives, approval boundary, and
+Salesforce source of truth remain the same.
+
+### `/logia demo run hospital-surge`
+
+Creates a scripted judge-facing sequence for the main 5-7 minute story:
+WhatsApp complaint, evidence, ten-agent plan, manager approval, Slack tasks,
+protected supplier email or queue, and outcome metrics.
+
+This is useful during rehearsal because it keeps the team on the same story.
+It is not a replacement for showing the Salesforce command center.
+
+### `/logia report <issue>`
+
+Captures a worker-safe operational issue without drafting a supplier email.
 
 Example:
 
 ```text
-/logia order gloves qty 500 due 3 days supplier supplier@example.com
+/logia report gloves are low and the queue is not moving
+```
+
+Expected result:
+
+- Logia creates a safe worker report case.
+- Logia maps affected modules such as inventory, capacity, trust, billing, or
+  partner delay.
+- Logia creates role tasks for Operations Manager, Worker A, Worker B, and
+  Finance Reviewer when relevant.
+- Protected supplier email, customer updates, billing actions, or external
+  write-backs still require manager approval.
+
+### `/logia order <item> qty <amount> due <days> supplier <email>`
+
+Creates a manager-facing stock-order draft. Use it when the Operations Manager
+already knows the needed item, quantity, deadline, and supplier contact.
+
+Example:
+
+```text
+/logia order hospital gloves qty 500 due 3 days supplier supplier@example.com
 ```
 
 Expected result:
@@ -101,6 +142,8 @@ Expected result:
   fallback instead of pretending the email was sent.
 - Salesforce remains the source of truth for the final approval and audit
   record.
+- If a worker tries to use the protected order path, Logia captures it as a
+  worker report and routes the decision to the Operations Manager.
 
 Current demo recipient configured by the team: a supplier demo mailbox. Keep
 the actual address in Anypoint secure properties or Windows user environment,
@@ -140,13 +183,33 @@ the protected action safely.
 
 Use these simple roles in the demo:
 
-- Owner: sees summary and outcomes.
-- Operations Manager: approves protected actions.
-- Worker A: service/customer/front-desk work.
-- Worker B: inventory, facilities, and resource work.
-- Finance Reviewer: billing, refund, payment, and claim review.
+- Fahan: Operations Manager, approval owner, and main presenter.
+- Hassan: Customer or WhatsApp sender, plus Worker A for service/front-desk
+  tasks.
+- Ranveer: Worker B for inventory, facilities, and resource tasks.
+- Aarav: Finance Reviewer and data QA for billing, refund, payment, and claim
+  review.
 - Supplier: external recipient for approved supplier emails.
 - Customer Alias: external complainant with no raw personal data shown.
+
+Use a hybrid setup. Fahan drives the main projector. The other laptops stay
+logged into Slack roles so judges can see role notifications if needed.
+
+## Slack Channels For Demo Day
+
+Use a small channel set:
+
+- `#logia-demo`: main visible channel for `/logia queue`, `/logia report`,
+  `/logia order`, approvals, profile demos, and task updates.
+- `#logia-backstage`: private team channel for timing, recovery, and mistakes.
+  Do not show it to judges.
+- `#logia-worker-tasks`: optional rehearsal channel only. Use it live only if
+  it is already smooth; otherwise keep tasks in `#logia-demo`.
+
+Invite all four teammates and the Logia bot to `#logia-demo`.
+
+The cleanest presentation is one Logia bot in one channel. Do not create one
+bot per profile. Use profile commands and profile labels instead.
 
 ## Slack Lists Task Mirror
 
@@ -280,12 +343,21 @@ staff see the work, discuss it, and approve or reject actions.
 For a manager-created stock order, run:
 
 ```text
-/logia order gloves qty 500 due 3 days supplier supplier@example.com
+/logia order hospital gloves qty 500 due 3 days supplier supplier@example.com
 ```
 
 Explain: the manager can express the operational need in plain language. Logia
 turns it into a protected supplier email draft and approval card, but it does
 not send anything before approval.
+
+For a worker-safe report, have Ranveer say or run:
+
+```text
+/logia report gloves are low and the queue is not moving
+```
+
+Explain: workers report facts. Logia creates evidence and role tasks. The
+manager decides whether a supplier order or external message should be drafted.
 
 ### 6. Show Approval
 
@@ -365,7 +437,7 @@ Expected business flow:
 Manager-initiated stock request:
 
 ```text
-/logia order surgical gloves qty 500 due 3 days supplier supplier@example.com
+/logia order hospital surgical gloves qty 500 due 3 days supplier supplier@example.com
 ```
 
 This is different from a customer complaint. It starts from an internal manager,
@@ -396,17 +468,29 @@ available.
 4. In Slack, run:
 
 ```text
+/logia report gloves are low and the queue is not moving
+```
+
+5. In Slack, run:
+
+```text
+/logia order hospital gloves qty 500 due 3 days supplier supplier@example.com
+```
+
+6. In Slack, run:
+
+```text
 /logia demo airport
 /logia demo hotel
 /logia demo bank
 ```
 
-5. In Salesforce, open the command center and show the evidence, recommendation,
+7. In Salesforce, open the command center and show the evidence, recommendation,
    approval, actions, and outcomes.
 
-6. Approve the protected action in Slack or Salesforce.
+8. Approve the protected action in Slack or Salesforce.
 
-7. Show that Logia recorded the outcome instead of only sending a message.
+9. Show that Logia recorded the outcome instead of only sending a message.
 
 ## What To Say If Something Fails
 

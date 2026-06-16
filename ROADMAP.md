@@ -639,6 +639,20 @@ file before editing.
 - [x] Add `/logia order` missing-detail behavior: if item, quantity, due date,
       or supplier email is missing, Logia returns a modal/form request instead
       of guessing.
+- [x] Add `/logia profile hospital|airport|hotel|bank` in the signed reference
+      runtime so one Logia bot can switch profile wording without creating
+      separate bots per business.
+- [x] Add role-gated `/logia order` behavior in the signed reference runtime:
+      manager-like users can create protected supplier-email drafts, while
+      worker-like users are routed to manager review instead of triggering
+      supplier email.
+- [x] Add `/logia report <issue>` in the signed reference runtime so workers
+      can report low stock, queue pressure, billing, partner, or complaint
+      issues and receive role-task routing without protected execution.
+- [x] Add `/logia demo run hospital-surge` in the signed reference runtime as
+      the scripted 5-7 minute showcase sequence: WhatsApp signal, evidence,
+      ten-agent plan, manager approval, Slack tasks, protected supplier email
+      or queue, and outcome.
 - [x] Register manager-created stock orders as pending protected actions with
       role-owned task/list mirror metadata: Owner, Operations Manager, Worker A,
       Worker B, Finance Reviewer, Supplier, and Customer Alias.

@@ -227,11 +227,21 @@ not expose raw complaint text, phone numbers, patient details, or secrets.
 
 - `/logia status <case-id|approval-id>` checks safe approval or delivery state.
 - `/logia queue` summarizes active approvals and queue state.
+- `/logia profile hospital|airport|hotel|bank` sets the channel demo profile
+  for manager orders and role-task wording.
 - `/logia demo hospital|airport|hotel|bank` previews the same universal pack
   under a judge-readable profile.
-- `/logia order gloves qty 500 due 3 days supplier supplier@example.com`
+- `/logia demo run hospital-surge` posts the 5-7 minute scripted showcase
+  sequence: WhatsApp signal, evidence, agents, manager approval, protected
+  action, and outcome.
+- `/logia report gloves are low at pharmacy` captures a worker-safe issue,
+  creates role tasks, and routes protected actions to the Operations Manager.
+- `/logia order hospital gloves qty 500 due 3 days supplier supplier@example.com`
   drafts a supplier email, task mirror, and approval card. Approval is required
   before Gmail or queued fallback execution.
+- Worker-like users should report issues; manager-like users draft protected
+  supplier email. The reference runtime routes unauthorized worker order
+  attempts to a manager review report instead of creating a supplier email.
 
 Optional Slack Lists support mirrors queue work into `Logia Operations Queue`.
 Salesforce remains the source of truth. The Slack app needs `lists:write` to

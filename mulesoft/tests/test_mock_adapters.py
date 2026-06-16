@@ -107,6 +107,7 @@ class MockAdapterTest(unittest.TestCase):
         self.api = build_default_api(
             slack_webhook_url="",
             whatsapp_provider_config=None,
+            gmail_provider_config=None,
         )
         self.contract = self.api.contract
 
@@ -880,6 +881,170 @@ class MockAdapterTest(unittest.TestCase):
             [button["text"]["text"] for button in buttons],
         )
 
+    def test_slack_order_command_keeps_profile_out_of_item_name(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        approval_count_before = len(api.write_back_adapter.approvals)
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order hospital gloves qty 500 due 3 days supplier "
+                    "supplier@example.com"
+                ),
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("gloves", response.body["draft"]["item"])
+        self.assertEqual(
+            "profile:hospital-private-large",
+            response.body["draft"]["profile"],
+        )
+
+    def test_slack_profile_command_sets_channel_profile_for_orders(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+        profile_headers, profile_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": "profile hotel",
+                "channel_id": "CLOGIA",
+                "user_name": "ops-manager",
+            },
+        )
+
+        profile_response = handler.handle(profile_headers, profile_body)
+
+        self.assertEqual(200, profile_response.status)
+        self.assertEqual(
+            "profile:hotel-guest-operations",
+            profile_response.body["profileId"],
+        )
+
+        order_headers, order_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order towels qty 20 due Friday supplier "
+                    "supplier@example.com"
+                ),
+                "channel_id": "CLOGIA",
+                "user_name": "ops-manager",
+            },
+        )
+
+        order_response = handler.handle(order_headers, order_body)
+
+        self.assertEqual(200, order_response.status)
+        self.assertEqual("towels", order_response.body["draft"]["item"])
+        self.assertEqual(
+            "profile:hotel-guest-operations",
+            order_response.body["draft"]["profile"],
+        )
+
+    def test_worker_order_command_routes_to_manager_report(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        approval_count_before = len(api.write_back_adapter.approvals)
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": (
+                    "order gloves qty 500 due 3 days supplier "
+                    "supplier@example.com"
+                ),
+                "user_name": "worker-b",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("ROUTED_TO_MANAGER", response.body["policyDecision"])
+        self.assertNotIn("approvalId", response.body)
+        self.assertEqual(approval_count_before, len(api.write_back_adapter.approvals))
+        self.assertEqual(1, len(api.write_back_adapter.operational_reports))
+        self.assertIn("Operations Manager", response.body["text"])
+
+    def test_slack_report_command_creates_role_tasks(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": "report gloves are low and the queue is not moving",
+                "user_name": "worker-b",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual(1, len(api.write_back_adapter.operational_reports))
+        self.assertIn("Inventory and supply", response.body["affectedModules"])
+        self.assertIn("Capacity and availability", response.body["affectedModules"])
+        owner_roles = {task["ownerRole"] for task in response.body["tasks"]}
+        self.assertIn("Operations Manager", owner_roles)
+        self.assertIn("Worker B", owner_roles)
+        self.assertIn("Worker A", owner_roles)
+
+    def test_slack_demo_run_hospital_surge_creates_scripted_card(self) -> None:
+        signing_secret = "test-slack-signing-secret"
+        api = build_default_api(slack_webhook_url="")
+        headers, raw_body = self.signed_slack_form_request(
+            signing_secret=signing_secret,
+            form={
+                "command": "/logia",
+                "text": "demo run hospital-surge",
+                "user_name": "ops-manager",
+            },
+        )
+        handler = SlackStatusCommandHandler(
+            signing_secret=signing_secret,
+            write_back_adapter=api.write_back_adapter,
+            now_seconds=lambda: 1710000000,
+        )
+
+        response = handler.handle(headers, raw_body)
+
+        self.assertEqual(200, response.status)
+        self.assertEqual("demo-run-hospital-surge", response.body["scenarioId"])
+        self.assertIn("complaint -> evidence", response.body["text"])
+        self.assertTrue(response.body["approvalId"].startswith("approval-logia-order-"))
+        self.assertEqual(
+            "PENDING",
+            api.write_back_adapter.approvals[response.body["approvalId"]]["status"],
+        )
+
     def test_slack_order_command_without_details_returns_modal_request(self) -> None:
         signing_secret = "test-slack-signing-secret"
         api = build_default_api(slack_webhook_url="")
@@ -1083,7 +1248,10 @@ class MockAdapterTest(unittest.TestCase):
 
     def test_supplier_email_stays_queued_without_gmail_credentials(self) -> None:
         signing_secret = "test-slack-signing-secret"
-        api = build_default_api(slack_webhook_url="")
+        api = build_default_api(
+            slack_webhook_url="",
+            gmail_provider_config=None,
+        )
         command_headers, command_body = self.signed_slack_form_request(
             signing_secret=signing_secret,
             form={
@@ -1092,6 +1260,7 @@ class MockAdapterTest(unittest.TestCase):
                     "order gloves qty 500 due 3 days supplier "
                     "supplier@example.com"
                 ),
+                "user_name": "ops-manager",
             },
         )
         command_handler = SlackStatusCommandHandler(
@@ -1158,6 +1327,7 @@ class MockAdapterTest(unittest.TestCase):
                     "order gloves qty 500 due 3 days supplier "
                     "supplier@example.com"
                 ),
+                "user_name": "ops-manager",
             },
         )
         handler = SlackStatusCommandHandler(

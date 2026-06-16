@@ -194,8 +194,10 @@ Recommended hackathon stance:
 - Slack supports internal alerts, Block Kit approval cards, signed
   approve/reject/modify decisions, safe
   `/logia status <case-id|approval-id>`, `/logia queue`, and
-  `/logia demo hospital|airport|hotel|bank` checks, plus delivery/audit
-  metadata in the local runtime.
+  `/logia profile hospital|airport|hotel|bank`,
+  `/logia demo hospital|airport|hotel|bank`,
+  `/logia demo run hospital-surge`, `/logia report <issue>`, and protected
+  `/logia order ...` checks, plus delivery/audit metadata in the local runtime.
 - Slack approve/reject buttons should be the manager approval story when the
   Slack App interactivity Request URL is configured. The verified free CloudHub
   URL is:
@@ -233,8 +235,11 @@ demo feel alive for managers and staff:
 
 - alerts: role-routed internal updates for operations owners;
 - approval cards: `Approve`, `Reject`, and `Modify` Block Kit buttons;
-- commands: `/logia status <case-id|approval-id>`, `/logia queue`, and
-  `/logia demo hospital|airport|hotel|bank`;
+- commands: `/logia status <case-id|approval-id>`, `/logia queue`,
+  `/logia profile hospital|airport|hotel|bank`,
+  `/logia demo hospital|airport|hotel|bank`,
+  `/logia demo run hospital-surge`, `/logia report <issue>`, and protected
+  `/logia order ...`;
 - natural intake: `@Logia` mentions, Logia DMs, `/logia order`, and the
   `Send to Logia` message shortcut can route stock/order requests into a
   protected supplier-email draft;
@@ -273,14 +278,18 @@ Universal demo command examples:
 /logia demo airport
 /logia demo hotel
 /logia demo bank
-/logia order gloves qty 500 due 3 days supplier supplier@example.com
+/logia profile hospital
+/logia report gloves are low and the queue is not moving
+/logia order hospital gloves qty 500 due 3 days supplier supplier@example.com
+/logia demo run hospital-surge
 ```
 
 Each command uses the same primitive flow: signal, evidence, primitive mapping,
 agent action plan, approval, MuleSoft execution, Slack update, and outcome.
-The `order` command is manager-initiated and demonstrates a protected supplier
-email draft: Slack can show the approval card, but Salesforce remains the
-approval and audit source of truth.
+The `report` command is worker-safe and creates a role-routed issue without
+supplier email. The `order` command is manager-initiated and demonstrates a
+protected supplier email draft: Slack can show the approval card, but
+Salesforce remains the approval and audit source of truth.
 
 ## End-To-End Logic
 

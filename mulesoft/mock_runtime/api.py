@@ -141,6 +141,31 @@ UNIVERSAL_PROFILE_DEMOS = {
 }
 UNIVERSAL_PROFILE_DEMOS["banking"] = UNIVERSAL_PROFILE_DEMOS["bank"]
 
+PROFILE_LABELS = {
+    "profile:hospital-private-large": "Hospital",
+    "profile:airport-operations": "Airport",
+    "profile:hotel-guest-operations": "Hotel",
+    "profile:bank-service-operations": "Banking",
+}
+
+PROFILE_TERMS = {
+    "airport": "profile:airport-operations",
+    "hotel": "profile:hotel-guest-operations",
+    "bank": "profile:bank-service-operations",
+    "banking": "profile:bank-service-operations",
+    "hospital": "profile:hospital-private-large",
+}
+
+DEFAULT_SLACK_MANAGER_NAMES = frozenset(
+    {
+        "ops-manager",
+        "operations-manager",
+        "operations_manager",
+        "manager",
+        "fahan",
+    }
+)
+
 
 def canonical_hash(value: dict[str, Any]) -> str:
     canonical = json.dumps(
@@ -259,13 +284,7 @@ class LogiaOrderParser:
         re.IGNORECASE,
     )
 
-    PROFILE_TERMS = {
-        "airport": "profile:airport-operations",
-        "hotel": "profile:hotel-guest-operations",
-        "bank": "profile:bank-service-operations",
-        "banking": "profile:bank-service-operations",
-        "hospital": "profile:hospital-private-large",
-    }
+    PROFILE_TERMS = PROFILE_TERMS
 
     @classmethod
     def has_order_intent(cls, text: str) -> bool:
@@ -276,7 +295,12 @@ class LogiaOrderParser:
         return re.sub(r"<@[A-Z0-9]+>\s*", "", text or "").strip()
 
     @classmethod
-    def parse(cls, text: str) -> LogiaOrderDraft:
+    def parse(
+        cls,
+        text: str,
+        *,
+        default_profile: str = "profile:hospital-private-large",
+    ) -> LogiaOrderDraft:
         raw_text = cls.strip_slack_mention(text).strip()
         cleaned = re.sub(r"^/logia\s+", "", raw_text, flags=re.IGNORECASE)
         cleaned = re.sub(r"^order\b", "", cleaned, flags=re.IGNORECASE).strip()
@@ -285,7 +309,7 @@ class LogiaOrderParser:
         if email_match:
             supplier_email = email_match.group(0)
 
-        profile = "profile:hospital-private-large"
+        profile = default_profile
         lowered = cleaned.lower()
         for term, profile_id in cls.PROFILE_TERMS.items():
             if re.search(rf"\b{re.escape(term)}\b", lowered):
@@ -395,6 +419,12 @@ class LogiaOrderParser:
     @staticmethod
     def _clean_item(value: str) -> str:
         value = re.sub(LogiaOrderParser.EMAIL_PATTERN, "", value or "")
+        value = re.sub(
+            r"\b(?:hospital|airport|hotel|bank|banking)\b",
+            " ",
+            value,
+            flags=re.IGNORECASE,
+        )
         value = re.sub(
             r"\b(?:qty|quantity|amount|due|by|in|from|supplier|email|for|manager|note)\b.*$",
             "",
@@ -520,16 +550,10 @@ class LogiaSlackViews:
 
     @staticmethod
     def _profile_option(profile_id: str) -> dict[str, Any]:
-        labels = {
-            "profile:hospital-private-large": "Hospital",
-            "profile:airport-operations": "Airport",
-            "profile:hotel-guest-operations": "Hotel",
-            "profile:bank-service-operations": "Banking",
-        }
         return {
             "text": {
                 "type": "plain_text",
-                "text": labels.get(profile_id, "Hospital"),
+                "text": PROFILE_LABELS.get(profile_id, "Hospital"),
             },
             "value": profile_id,
         }
@@ -1184,6 +1208,7 @@ class MockWriteBackAdapter:
     ) -> None:
         self.approvals: dict[str, dict[str, Any]] = {}
         self.source_records: dict[str, dict[str, Any]] = {}
+        self.operational_reports: dict[str, dict[str, Any]] = {}
         self.pending_actions_by_approval: dict[str, list[dict[str, Any]]] = {}
         self.pending_task_mirrors_by_approval: dict[str, dict[str, Any]] = {}
         self._executions: dict[
@@ -1248,6 +1273,10 @@ class MockWriteBackAdapter:
         self.pending_task_mirrors_by_approval[action["approvalId"]] = mirror
         self.approvals[action["approvalId"]]["taskMirror"] = mirror
         return deepcopy(self.approvals[action["approvalId"]])
+
+    def register_operational_report(self, report: dict[str, Any]) -> dict[str, Any]:
+        self.operational_reports[report["caseId"]] = deepcopy(report)
+        return deepcopy(self.operational_reports[report["caseId"]])
 
     def execute_pending_actions_for_approval(
         self,
@@ -2223,11 +2252,15 @@ class LogiaSlackOrderWorkflow:
         *,
         write_back_adapter: MockWriteBackAdapter,
         text: str,
+        default_profile: str = "profile:hospital-private-large",
         response_type: str = "in_channel",
     ) -> MockHttpResponse:
         return cls.response_for_draft(
             write_back_adapter=write_back_adapter,
-            draft=LogiaOrderParser.parse(text),
+            draft=LogiaOrderParser.parse(
+                text,
+                default_profile=default_profile,
+            ),
             response_type=response_type,
         )
 
@@ -2452,6 +2485,234 @@ class LogiaSlackOrderWorkflow:
                 ],
             },
         ]
+
+
+class LogiaWorkerReportWorkflow:
+    """Captures staff reports without triggering protected supplier actions."""
+
+    TENANT_KEY = "demo-mauritius"
+
+    @classmethod
+    def response_for_text(
+        cls,
+        *,
+        write_back_adapter: MockWriteBackAdapter,
+        text: str,
+        profile: str = "profile:hospital-private-large",
+        reporter_role: str = "Worker B",
+        response_type: str = "in_channel",
+    ) -> MockHttpResponse:
+        issue_text = cls._clean_report_text(text)
+        if not issue_text:
+            return MockHttpResponse(
+                200,
+                {
+                    "ok": True,
+                    "response_type": "ephemeral",
+                    "text": (
+                        "Tell Logia what changed, for example "
+                        "`/logia report gloves are low at pharmacy`."
+                    ),
+                },
+                {},
+            )
+
+        profile = cls._profile_from_text(issue_text, profile)
+        modules = cls._modules_for_text(issue_text)
+        case_id = "case-logia-report-" + canonical_hash(
+            {
+                "issue": issue_text,
+                "profile": profile,
+                "reporterRole": reporter_role,
+            }
+        )[:12]
+        report = {
+            "caseId": case_id,
+            "profileId": profile,
+            "profileLabel": PROFILE_LABELS.get(profile, "Hospital"),
+            "source": "slack-worker-report",
+            "reporterRole": reporter_role,
+            "safeSummary": issue_text[:180],
+            "status": "Manager Review Needed",
+            "affectedModules": modules,
+            "approvalRequiredForProtectedActions": True,
+            "tasks": cls._tasks_for_modules(modules),
+            "recommendedManagerCommand": cls._recommended_manager_command(
+                issue_text,
+                profile,
+            ),
+        }
+        write_back_adapter.register_operational_report(report)
+        task_text = "; ".join(
+            f"{task['ownerRole']}: {task['task']}" for task in report["tasks"]
+        )
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": response_type,
+                "text": (
+                    f"Logia captured worker report `{case_id}` for "
+                    f"{report['profileLabel']}. A manager must approve any "
+                    "supplier email, customer update, billing action, or "
+                    f"external write-back. Tasks: {task_text}"
+                ),
+                "caseId": case_id,
+                "profileId": profile,
+                "affectedModules": modules,
+                "tasks": report["tasks"],
+                "recommendedManagerCommand": report["recommendedManagerCommand"],
+            },
+            {},
+        )
+
+    @classmethod
+    def _clean_report_text(cls, text: str) -> str:
+        cleaned = LogiaOrderParser.strip_slack_mention(text)
+        cleaned = re.sub(r"^/logia\s+", "", cleaned, flags=re.IGNORECASE).strip()
+        cleaned = re.sub(r"^report\b", "", cleaned, flags=re.IGNORECASE).strip()
+        return re.sub(r"\s+", " ", cleaned)
+
+    @classmethod
+    def _profile_from_text(cls, text: str, default_profile: str) -> str:
+        lowered = text.lower()
+        for term, profile_id in PROFILE_TERMS.items():
+            if re.search(rf"\b{re.escape(term)}\b", lowered):
+                return profile_id
+        return default_profile
+
+    @classmethod
+    def _modules_for_text(cls, text: str) -> list[str]:
+        lowered = text.lower()
+        modules = ["Evidence quality and uncertainty", "Staff coordination"]
+        if re.search(r"\b(stock|low|unavailable|order|restock|supply)\b", lowered):
+            modules.append("Inventory and supply")
+        if re.search(r"\b(wait|queue|delay|slow|crowd|capacity)\b", lowered):
+            modules.append("Capacity and availability")
+        if re.search(
+            r"\b(complaint|angry|upset|guest|patient|passenger|client)\b",
+            lowered,
+        ):
+            modules.append("Complaint and trust")
+        if re.search(r"\b(bill|billing|payment|refund|claim|charge)\b", lowered):
+            modules.append("Billing and financial exposure")
+        if re.search(
+            r"\b(vendor|supplier|partner|lab|laundry|airline|processor)\b",
+            lowered,
+        ):
+            modules.append("Partner and vendor failure")
+        modules.extend(["Risk, safety, and compliance", "Outcome learning"])
+        return list(dict.fromkeys(modules))
+
+    @classmethod
+    def _tasks_for_modules(cls, modules: list[str]) -> list[dict[str, str]]:
+        tasks = [
+            {
+                "ownerRole": "Operations Manager",
+                "task": "review recommendation and approval boundary",
+                "status": "Pending",
+            }
+        ]
+        if "Inventory and supply" in modules:
+            tasks.append(
+                {
+                    "ownerRole": "Worker B",
+                    "task": "verify stock count and service window",
+                    "status": "Pending",
+                }
+            )
+        if "Complaint and trust" in modules or "Capacity and availability" in modules:
+            tasks.append(
+                {
+                    "ownerRole": "Worker A",
+                    "task": "check front-line service impact",
+                    "status": "Pending",
+                }
+            )
+        if "Billing and financial exposure" in modules:
+            tasks.append(
+                {
+                    "ownerRole": "Finance Reviewer",
+                    "task": "review cost, billing, refund, or claim exposure",
+                    "status": "Pending",
+                }
+            )
+        return tasks
+
+    @classmethod
+    def _recommended_manager_command(cls, text: str, profile: str) -> str:
+        if "Inventory and supply" not in cls._modules_for_text(text):
+            return "/logia queue"
+        profile_term = {
+            "profile:hospital-private-large": "hospital",
+            "profile:airport-operations": "airport",
+            "profile:hotel-guest-operations": "hotel",
+            "profile:bank-service-operations": "bank",
+        }.get(profile, "hospital")
+        return (
+            f"/logia order {profile_term} <item> qty <amount> due <time> "
+            "supplier <email>"
+        )
+
+
+class LogiaDemoScenarioWorkflow:
+    """Builds a scripted judge-facing scenario without creating real data."""
+
+    @classmethod
+    def hospital_surge_response(
+        cls,
+        *,
+        write_back_adapter: MockWriteBackAdapter,
+    ) -> MockHttpResponse:
+        draft = LogiaOrderParser.parse(
+            "order hospital gloves qty 500 due 3 days supplier demo-supplier@example.com"
+        )
+        order_response = LogiaSlackOrderWorkflow.response_for_draft(
+            write_back_adapter=write_back_adapter,
+            draft=draft,
+            response_type="in_channel",
+        )
+        steps = [
+            "WhatsApp complaint: one-hour wait and item unavailable.",
+            "Evidence: queue, stock, staff, billing, and partner facts.",
+            "Agents: trust, capacity, inventory, finance, risk, communication, outcome.",
+            "Manager approval: supplier email/order stays blocked.",
+            "Execution: Slack task, Gmail supplier email or protected queue, outcome metric.",
+            "Profile proof: same primitives map to airport, hotel, and banking.",
+        ]
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "in_channel",
+                "text": (
+                    "Logia hospital-surge demo is ready: complaint -> evidence "
+                    "-> agents -> approval -> protected actions -> outcome. "
+                    f"Approval card created as `{order_response.body['approvalId']}`."
+                ),
+                "scenarioId": "demo-run-hospital-surge",
+                "approvalId": order_response.body["approvalId"],
+                "actionId": order_response.body["actionId"],
+                "steps": steps,
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": (
+                                "*Logia hospital surge script*\n"
+                                + "\n".join(
+                                    f"{index + 1}. {step}"
+                                    for index, step in enumerate(steps)
+                                )
+                            ),
+                        },
+                    },
+                    *order_response.body["blocks"],
+                ],
+            },
+            {},
+        )
 
 
 class SlackApprovalInteractionHandler:
@@ -2731,6 +2992,8 @@ class SlackStatusCommandHandler:
         *,
         signing_secret: str,
         write_back_adapter: MockWriteBackAdapter,
+        manager_usernames: set[str] | None = None,
+        manager_user_ids: set[str] | None = None,
         now_seconds: Callable[[], int] | None = None,
         maximum_age_seconds: int = 300,
     ) -> None:
@@ -2738,9 +3001,21 @@ class SlackStatusCommandHandler:
             raise ValueError("signing_secret is required")
         self.signing_secret = signing_secret
         self.write_back_adapter = write_back_adapter
+        self.manager_usernames = {
+            value.lower()
+            for value in (
+                manager_usernames
+                if manager_usernames is not None
+                else DEFAULT_SLACK_MANAGER_NAMES
+            )
+        }
+        self.manager_user_ids = {
+            value.upper() for value in (manager_user_ids or set())
+        }
         self.now_seconds = now_seconds or (lambda: int(time.time()))
         self.maximum_age_seconds = maximum_age_seconds
         self._seen_signatures: set[str] = set()
+        self.active_profiles_by_channel: dict[str, str] = {}
 
     def handle(
         self,
@@ -2781,6 +3056,7 @@ class SlackStatusCommandHandler:
                 "Only /logia commands are supported.",
             )
         text = form.get("text", "").strip()
+        channel_key = self._channel_key(form)
         parts = text.split()
         if not parts:
             return self._help_response()
@@ -2790,10 +3066,33 @@ class SlackStatusCommandHandler:
             return self._status_response(parts[1])
         if verb == "queue" and len(parts) == 1:
             return self._queue_response()
+        if verb == "profile" and len(parts) == 2:
+            return self._profile_response(channel_key, parts[1].lower())
         if verb == "demo" and len(parts) == 2:
             return self._demo_response(parts[1].lower())
+        if verb == "demo" and len(parts) == 3 and parts[1].lower() == "run":
+            return self._demo_run_response(parts[2].lower())
+        if verb == "report":
+            return self._report_response(
+                text,
+                active_profile=self._active_profile(channel_key),
+            )
         if verb == "order":
-            return self._order_response(text)
+            if not self._is_manager(form):
+                response = self._report_response(
+                    "report " + text,
+                    active_profile=self._active_profile(channel_key),
+                )
+                response.body["policyDecision"] = "ROUTED_TO_MANAGER"
+                response.body["text"] = (
+                    "Only an Operations Manager can draft protected supplier "
+                    "email from Slack. " + response.body["text"]
+                )
+                return response
+            return self._order_response(
+                text,
+                active_profile=self._active_profile(channel_key),
+            )
         return self._help_response()
 
     def _help_response(self) -> MockHttpResponse:
@@ -2805,7 +3104,10 @@ class SlackStatusCommandHandler:
                 "text": (
                     "Use `/logia status <case-id|approval-id>`, "
                     "`/logia queue`, or "
+                    "`/logia profile hospital|airport|hotel|bank`, or "
                     "`/logia demo hospital|airport|hotel|bank`, or "
+                    "`/logia demo run hospital-surge`, or "
+                    "`/logia report <issue>`, or "
                     "`/logia order <item> qty <amount> due <days> "
                     "supplier <email>`."
                 ),
@@ -2883,6 +3185,7 @@ class SlackStatusCommandHandler:
             f"{status}: {count}" for status, count in sorted(counts.items())
         ) or "no approvals"
         pending_text = ", ".join(pending) if pending else "none"
+        report_count = len(self.write_back_adapter.operational_reports)
         list_text = (
             f" Slack List mirror: `{self.write_back_adapter.slack_list_id_operations}`."
             if self.write_back_adapter.slack_list_id_operations
@@ -2895,10 +3198,37 @@ class SlackStatusCommandHandler:
                 "response_type": "ephemeral",
                 "text": (
                     f"Logia queue summary: {count_text}. "
-                    f"Pending approvals: {pending_text}.{list_text}"
+                    f"Pending approvals: {pending_text}. "
+                    f"Worker reports: {report_count}.{list_text}"
                 ),
                 "approvalCounts": counts,
                 "pendingApprovalIds": pending,
+                "workerReportCount": report_count,
+            },
+            {},
+        )
+
+    def _profile_response(
+        self,
+        channel_key: str,
+        profile_key: str,
+    ) -> MockHttpResponse:
+        profile = UNIVERSAL_PROFILE_DEMOS.get(profile_key)
+        if profile is None:
+            return self._help_response()
+        self.active_profiles_by_channel[channel_key] = profile["profileId"]
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "in_channel",
+                "text": (
+                    f"Logia profile set to `{profile['profileId']}` for this "
+                    "channel. Future manager orders can omit the profile word. "
+                    "Salesforce remains the source of truth."
+                ),
+                "profileId": profile["profileId"],
+                "channelKey": channel_key,
             },
             {},
         )
@@ -2926,12 +3256,63 @@ class SlackStatusCommandHandler:
             {},
         )
 
-    def _order_response(self, text: str) -> MockHttpResponse:
+    def _demo_run_response(self, scenario_key: str) -> MockHttpResponse:
+        if scenario_key == "hospital-surge":
+            return LogiaDemoScenarioWorkflow.hospital_surge_response(
+                write_back_adapter=self.write_back_adapter,
+            )
+        return MockHttpResponse(
+            200,
+            {
+                "ok": True,
+                "response_type": "ephemeral",
+                "text": "Use `/logia demo run hospital-surge`.",
+            },
+            {},
+        )
+
+    def _report_response(
+        self,
+        text: str,
+        *,
+        active_profile: str,
+    ) -> MockHttpResponse:
+        return LogiaWorkerReportWorkflow.response_for_text(
+            write_back_adapter=self.write_back_adapter,
+            text=text,
+            profile=active_profile,
+            response_type="in_channel",
+        )
+
+    def _order_response(
+        self,
+        text: str,
+        *,
+        active_profile: str,
+    ) -> MockHttpResponse:
         return LogiaSlackOrderWorkflow.response_for_text(
             write_back_adapter=self.write_back_adapter,
             text=text,
+            default_profile=active_profile,
             response_type="in_channel",
         )
+
+    def _active_profile(self, channel_key: str) -> str:
+        return self.active_profiles_by_channel.get(
+            channel_key,
+            "profile:hospital-private-large",
+        )
+
+    @staticmethod
+    def _channel_key(form: dict[str, str]) -> str:
+        return form.get("channel_id") or form.get("channel_name") or "default"
+
+    def _is_manager(self, form: dict[str, str]) -> bool:
+        user_id = form.get("user_id", "").upper()
+        if user_id and user_id in self.manager_user_ids:
+            return True
+        username = form.get("user_name", "").strip().lower()
+        return username in self.manager_usernames
 
     def _validate_signature(
         self,

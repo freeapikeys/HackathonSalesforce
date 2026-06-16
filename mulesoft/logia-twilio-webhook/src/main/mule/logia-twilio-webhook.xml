@@ -273,7 +273,10 @@ var normalized = lower(text)
 var parts = normalized splitBy " "
 var profile = parts[1] default ""
 var isDemo = normalized startsWith "demo"
+var isDemoRun = normalized startsWith "demo run"
+var isProfile = normalized startsWith "profile"
 var isOrder = normalized startsWith "order"
+var isReport = normalized startsWith "report"
 var demoText =
     if (profile == "hospital")
         "Logia demo `hospital` uses `profile:hospital-private-large`: complaint, queue, room, stock, billing, partner delay, approval, Slack update, WhatsApp receipt, outcome."
@@ -285,9 +288,25 @@ var demoText =
         "Logia demo `bank` uses `profile:bank-service-operations`: client complaint, dispute, KYC delay, document evidence, compliance approval, callback, outcome."
     else
         "Use `/logia demo hospital|airport|hotel|bank` to preview a safe four-profile scenario."
+var profileText =
+    if (profile == "hospital")
+        "Logia profile set to `profile:hospital-private-large` for this channel story. Future manager orders can use hospital wording."
+    else if (profile == "airport")
+        "Logia profile set to `profile:airport-operations` for this channel story. Future manager orders can use airport wording."
+    else if (profile == "hotel")
+        "Logia profile set to `profile:hotel-guest-operations` for this channel story. Future manager orders can use hotel wording."
+    else if (profile == "bank" or profile == "banking")
+        "Logia profile set to `profile:bank-service-operations` for this channel story. Future manager orders can use banking wording."
+    else
+        "Use `/logia profile hospital|airport|hotel|bank` to set the channel demo profile."
 var orderText =
     if (isOrder and sizeOf(text) > 6)
         trim(text[6 to -1])
+    else
+        ""
+var reportText =
+    if (isReport and sizeOf(text) > 7)
+        trim(text[7 to -1])
     else
         ""
 var orderSummary =
@@ -295,6 +314,16 @@ var orderSummary =
         "No stock request details were provided. Try `/logia order gloves qty 500 due 3 days supplier supplier@example.com`."
     else
         "Manager stock request captured: " ++ orderText
+var reportSummary =
+    if (reportText == "")
+        "No worker issue was provided. Try `/logia report gloves are low at pharmacy`."
+    else
+        "Worker report captured: " ++ reportText ++ ". Logia creates evidence and role tasks, then routes protected actions to the Operations Manager."
+var demoRunText =
+    if (normalized == "demo run hospital-surge")
+        "Logia hospital-surge script: WhatsApp complaint -> evidence -> ten-agent plan -> manager approval -> Slack tasks -> protected supplier email or safe queue -> outcome metrics. Use this as the 5-7 minute judge demo."
+    else
+        "Use `/logia demo run hospital-surge` for the scripted showcase sequence."
 var orderApprovalId = "approval-logia-supplier-order-001"
 var orderRecommendationId = "recommendation-logia-supplier-order-001"
 var orderButtonValue = write({
@@ -306,15 +335,21 @@ var responseText =
     if (normalized startsWith "status")
         "Logia status request received. Check the Salesforce command center for facts, approval state, actions, and outcomes."
     else if (normalized == "queue")
-        "Logia queue summary: Salesforce is the source of truth. Slack mirrors safe case, profile, module, status, owner, approval, action, evidence count, and outcome fields when Slack Lists are configured."
+        "Logia queue summary: Salesforce is the source of truth. Slack mirrors safe case, profile, module, status, owner, approval, action, evidence count, and outcome fields when Slack Lists are configured. Workers report issues; managers approve protected actions."
+    else if (isProfile)
+        profileText
+    else if (isDemoRun)
+        demoRunText
     else if (isDemo)
         demoText
+    else if (isReport)
+        reportSummary
     else if (isOrder)
         orderSummary ++ " Logia drafted a protected supplier email. Manager approval is required before any supplier email or order is sent."
     else
-        "Try `/logia status <case-id|approval-id>`, `/logia queue`, `/logia demo hospital|airport|hotel|bank`, or `/logia order <item> qty <amount> due <days> supplier <email>`. Logia keeps tasks and approvals in Salesforce, while Slack is for safe coordination."
+        "Try `/logia status <case-id|approval-id>`, `/logia queue`, `/logia profile hospital|airport|hotel|bank`, `/logia demo hospital|airport|hotel|bank`, `/logia demo run hospital-surge`, `/logia report <issue>`, or `/logia order <item> qty <amount> due <days> supplier <email>`. Logia keeps tasks and approvals in Salesforce, while Slack is for safe coordination."
 var baseResponse = {
-    response_type: if (isDemo or isOrder) "in_channel" else "ephemeral",
+    response_type: if (isDemo or isDemoRun or isProfile or isReport or isOrder) "in_channel" else "ephemeral",
     text: responseText
 }
 ---
