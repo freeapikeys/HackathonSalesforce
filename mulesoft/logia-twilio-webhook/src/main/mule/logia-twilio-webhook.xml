@@ -347,8 +347,29 @@ import * from dw::core::Binaries
 output application/json
 var toEmail = (vars.slackSupplierEmail default p('gmail.supplierEmail')) as String
 var orderText = (vars.slackOrderText default "the approved stock request") as String
+fun cleaned(value, fallback) =
+    do {
+        var raw = trim((value default "") as String)
+        ---
+        if (raw == "") fallback else raw
+    }
+fun sentenceCase(value, fallback) =
+    do {
+        var clean = cleaned(value, fallback)
+        ---
+        if (sizeOf(clean) <= 1) upper(clean) else upper(clean[0 to 0]) ++ clean[1 to -1]
+    }
+var requestWithoutSupplier = trim(((orderText splitBy " supplier ")[0] default orderText) as String)
+var requestBeforeDue = trim(((requestWithoutSupplier splitBy " due ")[0] default requestWithoutSupplier) as String)
+var requestDue = trim(((requestWithoutSupplier splitBy " due ")[1] default "requested date") as String)
+var requestItem = trim(((requestBeforeDue splitBy " qty ")[0] default requestBeforeDue) as String)
+var requestQuantity = trim(((requestBeforeDue splitBy " qty ")[1] default "requested quantity") as String)
+var orderRequestLines =
+    "Item: " ++ sentenceCase(requestItem, "Requested item") ++
+    "\nQuantity: " ++ cleaned(requestQuantity, "Requested quantity") ++
+    "\nNeeded by: " ++ sentenceCase(requestDue, "Requested date")
 var subject = "Approved Logia stock request"
-var body = "Hello,\n\nCould you please confirm availability, price, and earliest delivery for this approved request:\n\n" ++ orderText ++ "\n\nPlease reply with the earliest delivery option.\n\nBest regards,\nOperations Manager\nLogia"
+var body = "Hello,\n\nCould you please confirm availability, price, and earliest delivery for this approved request?\n\n" ++ orderRequestLines ++ "\n\nPlease reply with the earliest delivery option.\n\nBest regards,\nOperations Manager\nLogia"
 var mime = "From: " ++ p('gmail.senderEmail') ++ "\r\n" ++
     "To: " ++ toEmail ++ "\r\n" ++
     "Subject: " ++ subject ++ "\r\n" ++
@@ -489,6 +510,28 @@ var orderText =
         trim(text[6 to -1])
     else
         ""
+fun cleaned(value, fallback) =
+    do {
+        var raw = trim((value default "") as String)
+        ---
+        if (raw == "") fallback else raw
+    }
+fun sentenceCase(value, fallback) =
+    do {
+        var clean = cleaned(value, fallback)
+        ---
+        if (sizeOf(clean) <= 1) upper(clean) else upper(clean[0 to 0]) ++ clean[1 to -1]
+    }
+var requestWithoutSupplier = trim(((orderText splitBy " supplier ")[0] default orderText) as String)
+var requestSupplier = cleaned(((orderText splitBy " supplier ")[1] default "") as String, p('gmail.supplierEmail'))
+var requestBeforeDue = trim(((requestWithoutSupplier splitBy " due ")[0] default requestWithoutSupplier) as String)
+var requestDue = trim(((requestWithoutSupplier splitBy " due ")[1] default "requested date") as String)
+var requestItem = trim(((requestBeforeDue splitBy " qty ")[0] default requestBeforeDue) as String)
+var requestQuantity = trim(((requestBeforeDue splitBy " qty ")[1] default "requested quantity") as String)
+var orderRequestLines =
+    "Item: " ++ sentenceCase(requestItem, "Requested item") ++
+    "\nQuantity: " ++ cleaned(requestQuantity, "Requested quantity") ++
+    "\nNeeded by: " ++ sentenceCase(requestDue, "Requested date")
 var reportText =
     if (isReport and sizeOf(text) > 7)
         trim(text[7 to -1])
@@ -498,7 +541,7 @@ var orderSummary =
     if (orderText == "")
         "No stock request details were provided. Try `/logia order gloves qty 500 due 3 days supplier supplier@example.com`."
     else
-        "Manager stock request captured: " ++ orderText
+        "Manager stock request captured:\n" ++ orderRequestLines
 var reportSummary =
     if (reportText == "")
         "No worker issue was provided. Try `/logia report gloves are low at pharmacy`."
@@ -516,7 +559,7 @@ var orderButtonValue = write({
     recommendationId: orderRecommendationId,
     tenantKey: "demo-mauritius",
     orderText: orderText,
-    supplierEmail: p('gmail.supplierEmail')
+    supplierEmail: requestSupplier
 }, "application/json")
 var responseText =
     if (normalized startsWith "status")
@@ -532,7 +575,7 @@ var responseText =
     else if (isReport)
         reportSummary
     else if (isOrder)
-        orderSummary ++ " Logia drafted a protected supplier email. Manager approval is required before any supplier email or order is sent."
+        orderSummary ++ "\n\nLogia drafted a protected supplier email. Manager approval is required before any supplier email or order is sent."
     else
         "Try `/logia status <case-id|approval-id>`, `/logia queue`, `/logia profile hospital|airport|hotel|bank`, `/logia demo hospital|airport|hotel|bank`, `/logia demo run hospital-surge`, `/logia report <issue>`, or `/logia order <item> qty <amount> due <days> supplier <email>`. Logia keeps tasks and approvals in Salesforce, while Slack is for safe coordination."
 var baseResponse = {
@@ -568,6 +611,10 @@ if (isOrder)
                     {
                         'type': "mrkdwn",
                         "text": "*Action*\n`SEND_VENDOR_EMAIL` after approval"
+                    },
+                    {
+                        'type': "mrkdwn",
+                        "text": "*Supplier*\n" ++ requestSupplier
                     }
                 ]
             },
@@ -575,7 +622,7 @@ if (isOrder)
                 'type': "section",
                 "text": {
                     'type': "mrkdwn",
-                    "text": "*Draft email*\nSubject: Approved Logia stock request\n\nHello, could you please confirm availability, price, and earliest delivery for this request?\n\nPlease reply with the earliest delivery option.\n\nBest regards,\nOperations Manager\nLogia"
+                    "text": "*Draft email*\nSubject: Approved Logia stock request\n\nHello, could you please confirm availability, price, and earliest delivery for this approved request?\n\n" ++ orderRequestLines ++ "\n\nPlease reply with the earliest delivery option.\n\nBest regards,\nOperations Manager\nLogia"
                 }
             },
             {
