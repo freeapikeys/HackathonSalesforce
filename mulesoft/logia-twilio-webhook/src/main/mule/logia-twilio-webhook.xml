@@ -32,6 +32,22 @@
     />
     </http:request-config>
 
+    <http:request-config name="googleOauthRequest">
+        <http:request-connection
+      protocol="HTTPS"
+      host="oauth2.googleapis.com"
+      port="443"
+    />
+    </http:request-config>
+
+    <http:request-config name="gmailApiRequest">
+        <http:request-connection
+      protocol="HTTPS"
+      host="gmail.googleapis.com"
+      port="443"
+    />
+    </http:request-config>
+
     <flow name="meta-whatsapp-webhook-verify-root">
         <http:listener config-ref="logiaListener" path="/" allowedMethods="GET">
             <http:response statusCode="#[vars.statusCode default 403]">
@@ -232,7 +248,7 @@ output application/json
     </flow>
 
     <flow name="process-slack-interaction">
-        <ee:transform doc:name="Acknowledge Slack interaction">
+        <ee:transform doc:name="Parse Slack interaction">
             <ee:message>
                 <ee:set-payload
         ><![CDATA[%dw 2.0
@@ -243,20 +259,189 @@ var action = interaction.actions[0] default {}
 var actionId = lower((action.action_id default "") as String)
 var valueText = (action.value default "") as String
 var value = if (valueText startsWith "{") read(valueText, "application/json") else {}
-var approvalId = (value.approvalId default valueText default "selected approval") as String
-var decision =
-    if (actionId contains "approve") "approval"
-    else if (actionId contains "reject") "rejection"
-    else "change request"
+---
+{
+    actionId: actionId,
+    approvalId: (value.approvalId default valueText default "selected approval") as String,
+    recommendationId: (value.recommendationId default "recommendation-logia-supplier-order-001") as String,
+    orderText: (value.orderText default "the approved stock request") as String,
+    supplierEmail: (value.supplierEmail default p('gmail.supplierEmail')) as String
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+
+        <set-variable
+      variableName="slackActionId"
+      value="#[payload.actionId default '']"
+    />
+        <set-variable
+      variableName="slackApprovalId"
+      value="#[payload.approvalId default 'selected approval']"
+    />
+        <set-variable
+      variableName="slackRecommendationId"
+      value="#[payload.recommendationId default 'recommendation-logia-supplier-order-001']"
+    />
+        <set-variable
+      variableName="slackOrderText"
+      value="#[payload.orderText default 'the approved stock request']"
+    />
+        <set-variable
+      variableName="slackSupplierEmail"
+      value="#[payload.supplierEmail default 'configured supplier']"
+    />
+
+        <set-variable variableName="gmailDeliveryStatus" value="QUEUED" />
+        <set-variable
+      variableName="gmailDeliveryProvider"
+      value="mock-vendor-email"
+    />
+        <set-variable
+      variableName="gmailDeliverySummary"
+      value="Approved supplier email stayed in the protected queue."
+    />
+        <set-variable
+      variableName="gmailFallbackReason"
+      value="Gmail API was not executed for this Slack decision."
+    />
+        <set-variable variableName="gmailMessageId" value="" />
+
+        <choice doc:name="Execute approved supplier email when possible">
+            <when
+        expression="#[(vars.slackActionId contains 'approve') and p('gmail.clientId') != 'replace-at-runtime' and p('gmail.clientSecret') != 'replace-at-runtime' and p('gmail.refreshToken') != 'replace-at-runtime' and p('gmail.senderEmail') != 'replace-at-runtime' and p('gmail.supplierEmail') != 'replace-at-runtime']"
+      >
+                <try doc:name="Send approved supplier email through Gmail">
+                    <ee:transform doc:name="Build Gmail OAuth refresh request">
+                        <ee:message>
+                            <ee:set-payload
+              ><![CDATA[%dw 2.0
+output application/x-www-form-urlencoded
+---
+{
+    client_id: p('gmail.clientId'),
+    client_secret: p('gmail.clientSecret'),
+    refresh_token: p('gmail.refreshToken'),
+    grant_type: "refresh_token"
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+                    <http:request
+            method="POST"
+            config-ref="googleOauthRequest"
+            path="/token"
+          >
+                        <http:headers
+            ><![CDATA[#[{
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }]]]></http:headers>
+                    </http:request>
+                    <set-variable
+            variableName="gmailAccessToken"
+            value="#[(payload.access_token default '') as String]"
+          />
+                    <ee:transform doc:name="Build Gmail supplier send request">
+                        <ee:message>
+                            <ee:set-payload
+              ><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/json
+var toEmail = (vars.slackSupplierEmail default p('gmail.supplierEmail')) as String
+var orderText = (vars.slackOrderText default "the approved stock request") as String
+var subject = "Approved Logia stock request"
+var body = "Hello,\n\nCould you please confirm availability, price, and earliest delivery for this approved request:\n\n" ++ orderText ++ "\n\nPlease reply with the earliest delivery option.\n\nBest regards,\nOperations Manager\nLogia"
+var mime = "From: " ++ p('gmail.senderEmail') ++ "\r\n" ++
+    "To: " ++ toEmail ++ "\r\n" ++
+    "Subject: " ++ subject ++ "\r\n" ++
+    "MIME-Version: 1.0\r\n" ++
+    "Content-Type: text/plain; charset=UTF-8\r\n\r\n" ++
+    body
+fun b64url(value) = (((toBase64(value as Binary) replace "+" with "-") replace "/" with "_") replace "=" with "")
+---
+{
+    raw: b64url(mime)
+}]]></ee:set-payload>
+                        </ee:message>
+                    </ee:transform>
+                    <http:request
+            method="POST"
+            config-ref="gmailApiRequest"
+            path="/gmail/v1/users/me/messages/send"
+          >
+                        <http:headers
+            ><![CDATA[#[{
+                            'Authorization': 'Bearer ' ++ vars.gmailAccessToken,
+                            'Content-Type': 'application/json'
+                        }]]]></http:headers>
+                    </http:request>
+                    <set-variable
+            variableName="gmailDeliveryStatus"
+            value="SENT"
+          />
+                    <set-variable
+            variableName="gmailDeliveryProvider"
+            value="gmail-api"
+          />
+                    <set-variable
+            variableName="gmailDeliverySummary"
+            value="Approved supplier email was sent through Gmail API."
+          />
+                    <set-variable variableName="gmailFallbackReason" value="" />
+                    <set-variable
+            variableName="gmailMessageId"
+            value="#[(payload.id default '') as String]"
+          />
+                    <error-handler>
+                        <on-error-continue
+              enableNotifications="true"
+              logException="true"
+            >
+                            <set-variable
+                variableName="gmailDeliveryStatus"
+                value="QUEUED"
+              />
+                            <set-variable
+                variableName="gmailDeliveryProvider"
+                value="gmail-api"
+              />
+                            <set-variable
+                variableName="gmailDeliverySummary"
+                value="Approved supplier email stayed in the protected queue after Gmail failure."
+              />
+                            <set-variable
+                variableName="gmailFallbackReason"
+                value="Gmail API send failed; protected supplier email remains queued."
+              />
+                        </on-error-continue>
+                    </error-handler>
+                </try>
+            </when>
+        </choice>
+
+        <ee:transform doc:name="Return Slack interaction decision">
+            <ee:message>
+                <ee:set-payload
+        ><![CDATA[%dw 2.0
+output application/json
+var actionId = (vars.slackActionId default "") as String
+var approvalId = (vars.slackApprovalId default "selected approval") as String
+var recipient = (vars.slackSupplierEmail default p('gmail.supplierEmail')) as String
+var status = (vars.gmailDeliveryStatus default "QUEUED") as String
+var provider = (vars.gmailDeliveryProvider default "mock-vendor-email") as String
+var messageId = (vars.gmailMessageId default "") as String
+var fallback = (vars.gmailFallbackReason default "") as String
 ---
 {
     response_type: "ephemeral",
     replace_original: false,
     text:
         if (actionId contains "modify")
-            "Logia noted the change request for `" ++ approvalId ++ "`. Open the Salesforce command center to adjust the recommendation safely."
+            "Change request noted for `" ++ approvalId ++ "`. Open Salesforce to edit the recommendation safely."
+        else if (actionId contains "reject")
+            "Rejected `" ++ approvalId ++ "`. No supplier email or order was sent."
+        else if (status == "SENT")
+            "Approved `" ++ approvalId ++ "`. Supplier email sent to " ++ recipient ++ " through `" ++ provider ++ "`" ++ (if (messageId != "") " (`" ++ messageId ++ "`)." else ".")
         else
-            "Logia received the " ++ decision ++ " for `" ++ approvalId ++ "`. Salesforce remains the system of record for the governed action."
+            "Approved `" ++ approvalId ++ "`, but the supplier email is still safely queued. Provider: `" ++ provider ++ "`. " ++ fallback
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
@@ -329,13 +514,15 @@ var orderRecommendationId = "recommendation-logia-supplier-order-001"
 var orderButtonValue = write({
     approvalId: orderApprovalId,
     recommendationId: orderRecommendationId,
-    tenantKey: "demo-mauritius"
+    tenantKey: "demo-mauritius",
+    orderText: orderText,
+    supplierEmail: p('gmail.supplierEmail')
 }, "application/json")
 var responseText =
     if (normalized startsWith "status")
         "Logia status request received. Check the Salesforce command center for facts, approval state, actions, and outcomes."
     else if (normalized == "queue")
-        "Logia queue summary: this is the manager ops board. It shows active issues, tasks, approvals, and outcomes. Salesforce keeps the full record; Slack shows safe staff updates."
+        "Logia queue summary: this Slack command is the safe manager cockpit. Use `/logia report <issue>` to create role tasks and `/logia order <request>` to draft a protected supplier email. Salesforce keeps the full evidence, approval, action, and outcome record."
     else if (isProfile)
         profileText
     else if (isDemoRun)
@@ -380,7 +567,7 @@ if (isOrder)
                     },
                     {
                         'type': "mrkdwn",
-                        "text": "*Action*\n`SEND_VENDOR_EMAIL` mock queue"
+                        "text": "*Action*\n`SEND_VENDOR_EMAIL` after approval"
                     }
                 ]
             },
@@ -388,7 +575,7 @@ if (isOrder)
                 'type': "section",
                 "text": {
                     'type': "mrkdwn",
-                    "text": "*Draft email*\nSubject: Stock request approval needed\n\nHello, could you please confirm availability, price, and earliest delivery for this request?\n\nBest regards,\nOperations Manager\nLogia"
+                    "text": "*Draft email*\nSubject: Approved Logia stock request\n\nHello, could you please confirm availability, price, and earliest delivery for this request?\n\nPlease reply with the earliest delivery option.\n\nBest regards,\nOperations Manager\nLogia"
                 }
             },
             {
@@ -422,6 +609,56 @@ if (isOrder)
                         },
                         "action_id": "modify_logia_supplier_order",
                         "value": orderButtonValue
+                    }
+                ]
+            }
+        ]
+    }
+else if (isReport)
+    baseResponse ++ {
+        blocks: [
+            {
+                'type': "section",
+                "text": {
+                    'type': "mrkdwn",
+                    "text": "*Worker report captured*\n" ++ reportSummary
+                }
+            },
+            {
+                'type': "section",
+                "fields": [
+                    {
+                        'type': "mrkdwn",
+                        "text": "*Signal*\n`" ++ (if (reportText == "") "missing issue details" else reportText) ++ "`"
+                    },
+                    {
+                        'type': "mrkdwn",
+                        "text": "*Status*\nEvidence created, tasks proposed"
+                    },
+                    {
+                        'type': "mrkdwn",
+                        "text": "*Operations Manager*\nReview risk and approve protected actions"
+                    },
+                    {
+                        'type': "mrkdwn",
+                        "text": "*Worker A*\nUpdate affected customer/service desk if delay continues"
+                    },
+                    {
+                        'type': "mrkdwn",
+                        "text": "*Worker B*\nCheck resource, stock, or service area now"
+                    },
+                    {
+                        'type': "mrkdwn",
+                        "text": "*Finance Reviewer*\nCheck cost, refund, payment, or claim impact if relevant"
+                    }
+                ]
+            },
+            {
+                'type': "context",
+                "elements": [
+                    {
+                        'type': "mrkdwn",
+                        "text": "Slack is the visible task board. Salesforce remains the audit source. Invite worker users to `#logia-demo` so they can see these role tasks live."
                     }
                 ]
             }

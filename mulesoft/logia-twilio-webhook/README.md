@@ -187,11 +187,10 @@ Slack alert.
 
 ## Gmail Supplier Email
 
-The Python reference runtime supports Gmail API supplier email after manager
-approval with the narrow `gmail.send` scope. The deployed CloudHub channel app
-now has Gmail secure property placeholders and can store those values in
-Runtime Manager, but the live Slack approval route still returns a fast
-acknowledgement and keeps Salesforce as the approval/audit surface.
+The Python reference runtime and the deployed CloudHub channel app support
+Gmail API supplier email after manager approval with the narrow `gmail.send`
+scope. CloudHub reads Gmail OAuth values from Runtime Manager secure properties,
+then returns a `gmail-api` provider message id when delivery succeeds.
 
 Use the repository helper to apply the complete CloudHub property set without
 committing secrets:
@@ -208,5 +207,6 @@ do not update only one Gmail secret unless you also preserve the required
 runtime properties. See
 `docs/gmail-oauth-cloudhub-runbook.md` for the full setup and smoke tests.
 
-Do not claim live Gmail delivery from CloudHub until the approval execution
-route is extended and a `gmail-api` send result is visible in demo evidence.
+Claim live Gmail delivery only when the approval response shows provider
+`gmail-api` with a message id. If Gmail credentials are missing or Gmail fails,
+Logia keeps the supplier email in the protected queue and says so.

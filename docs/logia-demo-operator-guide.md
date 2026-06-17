@@ -27,10 +27,9 @@ airport, hotel, and banking profiles.
 - Supplier email has a Gmail API adapter in the MuleSoft reference runtime. It
   sends live only after manager approval and only when Gmail OAuth credentials
   are configured outside Git.
-- CloudHub has Gmail secure properties configured for the current demo app, but
-  the deployed Slack approval route still acknowledges approval and leaves the
-  execution/audit truth in Salesforce. Do not claim CloudHub sent Gmail until a
-  visible `gmail-api` send result exists.
+- CloudHub can send the approved supplier email through Gmail when the current
+  demo app has Gmail secure properties configured. Claim live delivery only when
+  the approval response shows provider `gmail-api` with a message id.
 
 ## What Is Mocked Or Protected
 
@@ -597,7 +596,6 @@ Explain the mapping:
 - If Slack Lists fail: "Lists are a paid Slack mirror. Salesforce remains the
   source of truth."
 - If vendor email is asked about: "Supplier email is protected. Gmail can send
-  it after approval in the reference runtime when credentials are configured.
-  The CloudHub app already stores Gmail secure properties, but we only claim
-  live Gmail delivery after the approval execution route shows a `gmail-api`
-  send result."
+  it after approval when credentials are configured. We only claim live Gmail
+  delivery when Slack/CloudHub returns a `gmail-api` message id; otherwise the
+  supplier email stays safely queued."

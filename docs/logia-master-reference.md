@@ -223,10 +223,9 @@ Recommended hackathon stance:
   records a protected queued fallback.
 - For the current CloudHub channel app, Gmail OAuth values can be stored as
   Anypoint secure properties with
-  `scripts/configure-cloudhub-logia-secrets.ps1`. The live Slack route still
-  acknowledges approval quickly and keeps Salesforce as the system of record,
-  so do not claim CloudHub Gmail send until a visible `gmail-api` send result
-  is recorded.
+  `scripts/configure-cloudhub-logia-secrets.ps1`. The live Slack route can send
+  an approved supplier email through Gmail and returns a visible `gmail-api`
+  message id when delivery succeeds; otherwise it keeps the email queued.
 
 ## Slack Cockpit
 
@@ -694,9 +693,8 @@ Highest-value tasks still open:
 9. Configure live Slack Lists only if the paid workspace, `lists:write` scope,
    list ID, and column IDs are ready. Otherwise use Slack messages/threads plus
    Salesforce command-center tasks.
-10. Extend the live CloudHub approval execution route before claiming CloudHub
-    Gmail delivery. Credentials are configured as secure properties, but live
-    send still needs a visible `gmail-api` evidence result.
+10. During rehearsal, confirm the live CloudHub approval route returns a
+    `gmail-api` message id before claiming supplier email delivery to judges.
 11. Use `docs/no-credential-demo-qa-pack.md` during final rehearsal for
     multilingual complaint scripts, fake voice-note transcripts, document/image
     evidence scenarios, expected agent routing, judge-sector mappings, and

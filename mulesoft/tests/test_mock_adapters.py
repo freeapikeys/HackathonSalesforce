@@ -445,12 +445,25 @@ class MockAdapterTest(unittest.TestCase):
     def test_slack_list_mirror_can_create_operations_queue_item(self) -> None:
         slack_transport = FakeSlackTransport()
         list_transport = FakeSlackListTransport()
-        api = build_default_api(
-            slack_webhook_url="https://hooks.slack.test/services/demo",
-            slack_transport=slack_transport,
-            slack_bot_token="test-slack-bot-token",
-            slack_list_transport=list_transport,
-        )
+        with patch.dict(
+            "os.environ",
+            {
+                "SLACK_LIST_ID_OPERATIONS": "",
+                "SLACK_LIST_COLUMN_CASE": "",
+                "SLACK_LIST_COLUMN_PROFILE": "",
+                "SLACK_LIST_COLUMN_STATUS": "",
+                "SLACK_LIST_COLUMN_OWNER": "",
+                "SLACK_LIST_COLUMN_DUE": "",
+                "SLACK_LIST_COLUMN_APPROVAL": "",
+                "SLACK_LIST_COLUMN_OUTCOME": "",
+            },
+        ):
+            api = build_default_api(
+                slack_webhook_url="https://hooks.slack.test/services/demo",
+                slack_transport=slack_transport,
+                slack_bot_token="test-slack-bot-token",
+                slack_list_transport=list_transport,
+            )
         example = api.contract.examples["operations"][
             "executeApprovedAction"
         ]["request"]
@@ -1357,11 +1370,24 @@ class MockAdapterTest(unittest.TestCase):
     def test_stock_order_creates_slack_list_task_when_configured(self) -> None:
         signing_secret = "test-slack-signing-secret"
         list_transport = FakeSlackListTransport()
-        api = build_default_api(
-            slack_webhook_url="",
-            slack_bot_token="test-slack-bot-token",
-            slack_list_transport=list_transport,
-        )
+        with patch.dict(
+            "os.environ",
+            {
+                "SLACK_LIST_ID_OPERATIONS": "",
+                "SLACK_LIST_COLUMN_CASE": "",
+                "SLACK_LIST_COLUMN_PROFILE": "",
+                "SLACK_LIST_COLUMN_STATUS": "",
+                "SLACK_LIST_COLUMN_OWNER": "",
+                "SLACK_LIST_COLUMN_DUE": "",
+                "SLACK_LIST_COLUMN_APPROVAL": "",
+                "SLACK_LIST_COLUMN_OUTCOME": "",
+            },
+        ):
+            api = build_default_api(
+                slack_webhook_url="",
+                slack_bot_token="test-slack-bot-token",
+                slack_list_transport=list_transport,
+            )
         headers, raw_body = self.signed_slack_form_request(
             signing_secret=signing_secret,
             form={

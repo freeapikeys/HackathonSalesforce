@@ -124,14 +124,13 @@ Invoke-WebRequest -Method Get `
 
 Expected result: HTTP `200` with body `logia-smoke`.
 
-## Current Limitation
+## Current CloudHub Behavior
 
-The Python MuleSoft reference runtime can send Gmail after approval when these
-credentials are present. The deployed CloudHub channel app currently stores the
-Gmail secure properties for the live integration boundary, but its Slack
-approval route still returns a fast acknowledgement and keeps Salesforce as the
-approval/audit surface.
+The Python MuleSoft reference runtime and deployed CloudHub channel app can send
+Gmail after approval when these credentials are present. The Slack approval
+route refreshes the Gmail access token, sends the supplier email through Gmail
+API, and returns a `gmail-api` provider message id when delivery succeeds.
 
-Do not claim live Gmail delivery from CloudHub until the CloudHub approval
-execution route is extended and a real `gmail-api` send result is visible in
-the demo evidence.
+Claim live Gmail delivery only when the approval response shows provider
+`gmail-api` with a message id. If Gmail credentials are missing or Gmail fails,
+the supplier email stays in the protected queue and Logia reports the fallback.

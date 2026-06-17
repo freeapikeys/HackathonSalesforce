@@ -670,8 +670,8 @@ file before editing.
 - [x] Configure live Gmail OAuth for the manager/demo sender account:
       Gmail API enabled, OAuth refresh token stored outside Git, `gmail.send`
       scope only, and one supplier recipient email for the demo. CloudHub stores
-      these as secure properties; the live approval route must still produce a
-      `gmail-api` send result before judges are told live email was sent.
+      these as secure properties; the live approval route now returns a
+      `gmail-api` message id when supplier email delivery succeeds.
 - [x] Rehearse CloudHub Slack command and button payload acknowledgements
       through the active rewritten ingress route.
 - [x] Package/deploy the WhatsApp webhook Mule app to CloudHub and verify the
