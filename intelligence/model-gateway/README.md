@@ -28,8 +28,9 @@ provider can be plugged into the same contract without changing Agentforce, UI,
 or prompt callers. It remains `UNAVAILABLE` in the demo fixtures until policy
 enables it. The reference adapter can call DeepSeek's OpenAI-compatible
 chat-completions endpoint only when explicitly enabled and `DEEPSEEK_API_KEY`
-is present. Missing credentials or disabled policy fail closed instead of
-silently pretending a model answered.
+is present. Local runtimes can set `DEEPSEEK_ENABLED=true`; shared runtimes
+should use their secret manager or secure properties. Missing credentials or
+disabled policy fail closed instead of silently pretending a model answered.
 
 For Logia, the same gateway should route retail recommendations and message
 drafts through logical profiles. A retail recommendation request should include
@@ -67,3 +68,13 @@ Slack and WhatsApp collaborators should read
 using the adapter for message drafts. The short version: call the model gateway
 for advisory draft text, keep `DEEPSEEK_API_KEY` outside Git, and never let the
 draft bypass manager approval or protected-action execution.
+
+To verify local DeepSeek readiness without exposing the key:
+
+```bash
+cp .env.example .env
+npm run check:deepseek
+```
+
+Set `DEEPSEEK_ENABLED=true` and `DEEPSEEK_API_KEY` in the ignored `.env` file
+or in the approved secret manager for shared runtimes.

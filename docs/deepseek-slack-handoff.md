@@ -29,9 +29,12 @@ documents, medical records, or provider-specific secrets to Slack or DeepSeek.
 
 ## Local Environment
 
-Set these outside Git:
+Copy `.env.example` to `.env` for local development, or set equivalent
+environment variables through the approved secret manager for shared runtimes.
+`.env` is ignored by Git.
 
 ```bash
+export DEEPSEEK_ENABLED=true
 export DEEPSEEK_API_KEY="<your-deepseek-api-key>"
 export DEEPSEEK_MODEL="deepseek-chat"
 ```
@@ -40,6 +43,19 @@ export DEEPSEEK_MODEL="deepseek-chat"
 
 Do not place either value in committed files, screenshots, Slack payloads,
 Salesforce fixtures, MuleSoft examples, or Beads issues.
+
+Validate local configuration without a live provider call:
+
+```bash
+npm run check:deepseek
+```
+
+Run a real DeepSeek smoke test only when you intentionally want a paid/provider
+call:
+
+```bash
+npm run check:deepseek:live
+```
 
 ## Runtime Adapter
 
@@ -66,6 +82,8 @@ The adapter:
 - normalizes the response into the existing gateway `AdapterResult`;
 - fails closed if disabled, credentials are missing, HTTP fails, or output is
   not valid JSON.
+- can be enabled through `DEEPSEEK_ENABLED=true` so existing gateway code does
+  not need provider-specific edits.
 
 ## Slack Implementation Contract
 
@@ -99,11 +117,27 @@ The Slack send remains blocked until approval is present. Missing Slack
 credentials should still return an honest `MOCK_SENT` or failure state, not a
 fake live delivery.
 
+## Shared Runtime Rule
+
+For collaborator machines, each developer should set their own `.env` or shell
+environment. For shared demos, put `DEEPSEEK_ENABLED`, `DEEPSEEK_API_KEY`, and
+`DEEPSEEK_MODEL` in the deployment secret store:
+
+- GitHub Actions: repository or environment secret;
+- MuleSoft/CloudHub: secure properties;
+- Salesforce-facing runtime: Named Credential, External Credential, or the
+  gateway service environment;
+- local dashboard/dev server: ignored `.env`.
+
+The repository should only contain `.env.example`, setup docs, and code that
+reads the environment.
+
 ## Verification
 
 Run:
 
 ```bash
+npm run check:deepseek
 npm run check:models
 ```
 

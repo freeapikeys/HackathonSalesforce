@@ -341,6 +341,29 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
             with self.assertRaises(AdapterUnavailable):
                 adapter.generate(generate)
 
+    def test_enabled_deepseek_adapter_rejects_placeholder_api_key(self) -> None:
+        contract = ModelGatewayContract()
+        _, generate = self.requests(contract)
+        adapter = DeepSeekOpenAICompatibleAdapter(enabled=True)
+
+        with patch.dict(
+            "os.environ",
+            {"DEEPSEEK_API_KEY": "<set-locally-or-in-secret-manager>"},
+            clear=True,
+        ):
+            with self.assertRaises(AdapterUnavailable):
+                adapter.generate(generate)
+
+    def test_deepseek_adapter_can_be_enabled_from_environment(self) -> None:
+        with patch.dict(
+            "os.environ",
+            {"DEEPSEEK_ENABLED": "true"},
+            clear=True,
+        ):
+            adapter = DeepSeekOpenAICompatibleAdapter()
+
+        self.assertTrue(adapter.enabled)
+
 
 if __name__ == "__main__":
     unittest.main()

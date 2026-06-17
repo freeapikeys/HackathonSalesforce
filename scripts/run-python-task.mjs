@@ -51,6 +51,7 @@ const tasks = {
   "harness-tests": [
     ["-m", "unittest", "discover", "-s", "scripts/tests", "-p", "test_*.py"]
   ],
+  "deepseek-config": [["scripts/check_deepseek_config.py", ...rest]],
   identity: [["scripts/verify_identity_history.py"]],
   mappings: [["scripts/validate_semantic_mappings.py"]],
   metadata: [["scripts/generate_core_salesforce_metadata.py", "--check"]],

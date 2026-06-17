@@ -22,6 +22,8 @@
     "check:temporal": "node scripts/run-python-task.mjs temporal",
     "check:project": "node scripts/validate-salesforce-project.mjs",
     "check:harness": "node scripts/run-python-task.mjs harness-tests",
+    "check:deepseek": "node scripts/run-python-task.mjs deepseek-config",
+    "check:deepseek:live": "node scripts/run-python-task.mjs deepseek-config --live",
     "demo:check": "node scripts/run-python-task.mjs harness check",
     "demo:reset": "node scripts/run-python-task.mjs harness reset",
     "demo:seed": "node scripts/run-python-task.mjs harness seed",

@@ -95,21 +95,27 @@ class MockBetaAdapter(ScriptedMockAdapter):
 class DeepSeekOpenAICompatibleAdapter:
     interface_version = "hfs.generate.v1"
     adapter_key = "deepseek-openai-compatible-adapter"
+    enabled_env_var = "DEEPSEEK_ENABLED"
     api_key_env_var = "DEEPSEEK_API_KEY"
     model_env_var = "DEEPSEEK_MODEL"
+    placeholder_api_keys = {
+        "<set-locally-or-in-secret-manager>",
+        "changeme",
+        "change-me",
+    }
     base_url = "https://api.deepseek.com"
 
     def __init__(
         self,
         *,
-        enabled: bool = False,
+        enabled: bool | None = None,
         transport: Callable[
             [str, dict[str, str], dict[str, Any]],
             tuple[int, dict[str, Any]],
         ]
         | None = None,
     ) -> None:
-        self.enabled = enabled
+        self.enabled = self._enabled_from_environment() if enabled is None else enabled
         self.transport = transport or self._post_json
         self.calls = 0
 
@@ -120,7 +126,8 @@ class DeepSeekOpenAICompatibleAdapter:
                 "DeepSeek adapter is disabled by default; enable it only "
                 "after approved credentials, budget, and policy are configured."
             )
-        if not os.environ.get(self.api_key_env_var):
+        api_key = os.environ.get(self.api_key_env_var, "").strip()
+        if not api_key or api_key.lower() in self.placeholder_api_keys:
             raise AdapterUnavailable(
                 f"{self.api_key_env_var} is not configured."
             )
@@ -129,7 +136,7 @@ class DeepSeekOpenAICompatibleAdapter:
         status, response = self.transport(
             self._chat_completions_url(),
             {
-                "Authorization": f"Bearer {os.environ[self.api_key_env_var]}",
+                "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             payload,
@@ -192,6 +199,15 @@ class DeepSeekOpenAICompatibleAdapter:
 
     def _chat_completions_url(self) -> str:
         return self.base_url.rstrip("/") + "/chat/completions"
+
+    @classmethod
+    def _enabled_from_environment(cls) -> bool:
+        return os.environ.get(cls.enabled_env_var, "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
 
     @staticmethod
     def _json_object_text(content: str) -> str:
