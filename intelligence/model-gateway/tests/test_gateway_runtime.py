@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
 import unittest
 from copy import deepcopy
+from unittest.mock import patch
 
 from hfs_model_gateway import (
+    AdapterUnavailable,
     DeepSeekOpenAICompatibleAdapter,
     DeterministicRouter,
     MockAlphaAdapter,
@@ -269,6 +272,74 @@ class ModelGatewayRuntimeTest(unittest.TestCase):
         self.assertEqual(0, alpha.calls)
         self.assertEqual(0, beta.calls)
         self.assertEqual(0, deepseek.calls)
+
+    def test_enabled_deepseek_adapter_uses_openai_compatible_generation(
+        self,
+    ) -> None:
+        contract = ModelGatewayContract()
+        _, generate = self.requests(contract)
+        expected_output = deepcopy(
+            contract.fixture["normalizedResponses"][0]["output"]
+        )
+        posts = []
+
+        def fake_transport(url, headers, payload):
+            posts.append({"url": url, "headers": headers, "payload": payload})
+            return 200, {
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(expected_output),
+                        }
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 111,
+                    "completion_tokens": 44,
+                },
+            }
+
+        with patch.dict(
+            "os.environ",
+            {
+                "DEEPSEEK_API_KEY": "test-key",
+                "DEEPSEEK_MODEL": "deepseek-chat",
+            },
+            clear=False,
+        ):
+            adapter = DeepSeekOpenAICompatibleAdapter(
+                enabled=True,
+                transport=fake_transport,
+            )
+            result = adapter.generate(generate)
+
+        self.assertEqual(expected_output, result.output)
+        self.assertEqual(111, result.input_tokens)
+        self.assertEqual(44, result.output_tokens)
+        self.assertEqual(0.0, result.cost_usd)
+        self.assertEqual(1, len(posts))
+        self.assertEqual(
+            "https://api.deepseek.com/chat/completions",
+            posts[0]["url"],
+        )
+        self.assertEqual(
+            "Bearer test-key",
+            posts[0]["headers"]["Authorization"],
+        )
+        self.assertEqual("deepseek-chat", posts[0]["payload"]["model"])
+        self.assertEqual(
+            {"type": "json_object"},
+            posts[0]["payload"]["response_format"],
+        )
+
+    def test_enabled_deepseek_adapter_requires_api_key(self) -> None:
+        contract = ModelGatewayContract()
+        _, generate = self.requests(contract)
+        adapter = DeepSeekOpenAICompatibleAdapter(enabled=True)
+
+        with patch.dict("os.environ", {}, clear=True):
+            with self.assertRaises(AdapterUnavailable):
+                adapter.generate(generate)
 
 
 if __name__ == "__main__":

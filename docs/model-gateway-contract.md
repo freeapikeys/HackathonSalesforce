@@ -27,6 +27,14 @@ his pretrained multilingual/voice models or DeepSeek through configuration. The
 gateway contract stays the same: provider output is advisory, audited, and
 policy-bound. It must not approve protected actions, execute external actions,
 make clinical decisions, decide refunds, or bypass evidence retention.
+
+For Slack implementation work, DeepSeek should be used through the same model
+gateway boundary to draft short operational text before a protected Slack action
+is assembled. Slack code should receive a normalized draft and evidence IDs, not
+the DeepSeek API key, raw model response, or provider-specific prompt details.
+The protected `SEND_SLACK_ALERT` action still requires manager approval before
+MuleSoft sends a live webhook or honest mock result.
+
 Logia callers should request logical profiles such as
 `logia-retail-recommendation`. Jury-gift callers can request similarly
 logical profiles such as `nexavenu-revenue-recommendation`. They must not
